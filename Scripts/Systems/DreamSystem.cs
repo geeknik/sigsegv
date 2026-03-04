@@ -78,6 +78,22 @@ namespace UsurperRemake.Systems
 
             new NarrativeDreamData
             {
+                Id = "dream_deep_call",
+                Title = "The Deep Call",
+                MinLevel = 1, MaxLevel = 10,
+                MinAwakening = 0, MaxAwakening = 2,
+                Priority = 15,
+                Content = new[] {
+                    "You're standing at the edge of a vast underground ocean.",
+                    "You can't see the other side. You're not sure there is one.",
+                    "Something moves in the water, deep down. It knows you're here.",
+                    "You get the feeling it's been waiting for someone to show up."
+                },
+                PhilosophicalHint = "You keep thinking about that dream. What's down there?"
+            },
+
+            new NarrativeDreamData
+            {
                 Id = "dream_voices",
                 Title = "A Chorus of Voices",
                 MinLevel = 1, MaxLevel = 30,

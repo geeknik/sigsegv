@@ -33,12 +33,13 @@ const SSH_HOST = '127.0.0.1';
 const SSH_PORT = 4000;
 const SSH_USER = 'usurper';
 const SSH_PASS = 'play';
-const DB_PATH = '/var/usurper/usurper_online.db';
+const DB_PATH = process.env.DB_PATH || '/var/usurper/usurper_online.db';
 
 // MUD mode: connect directly to MUD TCP server instead of through SSH
 // Default ON since the MUD server now listens directly on port 4000.
 // Set MUD_MODE=0 to fall back to legacy SSH mode if needed.
 const MUD_MODE = process.env.MUD_MODE !== '0';
+const MUD_HOST = process.env.MUD_HOST || '127.0.0.1';
 const MUD_PORT = parseInt(process.env.MUD_PORT || '4000', 10);
 const CACHE_TTL = 30000; // 30 seconds
 const FEED_POLL_MS = 5000; // SSE feed polls DB every 5 seconds
@@ -2574,7 +2575,7 @@ wss.on('connection', (ws, req) => {
     // MUD mode: connect directly to TCP game server (lower latency, no SSH overhead)
     // No AUTH header is sent — the MUD server detects the raw connection and
     // presents an interactive login/register menu directly to the user.
-    const tcp = net.connect({ host: '127.0.0.1', port: MUD_PORT }, () => {
+    const tcp = net.connect({ host: MUD_HOST, port: MUD_PORT }, () => {
       console.log(`[usurper-web] TCP connected to MUD server for ${clientIP}`);
     });
 

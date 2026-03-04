@@ -4660,6 +4660,29 @@ public abstract class BaseLocation
             terminal.WriteLine("");
         }
 
+        // Awakening status (v0.49.6)
+        var ocean = OceanPhilosophySystem.Instance;
+        if (ocean != null)
+        {
+            var awakeningLevel = ocean.AwakeningLevel;
+            var awakeningLabel = awakeningLevel switch
+            {
+                0 => "Dormant",
+                1 => "Stirring",
+                2 => "Aware",
+                3 => "Seeking",
+                4 => "Illuminated",
+                5 => "Transcendent",
+                6 => "Enlightened",
+                7 => "Awakened",
+                _ => "Dormant"
+            };
+            terminal.SetColor("dark_magenta");
+            terminal.WriteLine($"  Awakening: {awakeningLabel} ({awakeningLevel}/7)");
+            terminal.SetColor("white");
+            terminal.WriteLine("");
+        }
+
         // Wealth
         terminal.SetColor("yellow");
         terminal.WriteLine("═══ WEALTH ═══");

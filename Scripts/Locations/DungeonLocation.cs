@@ -1703,6 +1703,26 @@ public class DungeonLocation : BaseLocation
         terminal.WriteLine(room.AtmosphereText);
         terminal.WriteLine("");
 
+        // Mystery breadcrumbs — early floors hint at something deeper (v0.49.6)
+        if (currentDungeonLevel <= 5 && Random.Shared.Next(100) < 20)
+        {
+            var breadcrumbs = new[]
+            {
+                "The walls here look older than the rest of the dungeon. Strange symbols are carved into the stone.",
+                "You get the uncomfortable feeling that something is watching you. Not a monster. Something else.",
+                "The shadows down here seem to move on their own sometimes. Probably just the torchlight.",
+                "You can hear something like slow, heavy breathing from deep below. It's probably just the wind.",
+                "The air down here tastes faintly of salt, like the ocean. That shouldn't be possible this far underground.",
+                "You catch a faint sound, almost like whispering, but you can't make out any words.",
+                "Your torch flickers and you notice something carved into the wall. It looks like a wave.",
+                "You pass a puddle and your reflection looks wrong somehow. When you look again, it's fine.",
+            };
+            terminal.SetColor("dark_magenta");
+            terminal.WriteLine($"  {breadcrumbs[Random.Shared.Next(breadcrumbs.Length)]}");
+            terminal.SetColor("white");
+            terminal.WriteLine("");
+        }
+
         // Show what's in the room
         ShowRoomContents(room);
 
@@ -4014,8 +4034,8 @@ public class DungeonLocation : BaseLocation
             return;
         }
 
-        // Check if player survived
-        if (player.HP > 0)
+        // Check if player survived AND won (fleeing doesn't clear the room)
+        if (player.HP > 0 && combatResult.Outcome == CombatOutcome.Victory)
         {
             room.IsCleared = true;
             currentFloor.MonstersKilled += monsters.Count;

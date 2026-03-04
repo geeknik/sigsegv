@@ -302,10 +302,24 @@ public class InnLocation : BaseLocation
         
         // Show other NPCs
         ShowNPCsInLocation();
-        
+
+        // Aldric companion teaser — one-time sighting before recruitment level (v0.49.6)
+        if (currentPlayer != null && currentPlayer.Level >= 3 && CompanionSystem.Instance != null
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Aldric)?.IsRecruited ?? true)
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Aldric)?.IsDead ?? true)
+            && !currentPlayer.HintsShown.Contains(HintSystem.HINT_COMPANION_ALDRIC_TEASER))
+        {
+            currentPlayer.HintsShown.Add(HintSystem.HINT_COMPANION_ALDRIC_TEASER);
+            terminal.SetColor("dark_yellow");
+            terminal.WriteLine("  In the far corner, a scarred soldier sits alone, nursing a drink.");
+            terminal.WriteLine("  He looks like he's seen his share of fights. He doesn't look up.");
+            terminal.SetColor("white");
+            terminal.WriteLine("");
+        }
+
         // Show inn-specific menu
         ShowInnMenu();
-        
+
         // Status line
         ShowStatusLine();
     }

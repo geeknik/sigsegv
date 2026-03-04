@@ -90,6 +90,21 @@ public class HealerLocation : BaseLocation
 
         ShowNPCsInLocation();
 
+        // Mira companion teaser — level 5+ (v0.49.6)
+        if (GetCurrentPlayer() is { } miraCheck && miraCheck.Level >= 5
+            && CompanionSystem.Instance != null
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Mira)?.IsRecruited ?? true)
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Mira)?.IsDead ?? true)
+            && !miraCheck.HintsShown.Contains(HintSystem.HINT_COMPANION_MIRA_TEASER))
+        {
+            miraCheck.HintsShown.Add(HintSystem.HINT_COMPANION_MIRA_TEASER);
+            terminal.SetColor("dark_yellow");
+            terminal.WriteLine("  A young woman kneels beside an injured traveler, carefully tending");
+            terminal.WriteLine("  his wounds. She's good at it. You can tell she's done this many times.");
+            terminal.SetColor("white");
+            terminal.WriteLine("");
+        }
+
         ShowMenu();
         ShowPlayerHealthStatus();
     }

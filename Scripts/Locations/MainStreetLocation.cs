@@ -178,15 +178,52 @@ public class MainStreetLocation : BaseLocation
         }
 
         // NPC story notification — hint about NPCs with available story content (v0.49.3)
+        string? npcNotification = null;
         if (currentPlayer.Level >= 3)
         {
-            var npcNotification = TownNPCStorySystem.Instance?.GetNextNotification(currentPlayer);
+            npcNotification = TownNPCStorySystem.Instance?.GetNextNotification(currentPlayer);
             if (npcNotification != null)
             {
                 terminal.SetColor("cyan");
                 terminal.WriteLine(npcNotification);
                 terminal.SetColor("white");
             }
+        }
+
+        // Street micro-events — show real NPC activity from world simulation (v0.49.6)
+        if (npcNotification == null)
+        {
+            var microEvent = GenerateStreetMicroEvent();
+            if (microEvent != null)
+            {
+                terminal.SetColor("gray");
+                terminal.WriteLine($"  {microEvent}");
+                terminal.SetColor("white");
+            }
+        }
+
+        // Companion teasers — one-time early sightings before recruitment level (v0.49.6)
+        if (currentPlayer.Level >= 4 && CompanionSystem.Instance != null
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Vex)?.IsRecruited ?? true)
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Vex)?.IsDead ?? true)
+            && !currentPlayer.HintsShown.Contains(HintSystem.HINT_COMPANION_VEX_TEASER))
+        {
+            currentPlayer.HintsShown.Add(HintSystem.HINT_COMPANION_VEX_TEASER);
+            terminal.SetColor("dark_yellow");
+            terminal.WriteLine("  A quick-fingered stranger weaves through the crowd.");
+            terminal.WriteLine("  They catch your eye, flash a wink, and disappear into the crowd.");
+            terminal.SetColor("white");
+        }
+        else if (currentPlayer.Level >= 5 && CompanionSystem.Instance != null
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Lyris)?.IsRecruited ?? true)
+            && !(CompanionSystem.Instance.GetCompanion(CompanionId.Lyris)?.IsDead ?? true)
+            && !currentPlayer.HintsShown.Contains(HintSystem.HINT_COMPANION_LYRIS_TEASER))
+        {
+            currentPlayer.HintsShown.Add(HintSystem.HINT_COMPANION_LYRIS_TEASER);
+            terminal.SetColor("dark_yellow");
+            terminal.WriteLine("  A hooded woman passes through the crowd, lips moving in silent prayer.");
+            terminal.WriteLine("  She glances your way briefly. Something about her eyes unsettles you.");
+            terminal.SetColor("white");
         }
 
         // God Slayer buff reminder
@@ -3107,5 +3144,98 @@ public class MainStreetLocation : BaseLocation
     private async Task ShowWorldBossMenu()
     {
         await WorldBossSystem.Instance.ShowWorldBossUI(currentPlayer, terminal);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Street Micro-Events — surface real NPC simulation state (v0.49.6)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    private string? GenerateStreetMicroEvent()
+    {
+        var npcs = GetLiveNPCsAtLocation();
+        if (npcs.Count < 1) return null;
+
+        // Priority 1: Married/lover pair both at Main Street
+        for (int i = 0; i < npcs.Count && i < 6; i++)
+        {
+            for (int j = i + 1; j < npcs.Count && j < 6; j++)
+            {
+                if (RelationshipSystem.AreMarried(npcs[i], npcs[j]))
+                    return $"{npcs[i].Name2} and {npcs[j].Name2} walk together, sharing a quiet conversation.";
+                int rel = RelationshipSystem.GetRelationshipLevel(npcs[i], npcs[j]);
+                if (rel <= GameConfig.RelationLove)
+                    return $"{npcs[i].Name2} and {npcs[j].Name2} are walking close together, talking in low voices.";
+            }
+        }
+
+        // Priority 2-7: Check individual NPCs (shuffle for variety)
+        var shuffled = npcs.OrderBy(_ => Random.Shared.Next()).ToList();
+        foreach (var npc in shuffled)
+        {
+            var recentEvents = npc.Brain?.Memory?.GetRecentEvents(24);
+            if (recentEvents != null)
+            {
+                // Won a fight recently
+                var defeated = recentEvents.FirstOrDefault(e => e.Type == MemoryType.Defeated);
+                if (defeated != null)
+                    return $"{npc.Name2} carries a confident swagger. Looks like they bested {defeated.InvolvedCharacter} recently.";
+
+                // Witnessed a death
+                var sawDeath = recentEvents.FirstOrDefault(e => e.Type == MemoryType.SawDeath);
+                if (sawDeath != null)
+                    return $"{npc.Name2} has a faraway look, like they saw something they'd rather forget.";
+
+                // Was attacked / in a fight
+                var attacked = recentEvents.FirstOrDefault(e => e.Type == MemoryType.Attacked);
+                if (attacked != null)
+                    return $"{npc.Name2} sports fresh bruises. Someone picked a fight.";
+            }
+
+            // Emotional state checks
+            if (npc.EmotionalState != null)
+            {
+                if (npc.EmotionalState.HasEmotion(EmotionType.Anger))
+                    return $"{npc.Name2}'s jaw is clenched. They look ready to hit something.";
+                if (npc.EmotionalState.HasEmotion(EmotionType.Joy))
+                    return $"{npc.Name2} is humming cheerfully as they pass.";
+                if (npc.EmotionalState.HasEmotion(EmotionType.Sadness))
+                    return $"{npc.Name2} sits alone on a bench, looking like they could use a drink.";
+                if (npc.EmotionalState.HasEmotion(EmotionType.Fear))
+                    return $"{npc.Name2} keeps glancing over their shoulder, jumpy about something.";
+            }
+        }
+
+        // Priority 8: Gang members present together
+        var gangNpcs = npcs.Where(n => !string.IsNullOrEmpty(n.GangId)).ToList();
+        if (gangNpcs.Count >= 2)
+            return "A knot of gang members huddle together, speaking in low tones.";
+
+        // Priority 9: Enemy pair
+        for (int i = 0; i < npcs.Count && i < 5; i++)
+        {
+            for (int j = i + 1; j < npcs.Count && j < 5; j++)
+            {
+                if (RelationshipSystem.GetRelationshipLevel(npcs[i], npcs[j]) >= GameConfig.RelationEnemy)
+                    return $"{npcs[i].Name2} and {npcs[j].Name2} eye each other warily from across the street.";
+            }
+        }
+
+        // Priority 10: NPC with an emergent role
+        foreach (var npc in shuffled)
+        {
+            if (!string.IsNullOrEmpty(npc.EmergentRole))
+            {
+                return npc.EmergentRole switch
+                {
+                    "Defender" => $"{npc.Name2} stands watch near the gate, keeping an eye on things.",
+                    "Merchant" => $"{npc.Name2} is haggling loudly with a street vendor.",
+                    "Healer" => $"{npc.Name2} is tending to a scrape on a child's knee.",
+                    "Explorer" => $"{npc.Name2} is studying a worn map, planning their next trip.",
+                    _ => null
+                };
+            }
+        }
+
+        return null;
     }
 }

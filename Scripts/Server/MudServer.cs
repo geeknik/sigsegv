@@ -289,6 +289,23 @@ public class MudServer
                     // The session identity must always be the login key (account name).
                 }
 
+                // Auto-provision: create account if it doesn't exist (trusted auth only)
+                if (password == null && UsurperRemake.BBS.DoorMode.AutoProvision)
+                {
+                    if (!sqlBackend.PlayerExists(username))
+                    {
+                        var (provSuccess, provMessage) = await sqlBackend.AutoProvisionPlayer(username);
+                        if (!provSuccess)
+                        {
+                            Console.Error.WriteLine($"[MUD] Auto-provision failed for '{username}': {provMessage}");
+                            await WriteLineAsync(stream, $"ERR:{provMessage}");
+                            client.Close();
+                            return;
+                        }
+                        Console.Error.WriteLine($"[MUD] Auto-provisioned new account: '{username}'");
+                    }
+                }
+
                 // Normalize to lowercase for consistent key usage
                 username = usernameKey;
 

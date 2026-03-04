@@ -712,6 +712,15 @@ namespace UsurperRemake.Systems
                 return 0;
             }
 
+            // Check weapon requirement before listing spells
+            if (!SpellSystem.HasRequiredSpellWeapon(player))
+            {
+                var required = SpellSystem.GetSpellWeaponRequirement(player.Class);
+                terminal.SetColor("red");
+                terminal.WriteLine($"  You need a {required} equipped to cast spells!");
+                return 0;
+            }
+
             var availableSpells = SpellSystem.GetAvailableSpells(player);
             if (availableSpells.Count == 0)
             {

@@ -2369,6 +2369,75 @@ namespace UsurperRemake.Systems
         }
 
         /// <summary>
+        /// Auto-provision a player account for trusted auth (no password).
+        /// Used by --auto-provision flag for BBS passthrough connections where
+        /// the BBS already handles user authentication.
+        /// </summary>
+        public async Task<(bool success, string message)> AutoProvisionPlayer(string username)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(username) || username.Length < 2 || username.Length > 20)
+                    return (false, "Username must be 2-20 characters.");
+
+                // Block reserved alt character suffix
+                if (username.Contains(GameConfig.AltCharacterSuffix, StringComparison.OrdinalIgnoreCase))
+                    return (false, "Username contains reserved characters.");
+
+                // Check for valid characters (alphanumeric, spaces, hyphens, underscores)
+                foreach (char c in username)
+                {
+                    if (!char.IsLetterOrDigit(c) && c != ' ' && c != '-' && c != '_')
+                        return (false, "Username can only contain letters, numbers, spaces, hyphens, and underscores.");
+                }
+
+                using var connection = OpenConnection();
+
+                // Check if username already exists
+                using (var checkCmd = connection.CreateCommand())
+                {
+                    checkCmd.CommandText = "SELECT COUNT(*) FROM players WHERE LOWER(username) = LOWER(@username);";
+                    checkCmd.Parameters.AddWithValue("@username", username);
+                    var count = Convert.ToInt64(await checkCmd.ExecuteScalarAsync());
+                    if (count > 0)
+                        return (true, "Account already exists."); // Not an error — just means no provisioning needed
+                }
+
+                // Check if banned
+                using (var banCmd = connection.CreateCommand())
+                {
+                    banCmd.CommandText = "SELECT COUNT(*) FROM banned_names WHERE LOWER(name) = LOWER(@username);";
+                    banCmd.Parameters.AddWithValue("@username", username);
+                    try
+                    {
+                        var count = Convert.ToInt64(await banCmd.ExecuteScalarAsync());
+                        if (count > 0)
+                            return (false, "That username is not available.");
+                    }
+                    catch { /* banned_names table may not exist yet, that's fine */ }
+                }
+
+                // Insert with empty password_hash (trusted auth only — no password needed)
+                using var insertCmd = connection.CreateCommand();
+                insertCmd.CommandText = @"
+                    INSERT INTO players (username, display_name, password_hash, player_data, created_at)
+                    VALUES (@username, @display_name, '', '{}', datetime('now'));
+                ";
+                insertCmd.Parameters.AddWithValue("@username", username.ToLower());
+                insertCmd.Parameters.AddWithValue("@display_name", username);
+                await insertCmd.ExecuteNonQueryAsync();
+
+                DebugLogger.Instance.LogInfo("SQL", $"Auto-provisioned account: '{username}'");
+                return (true, "Account auto-provisioned.");
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Instance.LogError("SQL", $"Failed to auto-provision player: {ex.Message}");
+                return (false, "Account creation failed. Please try again.");
+            }
+        }
+
+        /// <summary>
         /// Authenticate a player. Returns (success, displayName, message).
         /// </summary>
         public async Task<(bool success, string displayName, string message)> AuthenticatePlayer(string username, string password)

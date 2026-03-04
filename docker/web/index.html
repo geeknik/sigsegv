@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usurper Reborn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0f;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        .header { text-align: center; padding: 40px 0 20px; }
+        .header h1 { font-size: 2rem; color: #d4a017; margin-bottom: 8px; }
+        .header p { color: #888; font-size: 0.95rem; }
+
+        /* Play Button */
+        .play-btn {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #d4a017, #b8860b);
+            color: #0a0a0f;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .play-btn:hover { background: linear-gradient(135deg, #e6b422, #d4a017); }
+
+        /* Terminal */
+        .terminal-section { display: none; padding: 20px 0; }
+        .terminal-section.active { display: block; }
+        #terminal-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .terminal-status {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .terminal-status.connected { color: #00ff88; }
+        .terminal-status.error { color: #ff4444; }
+        .terminal-close {
+            float: right;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .terminal-close:hover { color: #fff; }
+
+        /* Connect Info */
+        .connect-info {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 20px;
+        }
+        .connect-info h3 { color: #d4a017; margin-bottom: 10px; font-size: 1rem; }
+        .connect-info code {
+            display: inline-block;
+            background: #1a1a2e;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            color: #00e5ff;
+            font-size: 0.9rem;
+        }
+        .connect-info p { color: #666; font-size: 0.85rem; margin-top: 8px; }
+
+        /* Stats */
+        .stats-section { padding: 30px 0; }
+        .stats-section h2 { color: #d4a017; text-align: center; margin-bottom: 20px; }
+        .stats-error { text-align: center; color: #666; padding: 20px; }
+        .stats-online-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .online-dot {
+            width: 10px; height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .online-dot.offline { background: #666; animation: none; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .online-count { font-size: 1.1rem; font-weight: bold; }
+        .online-count.none { color: #666; }
+        .online-empty { text-align: center; color: #555; font-style: italic; padding: 10px; }
+        .online-players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .online-players-table th {
+            text-align: left;
+            padding: 6px 10px;
+            border-bottom: 1px solid #333;
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .online-players-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #1a1a2e;
+            font-size: 0.9rem;
+        }
+        .player-via { color: #666; font-size: 0.8rem; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-value { font-size: 1.3rem; font-weight: bold; color: #d4a017; }
+        .stat-label { font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase; }
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .highlight-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 14px;
+        }
+        .highlight-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .highlight-value { font-size: 1.1rem; font-weight: bold; color: #e0e0e0; margin: 4px 0; }
+        .highlight-detail { font-size: 0.8rem; color: #666; }
+        .leaderboard-section { margin-top: 20px; }
+        .leaderboard-section h3 { color: #d4a017; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th {
+            text-align: left;
+            padding: 6px 10px;
+            border-bottom: 1px solid #333;
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .leaderboard-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #1a1a2e;
+            font-size: 0.85rem;
+        }
+        .rank-col { width: 50px; }
+        .rank-1 { color: #ffd700; font-weight: bold; }
+        .rank-2 { color: #c0c0c0; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
+        .is-online { color: #00ff88; }
+        .online-indicator { margin-right: 4px; font-size: 0.7rem; }
+        .lb-xp { color: #888; }
+        .immortal-name { color: #d4a017; }
+        .immortal-class { color: #d4a017; }
+
+        /* Dashboard Links */
+        .dashboard-links {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #1a1a2e;
+        }
+        .dashboard-links a {
+            color: #4488ff;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 0.85rem;
+        }
+        .dashboard-links a:hover { text-decoration: underline; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #444;
+            font-size: 0.8rem;
+        }
+        .footer a { color: #666; text-decoration: none; }
+        .footer a:hover { color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Usurper Reborn</h1>
+            <p>A text-based RPG with turn-based combat, deep narrative systems, and a persistent living world.</p>
+            <button class="play-btn" onclick="openTerminal()">Play Now</button>
+        </div>
+
+        <section class="terminal-section" id="terminal-section">
+            <button class="terminal-close" onclick="closeTerminal()" title="Close terminal">&times;</button>
+            <div id="terminal-container"></div>
+            <div class="terminal-status" id="terminal-status">Click "Play Now" to connect...</div>
+        </section>
+
+        <div class="connect-info">
+            <h3>Other Ways to Connect</h3>
+            <code>ssh usurper@your-server -p 4000</code>
+            <p>Password: play &bull; Or connect via your BBS</p>
+        </div>
+
+        <section class="stats-section">
+            <h2>Live Server Stats</h2>
+            <div id="stats-content">
+                <div class="stats-error" id="stats-loading">Loading world data...</div>
+            </div>
+        </section>
+
+        <div class="dashboard-links">
+            <a href="/dashboard">NPC Dashboard</a>
+            <a href="/balance">Balance Dashboard</a>
+            <a href="/admin">Admin Panel</a>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="https://github.com/jknight/usurper-reborn">Usurper Reborn</a> &bull; Originally by Jakob Dangarden (1993)</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+    <script>
+        let terminal, fitAddon, ws = null, onDataDispose = null, onResizeDispose = null;
+
+        function openTerminal() {
+            const section = document.getElementById('terminal-section');
+            const status = document.getElementById('terminal-status');
+            section.classList.add('active');
+            section.scrollIntoView({ behavior: 'smooth' });
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                if (terminal) terminal.focus();
+                return;
+            }
+
+            if (!terminal) {
+                terminal = new Terminal({
+                    cursorBlink: true,
+                    fontSize: 14,
+                    fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                    theme: {
+                        background: '#0a0a0f',
+                        foreground: '#e0e0e0',
+                        cursor: '#00e5ff',
+                        selectionBackground: '#264f78',
+                        black: '#000000', red: '#ff4444', green: '#00ff88',
+                        yellow: '#ffaa00', blue: '#4488ff', magenta: '#aa66ff',
+                        cyan: '#00e5ff', white: '#e0e0e0',
+                        brightBlack: '#666666', brightRed: '#ff6666', brightGreen: '#66ffaa',
+                        brightYellow: '#ffcc44', brightBlue: '#66aaff', brightMagenta: '#cc88ff',
+                        brightCyan: '#33eeff', brightWhite: '#ffffff'
+                    },
+                    scrollback: 1000,
+                    convertEol: true
+                });
+                fitAddon = new FitAddon.FitAddon();
+                terminal.loadAddon(fitAddon);
+                terminal.open(document.getElementById('terminal-container'));
+                fitAddon.fit();
+                window.addEventListener('resize', () => { if (fitAddon) fitAddon.fit(); });
+            }
+
+            terminal.clear();
+            status.textContent = 'Connecting...';
+            status.className = 'terminal-status';
+
+            const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(proto + '//' + location.host + '/ws');
+            ws.binaryType = 'arraybuffer';
+
+            ws.onopen = () => {
+                status.textContent = 'Connected';
+                status.className = 'terminal-status connected';
+                terminal.focus();
+                if (fitAddon) {
+                    const dims = fitAddon.proposeDimensions();
+                    if (dims) ws.send(JSON.stringify({ type: 'resize', cols: dims.cols, rows: dims.rows }));
+                }
+            };
+            ws.onmessage = (event) => {
+                if (event.data instanceof ArrayBuffer) terminal.write(new Uint8Array(event.data));
+                else terminal.write(event.data);
+            };
+            ws.onclose = () => {
+                status.textContent = 'Disconnected. Click "Play Now" to reconnect.';
+                status.className = 'terminal-status';
+                terminal.write('\r\n\x1b[90m--- Connection closed ---\x1b[0m\r\n');
+            };
+            ws.onerror = () => {
+                status.textContent = 'Connection failed. Please try again.';
+                status.className = 'terminal-status error';
+            };
+
+            if (onDataDispose) onDataDispose.dispose();
+            if (onResizeDispose) onResizeDispose.dispose();
+            onDataDispose = terminal.onData((data) => {
+                if (ws && ws.readyState === WebSocket.OPEN) ws.send(data);
+            });
+            onResizeDispose = terminal.onResize(({ cols, rows }) => {
+                if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'resize', cols, rows }));
+            });
+        }
+
+        function closeTerminal() {
+            document.getElementById('terminal-section').classList.remove('active');
+            if (ws) { ws.close(); ws = null; }
+        }
+
+        // Stats dashboard
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        function formatNumber(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return String(n);
+        }
+        function formatGold(n) {
+            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return String(n);
+        }
+        function renderStatCard(value, label) {
+            return '<div class="stat-card"><div class="stat-value">' + value + '</div><div class="stat-label">' + label + '</div></div>';
+        }
+
+        function renderStats(data) {
+            const container = document.getElementById('stats-content');
+            if (!data || data.error) {
+                container.innerHTML = '<div class="stats-error">World data unavailable. The server may be offline.</div>';
+                return;
+            }
+            let html = '';
+            const onlineCount = data.onlineCount || 0;
+            html += '<div class="stats-online-header">';
+            html += '<div class="online-dot' + (onlineCount > 0 ? '' : ' offline') + '"></div>';
+            html += '<span class="online-count' + (onlineCount > 0 ? '' : ' none') + '">';
+            html += onlineCount === 0 ? 'No adventurers online' : onlineCount === 1 ? '1 Adventurer Online' : onlineCount + ' Adventurers Online';
+            html += '</span></div>';
+
+            if (data.online && data.online.length > 0) {
+                html += '<table class="online-players-table"><thead><tr><th>Player</th><th>Class</th><th>Level</th><th>Location</th><th>Via</th></tr></thead><tbody>';
+                for (const p of data.online) {
+                    html += '<tr>';
+                    html += '<td class="player-name">' + escapeHtml(p.name) + '</td>';
+                    html += '<td class="player-class">' + escapeHtml(p.className) + '</td>';
+                    html += '<td>' + p.level + '</td>';
+                    html += '<td>' + escapeHtml(p.location) + '</td>';
+                    html += '<td class="player-via">' + escapeHtml(p.connectionType || 'Unknown') + '</td>';
+                    html += '</tr>';
+                }
+                html += '</tbody></table>';
+            } else {
+                html += '<div class="online-empty">The realm awaits its next hero...</div>';
+            }
+
+            const s = data.stats || {};
+            html += '<div class="stats-grid">';
+            html += renderStatCard(formatNumber(s.totalPlayers || 0), 'Total Players');
+            html += renderStatCard(formatNumber(s.totalKills || 0), 'Monsters Slain');
+            html += renderStatCard(s.avgLevel || 0, 'Avg Level');
+            html += renderStatCard(s.deepestFloor || 0, 'Deepest Floor');
+            html += renderStatCard(formatGold(s.totalGold || 0), 'Total Gold');
+            html += '</div>';
+
+            const h = data.highlights || {};
+            html += '<div class="highlights-grid">';
+            if (h.topPlayer) {
+                html += '<div class="highlight-card"><div class="highlight-label">Top Adventurer</div>';
+                html += '<div class="highlight-value">' + escapeHtml(h.topPlayer.name) + '</div>';
+                html += '<div class="highlight-detail">Level ' + h.topPlayer.level + ' ' + escapeHtml(h.topPlayer.className) + '</div></div>';
+            }
+            if (h.king) {
+                html += '<div class="highlight-card"><div class="highlight-label">Current Ruler</div>';
+                html += '<div class="highlight-value">' + escapeHtml(h.king) + '</div></div>';
+            }
+            html += '</div>';
+
+            if (data.leaderboard && data.leaderboard.length > 0) {
+                html += '<div class="leaderboard-section"><h3>Hall of Fame</h3>';
+                html += '<table class="leaderboard-table"><thead><tr><th class="rank-col">Rank</th><th>Player</th><th>Class</th><th>Lv</th><th>XP</th></tr></thead><tbody>';
+                for (const p of data.leaderboard.slice(0, 15)) {
+                    const rankClass = p.rank <= 3 ? ' rank-' + p.rank : '';
+                    const onlineDot = p.isOnline ? '<span class="online-indicator">●</span>' : '';
+                    html += '<tr><td class="rank-col' + rankClass + '">#' + p.rank + '</td>';
+                    html += '<td class="lb-name' + (p.isOnline ? ' is-online' : '') + '">' + onlineDot + escapeHtml(p.name) + '</td>';
+                    html += '<td class="lb-class">' + escapeHtml(p.className) + '</td>';
+                    html += '<td>' + p.level + '</td>';
+                    html += '<td class="lb-xp">' + formatNumber(p.experience) + '</td></tr>';
+                }
+                html += '</tbody></table></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function fetchStats() {
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => renderStats(data))
+                .catch(() => {
+                    document.getElementById('stats-content').innerHTML =
+                        '<div class="stats-error">Could not reach the game server. Try again later.</div>';
+                });
+        }
+        fetchStats();
+        setInterval(fetchStats, 30000);
+    </script>
+</body>
+</html>

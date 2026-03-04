@@ -1,0 +1,65 @@
+# Usurper Reborn — Docker Compose
+#
+# Usage:
+#   docker compose up -d              Start all services
+#   docker compose logs -f usurper-game   Follow game server logs
+#   docker compose down               Stop all services
+#
+# Game server listens on port 4000 (raw TCP) for BBS/MUD client connections.
+# Web interface available on port 80 (browser play + dashboards).
+#
+# Customize:
+#   - Replace "YourAdminName" with your admin username
+#   - Change BALANCE_PASS from the default
+#   - Mount your own index.html: ./my-landing.html:/opt/usurper/web/index.html
+
+services:
+  usurper-game:
+    build: .
+    ports:
+      - "4000:4000"
+    volumes:
+      - usurper-data:/var/usurper
+    command:
+      - "--mud-server"
+      - "--mud-port"
+      - "4000"
+      - "--db"
+      - "/var/usurper/usurper_online.db"
+      - "--log-stdout"
+      - "--auto-provision"
+      - "--sim-interval"
+      - "30"
+      - "--admin"
+      - "YourAdminName"
+    restart: unless-stopped
+
+  usurper-web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    volumes:
+      - usurper-data:/var/usurper
+    environment:
+      - MUD_MODE=1
+      - MUD_HOST=usurper-game
+      - MUD_PORT=4000
+      - DB_PATH=/var/usurper/usurper_online.db
+      - BALANCE_USER=admin
+      - BALANCE_PASS=changeme
+    depends_on:
+      - usurper-game
+    restart: unless-stopped
+
+  usurper-nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - usurper-web
+    restart: unless-stopped
+
+volumes:
+  usurper-data:

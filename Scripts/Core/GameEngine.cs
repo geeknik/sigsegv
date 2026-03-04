@@ -3488,6 +3488,15 @@ public partial class GameEngine
                     ManaRegen = equipData.ManaRegen
                 };
 
+                // Migration: legacy loot items may have WeaponType=None because InferWeaponType
+                // wasn't called when they were first looted. Fix them on load so weapon requirements
+                // (Bard instruments, Ranger bows, Assassin daggers, Mage staves) work correctly.
+                if (equipment.Slot == EquipmentSlot.MainHand && equipment.WeaponType == WeaponType.None)
+                {
+                    equipment.WeaponType = ShopItemGenerator.InferWeaponType(equipment.Name);
+                    equipment.Handedness = ShopItemGenerator.InferHandedness(equipment.WeaponType);
+                }
+
                 if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
                 {
                     // MUD mode: assign fresh unique ID to avoid collisions with other players

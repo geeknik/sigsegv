@@ -3233,11 +3233,14 @@ public partial class CombatEngine
             int dmg = baseDmg + random.Next(1, player.Level / 5 + 2);
             monster.HP = Math.Max(0, monster.HP - dmg);
             monster.PoisonRounds--;
-            terminal.WriteLine($"Poison burns {monster.Name} for {dmg} damage!", "dark_green");
-            if (monster.PoisonRounds == 0) monster.Poisoned = false;
+            if (monster.IsBurning)
+                terminal.WriteLine($"Fire burns {monster.Name} for {dmg} damage!", "red");
+            else
+                terminal.WriteLine($"Poison burns {monster.Name} for {dmg} damage!", "dark_green");
+            if (monster.PoisonRounds == 0) { monster.Poisoned = false; monster.IsBurning = false; }
             if (!monster.IsAlive)
             {
-                terminal.WriteLine($"{monster.Name} succumbs to poison!", "dark_green");
+                terminal.WriteLine(monster.IsBurning ? $"{monster.Name} is consumed by flames!" : $"{monster.Name} succumbs to poison!", monster.IsBurning ? "red" : "dark_green");
                 return;
             }
         }
@@ -3660,13 +3663,15 @@ public partial class CombatEngine
             playerDefense += defBoons.FlatDefense;
         }
 
-        long actualDamage = Math.Max(1, monsterAttack - playerDefense);
+        // Minimum damage is 5% of monster attack to prevent defense stacking invulnerability
+        long minDamage = Math.Max(1, monsterAttack / 20);
+        long actualDamage = Math.Max(minDamage, monsterAttack - playerDefense);
 
         // Shield block: halve incoming damage on successful block
         if (blocked)
         {
             long blockedAmount = actualDamage / 2;
-            actualDamage = Math.Max(1, actualDamage - blockedAmount);
+            actualDamage = Math.Max(minDamage, actualDamage - blockedAmount);
             terminal.SetColor("bright_cyan");
             terminal.WriteLine($"Your shield absorbs {blockedAmount} damage!");
         }
@@ -11286,8 +11291,9 @@ public partial class CombatEngine
                 break;
 
             case "fire":
-                // Burn DoT — reuse poison mechanics for fire damage over time
+                // Burn DoT — reuse poison tick mechanics for fire damage over time
                 target.Poisoned = true;
+                target.IsBurning = true;
                 target.PoisonRounds = duration > 0 ? duration : 2;
                 terminal.WriteLine($"{target.Name} catches fire!", "red");
                 break;

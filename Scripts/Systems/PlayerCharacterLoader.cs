@@ -131,6 +131,13 @@ public static class PlayerCharacterLoader
                     ManaRegen = equipData.ManaRegen
                 };
 
+                // Migration: fix legacy items with WeaponType=None
+                if (equipment.Slot == EquipmentSlot.MainHand && equipment.WeaponType == WeaponType.None)
+                {
+                    equipment.WeaponType = ShopItemGenerator.InferWeaponType(equipment.Name);
+                    equipment.Handedness = ShopItemGenerator.InferHandedness(equipment.WeaponType);
+                }
+
                 // Always use fresh IDs — loaded characters are temporary combat entities
                 int newId = EquipmentDatabase.RegisterDynamic(equipment);
                 if (newId != equipData.Id)

@@ -33,6 +33,17 @@ namespace UsurperRemake.Systems
         private const int MaxBackupFiles = 3;
         private bool isEnabled = true;
         private LogLevel minimumLevel = LogLevel.Info;
+        private static bool _logToStdout = false;
+
+        /// <summary>
+        /// When true, log output goes to stdout instead of logs/debug.log.
+        /// Used for Docker/container deployments where the runtime handles log aggregation.
+        /// </summary>
+        public static bool LogToStdout
+        {
+            get => _logToStdout;
+            set => _logToStdout = value;
+        }
 
         // Session tracking
         private readonly string sessionId;
@@ -56,9 +67,12 @@ namespace UsurperRemake.Systems
             sessionId = Guid.NewGuid().ToString("N")[..8];
             sessionStart = DateTime.Now;
 
-            // Store logs in a logs subfolder
+            // Store logs in a logs subfolder (skip in stdout mode)
             logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
-            Directory.CreateDirectory(logDirectory);
+            if (!_logToStdout)
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
             logFilePath = Path.Combine(logDirectory, "debug.log");
 
             // Flush queue every 2 seconds
@@ -112,6 +126,14 @@ namespace UsurperRemake.Systems
             }
 
             if (sb.Length == 0) return;
+
+            // In stdout mode, write to console and skip file I/O entirely
+            if (_logToStdout)
+            {
+                try { Console.Out.Write(sb.ToString()); }
+                catch { /* stdout may be closed */ }
+                return;
+            }
 
             lock (writeLock)
             {

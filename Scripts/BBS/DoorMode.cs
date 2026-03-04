@@ -34,6 +34,7 @@ namespace UsurperRemake.BBS
         private static bool _mudRelayMode = false;
         private static int _mudPort = 4000;
         private static readonly List<string> _mudAdminUsers = new();
+        private static bool _autoProvision = false;
 
         // Idle timeout and session time tracking
         private static int _idleTimeoutMinutes = GameConfig.DefaultBBSIdleTimeoutMinutes;
@@ -212,6 +213,12 @@ namespace UsurperRemake.BBS
         public static IReadOnlyList<string> MudAdminUsers => _mudAdminUsers;
 
         /// <summary>
+        /// When true, trusted auth (no password) auto-creates accounts that don't exist.
+        /// Used for BBS passthrough where the BBS handles authentication.
+        /// </summary>
+        public static bool AutoProvision => _autoProvision;
+
+        /// <summary>
         /// Check command line args for door mode parameters
         /// Returns true if door mode should be used
         /// </summary>
@@ -332,6 +339,18 @@ namespace UsurperRemake.BBS
                 {
                     _mudAdminUsers.Add(args[i + 1].Trim());
                     i++;
+                }
+                // --auto-provision enables auto-account creation for trusted auth (no password)
+                else if (arg == "--auto-provision")
+                {
+                    _autoProvision = true;
+                    Console.Error.WriteLine("[MUD] Auto-provision enabled — trusted auth will auto-create accounts");
+                }
+                // --log-stdout routes DebugLogger output to stdout instead of logs/debug.log
+                else if (arg == "--log-stdout")
+                {
+                    UsurperRemake.Systems.DebugLogger.LogToStdout = true;
+                    Console.Error.WriteLine("[BOOT] Log output directed to stdout");
                 }
             }
 

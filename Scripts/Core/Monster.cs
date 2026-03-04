@@ -23,6 +23,7 @@ public class Monster
     public long HP { get; set; }                        // hitpoints
     public long Punch { get; set; }                     // punch, temporary battle var
     public bool Poisoned { get; set; }                  // poisoned?, temporary battle var
+    public bool IsBurning { get; set; }                  // burning (fire DoT), temporary battle var
     public bool Stunned { get; set; }                   // stunned?, temporary battle var
     public bool Distracted { get; set; }                // distracted?, reduced accuracy
     public bool Charmed { get; set; }                   // charmed?, may skip attack
@@ -589,6 +590,7 @@ public class Monster
         CombatTarget = "";
         CombatRound = 0;
         Poisoned = false;
+        IsBurning = false;
         Disease = false;
         Target = 0;
         Punch = 0;

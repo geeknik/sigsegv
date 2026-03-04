@@ -30,6 +30,10 @@ namespace UsurperRemake.Systems
         public const string HINT_QUEST_SYSTEM = "quest_system";
         public const string HINT_GETTING_STARTED = "getting_started";
         public const string HINT_FIRST_COMBAT_CLASS = "first_combat_class";
+        public const string HINT_COMPANION_ALDRIC_TEASER = "companion_aldric_teaser";
+        public const string HINT_COMPANION_VEX_TEASER = "companion_vex_teaser";
+        public const string HINT_COMPANION_LYRIS_TEASER = "companion_lyris_teaser";
+        public const string HINT_COMPANION_MIRA_TEASER = "companion_mira_teaser";
 
         // Hint definitions
         private readonly Dictionary<string, HintDefinition> hints = new()

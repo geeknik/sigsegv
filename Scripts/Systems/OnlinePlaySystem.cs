@@ -342,8 +342,10 @@ namespace UsurperRemake.Systems
             int attempts = 0;
             const int MAX_ATTEMPTS = 5;
 
-            // Check for saved credentials
-            var savedCreds = LoadSavedCredentials();
+            // Check for saved credentials (skip in BBS door mode — multiple BBS users
+            // share the same game installation, so saved credentials would log everyone
+            // in as the first user who saved them)
+            var savedCreds = UsurperRemake.BBS.DoorMode.IsInDoorMode ? null : LoadSavedCredentials();
 
             while (!authenticated && attempts < MAX_ATTEMPTS)
             {
@@ -571,16 +573,23 @@ namespace UsurperRemake.Systems
                 {
                     authenticated = true;
 
-                    // Offer to save credentials
+                    // Offer to save credentials (not in BBS door mode — shared installation)
                     terminal.SetColor("bright_green");
-                    terminal.Write("  Authenticated! ");
-                    terminal.SetColor("gray");
-                    var save = (await terminal.GetInput("Save credentials for next time? (Y/N): ")).Trim().ToUpper();
-                    if (save == "Y")
+                    if (UsurperRemake.BBS.DoorMode.IsInDoorMode)
                     {
-                        SaveCredentials(server, port, username!, password!);
-                        terminal.SetColor("green");
-                        terminal.WriteLine("  Credentials saved.");
+                        terminal.WriteLine("  Authenticated!");
+                    }
+                    else
+                    {
+                        terminal.Write("  Authenticated! ");
+                        terminal.SetColor("gray");
+                        var save = (await terminal.GetInput("Save credentials for next time? (Y/N): ")).Trim().ToUpper();
+                        if (save == "Y")
+                        {
+                            SaveCredentials(server, port, username!, password!);
+                            terminal.SetColor("green");
+                            terminal.WriteLine("  Credentials saved.");
+                        }
                     }
                 }
                 else
