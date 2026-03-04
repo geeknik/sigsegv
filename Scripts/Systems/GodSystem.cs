@@ -143,6 +143,7 @@ public class GodSystem
         {
             if (!godsByName.ContainsKey(name))
             {
+                int npcBelievers = random.Next(5, 50);
                 var god = new God
                 {
                     Name = name,
@@ -153,7 +154,8 @@ public class GodSystem
                     AI = GameConfig.GodAIComputer,
                     Age = random.Next(100, 1000),
                     Sex = name == "Amara" || name == "Sylvana" || name == "Discordia" ? 2 : 1,
-                    Believers = random.Next(5, 50),
+                    BaselineBelievers = npcBelievers,
+                    Believers = npcBelievers,
                     Deleted = false,
                     DeedsLeft = 99,
                     Darkness = darkness,

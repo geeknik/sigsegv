@@ -3852,6 +3852,7 @@ public partial class GameEngine
         player.AlchemistINTBoosts = playerData.AlchemistINTBoosts;
         player.GamblingRoundsToday = playerData.GamblingRoundsToday;
         player.PitFightsToday = playerData.PitFightsToday;
+        player.DesecrationsToday = playerData.DesecrationsToday;
         player.LoanAmount = playerData.LoanAmount;
         player.LoanDaysRemaining = playerData.LoanDaysRemaining;
         player.LoanInterestAccrued = playerData.LoanInterestAccrued;

@@ -795,6 +795,14 @@ public partial class TempleLocation : BaseLocation
         terminal.WriteLine("");
         terminal.WriteLine("");
         
+        if (currentPlayer.DesecrationsToday >= 2)
+        {
+            terminal.WriteLine("The temple guards are watching you too closely after your earlier sacrilege.", "red");
+            terminal.WriteLine("You'll have to wait until tomorrow.", "gray");
+            await Task.Delay(2000);
+            return;
+        }
+
         if (currentPlayer.DarkNr < 1)
         {
             terminal.WriteLine("You don't have any evil deeds left!", "red");
@@ -2028,18 +2036,44 @@ public partial class TempleLocation : BaseLocation
         currentPlayer.Darkness += darknessGain;
         currentPlayer.Experience += xpGain;
         currentPlayer.DarkNr--;
+        currentPlayer.DesecrationsToday++;
 
         terminal.WriteLine("", "white");
         terminal.WriteLine($"Darkness flows into your soul! (+{darknessGain} Darkness)", "dark_red");
         terminal.WriteLine($"Experience gained from profane knowledge! (+{xpGain} XP)", "yellow");
 
-        // Chance for curse
-        if (random.NextDouble() < 0.2)
+        // Divine retribution — escalates with repeated desecrations
+        // First desecration: 30% curse chance, mild damage
+        // Second desecration: guaranteed curse, heavy damage + stat loss
+        double curseChance = currentPlayer.DesecrationsToday >= 2 ? 1.0 : 0.3;
+        if (random.NextDouble() < curseChance)
         {
             terminal.WriteLine("", "white");
             terminal.WriteLine($"{god.Name} curses you from beyond!", "bright_red");
 
             int curseDamage = random.Next(10, 30 + currentPlayer.Level);
+            if (currentPlayer.DesecrationsToday >= 2)
+            {
+                // Second desecration: much heavier punishment
+                curseDamage *= 3;
+                terminal.WriteLine("The divine fury is overwhelming!", "bright_red");
+
+                // Lose a random base stat point
+                string[] stats = { "Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma" };
+                string lostStat = stats[random.Next(stats.Length)];
+                switch (lostStat)
+                {
+                    case "Strength": currentPlayer.BaseStrength = Math.Max(1, currentPlayer.BaseStrength - 1); break;
+                    case "Dexterity": currentPlayer.BaseDexterity = Math.Max(1, currentPlayer.BaseDexterity - 1); break;
+                    case "Constitution": currentPlayer.BaseConstitution = Math.Max(1, currentPlayer.BaseConstitution - 1); break;
+                    case "Intelligence": currentPlayer.BaseIntelligence = Math.Max(1, currentPlayer.BaseIntelligence - 1); break;
+                    case "Wisdom": currentPlayer.BaseWisdom = Math.Max(1, currentPlayer.BaseWisdom - 1); break;
+                    case "Charisma": currentPlayer.BaseCharisma = Math.Max(1, currentPlayer.BaseCharisma - 1); break;
+                }
+                currentPlayer.RecalculateStats();
+                terminal.WriteLine($"You feel your {lostStat} diminish as divine power strips it away! (-1 {lostStat})", "red");
+            }
+
             currentPlayer.HP = Math.Max(1, currentPlayer.HP - curseDamage);
             terminal.WriteLine($"You take {curseDamage} divine damage!", "red");
         }

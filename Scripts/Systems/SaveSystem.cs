@@ -796,6 +796,7 @@ namespace UsurperRemake.Systems
                 AlchemistINTBoosts = player.AlchemistINTBoosts,
                 GamblingRoundsToday = player.GamblingRoundsToday,
                 PitFightsToday = player.PitFightsToday,
+                DesecrationsToday = player.DesecrationsToday,
                 LoanAmount = player.LoanAmount,
                 LoanDaysRemaining = player.LoanDaysRemaining,
                 LoanInterestAccrued = player.LoanInterestAccrued,

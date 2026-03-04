@@ -23,9 +23,10 @@ public class God
     public int DeedsLeft { get; set; } = GameConfig.DefaultGodDeedsLeft; // deedsleft: SmallWord
     public bool Deleted { get; set; } = false;         // deleted: boolean
     public int Believers { get; set; } = 0;            // believers: SmallWord - # of worshippers
+    public int BaselineBelievers { get; set; } = 0;    // Simulated NPC worshippers (preserved across player worship changes)
     public long Darkness { get; set; } = 0;            // darkness: longint - dark points
     public long Goodness { get; set; } = 0;            // goodness: longint - good points
-    
+
     // Additional properties for C# implementation
     public DateTime LastActive { get; set; } = DateTime.Now;
     public DateTime CreatedDate { get; set; } = DateTime.Now;
@@ -135,10 +136,10 @@ public class God
         if (!Disciples.Contains(characterName))
         {
             Disciples.Add(characterName);
-            Believers = Disciples.Count;
+            Believers = BaselineBelievers + Disciples.Count;
         }
     }
-    
+
     /// <summary>
     /// Remove a believer from this god
     /// </summary>
@@ -147,7 +148,7 @@ public class God
         if (Disciples.Contains(characterName))
         {
             Disciples.Remove(characterName);
-            Believers = Disciples.Count;
+            Believers = BaselineBelievers + Disciples.Count;
         }
     }
     
@@ -252,6 +253,7 @@ public class God
             ["DeedsLeft"] = DeedsLeft,
             ["Deleted"] = Deleted,
             ["Believers"] = Believers,
+            ["BaselineBelievers"] = BaselineBelievers,
             ["Darkness"] = Darkness,
             ["Goodness"] = Goodness,
             ["LastActive"] = LastActive.ToBinary(),
@@ -280,6 +282,7 @@ public class God
         if (dict.ContainsKey("DeedsLeft")) god.DeedsLeft = Convert.ToInt32(dict["DeedsLeft"]);
         if (dict.ContainsKey("Deleted")) god.Deleted = Convert.ToBoolean(dict["Deleted"]);
         if (dict.ContainsKey("Believers")) god.Believers = Convert.ToInt32(dict["Believers"]);
+        if (dict.ContainsKey("BaselineBelievers")) god.BaselineBelievers = Convert.ToInt32(dict["BaselineBelievers"]);
         if (dict.ContainsKey("Darkness")) god.Darkness = Convert.ToInt64(dict["Darkness"]);
         if (dict.ContainsKey("Goodness")) god.Goodness = Convert.ToInt64(dict["Goodness"]);
         if (dict.ContainsKey("LastActive")) god.LastActive = DateTime.FromBinary(Convert.ToInt64(dict["LastActive"]));

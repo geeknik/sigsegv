@@ -539,6 +539,7 @@ namespace UsurperRemake.Systems
         public int AlchemistINTBoosts { get; set; }
         public int GamblingRoundsToday { get; set; }
         public int PitFightsToday { get; set; }
+        public int DesecrationsToday { get; set; }
         public long LoanAmount { get; set; }
         public int LoanDaysRemaining { get; set; }
         public long LoanInterestAccrued { get; set; }

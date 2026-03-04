@@ -584,6 +584,7 @@ public class Character
     public int AlchemistINTBoosts { get; set; } = 0;            // Lifetime alchemist INT boosts (cap 3)
     public int GamblingRoundsToday { get; set; } = 0;           // Daily gambling counter (max 10)
     public int PitFightsToday { get; set; } = 0;                // Daily pit fight counter (max 3)
+    public int DesecrationsToday { get; set; } = 0;             // Daily desecration counter (max 2)
     public long LoanAmount { get; set; } = 0;                   // Active loan balance (principal + interest)
     public int LoanDaysRemaining { get; set; } = 0;             // Days until enforcer attack
     public long LoanInterestAccrued { get; set; } = 0;          // Total interest accrued

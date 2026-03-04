@@ -60,16 +60,20 @@ public class SettlementLocation : BaseLocation
         {
             var b = kvp.Value;
             string name = SettlementSystem.GetBuildingDisplayName(kvp.Key);
-            string tier = SettlementSystem.GetTierDisplayName(b.Tier);
+            bool isActive = state.ActiveBuilding == kvp.Key;
+            // Show "In Progress" instead of "Not Started" when actively being built
+            string tier = (isActive && b.Tier == BuildingTier.None && b.ResourcePool > 0)
+                ? "In Progress"
+                : SettlementSystem.GetTierDisplayName(b.Tier);
             string color = b.Tier switch
             {
                 BuildingTier.Upgraded => "bright_green",
                 BuildingTier.Built => "green",
                 BuildingTier.Foundation => "yellow",
-                _ => "darkgray"
+                _ => isActive ? "cyan" : "darkgray"
             };
 
-            string active = state.ActiveBuilding == kvp.Key ? " [BUILDING...]" : "";
+            string active = isActive ? " [BUILDING...]" : "";
             terminal.SetColor(color);
             terminal.Write($"    {name,-16} ");
             terminal.SetColor("white");

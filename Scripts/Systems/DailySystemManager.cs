@@ -316,6 +316,7 @@ public class DailySystemManager
         // Reset Dark Alley daily counters (v0.41.0)
         player.GamblingRoundsToday = 0;
         player.PitFightsToday = 0;
+        player.DesecrationsToday = 0;
 
         // Reset real-world-date daily tracking (online mode persistence)
         player.SethFightsToday = 0;
