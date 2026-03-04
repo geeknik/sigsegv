@@ -108,6 +108,9 @@ public class LocationManager
         // Music Shop (instruments & bard services)
         locations[GameLocation.MusicShop] = new MusicShopLocation();
 
+        // Wilderness (exploration beyond the city gates)
+        locations[GameLocation.Wilderness] = new WildernessLocation();
+
         // Note: Gym removed - stat training doesn't fit single-player endless format
 
         // GD.Print($"[LocationManager] Initialized {locations.Count} locations");
@@ -142,7 +145,8 @@ public class LocationManager
             GameLocation.Arena,        // loc16 – PvP arena (online only)
             GameLocation.Dormitory,    // loc17 – lodging
             GameLocation.MusicShop,    // loc18 – music shop
-            GameLocation.TeamCorner    // loc19 – team corner
+            GameLocation.TeamCorner,   // loc19 – team corner
+            GameLocation.Wilderness    // loc20 – wilderness exploration
         };
         
         navigationTable[GameLocation.TheInn] = new List<GameLocation>
@@ -218,6 +222,11 @@ public class LocationManager
         };
 
         navigationTable[GameLocation.MusicShop] = new List<GameLocation>
+        {
+            GameLocation.MainStreet
+        };
+
+        navigationTable[GameLocation.Wilderness] = new List<GameLocation>
         {
             GameLocation.MainStreet
         };

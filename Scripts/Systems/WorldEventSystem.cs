@@ -118,6 +118,9 @@ namespace UsurperRemake.Systems
             // Recalculate global modifiers
             RecalculateGlobalModifiers();
 
+            // Generate distant world news (flavor from regions the player never visits)
+            GenerateDistantWorldNews(currentDay);
+
             await Task.CompletedTask;
         }
 
@@ -887,6 +890,176 @@ namespace UsurperRemake.Systems
                 return jsonElement.GetSingle();
             }
             return Convert.ToSingle(value);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // DISTANT WORLD NEWS — flavor events from regions the player
+        // never visits, making the world feel larger
+        // ═══════════════════════════════════════════════════════════════
+
+        private static readonly string[] DistantRegions = {
+            "Ashenmoor", "the Northern Reaches", "the Iron Coast", "the Verdant Expanse",
+            "Crownhaven", "the Sunken Isles", "Duskhollow", "Stormbreak"
+        };
+
+        private readonly List<string> _recentNewsCategories = new();
+        private int _lastDistantNewsDay = 0;
+
+        private static readonly (string Category, string[] Templates)[] DistantNewsTemplates = new[]
+        {
+            ("War", new[] {
+                "Border skirmishes between {REGION1} and {REGION2} have intensified.",
+                "The armies of {REGION1} march south — refugees flood the roads.",
+                "A ceasefire was declared between {REGION1} and {REGION2}.",
+                "Mercenary companies from {REGION1} are recruiting. The pay is good.",
+                "Raiders from {REGION1} burned a border village near {REGION2}.",
+                "A legendary general has risen in {REGION1}, rallying troops for war.",
+                "The siege of {REGION1} enters its third month. Supplies run low.",
+            }),
+            ("Trade", new[] {
+                "A merchant caravan from {REGION1} arrived bearing exotic spices and silks.",
+                "Trade routes through {REGION1} have been disrupted by bandits.",
+                "The price of iron has tripled — {REGION1}'s mines have flooded.",
+                "A rare shipment of enchanted ore from {REGION1} reached port.",
+                "Merchants from {REGION1} speak of a boom in the gem trade.",
+                "A trade embargo between {REGION1} and {REGION2} has collapsed local markets.",
+                "Smugglers from {REGION1} peddle forbidden alchemical reagents.",
+            }),
+            ("Plague", new[] {
+                "A mysterious sickness spreads through {REGION1}. Healers are baffled.",
+                "Healers from {REGION1} report the plague has been contained at last.",
+                "Travelers from {REGION1} carry a strange coughing illness.",
+                "A quarantine has been declared around {REGION1}. No one enters or leaves.",
+                "Priests in {REGION1} claim divine intervention cured the blight.",
+            }),
+            ("Discovery", new[] {
+                "Explorers in {REGION1} discovered ruins predating the Old Gods.",
+                "A new dungeon entrance was found beneath the mountains of {REGION1}.",
+                "Ancient texts from {REGION1} mention a forgotten eighth Old God.",
+                "Miners in {REGION1} broke through into an underground city of unknown origin.",
+                "A scholar from {REGION1} claims to have deciphered the language of the Seals.",
+                "Artifacts of immense power were unearthed in {REGION1}.",
+            }),
+            ("Political", new[] {
+                "The High Council of {REGION1} has elected a new Chancellor.",
+                "Civil unrest in {REGION1} — the governor has been deposed.",
+                "An alliance between {REGION1} and {REGION2} shakes the balance of power.",
+                "The throne of {REGION1} sits empty. Three claimants vie for the crown.",
+                "A beloved queen of {REGION1} was assassinated. The realm mourns.",
+                "Diplomats from {REGION1} arrived seeking an alliance against {REGION2}.",
+            }),
+            ("Disaster", new[] {
+                "A great earthquake struck {REGION1}. Ships lost at sea.",
+                "Wildfire consumed half of {REGION1}. The forests burn for weeks.",
+                "Floods devastated the lowlands of {REGION1}. Thousands displaced.",
+                "A volcano erupted near {REGION1}, blanketing the sky in ash.",
+                "Famine grips {REGION1} after a season of failed harvests.",
+                "A tidal wave struck the coast of {REGION1}. Entire villages washed away.",
+            }),
+            ("Monster", new[] {
+                "A dragon was sighted over {REGION1}. Livestock vanishes nightly.",
+                "Sea serpents plague the waters around {REGION1}.",
+                "A horde of undead emerged from {REGION1}'s ancient burial grounds.",
+                "A pack of dire wolves terrorizes travelers between {REGION1} and {REGION2}.",
+                "Something ancient stirs beneath {REGION1}. The ground trembles at night.",
+                "A giant has been spotted wandering the highlands of {REGION1}.",
+                "Hunters from {REGION1} report sightings of creatures that shouldn't exist.",
+            }),
+        };
+
+        private static readonly string[] PlayerReferencedTemplates = new[]
+        {
+            "Bards in {REGION1} sing of {PLAYER}'s exploits in the deep dungeons.",
+            "A merchant in {REGION1} sells maps claiming to lead to {PLAYER}'s hidden treasure.",
+            "The fame of {PLAYER} has reached even {REGION1}.",
+            "Scholars in {REGION1} debate {PLAYER}'s encounters with the Old Gods.",
+            "Children in {REGION1} play at being {PLAYER}, the dungeon delver.",
+            "A bounty hunter from {REGION1} seeks to test their mettle against {PLAYER}.",
+            "Tavern tales from {REGION1} grow more fantastical about {PLAYER} with each telling.",
+        };
+
+        /// <summary>
+        /// Generate 1-2 flavor news items from distant regions the player never visits.
+        /// Called from ProcessDailyEvents.
+        /// </summary>
+        public void GenerateDistantWorldNews(int currentDay)
+        {
+            if (currentDay == _lastDistantNewsDay) return;
+            _lastDistantNewsDay = currentDay;
+
+            var news = NewsSystem.Instance;
+            if (news == null) return;
+
+            int count = _random.Next(1, 3); // 1-2 news items
+
+            for (int i = 0; i < count; i++)
+            {
+                string? message = GenerateOneDistantNews();
+                if (message != null)
+                {
+                    news.Newsy($"☆ {message}");
+                }
+            }
+        }
+
+        private string? GenerateOneDistantNews()
+        {
+            // 15% chance of player-referenced news if any players exist
+            if (_random.Next(100) < 15)
+            {
+                var playerNews = TryGeneratePlayerReferencedNews();
+                if (playerNews != null) return playerNews;
+            }
+
+            // Pick a category, avoiding recent repeats
+            string category;
+            int attempts = 0;
+            do
+            {
+                var pool = DistantNewsTemplates[_random.Next(DistantNewsTemplates.Length)];
+                category = pool.Category;
+                if (!_recentNewsCategories.Contains(category) || attempts > 10)
+                {
+                    string template = pool.Templates[_random.Next(pool.Templates.Length)];
+                    string result = ReplaceRegionTokens(template);
+                    TrackCategory(category);
+                    return result;
+                }
+                attempts++;
+            } while (attempts <= 15);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Set by game systems when a notable player name is available for news references.
+        /// </summary>
+        public string? NotablePlayerName { get; set; }
+
+        private string? TryGeneratePlayerReferencedNews()
+        {
+            var playerName = NotablePlayerName;
+            if (string.IsNullOrEmpty(playerName)) return null;
+
+            var template = PlayerReferencedTemplates[_random.Next(PlayerReferencedTemplates.Length)];
+            return ReplaceRegionTokens(template).Replace("{PLAYER}", playerName);
+        }
+
+        private string ReplaceRegionTokens(string template)
+        {
+            string region1 = DistantRegions[_random.Next(DistantRegions.Length)];
+            string region2;
+            do { region2 = DistantRegions[_random.Next(DistantRegions.Length)]; }
+            while (region2 == region1);
+
+            return template.Replace("{REGION1}", region1).Replace("{REGION2}", region2);
+        }
+
+        private void TrackCategory(string category)
+        {
+            _recentNewsCategories.Add(category);
+            while (_recentNewsCategories.Count > 5)
+                _recentNewsCategories.RemoveAt(0);
         }
     }
 }

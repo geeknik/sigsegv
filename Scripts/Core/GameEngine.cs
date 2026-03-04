@@ -3098,6 +3098,9 @@ public partial class GameEngine
         bool isNewGame = currentPlayer.Statistics?.TotalSessionsPlayed <= 1;
         DebugLogger.Instance.LogGameStart(currentPlayer.Name, isNewGame);
 
+        // Set notable player name for distant world news references
+        WorldEventSystem.Instance.NotablePlayerName ??= currentPlayer.Name;
+
         // Initialize NPCs only if they haven't been initialized yet
         // The NPCSpawnSystem has a guard flag to prevent duplicate spawning
         if (NPCSpawnSystem.Instance.ActiveNPCs.Count == 0)
@@ -3341,6 +3344,7 @@ public partial class GameEngine
             CompactMode = playerData.CompactMode,
             ColorTheme = playerData.ColorTheme,
             AutoLevelUp = playerData.AutoLevelUp,
+            AutoEquipDisabled = playerData.AutoEquipDisabled,
             TeamXPPercent = playerData.TeamXPPercent ?? TeamXPConfig.DefaultTeamXPPercent.ToArray(),
             Loyalty = playerData.Loyalty,
             Haunt = playerData.Haunt,
@@ -3734,6 +3738,18 @@ public partial class GameEngine
         player.SongBuffValue = playerData.SongBuffValue;
         player.SongBuffValue2 = playerData.SongBuffValue2;
         player.HeardLoreSongs = playerData.HeardLoreSongs != null ? new HashSet<int>(playerData.HeardLoreSongs) : new HashSet<int>();
+
+        // Dungeon Settlements & Wilderness (v0.49.4)
+        player.VisitedSettlements = playerData.VisitedSettlements != null ? new HashSet<string>(playerData.VisitedSettlements) : new HashSet<string>();
+        player.SettlementLoreRead = playerData.SettlementLoreRead != null ? new HashSet<string>(playerData.SettlementLoreRead) : new HashSet<string>();
+        player.WildernessExplorationsToday = playerData.WildernessExplorationsToday;
+        player.WildernessDiscoveries = playerData.WildernessDiscoveries != null ? new HashSet<string>(playerData.WildernessDiscoveries) : new HashSet<string>();
+
+        // Dark Pact & Evil Deed tracking (v0.49.4)
+        player.DarkPactCombats = playerData.DarkPactCombats;
+        player.DarkPactDamageBonus = playerData.DarkPactDamageBonus;
+        player.HasShatteredSealFragment = playerData.HasShatteredSealFragment;
+        player.HasTouchedTheVoid = playerData.HasTouchedTheVoid;
 
         // Restore chest contents
         var playerKey = (player is Player pp ? pp.RealName : player.Name2) ?? player.Name2;

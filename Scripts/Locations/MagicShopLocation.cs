@@ -1972,12 +1972,13 @@ public partial class MagicShopLocation : BaseLocation
             return;
         }
 
-        if (player.Level < item.MinLevel)
+        bool canEquipPersonally = player.Level >= item.MinLevel;
+
+        if (!canEquipPersonally)
         {
-            terminal.SetColor("red");
-            terminal.WriteLine($"  Requires level {item.MinLevel}.");
-            await terminal.WaitForKey();
-            return;
+            terminal.SetColor("yellow");
+            terminal.WriteLine($"  Warning: Requires level {item.MinLevel} (you are level {player.Level}).");
+            terminal.WriteLine("  This item will go to your inventory (for companions/NPCs).");
         }
 
         // Show item detail before purchase
@@ -2008,36 +2009,73 @@ public partial class MagicShopLocation : BaseLocation
 
         player.Gold -= totalWithTax;
 
-        // For rings, prompt which finger if both are occupied
-        EquipmentSlot? targetSlot = null;
-        if (category == AccessoryCategory.Rings)
+        if (canEquipPersonally && !player.AutoEquipDisabled)
         {
-            var lf = player.GetEquipment(EquipmentSlot.LFinger);
-            var rf = player.GetEquipment(EquipmentSlot.RFinger);
-            if (lf != null && rf != null)
+            // Ask whether to equip or send to inventory
+            terminal.SetColor("cyan");
+            var equipChoice = await terminal.GetInput("  [E]quip now or [I]nventory? ");
+            if (equipChoice.Trim().ToUpper().StartsWith("I"))
             {
-                terminal.SetColor("cyan");
-                terminal.WriteLine($"  Both ring slots are occupied:");
-                terminal.SetColor("white");
-                terminal.WriteLine($"    [L] Left:  {lf.Name}");
-                terminal.WriteLine($"    [R] Right: {rf.Name}");
-                var fingerChoice = await terminal.GetInput("  Replace which? (L/R): ");
-                targetSlot = fingerChoice.Trim().ToUpper() == "R"
-                    ? EquipmentSlot.RFinger
-                    : EquipmentSlot.LFinger;
+                var invItem = player.ConvertEquipmentToLegacyItem(item);
+                player.Inventory.Add(invItem);
+                terminal.SetColor("bright_green");
+                terminal.WriteLine($"  You purchased {item.Name} — added to inventory.");
             }
-        }
+            else
+            {
+                // For rings, prompt which finger if both are occupied
+                EquipmentSlot? targetSlot = null;
+                if (category == AccessoryCategory.Rings)
+                {
+                    var lf = player.GetEquipment(EquipmentSlot.LFinger);
+                    var rf = player.GetEquipment(EquipmentSlot.RFinger);
+                    if (lf != null && rf != null)
+                    {
+                        terminal.SetColor("cyan");
+                        terminal.WriteLine($"  Both ring slots are occupied:");
+                        terminal.SetColor("white");
+                        terminal.WriteLine($"    [L] Left:  {lf.Name}");
+                        terminal.WriteLine($"    [R] Right: {rf.Name}");
+                        terminal.WriteLine($"    [C] Cancel purchase");
+                        var fingerChoice = await terminal.GetInput("  Replace which? (L/R/C): ");
+                        var fc = fingerChoice.Trim().ToUpper();
+                        if (fc.StartsWith("C") || string.IsNullOrEmpty(fc))
+                        {
+                            player.Gold += totalWithTax;
+                            terminal.SetColor("yellow");
+                            terminal.WriteLine("  Purchase cancelled.");
+                            await terminal.WaitForKey();
+                            return;
+                        }
+                        targetSlot = fc == "R"
+                            ? EquipmentSlot.RFinger
+                            : EquipmentSlot.LFinger;
+                    }
+                }
 
-        if (player.EquipItem(item, targetSlot, out string msg))
-        {
-            player.RecalculateStats();
-            terminal.SetColor("bright_green");
-            terminal.WriteLine($"  You now wear the {item.Name}!");
+                if (player.EquipItem(item, targetSlot, out string msg))
+                {
+                    player.RecalculateStats();
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine($"  You now wear the {item.Name}!");
+                }
+                else
+                {
+                    // Equip failed — add to inventory instead
+                    var invItem = player.ConvertEquipmentToLegacyItem(item);
+                    player.Inventory.Add(invItem);
+                    terminal.SetColor("yellow");
+                    terminal.WriteLine($"  Purchased {item.Name} — added to inventory.");
+                }
+            }
         }
         else
         {
-            terminal.SetColor("yellow");
-            terminal.WriteLine($"  Purchased {item.Name}. {msg}");
+            // Can't equip personally — add to inventory for companions/NPCs
+            var invItem = player.ConvertEquipmentToLegacyItem(item);
+            player.Inventory.Add(invItem);
+            terminal.SetColor("bright_green");
+            terminal.WriteLine($"  You purchased {item.Name} — added to inventory.");
         }
 
         player.Statistics?.RecordPurchase(totalWithTax);

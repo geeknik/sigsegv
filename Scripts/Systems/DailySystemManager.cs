@@ -329,6 +329,9 @@ public class DailySystemManager
         player.HomeRestsToday = 0;
         player.HerbsGatheredToday = 0;
 
+        // Reset wilderness daily explorations (v0.48.5)
+        player.WildernessExplorationsToday = 0;
+
         // Reset fatigue on full sleep (v0.49.1)
         player.Fatigue = 0;
 

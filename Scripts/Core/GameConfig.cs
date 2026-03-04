@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public static partial class GameConfig
 {
     // Version information
-    public const string Version = "0.49.3";
+    public const string Version = "0.49.4";
     public const string VersionName = "Swords and Lutes";
     public const string DiscordInvite = "discord.gg/EZhwgDT6Ta";
 
@@ -739,6 +739,19 @@ public static partial class GameConfig
     // Servants' Quarters
     public const int ServantsDailyGoldBase = 100;              // Base daily gold income
     public const int ServantsDailyGoldPerLevel = 10;           // Additional gold per player level
+
+    // Wilderness Exploration (v0.48.5)
+    public const int WildernessMaxDailyExplorations = 4;   // Trips per day
+    public const int WildernessTimeCostMinutes = 60;       // Game-time cost per trip
+    public const int WildernessFatigueCost = 5;            // Fatigue per exploration trip
+
+    // Evil Deeds tiered system (v0.49.4)
+    public const int EvilDeedSeriousMinLevel = 5;
+    public const int EvilDeedSeriousMinDarkness = 100;
+    public const int EvilDeedDarkMinLevel = 15;
+    public const int EvilDeedDarkMinDarkness = 400;
+    public const int DarkPactDuration = 10;            // combats
+    public const float DarkPactDamageBonus = 0.15f;    // 15% damage boost
 
     // Reinforced Door (safe home sleep in online mode)
     public const long ReinforcedDoorCost = 250_000;
@@ -1919,6 +1932,9 @@ public enum GameLocation
 
     // Music Shop (instruments & bard services)
     MusicShop = 503,     // Music Shop
+
+    // Wilderness (exploration beyond the city gates)
+    Wilderness = 504,    // Wilderness exploration
 
     Closed = 30000       // onloc_closed (for fake players)
 }

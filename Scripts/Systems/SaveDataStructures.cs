@@ -344,6 +344,7 @@ namespace UsurperRemake.Systems
         public bool CompactMode { get; set; }  // Compact menus for mobile/small screen SSH
         public ColorThemeType ColorTheme { get; set; } = ColorThemeType.Default;  // Player-selected color theme
         public bool AutoLevelUp { get; set; } = true;  // Auto-level on XP threshold (default on)
+        public bool AutoEquipDisabled { get; set; }  // Shop purchases go to inventory
         public int[]? TeamXPPercent { get; set; }  // Per-slot XP percentage distribution (player + 4 teammates)
         public int Loyalty { get; set; }    // Loyalty percentage (0-100)
         public int Haunt { get; set; }      // How many demons haunt player
@@ -496,6 +497,18 @@ namespace UsurperRemake.Systems
         public float SongBuffValue { get; set; }
         public float SongBuffValue2 { get; set; }
         public List<int> HeardLoreSongs { get; set; } = new();
+
+        // Dungeon Settlements & Wilderness (v0.49.4)
+        public List<string> VisitedSettlements { get; set; } = new();
+        public List<string> SettlementLoreRead { get; set; } = new();
+        public int WildernessExplorationsToday { get; set; }
+        public List<string> WildernessDiscoveries { get; set; } = new();
+
+        // Dark Pact & Evil Deed tracking (v0.49.4)
+        public int DarkPactCombats { get; set; }
+        public float DarkPactDamageBonus { get; set; }
+        public bool HasShatteredSealFragment { get; set; }
+        public bool HasTouchedTheVoid { get; set; }
 
         // Faction consumable properties (v0.40.2)
         public int PoisonCoatingCombats { get; set; }

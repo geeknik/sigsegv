@@ -140,10 +140,7 @@ public class InnLocation : BaseLocation
         terminal.ClearScreen();
 
         // Dramatic encounter
-        terminal.SetColor("red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "TROUBLE AT THE INN!"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("TROUBLE AT THE INN!", "red");
         terminal.WriteLine("");
 
         await Task.Delay(1000);
@@ -285,10 +282,7 @@ public class InnLocation : BaseLocation
         terminal.ClearScreen();
 
         // Inn header - standardized format
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"THE INN - 'The Drunken Dragon'".PadLeft((77 + 30) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE INN - 'The Drunken Dragon'", "bright_cyan", 77);
         terminal.WriteLine("");
         
         // Atmospheric description
@@ -321,228 +315,281 @@ public class InnLocation : BaseLocation
     /// </summary>
     private void ShowInnMenu()
     {
-        terminal.SetColor("yellow");
-        terminal.WriteLine("Inn Activities:");
-        terminal.WriteLine("");
-
-        // Row 1
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("D");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.Write("Buy a drink (5 gold)      ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("T");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Talk to patrons");
-
-        // Row 2
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("F");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.Write("Challenge Seth Able       ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("G");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Play drinking game");
-
-        // Row 3
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("U");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.Write("Listen to gossip          ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("B");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Check bulletin board");
-
-        // Row 4
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("E");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.Write("Rest at table             ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("O");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Order food (10 gold)");
-        terminal.WriteLine("");
-
-        // Check for recruitable companions
+        // Check for recruitable companions (needed by both branches)
         var recruitableCompanions = CompanionSystem.Instance.GetRecruitableCompanions(currentPlayer?.Level ?? 1).ToList();
-        if (recruitableCompanions.Any())
-        {
-            terminal.SetColor("bright_magenta");
-            terminal.WriteLine("A mysterious stranger catches your eye from a shadowy corner...");
-            terminal.WriteLine("");
-        }
-
-        // Show recruited companions waiting at the inn
         var recruitedCompanions = CompanionSystem.Instance.GetAllCompanions()
             .Where(c => c.IsRecruited && !c.IsDead).ToList();
-        if (recruitedCompanions.Any())
+
+        if (IsScreenReader)
         {
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Your companions ({recruitedCompanions.Count}) are resting at a nearby table.");
+            terminal.WriteLine("Inn Activities:");
+            terminal.WriteLine("");
+            WriteSRMenuOption("D", "Buy a drink (5 gold)");
+            WriteSRMenuOption("T", "Talk to patrons");
+            WriteSRMenuOption("F", "Challenge Seth Able");
+            WriteSRMenuOption("G", "Play drinking game");
+            WriteSRMenuOption("U", "Listen to gossip");
+            WriteSRMenuOption("B", "Check bulletin board");
+            WriteSRMenuOption("E", "Rest at table");
+            WriteSRMenuOption("O", "Order food (10 gold)");
+            terminal.WriteLine("");
+
+            if (recruitableCompanions.Any())
+                terminal.WriteLine("A mysterious stranger catches your eye from a shadowy corner...");
+            if (recruitedCompanions.Any())
+                terminal.WriteLine($"Your companions ({recruitedCompanions.Count}) are resting at a nearby table.");
+            if (recruitableCompanions.Any() || recruitedCompanions.Any())
+                terminal.WriteLine("");
+
+            terminal.WriteLine("Special Areas:");
+            WriteSRMenuOption("W", "Train with the Master");
+            WriteSRMenuOption("L", "Gambling Den");
+            if (recruitableCompanions.Any())
+                WriteSRMenuOption("A", $"Approach the stranger ({recruitableCompanions.Count} available)");
+            if (recruitedCompanions.Any())
+                WriteSRMenuOption("P", $"Manage your party ({recruitedCompanions.Count} companions)");
+            terminal.WriteLine("");
+
+            if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
+            {
+                long roomCost = (long)(currentPlayer.Level * GameConfig.InnRoomCostPerLevel);
+                WriteSRMenuOption("N", $"Rent a Room and Logout ({roomCost}g, protected)");
+                WriteSRMenuOption("K", "Attack a sleeper");
+            }
+            if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
+            {
+                if (DailySystemManager.CanRestForNight(currentPlayer))
+                    WriteSRMenuOption("Z", "Sleep (advance to morning)");
+                else
+                    WriteSRMenuOption("Z", "Wait until nightfall");
+            }
+
+            terminal.WriteLine("Navigation:");
+            WriteSRMenuOption("R", "Return to Main Street");
+            WriteSRMenuOption("S", "Status");
+            WriteSRMenuOption("?", "Help");
             terminal.WriteLine("");
         }
-
-        terminal.SetColor("cyan");
-        terminal.WriteLine("Special Areas:");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("W");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Train with the Master");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("L");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Gambling Den");
-
-        // Show companion option if available
-        if (recruitableCompanions.Any())
+        else
         {
+            terminal.SetColor("yellow");
+            terminal.WriteLine("Inn Activities:");
+            terminal.WriteLine("");
+
+            // Row 1
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
-            terminal.Write("A");
+            terminal.Write("D");
             terminal.SetColor("darkgray");
             terminal.Write("] ");
-            terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"Approach the stranger ({recruitableCompanions.Count} available)");
-        }
+            terminal.SetColor("white");
+            terminal.Write("Buy a drink (5 gold)      ");
 
-        // Show party management if player has companions
-        if (recruitedCompanions.Any())
-        {
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
-            terminal.Write("P");
+            terminal.Write("T");
             terminal.SetColor("darkgray");
             terminal.Write("] ");
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Manage your party ({recruitedCompanions.Count} companions)");
-        }
-        terminal.WriteLine("");
+            terminal.SetColor("white");
+            terminal.WriteLine("Talk to patrons");
 
-        // Online mode options: Rent a Room + Attack a Sleeper
-        if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
-        {
-            long roomCost = (long)(currentPlayer.Level * GameConfig.InnRoomCostPerLevel);
+            // Row 2
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
-            terminal.Write("N");
+            terminal.Write("F");
             terminal.SetColor("darkgray");
             terminal.Write("] ");
-            terminal.SetColor("bright_green");
-            terminal.Write($"Rent a Room & Logout ({roomCost}g, protected)    ");
+            terminal.SetColor("white");
+            terminal.Write("Challenge Seth Able       ");
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
-            terminal.Write("K");
+            terminal.Write("G");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Play drinking game");
+
+            // Row 3
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("U");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.Write("Listen to gossip          ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("B");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Check bulletin board");
+
+            // Row 4
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("E");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.Write("Rest at table             ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("O");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Order food (10 gold)");
+            terminal.WriteLine("");
+
+            if (recruitableCompanions.Any())
+            {
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine("A mysterious stranger catches your eye from a shadowy corner...");
+                terminal.WriteLine("");
+            }
+
+            if (recruitedCompanions.Any())
+            {
+                terminal.SetColor("bright_cyan");
+                terminal.WriteLine($"Your companions ({recruitedCompanions.Count}) are resting at a nearby table.");
+                terminal.WriteLine("");
+            }
+
+            terminal.SetColor("cyan");
+            terminal.WriteLine("Special Areas:");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("W");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Train with the Master");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("L");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Gambling Den");
+
+            // Show companion option if available
+            if (recruitableCompanions.Any())
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("A");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine($"Approach the stranger ({recruitableCompanions.Count} available)");
+            }
+
+            // Show party management if player has companions
+            if (recruitedCompanions.Any())
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("P");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("bright_cyan");
+                terminal.WriteLine($"Manage your party ({recruitedCompanions.Count} companions)");
+            }
+            terminal.WriteLine("");
+
+            // Online mode options: Rent a Room + Attack a Sleeper
+            if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
+            {
+                long roomCost = (long)(currentPlayer.Level * GameConfig.InnRoomCostPerLevel);
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("N");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("bright_green");
+                terminal.Write($"Rent a Room & Logout ({roomCost}g, protected)    ");
+
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("K");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("red");
+                terminal.WriteLine("Attack a sleeper");
+            }
+
+            // Single-player: Sleep/Wait option
+            if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("Z");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                if (DailySystemManager.CanRestForNight(currentPlayer))
+                {
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine("Sleep (advance to morning)");
+                }
+                else
+                {
+                    terminal.SetColor("dark_cyan");
+                    terminal.WriteLine("Wait until nightfall");
+                }
+            }
+
+            terminal.SetColor("yellow");
+            terminal.WriteLine("Navigation:");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("R");
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("red");
-            terminal.WriteLine("Attack a sleeper");
-        }
+            terminal.Write("Return to Main Street    ");
 
-        // Single-player: Sleep/Wait option
-        if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
-        {
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
-            terminal.Write("Z");
+            terminal.Write("S");
             terminal.SetColor("darkgray");
             terminal.Write("] ");
-            if (DailySystemManager.CanRestForNight(currentPlayer))
-            {
-                terminal.SetColor("bright_green");
-                terminal.WriteLine("Sleep (advance to morning)");
-            }
-            else
-            {
-                terminal.SetColor("dark_cyan");
-                terminal.WriteLine("Wait until nightfall");
-            }
+            terminal.SetColor("white");
+            terminal.Write("Status    ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("?");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Help");
+            terminal.WriteLine("");
         }
-
-        terminal.SetColor("yellow");
-        terminal.WriteLine("Navigation:");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("R");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("red");
-        terminal.Write("Return to Main Street    ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("S");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.Write("Status    ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("?");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Help");
-        terminal.WriteLine("");
     }
 
     /// <summary>
@@ -819,9 +866,7 @@ public class InnLocation : BaseLocation
         int sethLevel = GetSethLevel();
 
         terminal.ClearScreen();
-        terminal.SetColor("red");
-        terminal.WriteLine("CHALLENGING SETH ABLE");
-        terminal.WriteLine("====================");
+        WriteSectionHeader("CHALLENGING SETH ABLE", "red");
         terminal.WriteLine("");
 
         // Seth's drunken response
@@ -1041,9 +1086,7 @@ public class InnLocation : BaseLocation
     private async Task TalkToPatrons()
     {
         terminal.ClearScreen();
-        terminal.SetColor("cyan");
-        terminal.WriteLine("Mingle with Patrons");
-        terminal.WriteLine("===================");
+        WriteSectionHeader("Mingle with Patrons", "cyan");
         terminal.WriteLine("");
 
         // Get live NPCs at the Inn
@@ -1094,9 +1137,7 @@ public class InnLocation : BaseLocation
         while (continueInteraction)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Interacting with {npc.Name2}");
-            terminal.WriteLine(new string('─', 30 + npc.Name2.Length));
+            WriteSectionHeader($"Interacting with {npc.Name2}", "bright_cyan");
             terminal.WriteLine("");
 
             // Show NPC info
@@ -1406,12 +1447,7 @@ public class InnLocation : BaseLocation
         // --- Intro ---
         terminal.ClearScreen();
         terminal.WriteLine("");
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  +=======================================================+");
-        terminal.SetColor("bright_white");
-        terminal.WriteLine("  |              DRINKING CONTEST AT THE INN               |");
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  +=======================================================+");
+        WriteBoxHeader("DRINKING CONTEST AT THE INN", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -1462,21 +1498,32 @@ public class InnLocation : BaseLocation
         // --- Drink Choice ---
         terminal.ClearScreen();
         terminal.WriteLine("");
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("  Choose Your Competition Drink:");
-        terminal.WriteLine("");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("  [A] ");
-        terminal.SetColor("yellow");
-        terminal.WriteLine("Ale            - Easy going, more rounds to survive");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("  [S] ");
-        terminal.SetColor("yellow");
-        terminal.WriteLine("Stout          - A solid choice for serious drinkers");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("  [K] ");
-        terminal.SetColor("red");
-        terminal.WriteLine("Seth's Bomber  - Rocket fuel! Only the brave dare...");
+        if (IsScreenReader)
+        {
+            terminal.WriteLine("Choose Your Competition Drink:");
+            terminal.WriteLine("");
+            WriteSRMenuOption("A", "Ale - Easy going, more rounds to survive");
+            WriteSRMenuOption("S", "Stout - A solid choice for serious drinkers");
+            WriteSRMenuOption("K", "Seth's Bomber - Rocket fuel! Only the brave dare...");
+        }
+        else
+        {
+            terminal.SetColor("bright_magenta");
+            terminal.WriteLine("  Choose Your Competition Drink:");
+            terminal.WriteLine("");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("  [A] ");
+            terminal.SetColor("yellow");
+            terminal.WriteLine("Ale            - Easy going, more rounds to survive");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("  [S] ");
+            terminal.SetColor("yellow");
+            terminal.WriteLine("Stout          - A solid choice for serious drinkers");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("  [K] ");
+            terminal.SetColor("red");
+            terminal.WriteLine("Seth's Bomber  - Rocket fuel! Only the brave dare...");
+        }
         terminal.WriteLine("");
 
         string drinkName;
@@ -1720,12 +1767,7 @@ public class InnLocation : BaseLocation
         // --- Results ---
         terminal.ClearScreen();
         terminal.WriteLine("");
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  +=======================================================+");
-        terminal.SetColor("bright_white");
-        terminal.WriteLine("  |                  CONTEST RESULTS                       |");
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  +=======================================================+");
+        WriteBoxHeader("CONTEST RESULTS", "bright_yellow");
         terminal.WriteLine("");
 
         // Determine winner
@@ -1851,9 +1893,7 @@ public class InnLocation : BaseLocation
     private async Task ListenToRumors()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("Tavern Gossip");
-        terminal.WriteLine("=============");
+        WriteSectionHeader("Tavern Gossip", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -1928,9 +1968,7 @@ public class InnLocation : BaseLocation
     private async Task CheckBulletinBoard()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Inn Bulletin Board");
-        terminal.WriteLine("==================");
+        WriteSectionHeader("Inn Bulletin Board", "bright_cyan");
         terminal.WriteLine("");
         
         terminal.SetColor("white");
@@ -2192,10 +2230,7 @@ public class InnLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                        POTENTIAL COMPANIONS                                  ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("POTENTIAL COMPANIONS", "bright_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -2336,10 +2371,7 @@ public class InnLocation : BaseLocation
             // Show pending notifications first
             if (CompanionSystem.Instance.HasPendingNotifications)
             {
-                terminal.SetColor("bright_yellow");
-                terminal.WriteLine("==============================================================================");
-                terminal.WriteLine("                              NOTIFICATIONS                                   ");
-                terminal.WriteLine("==============================================================================");
+                WriteBoxHeader("NOTIFICATIONS", "bright_yellow");
                 terminal.WriteLine("");
 
                 foreach (var notification in CompanionSystem.Instance.GetAndClearNotifications())
@@ -2355,10 +2387,7 @@ public class InnLocation : BaseLocation
                 terminal.ClearScreen();
             }
 
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("==============================================================================");
-            terminal.WriteLine("                           P A R T Y   M A N A G E M E N T                    ");
-            terminal.WriteLine("==============================================================================");
+            WriteBoxHeader("PARTY MANAGEMENT", "bright_cyan");
             terminal.WriteLine("");
 
             // Show active companions
@@ -2532,10 +2561,7 @@ public class InnLocation : BaseLocation
     private async Task SwitchActiveCompanions(List<Companion> allCompanions)
     {
         terminal.ClearScreen();
-        terminal.SetColor("cyan");
-        terminal.WriteLine("==============================================================================");
-        terminal.WriteLine("                      SELECT ACTIVE COMPANIONS                                 ");
-        terminal.WriteLine("==============================================================================");
+        WriteBoxHeader("SELECT ACTIVE COMPANIONS", "cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -2628,10 +2654,7 @@ public class InnLocation : BaseLocation
     private async Task TalkToRecruitedCompanion(Companion companion)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"╔{'═'.ToString().PadRight(76, '═')}╗");
-        terminal.WriteLine($"║  {companion.Name} - {companion.Title}".PadRight(77) + "║");
-        terminal.WriteLine($"╚{'═'.ToString().PadRight(76, '═')}╝");
+        WriteBoxHeader($"{companion.Name} - {companion.Title}", "bright_cyan", 76);
         terminal.WriteLine("");
 
         // Show full description
@@ -2854,8 +2877,7 @@ public class InnLocation : BaseLocation
     private async Task HandlePersonalQuestInteraction(Companion companion)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"═══ {companion.PersonalQuestName} ═══");
+        WriteSectionHeader(companion.PersonalQuestName, "bright_magenta");
         terminal.WriteLine("");
 
         if (!companion.PersonalQuestStarted)
@@ -2917,8 +2939,7 @@ public class InnLocation : BaseLocation
     private async Task HandleRomanceInteraction(Companion companion)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══ A Quiet Moment ═══");
+        WriteSectionHeader("A Quiet Moment", "bright_magenta");
         terminal.WriteLine("");
 
         // Already romanced today — once per day limit
@@ -3008,8 +3029,7 @@ public class InnLocation : BaseLocation
     private async Task HandleGiveGift(Companion companion)
     {
         terminal.ClearScreen();
-        terminal.SetColor("yellow");
-        terminal.WriteLine("═══ Give a Gift ═══");
+        WriteSectionHeader("Give a Gift", "yellow");
         terminal.WriteLine("");
 
         if (currentPlayer.Gold < 50)
@@ -3096,8 +3116,7 @@ public class InnLocation : BaseLocation
     private async Task ShowCompanionHistory(Companion companion)
     {
         terminal.ClearScreen();
-        terminal.SetColor("cyan");
-        terminal.WriteLine($"═══ History with {companion.Name} ═══");
+        WriteSectionHeader($"History with {companion.Name}", "cyan");
         terminal.WriteLine("");
 
         if (companion.History.Count == 0)
@@ -3201,10 +3220,7 @@ public class InnLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
-            terminal.WriteLine($"                    EQUIPMENT: {target.DisplayName.ToUpper()}");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
+            WriteBoxHeader($"EQUIPMENT: {target.DisplayName.ToUpper()}", "bright_cyan");
             terminal.WriteLine("");
 
             // Show target's stats
@@ -3387,8 +3403,7 @@ public class InnLocation : BaseLocation
     private async Task CompanionEquipItemToCharacter(Character target)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"═══ EQUIP ITEM TO {target.DisplayName.ToUpper()} ═══");
+        WriteSectionHeader($"EQUIP ITEM TO {target.DisplayName.ToUpper()}", "bright_cyan");
         terminal.WriteLine("");
 
         // Collect equippable items from player's inventory and equipped items
@@ -3588,8 +3603,7 @@ public class InnLocation : BaseLocation
     private async Task CompanionUnequipItemFromCharacter(Character target)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"═══ UNEQUIP FROM {target.DisplayName.ToUpper()} ═══");
+        WriteSectionHeader($"UNEQUIP FROM {target.DisplayName.ToUpper()}", "bright_cyan");
         terminal.WriteLine("");
 
         // Get all equipped slots
@@ -3806,10 +3820,7 @@ public class InnLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
-            terminal.WriteLine($"                  COMBAT SKILLS: {companion.Name.ToUpper()}");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
+            WriteBoxHeader($"COMBAT SKILLS: {companion.Name.ToUpper()}", "bright_cyan");
             terminal.SetColor("white");
             terminal.WriteLine($"  Role: {companion.CombatRole} (as {charClass}) | Level: {companion.Level}");
             terminal.WriteLine("");
@@ -3896,10 +3907,7 @@ public class InnLocation : BaseLocation
     private async Task HandleStatTraining()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE MASTER TRAINER"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE MASTER TRAINER", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -3917,8 +3925,7 @@ public class InnLocation : BaseLocation
 
         terminal.SetColor("cyan");
         terminal.WriteLine($"{"#",-4} {"Stat",-16} {"Current",-10} {"Trained",-10} {"Next Cost",-12}");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 55));
+        WriteDivider(55, "darkgray");
 
         for (int i = 0; i < statNames.Length; i++)
         {
@@ -4163,10 +4170,7 @@ public class InnLocation : BaseLocation
     private async Task HandleGamblingDen()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "GAMBLING DEN"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("GAMBLING DEN", "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -4178,37 +4182,49 @@ public class InnLocation : BaseLocation
         terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
         terminal.WriteLine("");
 
-        terminal.SetColor("cyan");
-        terminal.WriteLine("Games Available:");
-        terminal.WriteLine("");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("1");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("High-Low Dice       (Guess higher or lower, 1.8x payout)");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("2");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Skull & Bones       (Blackjack with bone tiles, 2x payout)");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("3");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
         var armWrestles = DoorMode.IsOnlineMode ? currentPlayer.ArmWrestlesToday : _armWrestlesToday;
-        terminal.WriteLine($"Arm Wrestling       (STR contest vs NPC, {armWrestles}/{GameConfig.MaxArmWrestlesPerDay} today)");
+
+        if (IsScreenReader)
+        {
+            terminal.WriteLine("Games Available:");
+            terminal.WriteLine("");
+            WriteSRMenuOption("1", "High-Low Dice (Guess higher or lower, 1.8x payout)");
+            WriteSRMenuOption("2", "Skull and Bones (Blackjack with bone tiles, 2x payout)");
+            WriteSRMenuOption("3", $"Arm Wrestling (STR contest vs NPC, {armWrestles}/{GameConfig.MaxArmWrestlesPerDay} today)");
+        }
+        else
+        {
+            terminal.SetColor("cyan");
+            terminal.WriteLine("Games Available:");
+            terminal.WriteLine("");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("1");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("High-Low Dice       (Guess higher or lower, 1.8x payout)");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("2");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Skull & Bones       (Blackjack with bone tiles, 2x payout)");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("3");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine($"Arm Wrestling       (STR contest vs NPC, {armWrestles}/{GameConfig.MaxArmWrestlesPerDay} today)");
+        }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
@@ -4233,8 +4249,7 @@ public class InnLocation : BaseLocation
     private async Task PlayHighLowDice()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══════════ HIGH-LOW DICE ═══════════");
+        WriteSectionHeader("HIGH-LOW DICE", "bright_yellow");
         terminal.WriteLine("");
 
         if (currentPlayer.Gold <= 0)
@@ -4377,8 +4392,7 @@ public class InnLocation : BaseLocation
     private async Task PlaySkullAndBones()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("═══════════ SKULL & BONES ═══════════");
+        WriteSectionHeader("SKULL & BONES", "bright_cyan");
         terminal.WriteLine("");
 
         if (currentPlayer.Gold <= 0)
@@ -4559,8 +4573,7 @@ public class InnLocation : BaseLocation
     private async Task PlayArmWrestling()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("═══════════ ARM WRESTLING ═══════════");
+        WriteSectionHeader("ARM WRESTLING", "bright_red");
         terminal.WriteLine("");
 
         var armWrestles = DoorMode.IsOnlineMode ? currentPlayer.ArmWrestlesToday : _armWrestlesToday;
@@ -4719,10 +4732,7 @@ public class InnLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════╗");
-        terminal.WriteLine("║        Rent a Private Room       ║");
-        terminal.WriteLine("╚══════════════════════════════════╝");
+        WriteBoxHeader("Rent a Private Room", "bright_cyan");
         terminal.SetColor("white");
         terminal.WriteLine($"\n  Room cost: {roomCost:N0} gold");
         terminal.WriteLine("  You will be healed fully and logged out safely.");
@@ -4786,10 +4796,7 @@ public class InnLocation : BaseLocation
                 await Task.Delay(500);
             }
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════╗");
-            terminal.WriteLine("║        Rent a Private Room       ║");
-            terminal.WriteLine("╚══════════════════════════════════╝");
+            WriteBoxHeader("Rent a Private Room", "bright_cyan");
             terminal.SetColor("white");
         }
 

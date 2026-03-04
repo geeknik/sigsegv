@@ -407,6 +407,14 @@ public partial class CombatEngine
                 player.GodSlayerDefenseBonus = 0f;
             }
         }
+        if (player.DarkPactCombats > 0)
+        {
+            player.DarkPactCombats--;
+            if (player.DarkPactCombats <= 0)
+            {
+                player.DarkPactDamageBonus = 0f;
+            }
+        }
         if (player.SongBuffCombats > 0)
         {
             player.SongBuffCombats--;
@@ -2552,6 +2560,12 @@ public partial class CombatEngine
             attackPower += (long)(attackPower * attacker.GodSlayerDamageBonus);
         }
 
+        // Dark Pact bonus damage (Evil Deeds ritual buff)
+        if (attacker.HasDarkPactBuff)
+        {
+            attackPower += (long)(attackPower * attacker.DarkPactDamageBonus);
+        }
+
         // Fatigue damage penalty (single-player only)
         if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && attacker.Fatigue >= GameConfig.FatigueTiredThreshold)
         {
@@ -3199,7 +3213,9 @@ public partial class CombatEngine
         // Tick monster statuses
         if (monster.PoisonRounds > 0)
         {
-            int dmg = random.Next(1, 5); // 1d4
+            // Poison scales: 3-5% of monster's max HP + small level bonus
+            int baseDmg = Math.Max(3, (int)(monster.MaxHP * (0.03 + random.NextDouble() * 0.02)));
+            int dmg = baseDmg + random.Next(1, player.Level / 5 + 2);
             monster.HP = Math.Max(0, monster.HP - dmg);
             monster.PoisonRounds--;
             terminal.WriteLine($"Poison burns {monster.Name} for {dmg} damage!", "dark_green");
@@ -8473,6 +8489,8 @@ public partial class CombatEngine
                             attackPower += (long)(attackPower * player.WellRestedBonus);
                         if (player.HasGodSlayerBuff)
                             attackPower += (long)(attackPower * player.GodSlayerDamageBonus);
+                        if (player.HasDarkPactBuff)
+                            attackPower += (long)(attackPower * player.DarkPactDamageBonus);
                         // Fatigue damage penalty (single-player only, multi-monster path)
                         if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && player.Fatigue >= GameConfig.FatigueTiredThreshold)
                         {

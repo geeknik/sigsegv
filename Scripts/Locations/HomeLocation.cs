@@ -65,10 +65,7 @@ public class HomeLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"YOUR HOME".PadLeft((77 + 9) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("YOUR HOME", "bright_cyan");
         terminal.WriteLine("");
 
         // Quick stats bar
@@ -289,33 +286,50 @@ public class HomeLocation : BaseLocation
         // Sleep or Wait
         if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
         {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("Z");
-            terminal.SetColor("darkgray");
-            terminal.Write("] ");
-            if (DailySystemManager.CanRestForNight(currentPlayer))
+            if (IsScreenReader)
             {
-                terminal.SetColor("bright_green");
-                terminal.WriteLine("Sleep (advance to morning)");
+                string sleepLabel = DailySystemManager.CanRestForNight(currentPlayer)
+                    ? "Sleep (advance to morning)"
+                    : "Wait until nightfall";
+                terminal.WriteLine($" Z. {sleepLabel}");
             }
             else
             {
-                terminal.SetColor("dark_cyan");
-                terminal.WriteLine("Wait until nightfall");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("Z");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                if (DailySystemManager.CanRestForNight(currentPlayer))
+                {
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine("Sleep (advance to morning)");
+                }
+                else
+                {
+                    terminal.SetColor("dark_cyan");
+                    terminal.WriteLine("Wait until nightfall");
+                }
             }
         }
         else if (UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null && currentPlayer.HasReinforcedDoor)
         {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("Z");
-            terminal.SetColor("darkgray");
-            terminal.Write("] ");
-            terminal.SetColor("bright_green");
-            terminal.WriteLine("Sleep (safe — logout)");
+            if (IsScreenReader)
+            {
+                terminal.WriteLine(" Z. Sleep (safe, logout)");
+            }
+            else
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("Z");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("bright_green");
+                terminal.WriteLine("Sleep (safe — logout)");
+            }
         }
 
         // Navigation row
@@ -327,6 +341,13 @@ public class HomeLocation : BaseLocation
     // Write a menu option padded to a fixed 26-char column width
     private void WriteMenuOption(string prefix, string key, string label, bool available, int width)
     {
+        if (IsScreenReader)
+        {
+            // Plain text: "  E. Rest & Recover" padded to column width
+            string plain = $"{prefix}{key}. {label}";
+            terminal.Write(plain.PadRight(Math.Max(plain.Length, width)));
+            return;
+        }
         string keyColor = available ? "bright_yellow" : "dark_gray";
         string textColor = available ? "white" : "dark_gray";
         terminal.Write(prefix);
@@ -347,6 +368,11 @@ public class HomeLocation : BaseLocation
 
     private void WriteMenuNL(string prefix, string key, string label, bool available)
     {
+        if (IsScreenReader)
+        {
+            terminal.WriteLine($"{prefix}{key}. {label}");
+            return;
+        }
         string keyColor = available ? "bright_yellow" : "dark_gray";
         string textColor = available ? "white" : "dark_gray";
         terminal.Write(prefix);
@@ -869,8 +895,7 @@ public class HomeLocation : BaseLocation
         while (herbsLeft > 0)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_green");
-            terminal.WriteLine("═══ HERB GARDEN ═══");
+            WriteSectionHeader("HERB GARDEN", "bright_green");
             terminal.WriteLine("");
             terminal.SetColor("gray");
             terminal.WriteLine($"Gathers remaining today: {herbsLeft}");
@@ -946,8 +971,15 @@ public class HomeLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("═══ HERB POUCH ═══");
+        if (player.ScreenReaderMode)
+        {
+            terminal.WriteLine("HERB POUCH");
+        }
+        else
+        {
+            terminal.SetColor("bright_green");
+            terminal.WriteLine("═══ HERB POUCH ═══");
+        }
         terminal.WriteLine("");
 
         if (player.HasActiveHerbBuff)
@@ -1553,9 +1585,7 @@ public class HomeLocation : BaseLocation
     private async Task ShowFamily()
     {
         terminal.WriteLine("\n", "white");
-        terminal.WriteLine("╔══════════════════════════════════════╗", "bright_cyan");
-        terminal.WriteLine("║            FAMILY & LOVED ONES       ║", "bright_cyan");
-        terminal.WriteLine("╚══════════════════════════════════════╝", "bright_cyan");
+        WriteBoxHeader("FAMILY & LOVED ONES", "bright_cyan", 38);
         terminal.WriteLine();
 
         var romance = RomanceTracker.Instance;
@@ -1960,10 +1990,7 @@ public class HomeLocation : BaseLocation
         var spouseData = romance.Spouses.FirstOrDefault(s => s.NPCId == spouse.ID);
 
         terminal.WriteLine("\n", "white");
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("      RELATIONSHIP DISCUSSION");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("RELATIONSHIP DISCUSSION", "bright_cyan");
         terminal.WriteLine();
 
         terminal.SetColor("white");
@@ -2226,10 +2253,7 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        terminal.SetColor("red");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("         A DIFFICULT CONVERSATION");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("A DIFFICULT CONVERSATION", "red");
         terminal.WriteLine();
 
         terminal.SetColor("white");
@@ -2332,8 +2356,7 @@ public class HomeLocation : BaseLocation
         spouse.IsMarried = false;
         spouse.SpouseName = "";
 
-        terminal.SetColor("gray");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteThickDivider(39, "gray");
         terminal.WriteLine();
         terminal.SetColor("red");
         terminal.WriteLine("Your marriage has ended.");
@@ -2361,10 +2384,7 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("        INTIMATE FANTASIES");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("INTIMATE FANTASIES", "bright_magenta");
         terminal.WriteLine();
 
         terminal.SetColor("white");
@@ -2609,10 +2629,7 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("    ALTERNATIVE ARRANGEMENTS");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("ALTERNATIVE ARRANGEMENTS", "bright_magenta");
         terminal.WriteLine();
 
         terminal.SetColor("white");
@@ -2776,10 +2793,7 @@ public class HomeLocation : BaseLocation
     private async Task PlayHotwifingScene(NPC spouse, Spouse spouseData)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("          A NIGHT TO REMEMBER");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("A NIGHT TO REMEMBER", "bright_magenta");
         terminal.WriteLine();
 
         // Find a suitable third party NPC (exclude dead NPCs)
@@ -2821,10 +2835,7 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        terminal.SetColor("gray");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine($"  {spouse.Name} leaves for {spousePossessive} date...");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader($"{spouse.Name} leaves for {spousePossessive} date...", "gray");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -2837,10 +2848,7 @@ public class HomeLocation : BaseLocation
         await Task.Delay(2000);
 
         // The date scene (described, not shown)
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine("  LATER THAT NIGHT...");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader("LATER THAT NIGHT...", "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -2876,10 +2884,7 @@ public class HomeLocation : BaseLocation
         await Task.Delay(1500);
 
         // The reclamation
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine("          RECLAMATION");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader("RECLAMATION", "bright_red");
         terminal.WriteLine();
 
         await Task.Delay(1000);
@@ -3009,10 +3014,7 @@ public class HomeLocation : BaseLocation
     private async Task PlayCuckoldingScene(NPC spouse, Spouse spouseData)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("          THE ARRANGEMENT");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("THE ARRANGEMENT", "bright_magenta");
         terminal.WriteLine();
 
         // Find a suitable third party NPC (exclude dead NPCs)
@@ -3047,10 +3049,7 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        terminal.SetColor("gray");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine("  An hour later, there's a knock at the door...");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader("An hour later, there's a knock at the door...", "gray");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3072,10 +3071,7 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine("  You take your place...");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader("You take your place...", "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3114,10 +3110,7 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("════════════════════════════════════════");
-        terminal.WriteLine("  LATER...");
-        terminal.WriteLine("════════════════════════════════════════");
+        WriteSectionHeader("LATER...", "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3268,10 +3261,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
             await Task.Delay(2000);
 
-            terminal.SetColor("red");
-            terminal.WriteLine("═══════════════════════════════════════");
-            terminal.WriteLine("          A TERRIBLE SILENCE");
-            terminal.WriteLine("═══════════════════════════════════════");
+            WriteSectionHeader("A TERRIBLE SILENCE", "red");
             terminal.WriteLine();
 
             await Task.Delay(1500);
@@ -3382,10 +3372,7 @@ public class HomeLocation : BaseLocation
     /// </summary>
     private async Task ProcessSpouseDivorce(NPC spouse, Spouse spouseData)
     {
-        terminal.SetColor("red");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("         YOUR MARRIAGE HAS ENDED");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("YOUR MARRIAGE HAS ENDED", "red");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3430,10 +3417,7 @@ public class HomeLocation : BaseLocation
         var romance = RomanceTracker.Instance;
 
         terminal.WriteLine("\n", "white");
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══════════════════════════════════════");
-        terminal.WriteLine("         THE MASTER BEDROOM");
-        terminal.WriteLine("═══════════════════════════════════════");
+        WriteSectionHeader("THE MASTER BEDROOM", "bright_magenta");
         terminal.WriteLine();
 
         if (romance.Spouses.Count == 0 && romance.CurrentLovers.Count == 0)
@@ -3544,10 +3528,7 @@ public class HomeLocation : BaseLocation
     private async Task ShowHomeUpgrades()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════╗");
-        { const string t = "MASTER CRAFTSMAN'S RENOVATIONS"; int l = (62 - t.Length) / 2, r = 62 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("MASTER CRAFTSMAN'S RENOVATIONS", "bright_yellow", 62);
         terminal.WriteLine();
 
         terminal.SetColor("gray");
@@ -3625,10 +3606,17 @@ public class HomeLocation : BaseLocation
         ShowOneTimePurchase(opt++, "Fountain of Vitality", currentPlayer.HasVitalityFountain, fountainCost, "+10% max HP permanently");
 
         terminal.WriteLine();
-        terminal.SetColor("bright_yellow");
-        terminal.Write("[0]");
-        terminal.SetColor("white");
-        terminal.WriteLine(" Return");
+        if (IsScreenReader)
+        {
+            terminal.WriteLine("0. Return");
+        }
+        else
+        {
+            terminal.SetColor("bright_yellow");
+            terminal.Write("[0]");
+            terminal.SetColor("white");
+            terminal.WriteLine(" Return");
+        }
         terminal.WriteLine();
 
         var input = await terminal.GetInput("Select upgrade: ");
@@ -3747,6 +3735,18 @@ public class HomeLocation : BaseLocation
         string currentTierName = tierNames != null && level < tierNames.Length ? tierNames[level] : "";
         string nextTierName = tierNames != null && level + 1 < tierNames.Length ? tierNames[level + 1] : "";
 
+        if (IsScreenReader)
+        {
+            if (maxed)
+                terminal.WriteLine($"  {num}. {name} MAXED - {currentTierName} Lv {level}, {currentBonus}");
+            else
+            {
+                string tierText = nextTierName != "" ? $": {nextTierName}" : "";
+                terminal.WriteLine($"  {num}. {name} Lv {level + 1}{tierText}, {cost:N0}g, {nextBonus}");
+            }
+            return;
+        }
+
         if (maxed)
         {
             terminal.SetColor("bright_green");
@@ -3768,6 +3768,15 @@ public class HomeLocation : BaseLocation
 
     private void ShowOneTimePurchase(int num, string name, bool owned, long cost, string desc)
     {
+        if (IsScreenReader)
+        {
+            if (owned)
+                terminal.WriteLine($"  {num}. {name} - OWNED");
+            else
+                terminal.WriteLine($"  {num}. {name}, {cost:N0}g - {desc}");
+            return;
+        }
+
         if (owned)
         {
             terminal.SetColor("bright_green");
@@ -4037,10 +4046,7 @@ toResurrect.IsDead = false;
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "EQUIP YOUR PARTNER"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("EQUIP YOUR PARTNER", "bright_magenta");
         terminal.WriteLine("");
 
         // List partners
@@ -4090,10 +4096,7 @@ toResurrect.IsDead = false;
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
-            terminal.WriteLine($"                    EQUIPMENT: {target.DisplayName.ToUpper()}");
-            terminal.WriteLine($"═══════════════════════════════════════════════════════════════════════════════");
+            WriteSectionHeader($"EQUIPMENT: {target.DisplayName.ToUpper()}", "bright_magenta");
             terminal.WriteLine("");
 
             // Show target's stats
@@ -4125,22 +4128,32 @@ toResurrect.IsDead = false;
             // Show options
             terminal.SetColor("cyan");
             terminal.WriteLine("Options:");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [E]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Equip item from your inventory");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [U]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Unequip item from them");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [T]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Take all their equipment");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [Q]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Done / Return");
+            if (IsScreenReader)
+            {
+                terminal.WriteLine("  E. Equip item from your inventory");
+                terminal.WriteLine("  U. Unequip item from them");
+                terminal.WriteLine("  T. Take all their equipment");
+                terminal.WriteLine("  Q. Done / Return");
+            }
+            else
+            {
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [E]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Equip item from your inventory");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [U]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Unequip item from them");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [T]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Take all their equipment");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [Q]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Done / Return");
+            }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
@@ -4204,8 +4217,7 @@ toResurrect.IsDead = false;
     private async Task EquipItemToCharacter(Character target)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"═══ EQUIP ITEM TO {target.DisplayName.ToUpper()} ═══");
+        WriteSectionHeader($"EQUIP ITEM TO {target.DisplayName.ToUpper()}", "bright_magenta");
         terminal.WriteLine("");
 
         // Collect equippable items from player's inventory and equipped items
@@ -4390,8 +4402,7 @@ toResurrect.IsDead = false;
     private async Task UnequipItemFromCharacter(Character target)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"═══ UNEQUIP FROM {target.DisplayName.ToUpper()} ═══");
+        WriteSectionHeader($"UNEQUIP FROM {target.DisplayName.ToUpper()}", "bright_magenta");
         terminal.WriteLine("");
 
         // Get all equipped slots

@@ -135,6 +135,11 @@ namespace UsurperRemake.Systems
                     // First room is always entrance-friendly
                     roomType = RoomType.Hall;
                 }
+                else if (i == 1 && DungeonSettlementData.IsSettlementFloor(floor.Level))
+                {
+                    // Settlement floors get a guaranteed settlement room near the entrance
+                    roomType = RoomType.Settlement;
+                }
                 else if (i == count - 1)
                 {
                     // Last room is boss antechamber leading to boss
@@ -1103,6 +1108,9 @@ namespace UsurperRemake.Systems
                 floor.StairsDownRoomId = stairsRoom.Id;
             }
 
+            // Configure settlement rooms on settlement floors
+            ConfigureSettlementRooms(floor);
+
             // Create secret rooms with hidden exits (10% of connections)
             CreateSecretConnections(floor);
 
@@ -1114,6 +1122,25 @@ namespace UsurperRemake.Systems
 
             // Potentially place a secret boss on certain floors
             PlaceSecretBoss(floor);
+        }
+
+        private static void ConfigureSettlementRooms(DungeonFloor floor)
+        {
+            var settlement = DungeonSettlementData.GetSettlement(floor.Level);
+            if (settlement == null) return;
+
+            foreach (var room in floor.Rooms.Where(r => r.Type == RoomType.Settlement))
+            {
+                room.Name = settlement.Name;
+                room.Description = settlement.Description;
+                room.IsSafeRoom = true;
+                room.HasMonsters = false;
+                room.HasTrap = false;
+                room.HasTreasure = false;
+                room.HasEvent = true;
+                room.EventType = DungeonEventType.Settlement;
+                room.DangerRating = 0;
+            }
         }
 
         private static void CreateSecretConnections(DungeonFloor floor)
@@ -1577,11 +1604,12 @@ namespace UsurperRemake.Systems
         TrapGauntlet,       // Multiple traps in sequence
         ArenaRoom,          // Combat challenge room
         MerchantDen,        // Hidden merchant location
-        MemoryFragment      // Amnesia system reveals
+        MemoryFragment,     // Amnesia system reveals
+        Settlement          // Safe outpost hub at theme boundaries
     }
     public enum DungeonTheme { Catacombs, Sewers, Caverns, AncientRuins, DemonLair, FrozenDepths, VolcanicPit, AbyssalVoid }
     public enum FeatureInteraction { Examine, Open, Search, Read, Take, Use, Break, Enter }
-    public enum DungeonEventType { None, TreasureChest, Merchant, Shrine, Trap, NPCEncounter, Puzzle, RestSpot, MysteryEvent, Riddle, LoreDiscovery, MemoryFlash, SecretBoss }
+    public enum DungeonEventType { None, TreasureChest, Merchant, Shrine, Trap, NPCEncounter, Puzzle, RestSpot, MysteryEvent, Riddle, LoreDiscovery, MemoryFlash, SecretBoss, Settlement }
 
     /// <summary>
     /// Types of puzzles that can appear in dungeon rooms

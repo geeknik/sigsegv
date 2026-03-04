@@ -17,6 +17,16 @@ try {
 }
 
 const net = require('net');
+const { execFile } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+
+let bcrypt;
+try {
+  bcrypt = require('bcryptjs');
+} catch (err) {
+  console.warn(`[usurper-web] bcryptjs not available, falling back to SHA256: ${err.message}`);
+}
 
 const WS_PORT = 3000;
 const SSH_HOST = '127.0.0.1';
@@ -41,13 +51,73 @@ const BALANCE_DEFAULT_PASS = process.env.BALANCE_PASS || 'changeme';
 const BALANCE_SECRET = process.env.BALANCE_SECRET || crypto.randomBytes(32).toString('hex');
 const BALANCE_TOKEN_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-function hashPassword(password) {
+// Admin dashboard auth (shares credentials with balance dashboard)
+// Same user/pass — BALANCE_USER, BALANCE_PASS, BALANCE_SECRET are used for both
+
+// --- Login Rate Limiting ---
+const loginAttempts = new Map(); // IP -> { count, resetTime }
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip);
+  if (!attempt) return true; // no prior attempts
+  if (now > attempt.resetTime) {
+    loginAttempts.delete(ip);
+    return true; // lockout expired
+  }
+  return attempt.count < MAX_LOGIN_ATTEMPTS;
+}
+
+function recordFailedLogin(ip) {
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip) || { count: 0, resetTime: now + LOCKOUT_DURATION };
+  attempt.count++;
+  attempt.resetTime = now + LOCKOUT_DURATION;
+  loginAttempts.set(ip, attempt);
+}
+
+function clearLoginAttempts(ip) {
+  loginAttempts.delete(ip);
+}
+
+// Prune stale rate limit entries every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, attempt] of loginAttempts) {
+    if (now > attempt.resetTime) loginAttempts.delete(ip);
+  }
+}, 600000);
+
+// Peak player tracking
+let peakOnlinePlayers = 0;
+let peakOnlinePlayersTime = null;
+let sessionPeakOnline = 0;
+let sessionPeakTime = null;
+const SERVER_START_TIME = Date.now();
+
+const BCRYPT_ROUNDS = 12;
+
+// Legacy SHA256 hash (for migration detection)
+function hashPasswordSha256(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// Hash password with bcrypt (preferred) or SHA256 (fallback)
+function hashPassword(password) {
+  if (bcrypt) return bcrypt.hashSync(password, BCRYPT_ROUNDS);
+  return hashPasswordSha256(password);
+}
+
+// Detect if a stored hash is legacy SHA256 (64 hex chars) vs bcrypt ($2a$/$2b$)
+function isBcryptHash(hash) {
+  return hash && (hash.startsWith('$2a$') || hash.startsWith('$2b$'));
 }
 
 // Get stored password hash from DB, or fall back to default
 function getBalancePasswordHash() {
-  if (!dbWrite) return hashPassword(BALANCE_DEFAULT_PASS);
+  if (!dbWrite) return hashPasswordSha256(BALANCE_DEFAULT_PASS);
   try {
     dbWrite.exec(`CREATE TABLE IF NOT EXISTS balance_config (
       key TEXT PRIMARY KEY,
@@ -58,7 +128,7 @@ function getBalancePasswordHash() {
   } catch (e) {
     console.error(`[usurper-web] Balance config read error: ${e.message}`);
   }
-  return hashPassword(BALANCE_DEFAULT_PASS);
+  return hashPasswordSha256(BALANCE_DEFAULT_PASS);
 }
 
 function setBalancePasswordHash(hash) {
@@ -76,8 +146,23 @@ function setBalancePasswordHash(hash) {
   }
 }
 
+// Verify password — supports both bcrypt and legacy SHA256, auto-migrates to bcrypt
 function verifyBalancePassword(password) {
-  return hashPassword(password) === getBalancePasswordHash();
+  const storedHash = getBalancePasswordHash();
+  if (isBcryptHash(storedHash)) {
+    // Modern bcrypt hash
+    return bcrypt ? bcrypt.compareSync(password, storedHash) : false;
+  }
+  // Legacy SHA256 hash — verify then auto-migrate to bcrypt
+  if (hashPasswordSha256(password) === storedHash) {
+    if (bcrypt) {
+      const newHash = bcrypt.hashSync(password, BCRYPT_ROUNDS);
+      setBalancePasswordHash(newHash);
+      console.log('[security] Migrated password hash from SHA256 to bcrypt');
+    }
+    return true;
+  }
+  return false;
 }
 
 function createBalanceToken() {
@@ -97,6 +182,78 @@ function verifyBalanceToken(token) {
     const data = JSON.parse(payload);
     return data.exp > Date.now();
   } catch { return false; }
+}
+
+// --- Admin Dashboard Auth (reuses balance credentials) ---
+// Admin login/token uses the same balance auth functions:
+// verifyBalancePassword(), createBalanceToken(), verifyBalanceToken()
+// This means the same username/password works for both dashboards.
+
+// --- Admin Metrics Caching ---
+let adminOverviewCache = null;
+let adminOverviewCacheTime = 0;
+let adminServicesCache = null;
+let adminServicesCacheTime = 0;
+let adminDbCache = null;
+let adminDbCacheTime = 0;
+let adminSslCache = null;
+let adminSslCacheTime = 0;
+
+function execFileAsync(cmd, args, opts = {}) {
+  return new Promise((resolve, reject) => {
+    execFile(cmd, args, { timeout: 5000, ...opts }, (err, stdout, stderr) => {
+      if (err) reject(err);
+      else resolve(stdout);
+    });
+  });
+}
+
+// --- Peak Player Tracking ---
+function initPeakTracking() {
+  // Restore peak from DB on startup
+  if (dbWrite) {
+    try {
+      dbWrite.exec(`CREATE TABLE IF NOT EXISTS admin_config (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      )`);
+      const row = dbWrite.prepare("SELECT value FROM admin_config WHERE key = 'peak_online'").get();
+      if (row) {
+        const data = JSON.parse(row.value);
+        peakOnlinePlayers = data.count || 0;
+        peakOnlinePlayersTime = data.time || null;
+      }
+    } catch (e) { /* first run, no data yet */ }
+  }
+
+  // Poll every 30 seconds
+  setInterval(() => {
+    if (!db) return;
+    try {
+      const row = db.prepare(
+        "SELECT COUNT(*) as cnt FROM online_players WHERE last_heartbeat >= datetime('now', '-120 seconds')"
+      ).get();
+      const current = row ? row.cnt : 0;
+
+      // Session peak
+      if (current > sessionPeakOnline) {
+        sessionPeakOnline = current;
+        sessionPeakTime = new Date().toISOString();
+      }
+
+      // All-time peak
+      if (current > peakOnlinePlayers) {
+        peakOnlinePlayers = current;
+        peakOnlinePlayersTime = new Date().toISOString();
+        if (dbWrite) {
+          try {
+            dbWrite.prepare("INSERT OR REPLACE INTO admin_config (key, value) VALUES (?, ?)")
+              .run('peak_online', JSON.stringify({ count: peakOnlinePlayers, time: peakOnlinePlayersTime }));
+          } catch (e) { /* non-critical */ }
+        }
+      }
+    } catch (e) { /* DB may be locked */ }
+  }, 30000);
 }
 
 // Dashboard cache constants
@@ -156,6 +313,9 @@ if (Database) {
     console.error(`[usurper-web] Writable database not available: ${err.message}`);
   }
 }
+
+// Initialize peak tracking after DB is available
+initPeakTracking();
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -1051,12 +1211,22 @@ async function handleBalanceRequest(req, res) {
 
   // Login endpoint (no auth required)
   if (method === 'POST' && url === '/api/balance/login') {
+    const ip = req.headers['x-real-ip'] || req.socket.remoteAddress || 'unknown';
     try {
+      if (!checkRateLimit(ip)) {
+        console.warn(`[security] Rate limited login attempt from ${ip} (balance)`);
+        sendJson(res, 429, { error: 'Too many login attempts. Try again later.' });
+        return true;
+      }
       const body = await readBody(req);
       if (body.username === BALANCE_USER && verifyBalancePassword(body.password)) {
+        clearLoginAttempts(ip);
         const isDefault = body.password === BALANCE_DEFAULT_PASS;
+        console.log(`[security] Successful balance login from ${ip}`);
         sendJson(res, 200, { token: createBalanceToken(), mustChangePassword: isDefault });
       } else {
+        recordFailedLogin(ip);
+        console.warn(`[security] Failed balance login from ${ip} (user: ${String(body.username || '').substring(0, 20)})`);
         sendJson(res, 401, { error: 'Invalid credentials' });
       }
     } catch (e) {
@@ -1387,8 +1557,926 @@ async function handleDashRequest(req, res) {
   return false; // Not a dash route
 }
 
+// --- Admin Dashboard API ---
+const ADMIN_SERVICES = ['usurper-mud', 'sshd-usurper', 'usurper-web', 'nginx'];
+
+async function getAdminOverview() {
+  const now = Date.now();
+  if (adminOverviewCache && (now - adminOverviewCacheTime) < 15000) return adminOverviewCache;
+
+  // Server metrics from Node.js builtins
+  const memUsage = process.memoryUsage();
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
+  const usedMem = totalMem - freeMem;
+
+  const server = {
+    processUptime: Math.floor(process.uptime()),
+    systemUptime: Math.floor(os.uptime()),
+    platform: os.platform(),
+    nodeVersion: process.version,
+    memoryRssMB: Math.round(memUsage.rss / 1024 / 1024),
+    memoryTotalMB: Math.round(totalMem / 1024 / 1024),
+    memoryFreeMB: Math.round(freeMem / 1024 / 1024),
+    memoryUsedMB: Math.round(usedMem / 1024 / 1024),
+    memoryPercent: Math.round((usedMem / totalMem) * 100),
+    cpuLoad: os.loadavg(),
+    cpuCount: os.cpus().length,
+    hostname: os.hostname()
+  };
+
+  // Disk usage
+  let disk = { total: 0, used: 0, available: 0, percent: 0 };
+  try {
+    const dfOut = await execFileAsync('df', ['-B1', '/']);
+    const lines = dfOut.trim().split('\n');
+    if (lines.length >= 2) {
+      const parts = lines[1].split(/\s+/);
+      const total = parseInt(parts[1]) || 0;
+      const used = parseInt(parts[2]) || 0;
+      const avail = parseInt(parts[3]) || 0;
+      disk = {
+        totalGB: (total / 1073741824).toFixed(1),
+        usedGB: (used / 1073741824).toFixed(1),
+        availableGB: (avail / 1073741824).toFixed(1),
+        percent: total > 0 ? Math.round((used / total) * 100) : 0
+      };
+    }
+  } catch (e) { /* df not available */ }
+
+  // Player metrics from DB
+  let players = { online: 0, peakOnline: peakOnlinePlayers, peakOnlineTime: peakOnlinePlayersTime,
+    sessionPeak: sessionPeakOnline, sessionPeakTime: sessionPeakTime,
+    totalRegistered: 0, totalSleeping: 0, newToday: 0, activeLast24h: 0, activeLast7d: 0, banned: 0 };
+  if (db) {
+    try {
+      const onlineRow = db.prepare(
+        "SELECT COUNT(*) as cnt FROM online_players WHERE last_heartbeat >= datetime('now', '-120 seconds')"
+      ).get();
+      players.online = onlineRow ? onlineRow.cnt : 0;
+
+      const totalRow = db.prepare(
+        "SELECT COUNT(*) as cnt FROM players WHERE username NOT LIKE 'emergency_%'"
+      ).get();
+      players.totalRegistered = totalRow ? totalRow.cnt : 0;
+
+      const sleepRow = db.prepare("SELECT COUNT(*) as cnt FROM sleeping_players").get();
+      players.totalSleeping = sleepRow ? sleepRow.cnt : 0;
+
+      const newRow = db.prepare(
+        "SELECT COUNT(*) as cnt FROM players WHERE created_at >= datetime('now', '-24 hours') AND username NOT LIKE 'emergency_%'"
+      ).get();
+      players.newToday = newRow ? newRow.cnt : 0;
+
+      const active24Row = db.prepare(
+        "SELECT COUNT(*) as cnt FROM players WHERE last_login >= datetime('now', '-24 hours') AND username NOT LIKE 'emergency_%'"
+      ).get();
+      players.activeLast24h = active24Row ? active24Row.cnt : 0;
+
+      const active7dRow = db.prepare(
+        "SELECT COUNT(*) as cnt FROM players WHERE last_login >= datetime('now', '-7 days') AND username NOT LIKE 'emergency_%'"
+      ).get();
+      players.activeLast7d = active7dRow ? active7dRow.cnt : 0;
+
+      const bannedRow = db.prepare("SELECT COUNT(*) as cnt FROM players WHERE is_banned = 1").get();
+      players.banned = bannedRow ? bannedRow.cnt : 0;
+    } catch (e) {
+      console.error(`[usurper-web] Admin player query error: ${e.message}`);
+    }
+  }
+
+  // Web proxy stats
+  const webProxy = {
+    startTime: new Date(Date.now() - process.uptime() * 1000).toISOString(),
+    wsConnections: wss ? wss.clients.size : 0,
+    sseClients: sseClients ? sseClients.size : 0,
+    dashSseClients: dashSseClients ? dashSseClients.size : 0
+  };
+
+  adminOverviewCache = { server, disk, players, webProxy };
+  adminOverviewCacheTime = now;
+  return adminOverviewCache;
+}
+
+async function getAdminServices() {
+  const now = Date.now();
+  if (adminServicesCache && (now - adminServicesCacheTime) < 30000) return adminServicesCache;
+
+  const services = [];
+  for (const name of ADMIN_SERVICES) {
+    try {
+      const out = await execFileAsync('systemctl', [
+        'show', name,
+        '--property=ActiveState,MainPID,MemoryCurrent,ExecMainStartTimestamp'
+      ]);
+      const props = {};
+      for (const line of out.trim().split('\n')) {
+        const [k, ...v] = line.split('=');
+        props[k] = v.join('=');
+      }
+
+      const startTs = props.ExecMainStartTimestamp || '';
+      let uptimeStr = 'unknown';
+      if (startTs && startTs !== '') {
+        // Parse systemd timestamp like "Mon 2026-03-03 10:00:00 UTC"
+        const startDate = new Date(startTs.replace(/^\w+ /, ''));
+        if (!isNaN(startDate.getTime())) {
+          const secs = Math.floor((Date.now() - startDate.getTime()) / 1000);
+          const d = Math.floor(secs / 86400);
+          const h = Math.floor((secs % 86400) / 3600);
+          const m = Math.floor((secs % 3600) / 60);
+          uptimeStr = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+        }
+      }
+
+      const memBytes = parseInt(props.MemoryCurrent) || 0;
+      const memStr = memBytes > 0 ? `${Math.round(memBytes / 1048576)}M` : 'N/A';
+
+      services.push({
+        name,
+        status: props.ActiveState || 'unknown',
+        pid: parseInt(props.MainPID) || 0,
+        memory: memStr,
+        uptime: uptimeStr
+      });
+    } catch (e) {
+      services.push({ name, status: 'unknown', pid: 0, memory: 'N/A', uptime: 'unknown' });
+    }
+  }
+
+  adminServicesCache = services;
+  adminServicesCacheTime = now;
+  return services;
+}
+
+async function getAdminDatabase() {
+  const now = Date.now();
+  if (adminDbCache && (now - adminDbCacheTime) < 60000) return adminDbCache;
+
+  const result = { path: DB_PATH, sizeBytes: 0, sizeMB: '0', walSizeMB: '0', tables: {}, integrityCheck: 'unknown' };
+
+  // File size
+  try {
+    const stat = fs.statSync(DB_PATH);
+    result.sizeBytes = stat.size;
+    result.sizeMB = (stat.size / 1048576).toFixed(1);
+  } catch (e) { /* file may not exist locally */ }
+
+  // WAL size
+  try {
+    const walStat = fs.statSync(DB_PATH + '-wal');
+    result.walSizeMB = (walStat.size / 1048576).toFixed(1);
+  } catch (e) { result.walSizeMB = '0'; }
+
+  if (db) {
+    // Table counts
+    try {
+      const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all();
+      for (const t of tables) {
+        try {
+          const row = db.prepare(`SELECT COUNT(*) as cnt FROM "${t.name}"`).get();
+          result.tables[t.name] = row ? row.cnt : 0;
+        } catch (e) { result.tables[t.name] = -1; }
+      }
+    } catch (e) { /* schema query failed */ }
+
+    // Integrity check (fast mode)
+    try {
+      const row = db.prepare("PRAGMA integrity_check(1)").get();
+      result.integrityCheck = row ? Object.values(row)[0] : 'unknown';
+    } catch (e) { result.integrityCheck = 'error'; }
+  }
+
+  adminDbCache = result;
+  adminDbCacheTime = now;
+  return result;
+}
+
+async function getAdminSsl() {
+  const now = Date.now();
+  if (adminSslCache && (now - adminSslCacheTime) < 3600000) return adminSslCache;
+
+  const result = { domain: 'usurper-reborn.net', expiresAt: null, daysRemaining: null, issuer: null };
+
+  function parseSslOutput(out) {
+    for (const line of out.trim().split('\n')) {
+      if (line.includes('notAfter=')) {
+        const dateStr = line.split('notAfter=')[1].trim();
+        const expDate = new Date(dateStr);
+        if (!isNaN(expDate.getTime())) {
+          result.expiresAt = expDate.toISOString();
+          result.daysRemaining = Math.floor((expDate.getTime() - Date.now()) / 86400000);
+        }
+      }
+      if (line.includes('issuer=') || line.includes('issuer =')) {
+        const cn = line.match(/CN\s*=\s*([^,/\n]+)/);
+        result.issuer = cn ? cn[1].trim() : null;
+      }
+    }
+  }
+
+  // Method 1: Read cert file directly (needs root access)
+  try {
+    const certPath = '/etc/letsencrypt/live/usurper-reborn.net/cert.pem';
+    const out = await execFileAsync('openssl', ['x509', '-enddate', '-issuer', '-noout', '-in', certPath]);
+    parseSslOutput(out);
+  } catch (e) { /* permission denied — expected for usurper user */ }
+
+  // Method 2: Connect to local HTTPS and read cert via Node.js TLS
+  if (!result.expiresAt) {
+    try {
+      const tls = require('tls');
+      const cert = await new Promise((resolve, reject) => {
+        const sock = tls.connect(443, 'localhost', { servername: 'usurper-reborn.net', rejectUnauthorized: false }, () => {
+          const peerCert = sock.getPeerCertificate();
+          sock.destroy();
+          resolve(peerCert);
+        });
+        sock.setTimeout(5000, () => { sock.destroy(); reject(new Error('timeout')); });
+        sock.on('error', reject);
+      });
+      if (cert && cert.valid_to) {
+        result.expiresAt = new Date(cert.valid_to).toISOString();
+        result.daysRemaining = Math.floor((new Date(cert.valid_to) - Date.now()) / 86400000);
+        result.issuer = cert.issuer && cert.issuer.O ? cert.issuer.O : (cert.issuer ? JSON.stringify(cert.issuer) : 'Unknown');
+      }
+    } catch (e2) { /* both methods failed */ }
+  }
+
+  adminSslCache = result;
+  adminSslCacheTime = now;
+  return result;
+}
+
+function getAdminActivity() {
+  if (!db) return { recentLogins: [], recentNews: [], onlinePlayers: [] };
+
+  let recentLogins = [];
+  try {
+    recentLogins = db.prepare(`
+      SELECT display_name, last_login,
+             json_extract(player_data, '$.player.level') as level,
+             json_extract(player_data, '$.player.class') as class_id
+      FROM players WHERE username NOT LIKE 'emergency_%'
+      ORDER BY last_login DESC LIMIT 20
+    `).all().map(r => ({
+      name: r.display_name,
+      time: r.last_login,
+      level: r.level || 1,
+      className: CLASS_NAMES[r.class_id] || 'Unknown'
+    }));
+  } catch (e) { /* query failed */ }
+
+  let recentNews = [];
+  try {
+    recentNews = db.prepare(`
+      SELECT message, category, created_at
+      FROM news ORDER BY created_at DESC LIMIT 30
+    `).all().map(r => ({
+      message: r.message,
+      category: r.category,
+      time: r.created_at
+    }));
+  } catch (e) { /* news table may not exist */ }
+
+  let onlinePlayers = [];
+  try {
+    onlinePlayers = db.prepare(`
+      SELECT op.username, op.display_name, op.location, op.connected_at,
+             json_extract(p.player_data, '$.player.level') as level,
+             json_extract(p.player_data, '$.player.class') as class_id,
+             COALESCE(op.connection_type, 'Unknown') as connection_type
+      FROM online_players op
+      LEFT JOIN players p ON LOWER(op.username) = LOWER(p.username)
+      WHERE op.last_heartbeat >= datetime('now', '-120 seconds')
+      ORDER BY op.display_name
+    `).all().map(r => ({
+      name: r.display_name || r.username,
+      level: r.level || 1,
+      className: CLASS_NAMES[r.class_id] || 'Unknown',
+      location: r.location || 'Unknown',
+      connectionType: r.connection_type,
+      connectedAt: r.connected_at
+    }));
+  } catch (e) { /* query failed */ }
+
+  return { recentLogins, recentNews, onlinePlayers };
+}
+
+function getAdminVersion() {
+  const binaryPath = '/opt/usurper/UsurperReborn';
+  const result = { binaryPath, sizeMB: null, modifiedAt: null, version: null };
+
+  try {
+    const stat = fs.statSync(binaryPath);
+    result.sizeMB = (stat.size / 1048576).toFixed(1);
+    result.modifiedAt = stat.mtime.toISOString();
+  } catch (e) { /* binary not found (running locally) */ }
+
+  // Read version from version.txt (written during deployment)
+  try {
+    const versionPath = '/opt/usurper/version.txt';
+    result.version = fs.readFileSync(versionPath, 'utf8').trim();
+  } catch (e) { /* version.txt not found */ }
+
+  // Fallback: check the DLL for embedded version string
+  if (!result.version) {
+    try {
+      const dllPath = '/opt/usurper/UsurperReborn.dll';
+      const buf = fs.readFileSync(dllPath);
+      const str = buf.toString('utf8', 0, Math.min(buf.length, 500000));
+      const match = str.match(/0\.\d+\.\d+(?:-[a-zA-Z0-9]+)?/);
+      if (match) result.version = match[0];
+    } catch (e) { /* DLL not found or too large */ }
+  }
+
+  return result;
+}
+
+async function handleAdminRequest(req, res) {
+  const url = req.url.split('?')[0];
+  const method = req.method;
+
+  // CORS preflight
+  if (method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.writeHead(204);
+    res.end();
+    return true;
+  }
+
+  // Login endpoint (no auth required) — shares credentials with balance dashboard
+  if (method === 'POST' && url === '/api/admin/login') {
+    const ip = req.headers['x-real-ip'] || req.socket.remoteAddress || 'unknown';
+    try {
+      if (!checkRateLimit(ip)) {
+        console.warn(`[security] Rate limited login attempt from ${ip} (admin)`);
+        sendJson(res, 429, { error: 'Too many login attempts. Try again later.' });
+        return true;
+      }
+      const body = await readBody(req);
+      if (body.username === BALANCE_USER && verifyBalancePassword(body.password)) {
+        clearLoginAttempts(ip);
+        const isDefault = body.password === BALANCE_DEFAULT_PASS;
+        console.log(`[security] Successful admin login from ${ip}`);
+        sendJson(res, 200, { token: createBalanceToken(), mustChangePassword: isDefault });
+      } else {
+        recordFailedLogin(ip);
+        console.warn(`[security] Failed admin login from ${ip} (user: ${String(body.username || '').substring(0, 20)})`);
+        sendJson(res, 401, { error: 'Invalid credentials' });
+      }
+    } catch (e) {
+      sendJson(res, 400, { error: 'Invalid request' });
+    }
+    return true;
+  }
+
+  // All other admin endpoints require auth (accepts balance tokens)
+  // Accept token from Authorization header OR query string (for EventSource/SSE which can't send headers)
+  const authHeader = req.headers['authorization'] || '';
+  let token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (!token) {
+    try { token = new URL(req.url, 'http://localhost').searchParams.get('token') || ''; } catch {}
+  }
+  if (!verifyBalanceToken(token)) {
+    sendJson(res, 401, { error: 'Unauthorized' });
+    return true;
+  }
+
+  // POST /api/admin/change-password — changes balance password (shared)
+  if (method === 'POST' && url === '/api/admin/change-password') {
+    try {
+      const body = await readBody(req);
+      if (!body.newPassword || body.newPassword.length < 6) {
+        sendJson(res, 400, { error: 'Password must be at least 6 characters' });
+        return true;
+      }
+      if (setBalancePasswordHash(hashPassword(body.newPassword))) {
+        sendJson(res, 200, { success: true });
+      } else {
+        sendJson(res, 500, { error: 'Failed to save password' });
+      }
+    } catch (e) {
+      sendJson(res, 400, { error: 'Invalid request' });
+    }
+    return true;
+  }
+
+  // GET /api/admin/overview
+  if (method === 'GET' && url === '/api/admin/overview') {
+    const data = await getAdminOverview();
+    sendJson(res, 200, data);
+    return true;
+  }
+
+  // GET /api/admin/services
+  if (method === 'GET' && url === '/api/admin/services') {
+    const data = await getAdminServices();
+    sendJson(res, 200, { services: data });
+    return true;
+  }
+
+  // GET /api/admin/database
+  if (method === 'GET' && url === '/api/admin/database') {
+    const data = await getAdminDatabase();
+    sendJson(res, 200, data);
+    return true;
+  }
+
+  // GET /api/admin/ssl
+  if (method === 'GET' && url === '/api/admin/ssl') {
+    const data = await getAdminSsl();
+    sendJson(res, 200, data);
+    return true;
+  }
+
+  // GET /api/admin/activity
+  if (method === 'GET' && url === '/api/admin/activity') {
+    const data = getAdminActivity();
+    sendJson(res, 200, data);
+    return true;
+  }
+
+  // GET /api/admin/version
+  if (method === 'GET' && url === '/api/admin/version') {
+    const data = getAdminVersion();
+    sendJson(res, 200, data);
+    return true;
+  }
+
+  // POST /api/admin/reset-peak
+  if (method === 'POST' && url === '/api/admin/reset-peak') {
+    peakOnlinePlayers = 0;
+    peakOnlinePlayersTime = null;
+    sessionPeakOnline = 0;
+    sessionPeakTime = null;
+    if (dbWrite) {
+      try {
+        dbWrite.prepare("INSERT OR REPLACE INTO admin_config (key, value) VALUES (?, ?)")
+          .run('peak_online', JSON.stringify({ count: 0, time: null }));
+      } catch (e) { /* non-critical */ }
+    }
+    sendJson(res, 200, { success: true });
+    return true;
+  }
+
+  // --- Player Management Endpoints ---
+
+  // Parse :username from URL paths like /api/admin/players/SomeName/action
+  const playerMatch = url.match(/^\/api\/admin\/players\/([^/]+)(\/.*)?$/);
+  const playerUsername = playerMatch ? decodeURIComponent(playerMatch[1]) : null;
+  const playerAction = playerMatch ? (playerMatch[2] || '') : '';
+
+  // GET /api/admin/players — list with search/filter/pagination
+  if (method === 'GET' && url.startsWith('/api/admin/players') && !playerMatch) {
+    try {
+      const params = new URL(req.url, 'http://localhost').searchParams;
+      const search = params.get('search') || '';
+      const filter = params.get('filter') || 'all'; // all, online, banned, frozen, muted
+      const page = Math.max(1, parseInt(params.get('page')) || 1);
+      const limit = Math.min(100, Math.max(10, parseInt(params.get('limit')) || 25));
+      const offset = (page - 1) * limit;
+
+      let where = "WHERE p.username NOT LIKE 'emergency_%'";
+      const args = [];
+      if (search) {
+        where += " AND (LOWER(p.username) LIKE ? OR LOWER(p.display_name) LIKE ?)";
+        args.push(`%${search.toLowerCase()}%`, `%${search.toLowerCase()}%`);
+      }
+      if (filter === 'online') where += " AND o.username IS NOT NULL";
+      if (filter === 'banned') where += " AND p.is_banned = 1";
+      if (filter === 'frozen') where += " AND json_extract(p.player_data, '$.player.isFrozen') = 1";
+      if (filter === 'muted') where += " AND json_extract(p.player_data, '$.player.isMuted') = 1";
+
+      const countRow = db.prepare(`SELECT COUNT(*) as total FROM players p LEFT JOIN online_players o ON LOWER(p.username) = LOWER(o.username) ${where}`).get(...args);
+
+      const rows = db.prepare(`
+        SELECT p.username, p.display_name, p.is_banned, p.last_login, p.created_at, p.total_playtime_minutes,
+               json_extract(p.player_data, '$.player.level') as level,
+               json_extract(p.player_data, '$.player.class') as class_id,
+               json_extract(p.player_data, '$.player.gold') as gold,
+               json_extract(p.player_data, '$.player.hp') as hp,
+               json_extract(p.player_data, '$.player.maxHP') as maxHp,
+               json_extract(p.player_data, '$.player.isFrozen') as is_frozen,
+               json_extract(p.player_data, '$.player.isMuted') as is_muted,
+               json_extract(p.player_data, '$.player.race') as race_id,
+               o.username as online_username, o.location as online_location, o.connection_type
+        FROM players p
+        LEFT JOIN online_players o ON LOWER(p.username) = LOWER(o.username)
+        ${where}
+        ORDER BY CASE WHEN o.username IS NOT NULL THEN 0 ELSE 1 END, p.last_login DESC
+        LIMIT ? OFFSET ?
+      `).all(...args, limit, offset);
+
+      const players = rows.map(r => ({
+        username: r.username,
+        displayName: r.display_name,
+        level: r.level || 1,
+        className: CLASS_NAMES[r.class_id] || 'Unknown',
+        raceName: RACE_NAMES[r.race_id] || 'Unknown',
+        gold: r.gold || 0,
+        hp: r.hp || 0,
+        maxHp: r.maxHp || 0,
+        isOnline: !!r.online_username,
+        isBanned: !!r.is_banned,
+        isFrozen: !!r.is_frozen,
+        isMuted: !!r.is_muted,
+        location: r.online_location || null,
+        connectionType: r.connection_type || null,
+        lastLogin: r.last_login,
+        createdAt: r.created_at,
+        playtimeMinutes: r.total_playtime_minutes || 0,
+      }));
+
+      sendJson(res, 200, { players, total: countRow.total, page, limit, totalPages: Math.ceil(countRow.total / limit) });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // GET /api/admin/players/:username — full player detail
+  if (method === 'GET' && playerUsername && playerAction === '') {
+    try {
+      const row = db.prepare("SELECT * FROM players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (!row) { sendJson(res, 404, { error: 'Player not found' }); return true; }
+
+      const online = db.prepare("SELECT * FROM online_players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      let data = {};
+      try { data = JSON.parse(row.player_data || '{}'); } catch (e) { /* empty */ }
+      const p = data.player || {};
+
+      const detail = {
+        username: row.username,
+        displayName: row.display_name,
+        isOnline: !!online,
+        onlineLocation: online ? online.location : null,
+        connectionType: online ? online.connection_type : null,
+        isBanned: !!row.is_banned,
+        banReason: row.ban_reason,
+        lastLogin: row.last_login,
+        lastLogout: row.last_logout,
+        createdAt: row.created_at,
+        playtimeMinutes: row.total_playtime_minutes || 0,
+        stats: {
+          level: p.level || 1,
+          experience: p.experience || 0,
+          className: CLASS_NAMES[p.class] || 'Unknown',
+          classId: p.class || 0,
+          raceName: RACE_NAMES[p.race] || 'Unknown',
+          raceId: p.race || 0,
+          hp: p.hp || 0, maxHP: p.maxHP || 0,
+          mana: p.mana || 0, maxMana: p.maxMana || 0,
+          stamina: p.stamina || 0, maxStamina: p.maxStamina || 100,
+          strength: p.strength || 0, defense: p.defense || 0,
+          agility: p.agility || 0, dexterity: p.dexterity || 0,
+          constitution: p.constitution || 0, intelligence: p.intelligence || 0,
+          wisdom: p.wisdom || 0, charisma: p.charisma || 0,
+          fatigue: p.fatigue || 0,
+        },
+        resources: {
+          gold: p.gold || 0, bankGold: p.bankGold || 0,
+          potions: p.potions || 0, lockpicks: p.lockpicks || 0,
+          herbs: {
+            healingHerb: p.healingHerb || 0, ironbarkRoot: p.ironbarkRoot || 0,
+            firebloomPetal: p.firebloomPetal || 0, swiftthistle: p.swiftthistle || 0,
+            starbloomEssence: p.starbloomEssence || 0,
+          },
+        },
+        social: {
+          alignment: p.alignment || 'Neutral',
+          chivalry: p.chivalry || 0, darkness: p.darkness || 0,
+          isKing: p.isKing || false, kingName: p.kingName || null,
+          daysInPrison: p.daysInPrison || 0,
+          murderWeight: p.murderWeight || 0,
+          teamName: p.teamName || null,
+          faction: FACTION_NAMES[String(p.faction)] || FACTION_NAMES['-1'],
+          factionId: p.faction ?? -1,
+          isMarried: p.isMarried || false,
+          spouseName: p.spouseName || null,
+        },
+        story: {
+          awakeningLevel: p.awakeningLevel || 0,
+          cycleNumber: p.cycleNumber || 1,
+          cycleExpMultiplier: p.cycleExpMultiplier || 1.0,
+          isImmortal: p.isImmortal || false,
+          divineName: p.divineName || null,
+          godLevel: p.godLevel || 0,
+          completedEndings: p.completedEndings || [],
+          collectedSeals: data.collectedSeals || [],
+          heardLoreSongs: p.heardLoreSongs || [],
+        },
+        daily: {
+          fightCount: p.fightCount || 0,
+          thieveryCount: p.thieveryCount || 0,
+          brawlCount: p.brawlCount || 0,
+          questsCompletedToday: p.questsCompletedToday || 0,
+          homeRestsToday: p.homeRestsToday || 0,
+          herbsGatheredToday: p.herbsGatheredToday || 0,
+          pvpAttacksToday: p.pvpAttacksToday || 0,
+          gameTimeMinutes: p.gameTimeMinutes || 0,
+        },
+        settings: {
+          autoHeal: p.autoHeal ?? true,
+          compactMode: p.compactMode || false,
+          combatSpeed: p.combatSpeed || 'normal',
+          isFrozen: p.isFrozen || false,
+          isMuted: p.isMuted || false,
+        },
+        statistics: p.statistics || {},
+        equipment: p.equipment || {},
+        inventory: p.inventory || [],
+        spells: p.spells || [],
+        abilities: p.abilities || [],
+        companions: data.companions || [],
+      };
+
+      sendJson(res, 200, detail);
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/players/:username/edit — dot-path field editing
+  if (method === 'POST' && playerUsername && playerAction === '/edit') {
+    try {
+      const body = await readBody(req);
+      if (!body.changes || typeof body.changes !== 'object') {
+        sendJson(res, 400, { error: 'Missing changes object' }); return true;
+      }
+
+      const row = dbWrite.prepare("SELECT player_data FROM players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (!row) { sendJson(res, 404, { error: 'Player not found' }); return true; }
+
+      const online = db.prepare("SELECT username FROM online_players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      let data = JSON.parse(row.player_data || '{}');
+
+      // Apply dot-path changes (e.g., "player.gold" -> data.player.gold = value)
+      for (const [path, value] of Object.entries(body.changes)) {
+        const parts = path.split('.');
+        let obj = data;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (obj[parts[i]] === undefined) obj[parts[i]] = {};
+          obj = obj[parts[i]];
+        }
+        obj[parts[parts.length - 1]] = value;
+      }
+
+      dbWrite.prepare("UPDATE players SET player_data = ? WHERE LOWER(username) = LOWER(?)").run(JSON.stringify(data), playerUsername);
+
+      // Log the edit
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'edit_player', playerUsername, JSON.stringify(Object.keys(body.changes)));
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true, isOnline: !!online, warning: online ? 'Player is online — changes may be overwritten by autosave. Consider kicking the player first.' : null });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // GET /api/admin/players/:username/raw — raw JSON blob
+  if (method === 'GET' && playerUsername && playerAction === '/raw') {
+    try {
+      const row = db.prepare("SELECT player_data FROM players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (!row) { sendJson(res, 404, { error: 'Player not found' }); return true; }
+      res.setHeader('Content-Type', 'application/json');
+      res.writeHead(200);
+      res.end(row.player_data);
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/players/:username/raw — replace entire JSON blob
+  if (method === 'POST' && playerUsername && playerAction === '/raw') {
+    try {
+      const body = await readBody(req);
+      JSON.parse(JSON.stringify(body)); // validate it's valid JSON
+      const exists = dbWrite.prepare("SELECT username FROM players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (!exists) { sendJson(res, 404, { error: 'Player not found' }); return true; }
+
+      dbWrite.prepare("UPDATE players SET player_data = ? WHERE LOWER(username) = LOWER(?)").run(JSON.stringify(body), playerUsername);
+
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'raw_edit_player', playerUsername, 'Full JSON replacement');
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/players/:username/ban
+  if (method === 'POST' && playerUsername && playerAction === '/ban') {
+    try {
+      const body = await readBody(req).catch(() => ({}));
+      const reason = body.reason || 'Banned by admin';
+      dbWrite.prepare("UPDATE players SET is_banned = 1, ban_reason = ? WHERE LOWER(username) = LOWER(?)").run(reason, playerUsername);
+
+      // Queue kick if online
+      const online = db.prepare("SELECT username FROM online_players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (online) {
+        dbWrite.prepare("INSERT INTO admin_commands (command, target_username, args, created_by) VALUES (?, ?, ?, ?)")
+          .run('kick', playerUsername, JSON.stringify({ reason: 'You have been banned: ' + reason }), 'admin-web');
+      }
+
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'ban_player', playerUsername, reason);
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true, wasOnline: !!online });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/players/:username/unban
+  if (method === 'POST' && playerUsername && playerAction === '/unban') {
+    try {
+      dbWrite.prepare("UPDATE players SET is_banned = 0, ban_reason = NULL WHERE LOWER(username) = LOWER(?)").run(playerUsername);
+
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'unban_player', playerUsername, '');
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/players/:username/reset-password
+  if (method === 'POST' && playerUsername && playerAction === '/reset-password') {
+    try {
+      const body = await readBody(req);
+      if (!body.newPassword || body.newPassword.length < 4) {
+        sendJson(res, 400, { error: 'Password must be at least 4 characters' }); return true;
+      }
+      const hashed = hashPassword(body.newPassword);
+      dbWrite.prepare("UPDATE players SET password_hash = ? WHERE LOWER(username) = LOWER(?)").run(hashed, playerUsername);
+
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'reset_password', playerUsername, '');
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // DELETE /api/admin/players/:username
+  if (method === 'DELETE' && playerUsername && playerAction === '') {
+    try {
+      // Kick if online first
+      const online = db.prepare("SELECT username FROM online_players WHERE LOWER(username) = LOWER(?)").get(playerUsername);
+      if (online) {
+        dbWrite.prepare("INSERT INTO admin_commands (command, target_username, args, created_by) VALUES (?, ?, ?, ?)")
+          .run('kick', playerUsername, JSON.stringify({ reason: 'Account deleted' }), 'admin-web');
+      }
+
+      // Delete from all related tables
+      const tables = ['players', 'wizard_flags', 'sleeping_players', 'online_players', 'pvp_log'];
+      for (const table of tables) {
+        try {
+          dbWrite.prepare(`DELETE FROM ${table} WHERE LOWER(username) = LOWER(?)`).run(playerUsername);
+        } catch (e) { /* table might not have username column */ }
+      }
+      // Messages
+      try {
+        dbWrite.prepare("DELETE FROM messages WHERE LOWER(from_player) = LOWER(?) OR LOWER(to_player) = LOWER(?)").run(playerUsername, playerUsername);
+      } catch (e) { /* non-critical */ }
+
+      try {
+        dbWrite.prepare("INSERT INTO wizard_log (wizard_name, action, target, details, created_at) VALUES (?, ?, ?, ?, datetime('now'))")
+          .run('admin-web', 'delete_player', playerUsername, '');
+      } catch (e) { /* non-critical */ }
+
+      sendJson(res, 200, { success: true });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // POST /api/admin/commands — queue a command for MUD server
+  if (method === 'POST' && url === '/api/admin/commands') {
+    try {
+      const body = await readBody(req);
+      if (!body.command) { sendJson(res, 400, { error: 'Missing command' }); return true; }
+
+      const result = dbWrite.prepare("INSERT INTO admin_commands (command, target_username, args, created_by) VALUES (?, ?, ?, ?)")
+        .run(body.command, body.target || null, body.args ? JSON.stringify(body.args) : null, 'admin-web');
+
+      sendJson(res, 200, { id: result.lastInsertRowid, status: 'queued' });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // GET /api/admin/commands/:id — check command status
+  const cmdMatch = url.match(/^\/api\/admin\/commands\/(\d+)$/);
+  if (method === 'GET' && cmdMatch) {
+    try {
+      const row = db.prepare("SELECT * FROM admin_commands WHERE id = ?").get(parseInt(cmdMatch[1]));
+      if (!row) { sendJson(res, 404, { error: 'Command not found' }); return true; }
+      sendJson(res, 200, row);
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // GET /api/admin/snoop/:username — SSE stream of snoop output
+  const snoopMatch = url.match(/^\/api\/admin\/snoop\/([^/]+)$/);
+  if (method === 'GET' && snoopMatch) {
+    const snoopTarget = decodeURIComponent(snoopMatch[1]);
+    try {
+      // Queue snoop_start command
+      const startResult = dbWrite.prepare("INSERT INTO admin_commands (command, target_username, args, created_by) VALUES (?, ?, ?, ?)")
+        .run('snoop_start', snoopTarget, null, 'admin-web');
+
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      });
+      res.write(`data: ${JSON.stringify({ type: 'started', target: snoopTarget, commandId: startResult.lastInsertRowid })}\n\n`);
+
+      let lastSnoopId = 0;
+      const snoopInterval = setInterval(() => {
+        try {
+          const rows = db.prepare("SELECT id, line, created_at FROM snoop_buffer WHERE target_username = ? AND id > ? ORDER BY id LIMIT 50")
+            .all(snoopTarget, lastSnoopId);
+          for (const row of rows) {
+            res.write(`data: ${JSON.stringify({ type: 'output', line: row.line, id: row.id })}\n\n`);
+            lastSnoopId = row.id;
+          }
+        } catch (e) {
+          res.write(`data: ${JSON.stringify({ type: 'error', message: e.message })}\n\n`);
+        }
+      }, 500);
+
+      req.on('close', () => {
+        clearInterval(snoopInterval);
+        // Queue snoop_stop
+        try {
+          dbWrite.prepare("INSERT INTO admin_commands (command, target_username, args, created_by) VALUES (?, ?, ?, ?)")
+            .run('snoop_stop', snoopTarget, null, 'admin-web');
+        } catch (e) { /* best-effort */ }
+      });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  // GET /api/admin/wizard-log — recent audit trail
+  if (method === 'GET' && url.startsWith('/api/admin/wizard-log')) {
+    try {
+      const params = new URL(req.url, 'http://localhost').searchParams;
+      const limit = Math.min(200, Math.max(10, parseInt(params.get('limit')) || 50));
+      const rows = db.prepare("SELECT * FROM wizard_log ORDER BY id DESC LIMIT ?").all(limit);
+      sendJson(res, 200, { entries: rows });
+    } catch (e) {
+      sendJson(res, 500, { error: e.message });
+    }
+    return true;
+  }
+
+  sendJson(res, 404, { error: 'Not found' });
+  return true;
+}
+
 // --- HTTP Handler ---
 function handleHttpRequest(req, res) {
+  // Admin dashboard routes
+  if (req.url && req.url.startsWith('/api/admin/')) {
+    handleAdminRequest(req, res).catch(err => {
+      console.error(`[usurper-web] Admin API error: ${err.message}`);
+      if (!res.headersSent) sendJson(res, 500, { error: 'Internal error' });
+    });
+    return;
+  }
+
   // Balance dashboard routes
   if (req.url && req.url.startsWith('/api/balance/')) {
     handleBalanceRequest(req, res).catch(err => {
@@ -1464,6 +2552,7 @@ httpServer.listen(WS_PORT, () => {
   console.log(`[usurper-web] Stats API: http://127.0.0.1:${WS_PORT}/api/stats`);
   console.log(`[usurper-web] Dashboard API: http://127.0.0.1:${WS_PORT}/api/dash/*`);
   console.log(`[usurper-web] Balance API: http://127.0.0.1:${WS_PORT}/api/balance/*`);
+  console.log(`[usurper-web] Admin API: http://127.0.0.1:${WS_PORT}/api/admin/*`);
   console.log(`[usurper-web] Proxying SSH to ${SSH_HOST}:${SSH_PORT}`);
 });
 

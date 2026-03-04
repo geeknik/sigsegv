@@ -710,7 +710,17 @@ public partial class QuestSystem
         var targetName = equipObjective.TargetName;
         if (string.IsNullOrEmpty(targetName)) return;
 
-        // Check equipped slots for the item
+        // Check inventory FIRST — prefer removing unequipped copies so player keeps worn gear
+        var inventoryItem = player.Inventory?.FirstOrDefault(i =>
+            i.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase));
+        if (inventoryItem != null)
+        {
+            player.Inventory.Remove(inventoryItem);
+            terminal.WriteLine($"  You hand over your {targetName} to the Merchant Guild.", "gray");
+            return;
+        }
+
+        // Only take equipped item if no inventory copy exists
         foreach (var slot in Enum.GetValues<EquipmentSlot>())
         {
             var equipped = player.GetEquipment(slot);
@@ -720,15 +730,6 @@ public partial class QuestSystem
                 terminal.WriteLine($"  You hand over your {targetName} to the Merchant Guild.", "gray");
                 return;
             }
-        }
-
-        // Check inventory (legacy Item list)
-        var inventoryItem = player.Inventory?.FirstOrDefault(i =>
-            i.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase));
-        if (inventoryItem != null)
-        {
-            player.Inventory.Remove(inventoryItem);
-            terminal.WriteLine($"  You hand over your {targetName} to the Merchant Guild.", "gray");
         }
     }
 

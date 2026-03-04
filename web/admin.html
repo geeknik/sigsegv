@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usurper Reborn - Server Admin</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #c8c8d4;
+    --dim: #666680;
+    --cyan: #00e5ff;
+    --gold: #ffaa00;
+    --red: #ff4444;
+    --green: #44ff88;
+    --purple: #aa66ff;
+    --pink: #ff66aa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+  }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Login */
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+  }
+  #login-box {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2rem; border-radius: 8px; width: 320px;
+  }
+  #login-box h2 { color: var(--cyan); margin-bottom: 1rem; font-size: 1rem; }
+  #login-box input {
+    width: 100%; padding: 0.5rem; margin-bottom: 0.75rem;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 4px; font-family: inherit; font-size: 13px;
+  }
+  #login-box button {
+    width: 100%; padding: 0.5rem; background: var(--cyan); color: var(--bg);
+    border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+    font-family: inherit;
+  }
+  #login-box button:hover { opacity: 0.85; }
+  #login-error { color: var(--red); margin-top: 0.5rem; font-size: 12px; }
+
+  /* Dashboard */
+  #dashboard { display: none; padding: 1rem; max-width: 1400px; margin: 0 auto; }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .header h1 { color: var(--cyan); font-size: 1.1rem; }
+  .header-right { display: flex; align-items: center; gap: 0.5rem; }
+  .header button {
+    padding: 0.3rem 0.8rem; background: transparent; border: 1px solid var(--border);
+    color: var(--dim); cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 12px;
+  }
+  .header button:hover { color: var(--text); border-color: var(--text); }
+  .refresh-info { color: var(--dim); font-size: 11px; }
+
+  /* Overview cards */
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem; margin-bottom: 1.5rem;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 0.75rem; border-radius: 6px;
+  }
+  .card .label { color: var(--dim); font-size: 11px; text-transform: uppercase; }
+  .card .value { color: var(--cyan); font-size: 1.4rem; font-weight: bold; margin-top: 0.25rem; }
+  .card .sub { color: var(--dim); font-size: 11px; margin-top: 0.15rem; }
+  .card .value.warn { color: var(--gold); }
+  .card .value.danger { color: var(--red); }
+  .card .value.good { color: var(--green); }
+
+  /* Sections */
+  .section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; margin-bottom: 1.5rem; overflow: hidden;
+  }
+  .section-title {
+    padding: 0.6rem 1rem; border-bottom: 1px solid var(--border);
+    color: var(--gold); font-size: 0.85rem; font-weight: bold;
+  }
+  .section-body { padding: 1rem; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border);
+    color: var(--dim); font-weight: normal; text-transform: uppercase; font-size: 10px;
+  }
+  td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #0e0e16; }
+  tr:hover td { background: #16162a; }
+
+  /* Status dots */
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+  }
+  .status-dot.active { background: var(--green); }
+  .status-dot.inactive { background: var(--red); }
+  .status-dot.unknown { background: var(--dim); }
+
+  /* Tags */
+  .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: bold;
+  }
+  .tag-web { background: #112244; color: var(--cyan); }
+  .tag-ssh { background: #224411; color: var(--green); }
+  .tag-mud { background: #442211; color: var(--gold); }
+  .tag-bbs { background: #331144; color: var(--purple); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 0.5rem 1rem; cursor: pointer; color: var(--dim);
+    border-bottom: 2px solid transparent; font-size: 12px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--cyan);
+    padding: 1.5rem; border-radius: 8px; width: 340px;
+  }
+  .modal h3 { color: var(--cyan); margin-bottom: 1rem; font-size: 0.9rem; }
+  .modal input {
+    width: 100%; padding: 0.5rem; margin-bottom: 0.75rem;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 4px; font-family: inherit; font-size: 13px;
+  }
+  .modal .btn-row { display: flex; gap: 0.5rem; }
+  .modal button {
+    flex: 1; padding: 0.5rem; border: none; border-radius: 4px;
+    cursor: pointer; font-family: inherit; font-weight: bold;
+  }
+  .modal .btn-primary { background: var(--cyan); color: var(--bg); }
+  .modal .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--dim); }
+  .modal .btn-primary:hover { opacity: 0.85; }
+  .modal .btn-cancel:hover { color: var(--text); border-color: var(--text); }
+  .modal .msg { font-size: 12px; margin-top: 0.5rem; }
+  .modal .msg.error { color: var(--red); }
+  .modal .msg.ok { color: var(--green); }
+
+  /* Warning banner */
+  .password-warning {
+    background: #332200; border: 1px solid var(--gold); color: var(--gold);
+    padding: 0.6rem 1rem; border-radius: 6px; margin-bottom: 1rem;
+    font-size: 12px; display: flex; align-items: center; gap: 0.75rem;
+  }
+  .password-warning button {
+    padding: 0.3rem 0.8rem; background: var(--gold); color: var(--bg);
+    border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+    font-family: inherit; font-size: 12px; white-space: nowrap;
+  }
+
+  /* Two-column layout for sections */
+  .section-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .section-grid > .section { margin-bottom: 0; }
+
+  /* Mini cards inside sections */
+  .mini-cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+  .mini-card {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 0.5rem; border-radius: 4px; text-align: center;
+  }
+  .mini-card .label { color: var(--dim); font-size: 10px; text-transform: uppercase; }
+  .mini-card .value { color: var(--cyan); font-size: 1rem; font-weight: bold; margin-top: 0.15rem; }
+
+  /* Badges */
+  .badge {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: bold; margin-right: 3px;
+  }
+  .badge-online { background: #113322; color: var(--green); }
+  .badge-banned { background: #331111; color: var(--red); }
+  .badge-frozen { background: #112233; color: var(--cyan); }
+  .badge-muted { background: #332211; color: var(--gold); }
+
+  /* Player Search Bar */
+  .player-search-bar {
+    display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center;
+  }
+  .player-search-bar input {
+    flex: 1; min-width: 200px; padding: 0.5rem 0.75rem;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 4px; font-family: inherit; font-size: 13px;
+  }
+  .filter-btn {
+    padding: 0.35rem 0.75rem; background: transparent; border: 1px solid var(--border);
+    color: var(--dim); cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 11px;
+  }
+  .filter-btn:hover { color: var(--text); border-color: var(--text); }
+  .filter-btn.active { color: var(--cyan); border-color: var(--cyan); }
+
+  /* Player table */
+  .player-row { cursor: pointer; }
+  .player-row:hover td { background: #1a1a30 !important; }
+
+  /* Action buttons */
+  .action-btn {
+    padding: 3px 8px; border: 1px solid var(--border); background: transparent;
+    color: var(--dim); cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 11px;
+    margin-right: 3px;
+  }
+  .action-btn:hover { color: var(--text); border-color: var(--text); }
+  .action-btn-danger { border-color: #441111; color: var(--red); }
+  .action-btn-danger:hover { border-color: var(--red); }
+  .action-btn-warn { border-color: #443311; color: var(--gold); }
+  .action-btn-warn:hover { border-color: var(--gold); }
+  .action-btn-good { border-color: #114411; color: var(--green); }
+  .action-btn-good:hover { border-color: var(--green); }
+
+  /* Pagination */
+  .pagination {
+    display: flex; gap: 0.5rem; justify-content: center; align-items: center;
+    margin-top: 1rem; font-size: 12px; color: var(--dim);
+  }
+  .pagination button {
+    padding: 0.3rem 0.7rem; background: transparent; border: 1px solid var(--border);
+    color: var(--dim); cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 11px;
+  }
+  .pagination button:hover { color: var(--text); border-color: var(--text); }
+  .pagination button:disabled { opacity: 0.3; cursor: default; }
+
+  /* Player Detail Panel */
+  .player-panel {
+    display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 560px;
+    background: var(--surface); border-left: 2px solid var(--cyan);
+    overflow-y: auto; z-index: 900; padding: 1rem;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+  }
+  .player-panel.open { display: block; }
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem;
+  }
+  .panel-header h2 { color: var(--cyan); font-size: 1rem; }
+  .panel-close {
+    background: transparent; border: 1px solid var(--border); color: var(--dim);
+    cursor: pointer; border-radius: 4px; padding: 0.3rem 0.6rem; font-family: inherit; font-size: 12px;
+  }
+  .panel-close:hover { color: var(--text); border-color: var(--text); }
+
+  .panel-actions {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem;
+  }
+
+  .online-warn {
+    background: #332200; border: 1px solid var(--gold); color: var(--gold);
+    padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 0.75rem; font-size: 11px;
+  }
+
+  /* Editable fields */
+  .field-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 1rem;
+  }
+  .field-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.25rem 0.5rem; background: var(--bg); border-radius: 3px;
+  }
+  .field-label { color: var(--dim); font-size: 11px; }
+  .field-value {
+    color: var(--text); font-size: 12px; cursor: pointer; padding: 2px 4px; border-radius: 2px;
+  }
+  .field-value:hover { background: #1e1e2e; }
+  .field-value input {
+    background: var(--bg); border: 1px solid var(--cyan); color: var(--cyan);
+    padding: 1px 4px; border-radius: 2px; width: 80px; font-family: inherit; font-size: 12px;
+    text-align: right;
+  }
+
+  /* Raw JSON editor */
+  .json-editor {
+    width: 100%; min-height: 300px; background: var(--bg);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 0.75rem; border-radius: 4px; font-family: inherit; font-size: 11px;
+    resize: vertical;
+  }
+
+  /* Snoop terminal */
+  .snoop-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85); z-index: 1100;
+    padding: 2rem; flex-direction: column;
+  }
+  .snoop-overlay.active { display: flex; }
+  .snoop-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .snoop-header h3 { color: var(--cyan); font-size: 0.9rem; }
+  .snoop-terminal {
+    flex: 1; background: #000; border: 1px solid var(--border);
+    padding: 0.75rem; border-radius: 4px; overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #ccc;
+    white-space: pre-wrap; word-break: break-all;
+  }
+
+  /* Confirm modal extension */
+  .modal textarea {
+    width: 100%; padding: 0.5rem; margin-bottom: 0.75rem;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 4px; font-family: inherit; font-size: 13px; resize: vertical;
+    min-height: 60px;
+  }
+
+  /* Save bar */
+  .save-bar {
+    position: sticky; bottom: 0; background: var(--surface); border-top: 1px solid var(--border);
+    padding: 0.75rem; display: none; gap: 0.5rem; align-items: center;
+  }
+  .save-bar.visible { display: flex; }
+  .save-bar button {
+    padding: 0.4rem 1rem; border: none; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-weight: bold; font-size: 12px;
+  }
+  .save-bar .btn-save { background: var(--green); color: var(--bg); }
+  .save-bar .btn-discard { background: transparent; border: 1px solid var(--border); color: var(--dim); }
+  .save-bar .change-count { color: var(--gold); font-size: 11px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .section-grid { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .player-panel { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div id="login-box">
+    <h2>Server Admin</h2>
+    <input type="text" id="login-user" placeholder="Username" autocomplete="off">
+    <input type="password" id="login-pass" placeholder="Password">
+    <button onclick="doLogin()">Login</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal">
+    <h3>Change Password</h3>
+    <input type="password" id="pw-new" placeholder="New password (min 6 chars)">
+    <input type="password" id="pw-confirm" placeholder="Confirm new password">
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closePwModal()">Cancel</button>
+      <button class="btn-primary" onclick="doChangePassword()">Save</button>
+    </div>
+    <div class="msg" id="pw-msg"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="header">
+    <h1>Usurper Reborn &mdash; Server Admin</h1>
+    <div class="header-right">
+      <span class="refresh-info" id="last-refresh"></span>
+      <button onclick="refreshAll()">Refresh</button>
+      <button onclick="goToBalance()" style="color:var(--gold); border-color:var(--gold);">Balance Dashboard &rarr;</button>
+      <button onclick="openPwModal()">Password</button>
+      <button onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Default password warning -->
+  <div class="password-warning" id="pw-warning" style="display:none">
+    You're using the default password. Please change it for security.
+    <button onclick="openPwModal()">Change Now</button>
+  </div>
+
+  <!-- Overview Cards -->
+  <div class="cards" id="overview-cards"></div>
+
+  <!-- Services + Online Players -->
+  <div class="section-grid">
+    <div class="section">
+      <div class="section-title">Services</div>
+      <div class="section-body" id="services-body">Loading...</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Online Players</div>
+      <div class="section-body" id="online-body">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Database + SSL + Game Info -->
+  <div class="section-grid">
+    <div class="section">
+      <div class="section-title">Database</div>
+      <div class="section-body" id="db-body">Loading...</div>
+    </div>
+    <div class="section">
+      <div class="section-title">SSL Certificate &amp; Game Info</div>
+      <div class="section-body" id="ssl-version-body">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Recent Activity (Tabbed) -->
+  <div class="section">
+    <div class="tabs">
+      <div class="tab active" data-tab="logins">Recent Logins</div>
+      <div class="tab" data-tab="news">Game News</div>
+    </div>
+    <div class="tab-content active" id="tab-logins">
+      <div class="section-body" id="logins-body">Loading...</div>
+    </div>
+    <div class="tab-content" id="tab-news">
+      <div class="section-body" id="news-body">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Player Management -->
+  <div class="section">
+    <div class="section-title">Player Management</div>
+    <div class="section-body">
+      <div class="player-search-bar">
+        <input type="text" id="player-search" placeholder="Search players..." oninput="debouncedLoadPlayers()">
+        <button class="filter-btn active" data-filter="all" onclick="setPlayerFilter('all')">All</button>
+        <button class="filter-btn" data-filter="online" onclick="setPlayerFilter('online')">Online</button>
+        <button class="filter-btn" data-filter="banned" onclick="setPlayerFilter('banned')">Banned</button>
+        <button class="filter-btn" data-filter="frozen" onclick="setPlayerFilter('frozen')">Frozen</button>
+        <button class="filter-btn" data-filter="muted" onclick="setPlayerFilter('muted')">Muted</button>
+      </div>
+      <div id="player-table">Loading...</div>
+      <div class="pagination" id="player-pagination"></div>
+    </div>
+  </div>
+
+  <!-- Wizard Log -->
+  <div class="section">
+    <div class="section-title">Admin Audit Log</div>
+    <div class="section-body" id="wizard-log-body">Loading...</div>
+  </div>
+</div>
+
+<!-- Player Detail Panel -->
+<div class="player-panel" id="player-panel">
+  <div class="panel-header">
+    <h2 id="panel-player-name">Player</h2>
+    <button class="panel-close" onclick="closePlayerPanel()">&times; Close</button>
+  </div>
+  <div id="panel-badges"></div>
+  <div id="panel-online-warn" class="online-warn" style="display:none">
+    Player is online — edits may be overwritten by autosave. Kick the player first for safe editing.
+  </div>
+  <div class="panel-actions" id="panel-actions"></div>
+  <div class="tabs" id="panel-tabs">
+    <div class="tab active" data-tab="p-stats">Stats</div>
+    <div class="tab" data-tab="p-resources">Resources</div>
+    <div class="tab" data-tab="p-social">Social</div>
+    <div class="tab" data-tab="p-story">Story</div>
+    <div class="tab" data-tab="p-daily">Daily</div>
+    <div class="tab" data-tab="p-settings">Settings</div>
+    <div class="tab" data-tab="p-equipment">Equipment</div>
+    <div class="tab" data-tab="p-raw">Raw JSON</div>
+  </div>
+  <div class="tab-content active" id="tab-p-stats"><div id="panel-stats"></div></div>
+  <div class="tab-content" id="tab-p-resources"><div id="panel-resources"></div></div>
+  <div class="tab-content" id="tab-p-social"><div id="panel-social"></div></div>
+  <div class="tab-content" id="tab-p-story"><div id="panel-story"></div></div>
+  <div class="tab-content" id="tab-p-daily"><div id="panel-daily"></div></div>
+  <div class="tab-content" id="tab-p-settings"><div id="panel-settings"></div></div>
+  <div class="tab-content" id="tab-p-equipment"><div id="panel-equipment"></div></div>
+  <div class="tab-content" id="tab-p-raw"><div id="panel-raw"></div></div>
+  <div class="save-bar" id="save-bar">
+    <span class="change-count" id="change-count">0 changes</span>
+    <button class="btn-discard" onclick="discardChanges()">Discard</button>
+    <button class="btn-save" onclick="savePlayerChanges()">Save Changes</button>
+  </div>
+</div>
+
+<!-- Confirm Action Modal -->
+<div class="modal-overlay" id="action-modal">
+  <div class="modal">
+    <h3 id="action-modal-title">Confirm</h3>
+    <div id="action-modal-body"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeActionModal()">Cancel</button>
+      <button class="btn-primary" id="action-modal-confirm" onclick="confirmAction()">Confirm</button>
+    </div>
+    <div class="msg" id="action-modal-msg"></div>
+  </div>
+</div>
+
+<!-- Snoop Overlay -->
+<div class="snoop-overlay" id="snoop-overlay">
+  <div class="snoop-header">
+    <h3 id="snoop-title">Snooping: Player</h3>
+    <button class="action-btn action-btn-danger" onclick="stopSnoop()">Stop Snooping</button>
+  </div>
+  <div class="snoop-terminal" id="snoop-terminal"></div>
+</div>
+
+<script>
+const API = '/api/admin';
+let token = localStorage.getItem('admin_token') || localStorage.getItem('balance_token') || '';
+let refreshTimer = null;
+
+// --- Auth ---
+async function doLogin() {
+  const user = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  try {
+    const r = await fetch(`${API}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+    const d = await r.json();
+    if (r.ok && d.token) {
+      token = d.token;
+      localStorage.setItem('admin_token', token);
+      localStorage.setItem('balance_token', token);
+      showDashboard();
+      if (d.mustChangePassword) {
+        document.getElementById('pw-warning').style.display = 'flex';
+      }
+    } else {
+      errEl.textContent = d.error || 'Login failed';
+    }
+  } catch (e) {
+    errEl.textContent = 'Connection error';
+  }
+}
+
+function goToBalance() {
+  window.location.href = '/balance';
+}
+
+function doLogout() {
+  token = '';
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('balance_token');
+  if (refreshTimer) clearInterval(refreshTimer);
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// --- Password Change ---
+function openPwModal() {
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-msg').textContent = '';
+  document.getElementById('pw-modal').classList.add('active');
+  document.getElementById('pw-new').focus();
+}
+
+function closePwModal() {
+  document.getElementById('pw-modal').classList.remove('active');
+}
+
+async function doChangePassword() {
+  const pw = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  const msg = document.getElementById('pw-msg');
+  msg.className = 'msg'; msg.textContent = '';
+
+  if (pw.length < 6) { msg.className = 'msg error'; msg.textContent = 'Min 6 characters'; return; }
+  if (pw !== confirm) { msg.className = 'msg error'; msg.textContent = 'Passwords do not match'; return; }
+
+  try {
+    const r = await fetch(`${API}/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ newPassword: pw })
+    });
+    const d = await r.json();
+    if (r.ok) {
+      msg.className = 'msg ok'; msg.textContent = 'Password changed!';
+      document.getElementById('pw-warning').style.display = 'none';
+      setTimeout(closePwModal, 1500);
+    } else {
+      msg.className = 'msg error'; msg.textContent = d.error || 'Failed';
+    }
+  } catch (e) {
+    msg.className = 'msg error'; msg.textContent = 'Connection error';
+  }
+}
+
+// --- API Helpers ---
+async function apiFetch(endpoint) {
+  const r = await fetch(`${API}${endpoint}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (r.status === 401) { doLogout(); throw new Error('Session expired'); }
+  return r.json();
+}
+
+// --- Formatting ---
+function fmtUptime(secs) {
+  const d = Math.floor(secs / 86400);
+  const h = Math.floor((secs % 86400) / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function fmtTime(iso) {
+  if (!iso) return 'N/A';
+  const d = new Date(iso);
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function fmtTimeAgo(iso) {
+  if (!iso) return '';
+  const secs = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (secs < 60) return 'just now';
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+  return `${Math.floor(secs / 86400)}d ago`;
+}
+
+function colorClass(value, warnThreshold, dangerThreshold) {
+  if (value >= dangerThreshold) return 'danger';
+  if (value >= warnThreshold) return 'warn';
+  return 'good';
+}
+
+function connTag(type) {
+  const t = (type || 'Unknown').toLowerCase();
+  if (t === 'web') return '<span class="tag tag-web">WEB</span>';
+  if (t === 'ssh') return '<span class="tag tag-ssh">SSH</span>';
+  if (t === 'mud') return '<span class="tag tag-mud">MUD</span>';
+  if (t === 'bbs') return '<span class="tag tag-bbs">BBS</span>';
+  return `<span class="tag">${type}</span>`;
+}
+
+// --- Overview Cards ---
+function renderOverviewCards(data) {
+  const { server, disk, players, webProxy } = data;
+  const cards = [
+    { label: 'System Uptime', value: fmtUptime(server.systemUptime) },
+    { label: 'Web Proxy Uptime', value: fmtUptime(server.processUptime) },
+    { label: 'Memory Usage', value: `${server.memoryPercent}%`,
+      cls: colorClass(server.memoryPercent, 70, 85),
+      sub: `${server.memoryUsedMB} / ${server.memoryTotalMB} MB` },
+    { label: 'CPU Load (1m)', value: server.cpuLoad[0].toFixed(2),
+      cls: colorClass(server.cpuLoad[0], server.cpuCount * 0.7, server.cpuCount * 0.9),
+      sub: `${server.cpuCount} core${server.cpuCount > 1 ? 's' : ''}` },
+    { label: 'Disk Usage', value: `${disk.percent}%`,
+      cls: colorClass(disk.percent, 70, 85),
+      sub: `${disk.usedGB || '?'} / ${disk.totalGB || '?'} GB` },
+    { label: 'Online Players', value: players.online, cls: players.online > 0 ? 'good' : '' },
+    { label: 'Peak (All-Time)', value: players.peakOnline,
+      sub: players.peakOnlineTime ? fmtTime(players.peakOnlineTime) : 'N/A' },
+    { label: 'Peak (Session)', value: players.sessionPeak,
+      sub: players.sessionPeakTime ? fmtTime(players.sessionPeakTime) : 'N/A' },
+    { label: 'Total Players', value: players.totalRegistered },
+    { label: 'Sleeping', value: players.totalSleeping },
+    { label: 'New Today', value: players.newToday },
+    { label: 'Active (24h)', value: players.activeLast24h },
+    { label: 'Active (7d)', value: players.activeLast7d },
+    { label: 'Banned', value: players.banned, cls: players.banned > 0 ? 'warn' : '' },
+    { label: 'WS Connections', value: webProxy.wsConnections },
+    { label: 'SSE Clients', value: webProxy.sseClients + webProxy.dashSseClients },
+  ];
+
+  const el = document.getElementById('overview-cards');
+  el.innerHTML = cards.map(c => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+      <div class="value ${c.cls || ''}">${c.value}</div>
+      ${c.sub ? `<div class="sub">${c.sub}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// --- Services ---
+function renderServices(data) {
+  const el = document.getElementById('services-body');
+  if (!data.services || data.services.length === 0) {
+    el.innerHTML = '<span style="color:var(--dim)">No service data available</span>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <tr><th>Service</th><th>Status</th><th>PID</th><th>Memory</th><th>Uptime</th></tr>
+    ${data.services.map(s => {
+      const statusCls = s.status === 'active' ? 'active' : s.status === 'inactive' ? 'inactive' : 'unknown';
+      return `<tr>
+        <td><span class="status-dot ${statusCls}"></span>${s.name}</td>
+        <td>${s.status}</td>
+        <td>${s.pid || '-'}</td>
+        <td>${s.memory}</td>
+        <td>${s.uptime}</td>
+      </tr>`;
+    }).join('')}
+  </table>`;
+}
+
+// --- Online Players ---
+function renderOnlinePlayers(data) {
+  const el = document.getElementById('online-body');
+  const players = data.onlinePlayers || [];
+  if (players.length === 0) {
+    el.innerHTML = '<span style="color:var(--dim)">No players online</span>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <tr><th>Name</th><th>Level</th><th>Class</th><th>Location</th><th>Type</th><th>Connected</th></tr>
+    ${players.map(p => `<tr>
+      <td>${p.name}</td>
+      <td>${p.level}</td>
+      <td>${p.className}</td>
+      <td>${p.location}</td>
+      <td>${connTag(p.connectionType)}</td>
+      <td>${fmtTimeAgo(p.connectedAt)}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+// --- Database + SSL + Version ---
+function renderDatabase(data) {
+  const el = document.getElementById('db-body');
+  const tables = data.tables || {};
+  const tableRows = Object.entries(tables).map(([name, count]) =>
+    `<tr><td>${name}</td><td>${count >= 0 ? count.toLocaleString() : 'error'}</td></tr>`
+  ).join('');
+
+  const intCls = data.integrityCheck === 'ok' ? 'good' : 'danger';
+
+  el.innerHTML = `
+    <div class="mini-cards" style="margin-bottom: 1rem;">
+      <div class="mini-card">
+        <div class="label">DB Size</div>
+        <div class="value">${data.sizeMB} MB</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">WAL Size</div>
+        <div class="value">${data.walSizeMB} MB</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">Integrity</div>
+        <div class="value ${intCls}">${data.integrityCheck}</div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Table</th><th>Rows</th></tr>
+      ${tableRows}
+    </table>
+  `;
+}
+
+function renderSslVersion(sslData, versionData) {
+  const el = document.getElementById('ssl-version-body');
+
+  let sslHtml = '<div style="margin-bottom: 1rem;"><strong style="color:var(--gold)">SSL Certificate</strong></div>';
+  if (sslData.expiresAt) {
+    const daysCls = sslData.daysRemaining > 30 ? 'good' : sslData.daysRemaining > 7 ? 'warn' : 'danger';
+    sslHtml += `
+      <div class="mini-cards" style="margin-bottom: 1rem;">
+        <div class="mini-card">
+          <div class="label">Days Left</div>
+          <div class="value ${daysCls}">${sslData.daysRemaining}</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Expires</div>
+          <div class="value" style="font-size: 0.8rem;">${fmtTime(sslData.expiresAt)}</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Issuer</div>
+          <div class="value" style="font-size: 0.8rem;">${sslData.issuer || 'Unknown'}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    sslHtml += '<div style="color:var(--dim); margin-bottom: 1rem;">Certificate info unavailable</div>';
+  }
+
+  let versionHtml = '<div style="margin-bottom: 0.5rem;"><strong style="color:var(--gold)">Game Binary</strong></div>';
+  versionHtml += `
+    <div class="mini-cards">
+      <div class="mini-card">
+        <div class="label">Version</div>
+        <div class="value" style="font-size: 0.9rem;">${versionData.version || 'Unknown'}</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">Binary Size</div>
+        <div class="value" style="font-size: 0.9rem;">${versionData.sizeMB ? versionData.sizeMB + ' MB' : 'N/A'}</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">Last Deploy</div>
+        <div class="value" style="font-size: 0.8rem;">${versionData.modifiedAt ? fmtTime(versionData.modifiedAt) : 'N/A'}</div>
+      </div>
+    </div>
+  `;
+
+  el.innerHTML = sslHtml + versionHtml;
+}
+
+// --- Activity ---
+function renderLogins(data) {
+  const el = document.getElementById('logins-body');
+  const logins = data.recentLogins || [];
+  if (logins.length === 0) {
+    el.innerHTML = '<span style="color:var(--dim)">No recent logins</span>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <tr><th>Player</th><th>Level</th><th>Class</th><th>Last Login</th></tr>
+    ${logins.map(l => `<tr>
+      <td>${l.name}</td>
+      <td>${l.level}</td>
+      <td>${l.className}</td>
+      <td>${fmtTime(l.time)}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+function renderNews(data) {
+  const el = document.getElementById('news-body');
+  const news = data.recentNews || [];
+  if (news.length === 0) {
+    el.innerHTML = '<span style="color:var(--dim)">No recent news</span>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <tr><th>Event</th><th>Category</th><th>Time</th></tr>
+    ${news.map(n => `<tr>
+      <td>${escapeHtml(n.message)}</td>
+      <td>${n.category || ''}</td>
+      <td>${fmtTimeAgo(n.time)}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// --- Tabs ---
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('tab')) return;
+  const tabGroup = e.target.parentElement;
+  const container = tabGroup.parentElement;
+  tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+  const tabId = 'tab-' + e.target.dataset.tab;
+  document.getElementById(tabId).classList.add('active');
+});
+
+// --- Refresh All ---
+async function refreshAll() {
+  const refreshEl = document.getElementById('last-refresh');
+  refreshEl.textContent = 'Refreshing...';
+
+  try {
+    const [overview, services, database, ssl, activity, version] = await Promise.all([
+      apiFetch('/overview'),
+      apiFetch('/services'),
+      apiFetch('/database'),
+      apiFetch('/ssl'),
+      apiFetch('/activity'),
+      apiFetch('/version')
+    ]);
+
+    renderOverviewCards(overview);
+    renderServices(services);
+    renderOnlinePlayers(activity);
+    renderDatabase(database);
+    renderSslVersion(ssl, version);
+    renderLogins(activity);
+    renderNews(activity);
+
+    refreshEl.textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    if (e.message !== 'Session expired') {
+      refreshEl.textContent = 'Refresh failed';
+    }
+  }
+}
+
+// --- Show Dashboard ---
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  refreshAll();
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(refreshAll, 30000);
+}
+
+// --- Init ---
+// Enter key submits login
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('login-user').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-pass').focus();
+});
+
+// --- Player Management ---
+let playerFilter = 'all';
+let playerPage = 1;
+let playerSearchTimeout = null;
+let pendingChanges = {};
+let currentPanelPlayer = null;
+let snoopEventSource = null;
+let pendingActionFn = null;
+
+function debouncedLoadPlayers() {
+  clearTimeout(playerSearchTimeout);
+  playerSearchTimeout = setTimeout(() => { playerPage = 1; loadPlayers(); }, 300);
+}
+
+function setPlayerFilter(f) {
+  playerFilter = f;
+  playerPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  loadPlayers();
+}
+
+async function loadPlayers() {
+  const search = document.getElementById('player-search').value;
+  try {
+    const data = await apiFetch(`/players?search=${encodeURIComponent(search)}&filter=${playerFilter}&page=${playerPage}&limit=25`);
+    renderPlayerTable(data);
+  } catch (e) {
+    document.getElementById('player-table').innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+  }
+}
+
+function renderPlayerTable(data) {
+  const el = document.getElementById('player-table');
+  if (!data.players || data.players.length === 0) {
+    el.innerHTML = '<span style="color:var(--dim)">No players found</span>';
+    document.getElementById('player-pagination').innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = `<table>
+    <tr><th>Name</th><th>Level</th><th>Class</th><th>Race</th><th>Gold</th><th>Status</th><th>Last Login</th><th>Actions</th></tr>
+    ${data.players.map(p => {
+      let badges = '';
+      if (p.isOnline) badges += '<span class="badge badge-online">ONLINE</span>';
+      if (p.isBanned) badges += '<span class="badge badge-banned">BANNED</span>';
+      if (p.isFrozen) badges += '<span class="badge badge-frozen">FROZEN</span>';
+      if (p.isMuted) badges += '<span class="badge badge-muted">MUTED</span>';
+      return `<tr class="player-row" onclick="openPlayerPanel('${escapeHtml(p.username)}')">
+        <td>${escapeHtml(p.displayName || p.username)}</td>
+        <td>${p.level}</td>
+        <td>${p.className}</td>
+        <td>${p.raceName}</td>
+        <td>${(p.gold || 0).toLocaleString()}</td>
+        <td>${badges || '<span style="color:var(--dim)">-</span>'}</td>
+        <td>${fmtTimeAgo(p.lastLogin)}</td>
+        <td>
+          <button class="action-btn" onclick="event.stopPropagation(); openPlayerPanel('${escapeHtml(p.username)}')">Edit</button>
+          ${p.isBanned
+            ? `<button class="action-btn action-btn-good" onclick="event.stopPropagation(); quickUnban('${escapeHtml(p.username)}')">Unban</button>`
+            : `<button class="action-btn action-btn-danger" onclick="event.stopPropagation(); showBanModal('${escapeHtml(p.username)}')">Ban</button>`}
+          ${p.isOnline ? `<button class="action-btn action-btn-warn" onclick="event.stopPropagation(); showKickModal('${escapeHtml(p.username)}')">Kick</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('')}
+  </table>`;
+
+  // Pagination
+  const pag = document.getElementById('player-pagination');
+  pag.innerHTML = `
+    <button ${data.page <= 1 ? 'disabled' : ''} onclick="playerPage=${data.page - 1}; loadPlayers()">Prev</button>
+    <span>Page ${data.page} of ${data.totalPages} (${data.total} players)</span>
+    <button ${data.page >= data.totalPages ? 'disabled' : ''} onclick="playerPage=${data.page + 1}; loadPlayers()">Next</button>
+  `;
+}
+
+// --- Player Detail Panel ---
+async function openPlayerPanel(username) {
+  try {
+    const data = await apiFetch(`/players/${encodeURIComponent(username)}`);
+    currentPanelPlayer = data;
+    pendingChanges = {};
+    updateSaveBar();
+
+    document.getElementById('panel-player-name').textContent = data.displayName || data.username;
+
+    // Badges
+    let badges = '';
+    if (data.isOnline) badges += '<span class="badge badge-online">ONLINE</span>';
+    if (data.isBanned) badges += `<span class="badge badge-banned">BANNED${data.banReason ? ': ' + escapeHtml(data.banReason) : ''}</span>`;
+    if (data.settings.isFrozen) badges += '<span class="badge badge-frozen">FROZEN</span>';
+    if (data.settings.isMuted) badges += '<span class="badge badge-muted">MUTED</span>';
+    document.getElementById('panel-badges').innerHTML = badges;
+
+    // Online warning
+    document.getElementById('panel-online-warn').style.display = data.isOnline ? 'block' : 'none';
+
+    // Action buttons
+    renderPanelActions(data);
+
+    // Tabs
+    renderStatsTab(data);
+    renderResourcesTab(data);
+    renderSocialTab(data);
+    renderStoryTab(data);
+    renderDailyTab(data);
+    renderSettingsTab(data);
+    renderEquipmentTab(data);
+    renderRawTab(data);
+
+    // Reset to first tab
+    document.querySelectorAll('#panel-tabs .tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+    document.querySelectorAll('#player-panel .tab-content').forEach((t, i) => t.classList.toggle('active', i === 0));
+
+    document.getElementById('player-panel').classList.add('open');
+  } catch (e) {
+    alert('Error loading player: ' + e.message);
+  }
+}
+
+function closePlayerPanel() {
+  document.getElementById('player-panel').classList.remove('open');
+  currentPanelPlayer = null;
+  pendingChanges = {};
+}
+
+function renderPanelActions(data) {
+  const u = data.username;
+  let html = '';
+  if (data.isOnline) {
+    html += `<button class="action-btn action-btn-warn" onclick="showKickModal('${esc(u)}')">Kick</button>`;
+    html += `<button class="action-btn action-btn-danger" onclick="showSlayModal('${esc(u)}')">Slay</button>`;
+    html += `<button class="action-btn" onclick="startSnoop('${esc(u)}')">Snoop</button>`;
+    html += `<button class="action-btn action-btn-warn" onclick="showMessageModal('${esc(u)}')">Message</button>`;
+  }
+  if (data.settings.isFrozen)
+    html += `<button class="action-btn action-btn-good" onclick="queueCommand('thaw','${esc(u)}')">Thaw</button>`;
+  else
+    html += `<button class="action-btn action-btn-warn" onclick="queueCommand('freeze','${esc(u)}')">Freeze</button>`;
+  if (data.settings.isMuted)
+    html += `<button class="action-btn action-btn-good" onclick="queueCommand('unmute','${esc(u)}')">Unmute</button>`;
+  else
+    html += `<button class="action-btn action-btn-warn" onclick="queueCommand('mute','${esc(u)}')">Mute</button>`;
+  if (data.isBanned)
+    html += `<button class="action-btn action-btn-good" onclick="quickUnban('${esc(u)}')">Unban</button>`;
+  else
+    html += `<button class="action-btn action-btn-danger" onclick="showBanModal('${esc(u)}')">Ban</button>`;
+  html += `<button class="action-btn" onclick="showResetPwModal('${esc(u)}')">Reset Password</button>`;
+  html += `<button class="action-btn action-btn-danger" onclick="showDeleteModal('${esc(u)}')">Delete</button>`;
+  document.getElementById('panel-actions').innerHTML = html;
+}
+
+function esc(s) { return escapeHtml(s).replace(/'/g, "\\'"); }
+
+// --- Field rendering helpers ---
+function editableField(label, value, path, type = 'number') {
+  const displayVal = type === 'boolean' ? (value ? 'true' : 'false') : (value ?? '');
+  return `<div class="field-row">
+    <span class="field-label">${label}</span>
+    <span class="field-value" onclick="makeEditable(this, '${path}', '${type}')">${displayVal}</span>
+  </div>`;
+}
+
+function readonlyField(label, value) {
+  return `<div class="field-row">
+    <span class="field-label">${label}</span>
+    <span class="field-value" style="cursor:default">${value ?? ''}</span>
+  </div>`;
+}
+
+function makeEditable(el, path, type) {
+  if (el.querySelector('input')) return; // already editing
+  const current = el.textContent.trim();
+  const input = document.createElement('input');
+  input.type = type === 'boolean' ? 'text' : (type || 'text');
+  input.value = current;
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { input.blur(); }
+    if (e.key === 'Escape') { el.textContent = current; }
+  });
+  input.addEventListener('blur', () => {
+    let val = input.value;
+    if (type === 'number') val = Number(val);
+    else if (type === 'boolean') val = val === 'true';
+    el.textContent = val;
+    if (String(val) !== String(current)) {
+      pendingChanges[path] = val;
+      el.style.color = 'var(--gold)';
+    }
+    updateSaveBar();
+  });
+  el.textContent = '';
+  el.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+function updateSaveBar() {
+  const count = Object.keys(pendingChanges).length;
+  const bar = document.getElementById('save-bar');
+  bar.classList.toggle('visible', count > 0);
+  document.getElementById('change-count').textContent = `${count} change${count !== 1 ? 's' : ''}`;
+}
+
+function discardChanges() {
+  pendingChanges = {};
+  updateSaveBar();
+  if (currentPanelPlayer) openPlayerPanel(currentPanelPlayer.username);
+}
+
+async function savePlayerChanges() {
+  if (!currentPanelPlayer || Object.keys(pendingChanges).length === 0) return;
+  try {
+    const r = await fetch(`${API}/players/${encodeURIComponent(currentPanelPlayer.username)}/edit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ changes: pendingChanges })
+    });
+    const d = await r.json();
+    if (r.ok) {
+      pendingChanges = {};
+      updateSaveBar();
+      openPlayerPanel(currentPanelPlayer.username); // reload
+      loadPlayers();
+    } else {
+      alert('Save failed: ' + (d.error || 'Unknown error'));
+    }
+  } catch (e) {
+    alert('Save error: ' + e.message);
+  }
+}
+
+// --- Tab renderers ---
+function renderStatsTab(data) {
+  const s = data.stats;
+  document.getElementById('panel-stats').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Level', s.level, 'player.level')}
+      ${editableField('Experience', s.experience, 'player.experience')}
+      ${readonlyField('Class', s.className)}
+      ${readonlyField('Race', s.raceName)}
+      ${editableField('HP', s.hp, 'player.hp')}
+      ${editableField('Max HP', s.maxHP, 'player.maxHP')}
+      ${editableField('Mana', s.mana, 'player.mana')}
+      ${editableField('Max Mana', s.maxMana, 'player.maxMana')}
+      ${editableField('Stamina', s.stamina, 'player.stamina')}
+      ${editableField('Max Stamina', s.maxStamina, 'player.maxStamina')}
+      ${editableField('Strength', s.strength, 'player.strength')}
+      ${editableField('Defense', s.defense, 'player.defense')}
+      ${editableField('Agility', s.agility, 'player.agility')}
+      ${editableField('Dexterity', s.dexterity, 'player.dexterity')}
+      ${editableField('Constitution', s.constitution, 'player.constitution')}
+      ${editableField('Intelligence', s.intelligence, 'player.intelligence')}
+      ${editableField('Wisdom', s.wisdom, 'player.wisdom')}
+      ${editableField('Charisma', s.charisma, 'player.charisma')}
+      ${editableField('Fatigue', s.fatigue, 'player.fatigue')}
+    </div>
+    <div style="margin-top: 0.5rem; color: var(--dim); font-size: 11px;">
+      Playtime: ${Math.floor(data.playtimeMinutes / 60)}h ${data.playtimeMinutes % 60}m
+      &middot; Created: ${fmtTime(data.createdAt)}
+      &middot; Last Login: ${fmtTime(data.lastLogin)}
+    </div>
+  `;
+}
+
+function renderResourcesTab(data) {
+  const r = data.resources;
+  document.getElementById('panel-resources').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Gold', r.gold, 'player.gold')}
+      ${editableField('Bank Gold', r.bankGold, 'player.bankGold')}
+      ${editableField('Potions', r.potions, 'player.potions')}
+      ${editableField('Lockpicks', r.lockpicks, 'player.lockpicks')}
+      ${editableField('Healing Herb', r.herbs.healingHerb, 'player.healingHerb')}
+      ${editableField('Ironbark Root', r.herbs.ironbarkRoot, 'player.ironbarkRoot')}
+      ${editableField('Firebloom Petal', r.herbs.firebloomPetal, 'player.firebloomPetal')}
+      ${editableField('Swiftthistle', r.herbs.swiftthistle, 'player.swiftthistle')}
+      ${editableField('Starbloom Essence', r.herbs.starbloomEssence, 'player.starbloomEssence')}
+    </div>
+  `;
+}
+
+function renderSocialTab(data) {
+  const s = data.social;
+  document.getElementById('panel-social').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Chivalry', s.chivalry, 'player.chivalry')}
+      ${editableField('Darkness', s.darkness, 'player.darkness')}
+      ${editableField('Murder Weight', s.murderWeight, 'player.murderWeight')}
+      ${editableField('Days in Prison', s.daysInPrison, 'player.daysInPrison')}
+      ${readonlyField('Alignment', s.alignment)}
+      ${readonlyField('Faction', s.faction)}
+      ${readonlyField('Is King', s.isKing ? 'Yes' : 'No')}
+      ${readonlyField('Team', s.teamName || 'None')}
+      ${readonlyField('Married', s.isMarried ? 'Yes' : 'No')}
+      ${readonlyField('Spouse', s.spouseName || 'N/A')}
+    </div>
+  `;
+}
+
+function renderStoryTab(data) {
+  const s = data.story;
+  const st = data.statistics || {};
+  document.getElementById('panel-story').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Awakening Level', s.awakeningLevel, 'player.awakeningLevel')}
+      ${editableField('Cycle Number', s.cycleNumber, 'player.cycleNumber')}
+      ${editableField('Cycle XP Multiplier', s.cycleExpMultiplier, 'player.cycleExpMultiplier')}
+      ${readonlyField('Is Immortal', s.isImmortal ? 'Yes' : 'No')}
+      ${readonlyField('Divine Name', s.divineName || 'N/A')}
+      ${editableField('God Level', s.godLevel, 'player.godLevel')}
+      ${readonlyField('Completed Endings', (s.completedEndings || []).join(', ') || 'None')}
+      ${readonlyField('Seals Collected', (s.collectedSeals || []).length)}
+    </div>
+    <div style="margin-top:1rem; color:var(--gold); font-size:12px; font-weight:bold;">Statistics</div>
+    <div class="field-grid" style="margin-top:0.5rem;">
+      ${readonlyField('Monsters Killed', (st.totalMonstersKilled || 0).toLocaleString())}
+      ${readonlyField('Damage Dealt', (st.totalDamageDealt || 0).toLocaleString())}
+      ${readonlyField('Deaths', st.totalDeaths || 0)}
+      ${readonlyField('Deepest Floor', st.deepestDungeonLevel || 0)}
+      ${readonlyField('Boss Kills', st.bossesDefeated || 0)}
+      ${readonlyField('Total Gold Earned', (st.totalGoldEarned || 0).toLocaleString())}
+      ${readonlyField('PvP Kills', st.pvpKills || 0)}
+      ${readonlyField('PvP Deaths', st.pvpDeaths || 0)}
+    </div>
+  `;
+}
+
+function renderDailyTab(data) {
+  const d = data.daily;
+  document.getElementById('panel-daily').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Fight Count', d.fightCount, 'player.fightCount')}
+      ${editableField('Thievery Count', d.thieveryCount, 'player.thieveryCount')}
+      ${editableField('Brawl Count', d.brawlCount, 'player.brawlCount')}
+      ${editableField('Quests Today', d.questsCompletedToday, 'player.questsCompletedToday')}
+      ${editableField('Home Rests Today', d.homeRestsToday, 'player.homeRestsToday')}
+      ${editableField('Herbs Today', d.herbsGatheredToday, 'player.herbsGatheredToday')}
+      ${editableField('PvP Attacks Today', d.pvpAttacksToday, 'player.pvpAttacksToday')}
+      ${editableField('Game Time (min)', d.gameTimeMinutes, 'player.gameTimeMinutes')}
+    </div>
+    <div style="margin-top:0.75rem;">
+      <button class="action-btn" onclick="resetDailies()">Reset All Dailies</button>
+    </div>
+  `;
+}
+
+async function resetDailies() {
+  if (!currentPanelPlayer) return;
+  pendingChanges['player.fightCount'] = 0;
+  pendingChanges['player.thieveryCount'] = 0;
+  pendingChanges['player.brawlCount'] = 0;
+  pendingChanges['player.questsCompletedToday'] = 0;
+  pendingChanges['player.homeRestsToday'] = 0;
+  pendingChanges['player.herbsGatheredToday'] = 0;
+  pendingChanges['player.pvpAttacksToday'] = 0;
+  updateSaveBar();
+  await savePlayerChanges();
+}
+
+function renderSettingsTab(data) {
+  const s = data.settings;
+  document.getElementById('panel-settings').innerHTML = `
+    <div class="field-grid">
+      ${editableField('Auto Heal', s.autoHeal, 'player.autoHeal', 'boolean')}
+      ${editableField('Compact Mode', s.compactMode, 'player.compactMode', 'boolean')}
+      ${editableField('Frozen', s.isFrozen, 'player.isFrozen', 'boolean')}
+      ${editableField('Muted', s.isMuted, 'player.isMuted', 'boolean')}
+    </div>
+  `;
+}
+
+function renderEquipmentTab(data) {
+  const eq = data.equipment || {};
+  const inv = data.inventory || [];
+  let html = '<div style="color:var(--gold); font-size:12px; font-weight:bold; margin-bottom:0.5rem;">Equipped</div>';
+  if (Object.keys(eq).length === 0) {
+    html += '<div style="color:var(--dim); font-size:11px;">No equipment data</div>';
+  } else {
+    html += '<div class="field-grid">';
+    for (const [slot, item] of Object.entries(eq)) {
+      if (item && typeof item === 'object') {
+        html += readonlyField(slot, `${item.name || item.Name || 'Unknown'} (Lv ${item.level || item.Level || '?'})`);
+      }
+    }
+    html += '</div>';
+  }
+
+  html += '<div style="color:var(--gold); font-size:12px; font-weight:bold; margin: 1rem 0 0.5rem;">Inventory</div>';
+  if (inv.length === 0) {
+    html += '<div style="color:var(--dim); font-size:11px;">Empty</div>';
+  } else {
+    html += `<table style="font-size:11px;">
+      <tr><th>Item</th><th>Type</th></tr>
+      ${inv.slice(0, 50).map(i => `<tr><td>${escapeHtml(i.name || i.Name || 'Unknown')}</td><td>${i.type || i.Type || ''}</td></tr>`).join('')}
+      ${inv.length > 50 ? `<tr><td colspan="2" style="color:var(--dim)">...and ${inv.length - 50} more</td></tr>` : ''}
+    </table>`;
+  }
+
+  document.getElementById('panel-equipment').innerHTML = html;
+}
+
+async function renderRawTab(data) {
+  try {
+    const r = await fetch(`${API}/players/${encodeURIComponent(data.username)}/raw`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const raw = await r.text();
+    let formatted;
+    try { formatted = JSON.stringify(JSON.parse(raw), null, 2); } catch { formatted = raw; }
+    document.getElementById('panel-raw').innerHTML = `
+      <textarea class="json-editor" id="raw-json-editor">${escapeHtml(formatted)}</textarea>
+      <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+        <button class="action-btn action-btn-warn" onclick="saveRawJson()">Save Raw JSON</button>
+        <span style="color:var(--dim); font-size:11px; align-self:center;">Warning: replaces entire player data blob</span>
+      </div>
+    `;
+  } catch (e) {
+    document.getElementById('panel-raw').innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+  }
+}
+
+async function saveRawJson() {
+  if (!currentPanelPlayer) return;
+  const raw = document.getElementById('raw-json-editor').value;
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch (e) { alert('Invalid JSON: ' + e.message); return; }
+  if (!confirm('This will replace the ENTIRE player data. Are you sure?')) return;
+  try {
+    const r = await fetch(`${API}/players/${encodeURIComponent(currentPanelPlayer.username)}/raw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: raw
+    });
+    const d = await r.json();
+    if (r.ok) { alert('Saved!'); openPlayerPanel(currentPanelPlayer.username); }
+    else alert('Failed: ' + (d.error || 'Unknown'));
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+// --- Action modals ---
+function closeActionModal() {
+  document.getElementById('action-modal').classList.remove('active');
+  pendingActionFn = null;
+}
+
+function showActionModal(title, bodyHtml, confirmFn, btnText = 'Confirm') {
+  document.getElementById('action-modal-title').textContent = title;
+  document.getElementById('action-modal-body').innerHTML = bodyHtml;
+  document.getElementById('action-modal-msg').textContent = '';
+  document.getElementById('action-modal-confirm').textContent = btnText;
+  pendingActionFn = confirmFn;
+  document.getElementById('action-modal').classList.add('active');
+}
+
+async function confirmAction() {
+  if (pendingActionFn) {
+    document.getElementById('action-modal-msg').textContent = 'Processing...';
+    document.getElementById('action-modal-msg').className = 'msg';
+    try {
+      await pendingActionFn();
+      document.getElementById('action-modal-msg').textContent = 'Done!';
+      document.getElementById('action-modal-msg').className = 'msg ok';
+      setTimeout(() => { closeActionModal(); loadPlayers(); if (currentPanelPlayer) openPlayerPanel(currentPanelPlayer.username); }, 800);
+    } catch (e) {
+      document.getElementById('action-modal-msg').textContent = e.message;
+      document.getElementById('action-modal-msg').className = 'msg error';
+    }
+  }
+}
+
+function showBanModal(username) {
+  showActionModal('Ban Player: ' + username,
+    '<input type="text" id="ban-reason" placeholder="Reason (optional)">',
+    async () => {
+      const reason = document.getElementById('ban-reason').value || 'Banned by admin';
+      const r = await fetch(`${API}/players/${encodeURIComponent(username)}/ban`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ reason })
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }, 'Ban');
+}
+
+async function quickUnban(username) {
+  try {
+    const r = await fetch(`${API}/players/${encodeURIComponent(username)}/unban`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (r.ok) { loadPlayers(); if (currentPanelPlayer) openPlayerPanel(currentPanelPlayer.username); }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+function showKickModal(username) {
+  showActionModal('Kick Player: ' + username,
+    '<input type="text" id="kick-reason" placeholder="Reason (optional)">',
+    async () => {
+      const reason = document.getElementById('kick-reason').value || 'Kicked by admin';
+      const r = await fetch(`${API}/commands`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ command: 'kick', target: username, args: { reason } })
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }, 'Kick');
+}
+
+function showSlayModal(username) {
+  showActionModal('Slay Player: ' + username,
+    '<div style="color:var(--red); font-size:12px;">This will kill the player in-game immediately.</div>',
+    async () => {
+      const r = await fetch(`${API}/commands`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ command: 'slay', target: username })
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }, 'Slay');
+}
+
+function showMessageModal(username) {
+  showActionModal('Send Message to: ' + username,
+    '<textarea id="admin-msg" placeholder="Message to send..."></textarea>',
+    async () => {
+      const msg = document.getElementById('admin-msg').value;
+      if (!msg) throw new Error('Message cannot be empty');
+      const r = await fetch(`${API}/commands`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ command: 'message', target: username, args: { message: msg } })
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }, 'Send');
+}
+
+function showResetPwModal(username) {
+  showActionModal('Reset Password: ' + username,
+    '<input type="text" id="new-pw" placeholder="New password (min 4 chars)">',
+    async () => {
+      const pw = document.getElementById('new-pw').value;
+      if (!pw || pw.length < 4) throw new Error('Password must be at least 4 characters');
+      const r = await fetch(`${API}/players/${encodeURIComponent(username)}/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ newPassword: pw })
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }, 'Reset');
+}
+
+function showDeleteModal(username) {
+  showActionModal('DELETE Player: ' + username,
+    `<div style="color:var(--red); font-size:12px; margin-bottom:0.5rem;">This permanently deletes the player and all associated data. This cannot be undone.</div>
+     <input type="text" id="delete-confirm" placeholder="Type the username to confirm">`,
+    async () => {
+      const confirm = document.getElementById('delete-confirm').value;
+      if (confirm.toLowerCase() !== username.toLowerCase()) throw new Error('Username does not match');
+      const r = await fetch(`${API}/players/${encodeURIComponent(username)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!r.ok) throw new Error((await r.json()).error);
+      closePlayerPanel();
+    }, 'Delete Forever');
+}
+
+async function queueCommand(command, target, args) {
+  try {
+    const r = await fetch(`${API}/commands`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ command, target, args })
+    });
+    if (r.ok) {
+      loadPlayers();
+      if (currentPanelPlayer) setTimeout(() => openPlayerPanel(currentPanelPlayer.username), 3500); // wait for MUD server to process
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+// --- Snoop ---
+function startSnoop(username) {
+  stopSnoop(); // clean up any existing
+  document.getElementById('snoop-title').textContent = 'Snooping: ' + username;
+  document.getElementById('snoop-terminal').textContent = '';
+  document.getElementById('snoop-overlay').classList.add('active');
+
+  snoopEventSource = new EventSource(`${API}/snoop/${encodeURIComponent(username)}?token=${token}`);
+  snoopEventSource.onmessage = e => {
+    try {
+      const data = JSON.parse(e.data);
+      const term = document.getElementById('snoop-terminal');
+      if (data.type === 'output') {
+        term.textContent += data.line + '\n';
+        term.scrollTop = term.scrollHeight;
+      } else if (data.type === 'started') {
+        term.textContent += `[Snoop started for ${data.target}...]\n`;
+      } else if (data.type === 'error') {
+        term.textContent += `[Error: ${data.message}]\n`;
+      }
+    } catch {}
+  };
+  snoopEventSource.onerror = () => {
+    const term = document.getElementById('snoop-terminal');
+    term.textContent += '\n[Connection lost]\n';
+  };
+}
+
+function stopSnoop() {
+  if (snoopEventSource) {
+    snoopEventSource.close();
+    snoopEventSource = null;
+  }
+  document.getElementById('snoop-overlay').classList.remove('active');
+}
+
+// --- Wizard Log ---
+async function loadWizardLog() {
+  try {
+    const data = await apiFetch('/wizard-log?limit=50');
+    const el = document.getElementById('wizard-log-body');
+    const entries = data.entries || [];
+    if (entries.length === 0) {
+      el.innerHTML = '<span style="color:var(--dim)">No admin actions logged</span>';
+      return;
+    }
+    el.innerHTML = `<table>
+      <tr><th>Time</th><th>Admin</th><th>Action</th><th>Target</th><th>Details</th></tr>
+      ${entries.map(e => `<tr>
+        <td>${fmtTimeAgo(e.created_at)}</td>
+        <td>${escapeHtml(e.wizard_name || '')}</td>
+        <td>${escapeHtml(e.action || '')}</td>
+        <td>${escapeHtml(e.target || '')}</td>
+        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(e.details || '')}</td>
+      </tr>`).join('')}
+    </table>`;
+  } catch (e) {
+    document.getElementById('wizard-log-body').innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+  }
+}
+
+// --- Wire into refresh ---
+const origRefreshAll = refreshAll;
+refreshAll = async function() {
+  await origRefreshAll();
+  loadPlayers();
+  loadWizardLog();
+};
+
+// Handle SSE auth — snoop needs token in URL since EventSource can't send headers
+const origApiFetch = apiFetch;
+apiFetch = async function(endpoint) {
+  const r = await fetch(`${API}${endpoint}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (r.status === 401) { doLogout(); throw new Error('Session expired'); }
+  return r.json();
+};
+
+// Auto-login if token exists
+if (token) {
+  fetch(`${API}/overview`, { headers: { 'Authorization': `Bearer ${token}` } })
+    .then(r => { if (r.ok) showDashboard(); else doLogout(); })
+    .catch(() => doLogout());
+}
+</script>
+</body>
+</html>

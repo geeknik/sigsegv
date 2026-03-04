@@ -69,10 +69,7 @@ public class CastleLocation : BaseLocation
     private void DisplayRoyalCastleInterior()
     {
         // Header - standardized format
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"THE ROYAL CASTLE".PadLeft((77 + 16) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE ROYAL CASTLE", "bright_cyan");
         terminal.WriteLine("");
 
         // Royal greeting
@@ -123,10 +120,7 @@ public class CastleLocation : BaseLocation
     private void DisplayCastleExterior()
     {
         // Header - standardized format
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"OUTSIDE THE ROYAL CASTLE".PadLeft((77 + 24) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("OUTSIDE THE ROYAL CASTLE", "bright_cyan");
         terminal.WriteLine("");
 
         // Approach description
@@ -171,168 +165,193 @@ public class CastleLocation : BaseLocation
         terminal.WriteLine("Royal Commands:");
         terminal.WriteLine("");
 
-        // Row 1
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("P");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("rison Cells       ");
+        if (IsScreenReader)
+        {
+            WriteSRMenuOption("P", "Prison Cells");
+            WriteSRMenuOption("O", "Orders");
+            WriteSRMenuOption("1", "Royal Mail");
+            WriteSRMenuOption("G", "Go to Sleep");
+            WriteSRMenuOption("C", "Check Security");
+            WriteSRMenuOption("H", "History of Monarchs");
+            WriteSRMenuOption("A", "Abdicate");
+            WriteSRMenuOption("M", "Magic");
+            WriteSRMenuOption("F", "Fiscal Matters");
+            WriteSRMenuOption("S", "Status");
+            WriteSRMenuOption("Q", "Quests");
+            WriteSRMenuOption("T", "The Royal Orphanage");
+            WriteSRMenuOption("W", "Wedding");
+            WriteSRMenuOption("U", "Court Politics");
+            WriteSRMenuOption("E", "Estate (Succession)");
+            WriteSRMenuOption("B", "Bodyguards (Dungeon Mercenaries)");
+            terminal.WriteLine("");
+            WriteSRMenuOption("R", "Return to Town");
+            terminal.WriteLine("");
+        }
+        else
+        {
+            // Row 1
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("P");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("rison Cells       ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("O");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("rders             ");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("O");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("rders             ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("1");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine(" Royal Mail");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("1");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine(" Royal Mail");
 
-        // Row 2
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("G");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("o to Sleep        ");
+            // Row 2
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("G");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("o to Sleep        ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("C");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("heck Security     ");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("C");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("heck Security     ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("H");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("istory of Monarchs");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("H");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("istory of Monarchs");
 
-        // Row 3
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("A");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("bdicate           ");
+            // Row 3
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("A");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("bdicate           ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("M");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("agic              ");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("M");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("agic              ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("F");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("iscal Matters");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("F");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("iscal Matters");
 
-        // Row 4
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("S");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("tatus             ");
+            // Row 4
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("S");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("tatus             ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("Q");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("uests             ");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("Q");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("uests             ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("T");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("he Royal Orphanage");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("T");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("he Royal Orphanage");
 
-        // Row 5 - Political systems
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("W");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("edding            ");
+            // Row 5 - Political systems
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("W");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("edding            ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("U");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("Court Politics    ");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("U");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("Court Politics    ");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("E");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("state (Succession)");
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("E");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("state (Succession)");
 
-        // Row 6 - Royal Bodyguards
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("B");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("odyguards (Dungeon Mercenaries)");
+            // Row 6 - Royal Bodyguards
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("B");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("odyguards (Dungeon Mercenaries)");
 
-        terminal.WriteLine("");
+            terminal.WriteLine("");
 
-        // Navigation
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("R");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("eturn to Town");
-        terminal.WriteLine("");
+            // Navigation
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("R");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("eturn to Town");
+            terminal.WriteLine("");
+        }
 
         ShowStatusLine();
     }
@@ -346,91 +365,136 @@ public class CastleLocation : BaseLocation
         terminal.WriteLine("Options:");
         terminal.WriteLine("");
 
-        // Row 1
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("T");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("he Royal Guard    ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("P");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("rison             ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("D");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("onate to Royal Purse");
-
-        // Row 2
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("H");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("istory of Monarchs ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("S");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("eek Audience       ");
-
-        // Apply for Royal Guard option
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("A");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("pply for Royal Guard");
-
-        // Throne options - always show one of these
-        if (currentKing != null && currentKing.IsActive)
+        if (IsScreenReader)
         {
-            // There is a king - show infiltrate option
+            WriteSRMenuOption("T", "The Royal Guard");
+            WriteSRMenuOption("P", "Prison");
+            WriteSRMenuOption("D", "Donate to Royal Purse");
+            WriteSRMenuOption("H", "History of Monarchs");
+            WriteSRMenuOption("S", "Seek Audience");
+            WriteSRMenuOption("A", "Apply for Royal Guard");
+
+            if (currentKing != null && currentKing.IsActive)
+            {
+                bool canChallenge = CanChallengeThrone();
+                WriteSRMenuOption("I", canChallenge ? "Infiltrate Castle (Challenge for Throne)" : "Infiltrate Castle (Not Available)", canChallenge);
+            }
+            else
+            {
+                bool canClaim = currentPlayer.Level >= GameConfig.MinLevelKing;
+                WriteSRMenuOption("C", canClaim ? "Claim Empty Throne" : $"Claim Empty Throne (Requires Level {GameConfig.MinLevelKing})", canClaim);
+            }
+
+            if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !string.IsNullOrEmpty(currentPlayer.Team))
+                WriteSRMenuOption("B", "Besiege the Castle (Team Siege)");
+
+            terminal.WriteLine("");
+
+            var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
+            if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheCrown)
+                WriteSRMenuOption("J", "Join Royal Service");
+            else
+                terminal.WriteLine("You are a loyal servant of The Crown.");
+
+            if (FactionSystem.Instance?.HasCastleAccess() == true)
+                WriteSRMenuOption("L", "Royal Armory");
+
+            WriteSRMenuOption("R", "Return to Town");
+            terminal.WriteLine("");
+        }
+        else
+        {
+            // Row 1
             terminal.SetColor("darkgray");
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
-            terminal.Write("I");
+            terminal.Write("T");
             terminal.SetColor("darkgray");
             terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("he Royal Guard    ");
 
-            if (CanChallengeThrone())
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("P");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("rison             ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("D");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("onate to Royal Purse");
+
+            // Row 2
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("H");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("istory of Monarchs ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("S");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("eek Audience       ");
+
+            // Apply for Royal Guard option
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("A");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("pply for Royal Guard");
+
+            // Throne options - always show one of these
+            if (currentKing != null && currentKing.IsActive)
             {
-                terminal.SetColor("bright_red");
-                terminal.WriteLine("nfiltrate Castle (Challenge for Throne)");
-            }
-            else if (currentPlayer.Level < GameConfig.MinLevelKing)
-            {
-                terminal.SetColor("gray");
-                terminal.WriteLine($"nfiltrate Castle (Requires Level {GameConfig.MinLevelKing})");
-            }
-            else if (currentKing != null && currentKing.IsActive)
-            {
-                int kLevel = GetKingLevel();
-                if (kLevel > 0 && kLevel - currentPlayer.Level > GameConfig.KingChallengeLevelRange)
+                // There is a king - show infiltrate option
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("I");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+
+                if (CanChallengeThrone())
+                {
+                    terminal.SetColor("bright_red");
+                    terminal.WriteLine("nfiltrate Castle (Challenge for Throne)");
+                }
+                else if (currentPlayer.Level < GameConfig.MinLevelKing)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"nfiltrate Castle (King Lv{kLevel}, need Lv{Math.Max(GameConfig.MinLevelKing, kLevel - GameConfig.KingChallengeLevelRange)}+)");
+                    terminal.WriteLine($"nfiltrate Castle (Requires Level {GameConfig.MinLevelKing})");
+                }
+                else if (currentKing != null && currentKing.IsActive)
+                {
+                    int kLevel = GetKingLevel();
+                    if (kLevel > 0 && kLevel - currentPlayer.Level > GameConfig.KingChallengeLevelRange)
+                    {
+                        terminal.SetColor("gray");
+                        terminal.WriteLine($"nfiltrate Castle (King Lv{kLevel}, need Lv{Math.Max(GameConfig.MinLevelKing, kLevel - GameConfig.KingChallengeLevelRange)}+)");
+                    }
+                    else
+                    {
+                        terminal.SetColor("gray");
+                        terminal.WriteLine("nfiltrate Castle (Not Available)");
+                    }
                 }
                 else
                 {
@@ -440,99 +504,94 @@ public class CastleLocation : BaseLocation
             }
             else
             {
-                terminal.SetColor("gray");
-                terminal.WriteLine("nfiltrate Castle (Not Available)");
-            }
-        }
-        else
-        {
-            // No king - show claim throne option
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("C");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-
-            if (currentPlayer.Level >= GameConfig.MinLevelKing)
-            {
+                // No king - show claim throne option
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("laim Empty Throne");
+                terminal.Write("C");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+
+                if (currentPlayer.Level >= GameConfig.MinLevelKing)
+                {
+                    terminal.SetColor("bright_yellow");
+                    terminal.WriteLine("laim Empty Throne");
+                }
+                else
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine($"laim Empty Throne (Requires Level {GameConfig.MinLevelKing})");
+                }
+            }
+
+            // Castle Siege option (online mode, team required)
+            if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !string.IsNullOrEmpty(currentPlayer.Team))
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("B");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("bright_red");
+                terminal.WriteLine("esiege the Castle (Team Siege)");
+            }
+
+            terminal.WriteLine("");
+
+            // The Crown faction option - only show if not already a member
+            var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
+            if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheCrown)
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("J");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("oin Royal Service ");
+                if (factionSystem.PlayerFaction == null)
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("(swear loyalty to The Crown...)");
+                }
+                else
+                {
+                    terminal.SetColor("dark_red");
+                    terminal.WriteLine("(you serve another...)");
+                }
             }
             else
             {
-                terminal.SetColor("gray");
-                terminal.WriteLine($"laim Empty Throne (Requires Level {GameConfig.MinLevelKing})");
+                terminal.SetColor("bright_green");
+                terminal.WriteLine(" You are a loyal servant of The Crown.");
             }
-        }
 
-        // Castle Siege option (online mode, team required)
-        if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !string.IsNullOrEmpty(currentPlayer.Team))
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("B");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("bright_red");
-            terminal.WriteLine("esiege the Castle (Team Siege)");
-        }
-
-        terminal.WriteLine("");
-
-        // The Crown faction option - only show if not already a member
-        var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
-        if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheCrown)
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("J");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("oin Royal Service ");
-            if (factionSystem.PlayerFaction == null)
+            // Royal Armory (Crown only)
+            if (FactionSystem.Instance?.HasCastleAccess() == true)
             {
-                terminal.SetColor("gray");
-                terminal.WriteLine("(swear loyalty to The Crown...)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("L");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("yellow");
+                terminal.WriteLine(" Royal Armory");
             }
-            else
-            {
-                terminal.SetColor("dark_red");
-                terminal.WriteLine("(you serve another...)");
-            }
-        }
-        else
-        {
-            terminal.SetColor("bright_green");
-            terminal.WriteLine(" You are a loyal servant of The Crown.");
-        }
 
-        // Royal Armory (Crown only)
-        if (FactionSystem.Instance?.HasCastleAccess() == true)
-        {
+            // Navigation
             terminal.SetColor("darkgray");
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
-            terminal.Write("L");
+            terminal.Write("R");
             terminal.SetColor("darkgray");
             terminal.Write("]");
-            terminal.SetColor("yellow");
-            terminal.WriteLine(" Royal Armory");
+            terminal.SetColor("white");
+            terminal.WriteLine("eturn to Town");
+            terminal.WriteLine("");
         }
-
-        // Navigation
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("R");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("eturn to Town");
-        terminal.WriteLine("");
 
         ShowStatusLine();
     }
@@ -830,10 +889,7 @@ public class CastleLocation : BaseLocation
     private async Task ViewRoyalGuard()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE ROYAL GUARD"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE ROYAL GUARD", "bright_cyan");
         terminal.WriteLine("");
 
         if (currentKing == null || !currentKing.IsActive)
@@ -856,8 +912,7 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"#",-3} {"Name",-20} {"Rank",-15} {"Loyalty",-10}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 50));
+            WriteDivider(50);
 
             int i = 1;
             foreach (var guard in currentKing.Guards)
@@ -892,10 +947,7 @@ public class CastleLocation : BaseLocation
     private async Task VisitPrison()
     {
         terminal.ClearScreen();
-        terminal.SetColor("red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE ROYAL PRISON"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE ROYAL PRISON", "red");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -912,8 +964,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"Name",-20} {"Crime",-20} {"Days Left",-10}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 55));
+            WriteDivider(55);
 
             foreach (var prisoner in currentKing.Prisoners)
             {
@@ -935,10 +986,7 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_red");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "PRISON CELL MANAGEMENT"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("PRISON CELL MANAGEMENT", "bright_red");
             terminal.WriteLine("");
 
             if (currentKing.Prisoners.Count == 0)
@@ -951,8 +999,7 @@ public class CastleLocation : BaseLocation
             {
                 terminal.SetColor("cyan");
                 terminal.WriteLine($"{"#",-3} {"Name",-18} {"Crime",-18} {"Sentence",-10} {"Served",-8} {"Bail",-10}");
-                terminal.SetColor("darkgray");
-                terminal.WriteLine(new string('─', 75));
+                WriteDivider(75);
 
                 int i = 1;
                 foreach (var prisoner in currentKing.Prisoners)
@@ -968,9 +1015,20 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("cyan");
             terminal.WriteLine("Commands:");
-            terminal.SetColor("white");
-            terminal.WriteLine("(I)mprison someone  (P)ardon prisoner  (E)xecute prisoner");
-            terminal.WriteLine("(S)et bail amount   (R)eturn");
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("I", "Imprison someone");
+                WriteSRMenuOption("P", "Pardon prisoner");
+                WriteSRMenuOption("E", "Execute prisoner");
+                WriteSRMenuOption("S", "Set bail amount");
+                WriteSRMenuOption("R", "Return");
+            }
+            else
+            {
+                terminal.SetColor("white");
+                terminal.WriteLine("(I)mprison someone  (P)ardon prisoner  (E)xecute prisoner");
+                terminal.WriteLine("(S)et bail amount   (R)eturn");
+            }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
@@ -1043,8 +1101,7 @@ public class CastleLocation : BaseLocation
         // Show numbered list
         terminal.SetColor("cyan");
         terminal.WriteLine($"{"#",-4} {"Name",-20} {"Type",-20}");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 44));
+        WriteDivider(44);
 
         for (int i = 0; i < targets.Count; i++)
         {
@@ -1318,10 +1375,7 @@ public class CastleLocation : BaseLocation
     private async Task ReadRoyalMail()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "ROYAL MAIL"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL MAIL", "bright_magenta");
         terminal.WriteLine("");
 
         // Generate some random mail if there's none
@@ -1339,8 +1393,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"#",-3} {"From",-20} {"Subject",-35} {"Status",-10}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 70));
+            WriteDivider(70);
 
             for (int i = 0; i < royalMail.Count; i++)
             {
@@ -1370,8 +1423,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("bright_cyan");
             terminal.WriteLine($"From: {mail.Sender}");
             terminal.WriteLine($"Subject: {mail.Subject}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 60));
+            WriteDivider(60);
             terminal.SetColor("white");
             terminal.WriteLine("");
             terminal.WriteLine(mail.Body);
@@ -1420,10 +1472,7 @@ public class CastleLocation : BaseLocation
     private async Task RoyalSleep()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_blue");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE ROYAL CHAMBERS"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE ROYAL CHAMBERS", "bright_blue");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -1528,10 +1577,7 @@ public class CastleLocation : BaseLocation
     private async Task CheckSecurity()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "SECURITY REPORT"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("SECURITY REPORT", "bright_cyan");
         terminal.WriteLine("");
 
         // NPC Guard summary
@@ -1551,8 +1597,7 @@ public class CastleLocation : BaseLocation
             // Individual guard listing
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"Name",-20} {"Loyalty",-12} {"Salary",-12} {"Status",-10}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 55));
+            WriteDivider(55);
 
             foreach (var guard in currentKing.Guards)
             {
@@ -1589,8 +1634,7 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"Name",-20} {"Level",-8} {"HP",-12} {"Strength",-10}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 55));
+            WriteDivider(55);
 
             foreach (var monster in currentKing.MonsterGuards)
             {
@@ -1625,9 +1669,21 @@ public class CastleLocation : BaseLocation
         terminal.WriteLine("");
         terminal.SetColor("cyan");
         terminal.WriteLine("Guard Commands:");
-        terminal.SetColor("white");
-        terminal.WriteLine("(H)ire NPC guard    (M)onster guard    (F)ire guard");
-        terminal.WriteLine("(P)ay bonus         (D)ismiss monster  (R)eturn");
+        if (IsScreenReader)
+        {
+            WriteSRMenuOption("H", "Hire NPC guard");
+            WriteSRMenuOption("M", "Monster guard");
+            WriteSRMenuOption("F", "Fire guard");
+            WriteSRMenuOption("P", "Pay bonus");
+            WriteSRMenuOption("D", "Dismiss monster");
+            WriteSRMenuOption("R", "Return");
+        }
+        else
+        {
+            terminal.SetColor("white");
+            terminal.WriteLine("(H)ire NPC guard    (M)onster guard    (F)ire guard");
+            terminal.WriteLine("(P)ay bonus         (D)ismiss monster  (R)eturn");
+        }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
@@ -1693,10 +1749,7 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "MONSTER GUARD MARKET"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("MONSTER GUARD MARKET", "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -1710,8 +1763,7 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("cyan");
         terminal.WriteLine($"{"#",-3} {"Name",-15} {"Lvl",-5} {"HP",-7} {"STR",-6} {"DEF",-6} {"Cost",-10} {"Feed/Day",-10}");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 75));
+        WriteDivider(75);
 
         // Sort by level for easier selection
         var sortedMonsters = MonsterGuardTypes.AvailableMonsters.OrderBy(m => m.Level).ToArray();
@@ -1914,10 +1966,7 @@ public class CastleLocation : BaseLocation
     private async Task ShowMonarchHistory()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "HISTORY OF MONARCHS"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("HISTORY OF MONARCHS", "bright_yellow");
         terminal.WriteLine("");
 
         if (monarchHistory.Count == 0)
@@ -1930,8 +1979,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("cyan");
             terminal.WriteLine($"{"#",-3} {"Name",-25} {"Title",-8} {"Reign",-12} {"End",-15}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 65));
+            WriteDivider(65);
 
             int i = 1;
             foreach (var monarch in monarchHistory.OrderByDescending(m => m.CoronationDate))
@@ -1967,10 +2015,7 @@ public class CastleLocation : BaseLocation
     private async Task CourtMagician()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE COURT MAGICIAN"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE COURT MAGICIAN", "bright_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
@@ -1985,12 +2030,23 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("cyan");
         terminal.WriteLine("Available Services:");
-        terminal.SetColor("white");
-        terminal.WriteLine("(B)less the Kingdom   - 1,000 gold - Increase kingdom morale");
-        terminal.WriteLine("(D)etect Threats      - 500 gold   - Reveal potential dangers");
-        terminal.WriteLine("(P)rotection Spell    - 2,000 gold - Boost castle defenses");
-        terminal.WriteLine("(S)cry on Enemy       - 1,500 gold - Learn about rivals");
-        terminal.WriteLine("(R)eturn");
+        if (IsScreenReader)
+        {
+            WriteSRMenuOption("B", "Bless the Kingdom - 1,000 gold - Increase kingdom morale");
+            WriteSRMenuOption("D", "Detect Threats - 500 gold - Reveal potential dangers");
+            WriteSRMenuOption("P", "Protection Spell - 2,000 gold - Boost castle defenses");
+            WriteSRMenuOption("S", "Scry on Enemy - 1,500 gold - Learn about rivals");
+            WriteSRMenuOption("R", "Return");
+        }
+        else
+        {
+            terminal.SetColor("white");
+            terminal.WriteLine("(B)less the Kingdom   - 1,000 gold - Increase kingdom morale");
+            terminal.WriteLine("(D)etect Threats      - 500 gold   - Reveal potential dangers");
+            terminal.WriteLine("(P)rotection Spell    - 2,000 gold - Boost castle defenses");
+            terminal.WriteLine("(S)cry on Enemy       - 1,500 gold - Learn about rivals");
+            terminal.WriteLine("(R)eturn");
+        }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
@@ -2168,10 +2224,7 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_yellow");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "FISCAL MATTERS"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("FISCAL MATTERS", "bright_yellow");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
@@ -2200,9 +2253,20 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("cyan");
             terminal.WriteLine("Options:");
-            terminal.SetColor("white");
-            terminal.WriteLine("(T)ax Policy        (B)udget Details    (W)ithdraw from Treasury");
-            terminal.WriteLine("(D)eposit to Treasury                   (R)eturn");
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("T", "Tax Policy");
+                WriteSRMenuOption("B", "Budget Details");
+                WriteSRMenuOption("W", "Withdraw from Treasury");
+                WriteSRMenuOption("D", "Deposit to Treasury");
+                WriteSRMenuOption("R", "Return");
+            }
+            else
+            {
+                terminal.SetColor("white");
+                terminal.WriteLine("(T)ax Policy        (B)udget Details    (W)ithdraw from Treasury");
+                terminal.WriteLine("(D)eposit to Treasury                   (R)eturn");
+            }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
@@ -2330,8 +2394,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine($"Citizen Tax:       {citizenTaxIncome:N0} gold ({currentKing.TaxRate} x {Math.Max(10, npcCount)} citizens)");
         terminal.WriteLine($"Sales Tax Revenue: {salesTaxIncome:N0} gold ({currentKing.KingTaxPercent}% of sales)");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 40));
+        WriteDivider(40);
         terminal.SetColor("bright_green");
         terminal.WriteLine($"Total Income:      {citizenTaxIncome + salesTaxIncome:N0} gold");
 
@@ -2347,8 +2410,7 @@ public class CastleLocation : BaseLocation
         terminal.WriteLine($"Guard Salaries:    {guardCosts:N0} gold ({currentKing.Guards.Count} guards)");
         terminal.WriteLine($"Orphanage Costs:   {orphanCosts:N0} gold ({currentKing.Orphans.Count} orphans)");
         terminal.WriteLine($"Castle Maintenance: {baseCosts:N0} gold");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 40));
+        WriteDivider(40);
         terminal.SetColor("red");
         terminal.WriteLine($"Total Expenses:    {guardCosts + orphanCosts + baseCosts:N0} gold");
 
@@ -2424,10 +2486,7 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_yellow");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "ROYAL ORDERS"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("ROYAL ORDERS", "bright_yellow");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
@@ -2445,9 +2504,19 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("cyan");
             terminal.WriteLine("Commands:");
-            terminal.SetColor("white");
-            terminal.WriteLine("(E)stablishments    (P)roclamation     (B)ounty on someone");
-            terminal.WriteLine("(R)eturn");
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("E", "Establishments");
+                WriteSRMenuOption("P", "Proclamation");
+                WriteSRMenuOption("B", "Bounty on someone");
+                WriteSRMenuOption("R", "Return");
+            }
+            else
+            {
+                terminal.SetColor("white");
+                terminal.WriteLine("(E)stablishments    (P)roclamation     (B)ounty on someone");
+                terminal.WriteLine("(R)eturn");
+            }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
@@ -2613,10 +2682,7 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "THE ROYAL ORPHANAGE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("THE ROYAL ORPHANAGE", "bright_cyan");
             terminal.WriteLine("");
 
             // Update ages for real orphans
@@ -2638,8 +2704,7 @@ public class CastleLocation : BaseLocation
             {
                 terminal.SetColor("cyan");
                 terminal.WriteLine($"{"#",-4} {"Name",-20} {"Age",-6} {"Sex",-8} {"Race",-10} {"Type",-10} {"Happy",-6}");
-                terminal.SetColor("darkgray");
-                terminal.WriteLine(new string('─', 66));
+                WriteDivider(66);
 
                 for (int i = 0; i < currentKing.Orphans.Count; i++)
                 {
@@ -2674,23 +2739,37 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("cyan");
             terminal.WriteLine("Commands:");
             long adoptCost = 500 + (currentKing.Orphans.Count * 100);
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [A] "); terminal.SetColor("white"); terminal.WriteLine($"Adopt new orphan ({adoptCost:N0} gold from treasury)");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [V] "); terminal.SetColor("white"); terminal.WriteLine("View orphan details");
 
             // Show commission option if any real orphans are old enough
             bool hasCommissionable = currentKing.Orphans.Any(o => o.IsRealOrphan && o.Age >= GameConfig.OrphanCommissionAge);
-            if (hasCommissionable)
+
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("A", $"Adopt new orphan ({adoptCost:N0} gold from treasury)");
+                WriteSRMenuOption("V", "View orphan details");
+                if (hasCommissionable)
+                    WriteSRMenuOption("C", $"Commission orphan (recruit age {GameConfig.OrphanCommissionAge}+, {GameConfig.OrphanCommissionCost:N0} gold)");
+                WriteSRMenuOption("G", "Give gifts (increase happiness)");
+                WriteSRMenuOption("R", "Return to Royal Menu");
+            }
+            else
             {
                 terminal.SetColor("bright_yellow");
-                terminal.Write("  [C] "); terminal.SetColor("white"); terminal.WriteLine($"Commission orphan (recruit age {GameConfig.OrphanCommissionAge}+, {GameConfig.OrphanCommissionCost:N0} gold)");
-            }
+                terminal.Write("  [A] "); terminal.SetColor("white"); terminal.WriteLine($"Adopt new orphan ({adoptCost:N0} gold from treasury)");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [V] "); terminal.SetColor("white"); terminal.WriteLine("View orphan details");
 
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine("Give gifts (increase happiness)");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("  [R] "); terminal.SetColor("white"); terminal.WriteLine("Return to Royal Menu");
+                if (hasCommissionable)
+                {
+                    terminal.SetColor("bright_yellow");
+                    terminal.Write("  [C] "); terminal.SetColor("white"); terminal.WriteLine($"Commission orphan (recruit age {GameConfig.OrphanCommissionAge}+, {GameConfig.OrphanCommissionCost:N0} gold)");
+                }
+
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine("Give gifts (increase happiness)");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("  [R] "); terminal.SetColor("white"); terminal.WriteLine("Return to Royal Menu");
+            }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
@@ -3106,10 +3185,7 @@ public class CastleLocation : BaseLocation
     private async Task ArrangeRoyalMarriage()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                         ROYAL MARRIAGE                                       ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL MARRIAGE", "bright_magenta");
         terminal.WriteLine("");
 
         // Check if already married
@@ -3194,8 +3270,7 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("white");
         terminal.WriteLine($"{"#",-3} {"Name",-20} {"Level",-8} {"Dowry",-12} {"Faction Benefit"}");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine(new string('─', 70));
+        WriteDivider(70);
 
         int i = 1;
         foreach (var npc in eligibleNPCs)
@@ -3415,10 +3490,7 @@ public class CastleLocation : BaseLocation
     private async Task ViewCourtPolitics()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                         ROYAL COURT                                          ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL COURT", "bright_cyan");
         terminal.WriteLine("");
 
         // Show court members
@@ -3436,8 +3508,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("white");
             terminal.WriteLine($"{"Role",-18} {"Name",-25} {"Faction",-15} {"Loyalty",-10} {"Influence"}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 78));
+            WriteDivider(78);
 
             foreach (var member in currentKing.CourtMembers)
             {
@@ -3529,8 +3600,19 @@ public class CastleLocation : BaseLocation
             bool courtLoop = true;
             while (courtLoop)
             {
-                terminal.SetColor("cyan");
-                terminal.WriteLine("[D]ismiss  [A]rrest Plotter  [B]ribe  [P]romote  [Q]uit");
+                if (IsScreenReader)
+                {
+                    WriteSRMenuOption("D", "Dismiss");
+                    WriteSRMenuOption("A", "Arrest Plotter");
+                    WriteSRMenuOption("B", "Bribe");
+                    WriteSRMenuOption("P", "Promote");
+                    WriteSRMenuOption("Q", "Quit");
+                }
+                else
+                {
+                    terminal.SetColor("cyan");
+                    terminal.WriteLine("[D]ismiss  [A]rrest Plotter  [B]ribe  [P]romote  [Q]uit");
+                }
                 terminal.SetColor("white");
                 terminal.Write("Court action: ");
                 string courtChoice = (await terminal.ReadLineAsync())?.ToUpper() ?? "";
@@ -3765,10 +3847,7 @@ public class CastleLocation : BaseLocation
     private async Task ManageSuccession()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                         ROYAL SUCCESSION                                     ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL SUCCESSION", "bright_green");
         terminal.WriteLine("");
 
         // Show current heirs
@@ -3793,8 +3872,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("white");
             terminal.WriteLine($"{"#",-3} {"Name",-20} {"Age",-6} {"Sex",-8} {"Claim",-10} {"Status"}");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 60));
+            WriteDivider(60);
 
             int i = 1;
             foreach (var heir in currentKing.Heirs.OrderByDescending(h => h.ClaimStrength))
@@ -3831,21 +3909,30 @@ public class CastleLocation : BaseLocation
         // Options
         terminal.SetColor("cyan");
         terminal.WriteLine("Options:");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("D");
-        terminal.SetColor("cyan");
-        terminal.WriteLine("]esignate an heir");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("N");
-        terminal.SetColor("cyan");
-        terminal.WriteLine("]ame a new heir (adopt/legitimize)");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("R");
-        terminal.SetColor("cyan");
-        terminal.WriteLine("]eturn");
+        if (IsScreenReader)
+        {
+            WriteSRMenuOption("D", "Designate an heir");
+            WriteSRMenuOption("N", "Name a new heir (adopt/legitimize)");
+            WriteSRMenuOption("R", "Return");
+        }
+        else
+        {
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("D");
+            terminal.SetColor("cyan");
+            terminal.WriteLine("]esignate an heir");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("N");
+            terminal.SetColor("cyan");
+            terminal.WriteLine("]ame a new heir (adopt/legitimize)");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("R");
+            terminal.SetColor("cyan");
+            terminal.WriteLine("]eturn");
+        }
         terminal.WriteLine("");
 
         terminal.Write("Your choice: ");
@@ -4067,10 +4154,7 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "ROYAL BODYGUARDS"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("ROYAL BODYGUARDS", "bright_cyan");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
@@ -4116,32 +4200,41 @@ public class CastleLocation : BaseLocation
             long hireCost = GameConfig.MercenaryBaseCost + (currentPlayer.Level * GameConfig.MercenaryCostPerLevel);
 
             // Menu
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("H");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write($"ire Mercenary ({hireCost:N0}g)   ");
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("H", $"Hire Mercenary ({hireCost:N0}g)");
+                WriteSRMenuOption("D", "Dismiss");
+                WriteSRMenuOption("R", "Return");
+            }
+            else
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("H");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write($"ire Mercenary ({hireCost:N0}g)   ");
 
-            terminal.SetColor("darkgray");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("D");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write("ismiss   ");
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("D");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write("ismiss   ");
 
-            terminal.SetColor("darkgray");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("R");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.WriteLine("eturn");
+                terminal.SetColor("darkgray");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("R");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.WriteLine("eturn");
+            }
             terminal.WriteLine("");
 
             string input = await terminal.ReadLineAsync();
@@ -4288,10 +4381,7 @@ public class CastleLocation : BaseLocation
     private async Task RoyalQuests()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "ROYAL BOUNTY BOARD"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL BOUNTY BOARD", "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -4313,8 +4403,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.SetColor("bright_red");
             terminal.WriteLine("WANTED:");
-            terminal.SetColor("darkgray");
-            terminal.WriteLine(new string('─', 60));
+            WriteDivider(60);
 
             foreach (var bounty in bounties)
             {
@@ -4405,10 +4494,7 @@ public class CastleLocation : BaseLocation
     private async Task<bool> ChallengeThrone()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THRONE CHALLENGE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THRONE CHALLENGE", "bright_red");
         terminal.WriteLine("");
 
         // RULE: King cannot be on a team - must leave team first
@@ -4733,9 +4819,16 @@ public class CastleLocation : BaseLocation
             // Player wins!
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("════════════════════════════════════════════════");
-            terminal.WriteLine("              VICTORY!");
-            terminal.WriteLine("════════════════════════════════════════════════");
+            if (!IsScreenReader)
+            {
+                terminal.WriteLine("════════════════════════════════════════════════");
+                terminal.WriteLine("              VICTORY!");
+                terminal.WriteLine("════════════════════════════════════════════════");
+            }
+            else
+            {
+                terminal.WriteLine("VICTORY!");
+            }
             terminal.WriteLine($"You have defeated {currentKing.GetTitle()} {currentKing.Name}!");
             terminal.WriteLine("The throne is yours!");
 
@@ -4796,10 +4889,7 @@ public class CastleLocation : BaseLocation
     private async Task<bool> ClaimEmptyThrone()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "CLAIMING THE THRONE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("CLAIMING THE THRONE", "bright_yellow");
         terminal.WriteLine("");
 
         // Check level requirement
@@ -4873,10 +4963,18 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-        terminal.WriteLine("        Congratulations, The Castle is Yours!");
-        terminal.WriteLine($"  The InterRegnum is over, long live the {title}!");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        if (!IsScreenReader)
+        {
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+            terminal.WriteLine("        Congratulations, The Castle is Yours!");
+            terminal.WriteLine($"  The InterRegnum is over, long live the {title}!");
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        }
+        else
+        {
+            terminal.WriteLine("Congratulations, The Castle is Yours!");
+            terminal.WriteLine($"The InterRegnum is over, long live the {title}!");
+        }
         terminal.WriteLine("");
 
         NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} has claimed the empty throne! Long live the {title}!");
@@ -4891,10 +4989,7 @@ public class CastleLocation : BaseLocation
     private async Task<bool> AttemptAbdication()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "ABDICATION"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ABDICATION", "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -4975,10 +5070,7 @@ public class CastleLocation : BaseLocation
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "SEEK AN AUDIENCE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("SEEK AN AUDIENCE", "bright_cyan");
             terminal.WriteLine("");
             terminal.SetColor("gray");
             terminal.WriteLine("With no monarch on the throne, there is no one to grant you an audience.");
@@ -4996,10 +5088,7 @@ public class CastleLocation : BaseLocation
         if (reputation < 25)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "SEEK AN AUDIENCE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("SEEK AN AUDIENCE", "bright_cyan");
             terminal.WriteLine("");
             terminal.SetColor("red");
             terminal.WriteLine("The guards block your path!");
@@ -5021,10 +5110,7 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_cyan");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            { const string t = "AUDIENCE WITH THE CROWN"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+            WriteBoxHeader("AUDIENCE WITH THE CROWN", "bright_cyan");
             terminal.WriteLine("");
 
             // Display monarch and player status
@@ -5062,89 +5148,105 @@ public class CastleLocation : BaseLocation
             terminal.WriteLine("What do you wish to petition the Crown for?");
             terminal.WriteLine("");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_cyan");
-            terminal.Write("Q");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Request a Royal Quest");
+            if (IsScreenReader)
+            {
+                WriteSRMenuOption("Q", "Request a Royal Quest");
+                WriteSRMenuOption("K", "Request Knighthood (Requires Chivalry 200+, Fame 100+)");
+                WriteSRMenuOption("P", "Request a Pardon (Clear Darkness for gold)");
+                WriteSRMenuOption("L", "Request a Loan (Borrow from Treasury)");
+                WriteSRMenuOption("C", "Report a Crime (Place Bounty)");
+                WriteSRMenuOption("B", "Request a Blessing (Temporary stat boost)");
+                WriteSRMenuOption("T", "Petition for Tax Relief (Reduce kingdom taxes)");
+                terminal.WriteLine("");
+                WriteSRMenuOption("R", "Return to Castle");
+                terminal.WriteLine("");
+            }
+            else
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_cyan");
+                terminal.Write("Q");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Request a Royal Quest");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("K");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write(" Request Knighthood");
-            terminal.SetColor("gray");
-            terminal.WriteLine($" (Requires Chivalry 200+, Fame 100+)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("K");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write(" Request Knighthood");
+                terminal.SetColor("gray");
+                terminal.WriteLine($" (Requires Chivalry 200+, Fame 100+)");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_green");
-            terminal.Write("P");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write(" Request a Pardon");
-            terminal.SetColor("gray");
-            terminal.WriteLine($" (Clear Darkness for gold)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_green");
+                terminal.Write("P");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write(" Request a Pardon");
+                terminal.SetColor("gray");
+                terminal.WriteLine($" (Clear Darkness for gold)");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_magenta");
-            terminal.Write("L");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write(" Request a Loan");
-            terminal.SetColor("gray");
-            terminal.WriteLine($" (Borrow from Treasury)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_magenta");
+                terminal.Write("L");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write(" Request a Loan");
+                terminal.SetColor("gray");
+                terminal.WriteLine($" (Borrow from Treasury)");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_red");
-            terminal.Write("C");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Report a Crime (Place Bounty)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_red");
+                terminal.Write("C");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Report a Crime (Place Bounty)");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("cyan");
-            terminal.Write("B");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write(" Request a Blessing");
-            terminal.SetColor("gray");
-            terminal.WriteLine($" (Temporary stat boost)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("cyan");
+                terminal.Write("B");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write(" Request a Blessing");
+                terminal.SetColor("gray");
+                terminal.WriteLine($" (Temporary stat boost)");
 
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("yellow");
-            terminal.Write("T");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write(" Petition for Tax Relief");
-            terminal.SetColor("gray");
-            terminal.WriteLine($" (Reduce kingdom taxes)");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("yellow");
+                terminal.Write("T");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write(" Petition for Tax Relief");
+                terminal.SetColor("gray");
+                terminal.WriteLine($" (Reduce kingdom taxes)");
 
-            terminal.WriteLine("");
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("red");
-            terminal.Write("R");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.WriteLine(" Return to Castle");
-            terminal.WriteLine("");
+                terminal.WriteLine("");
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("red");
+                terminal.Write("R");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.WriteLine(" Return to Castle");
+                terminal.WriteLine("");
+            }
 
             string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
 
@@ -5196,8 +5298,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestQuest()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("═══ REQUEST A ROYAL QUEST ═══");
+        WriteSectionHeader("REQUEST A ROYAL QUEST", "bright_cyan");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5328,8 +5429,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestKnighthood()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══ REQUEST KNIGHTHOOD ═══");
+        WriteSectionHeader("REQUEST KNIGHTHOOD", "bright_yellow");
         terminal.WriteLine("");
 
         // Check requirements
@@ -5410,8 +5510,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestPardon()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("═══ REQUEST A PARDON ═══");
+        WriteSectionHeader("REQUEST A PARDON", "bright_green");
         terminal.WriteLine("");
 
         if (currentPlayer.Darkness <= 0)
@@ -5512,8 +5611,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestLoan()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_magenta");
-        terminal.WriteLine("═══ REQUEST A LOAN ═══");
+        WriteSectionHeader("REQUEST A LOAN", "bright_magenta");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5652,8 +5750,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceReportCrime()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("═══ REPORT A CRIME ═══");
+        WriteSectionHeader("REPORT A CRIME", "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -5755,8 +5852,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestBlessing()
     {
         terminal.ClearScreen();
-        terminal.SetColor("cyan");
-        terminal.WriteLine("═══ REQUEST A BLESSING ═══");
+        WriteSectionHeader("REQUEST A BLESSING", "cyan");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5870,8 +5966,7 @@ public class CastleLocation : BaseLocation
     private async Task AudiencePetitionTaxRelief()
     {
         terminal.ClearScreen();
-        terminal.SetColor("yellow");
-        terminal.WriteLine("═══ PETITION FOR TAX RELIEF ═══");
+        WriteSectionHeader("PETITION FOR TAX RELIEF", "yellow");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -6021,10 +6116,7 @@ public class CastleLocation : BaseLocation
     private async Task ApplyForRoyalGuard()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                      ROYAL GUARD RECRUITMENT                                 ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ROYAL GUARD RECRUITMENT", "bright_cyan");
         terminal.WriteLine("");
 
         // Check if there's a king
@@ -6545,10 +6637,7 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE ROYAL ARMORY"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE ROYAL ARMORY", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -6572,57 +6661,75 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("bright_white");
         terminal.WriteLine("  #  Item                  Price        Stats");
-        terminal.SetColor("darkgray");
-        terminal.WriteLine("  ─────────────────────────────────────────────────────────");
+        if (!IsScreenReader)
+        {
+            terminal.SetColor("darkgray");
+            terminal.WriteLine("  ─────────────────────────────────────────────────────────");
+        }
 
-        string bladeColor = currentPlayer.Gold >= crownBladePrice ? "white" : "darkgray";
-        terminal.SetColor("darkgray");
-        terminal.Write("  [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("1");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor(bladeColor);
-        terminal.WriteLine($"Crown Blade         {crownBladePrice,10:N0}g   WeapPow {bladeWeapPow}");
+        if (IsScreenReader)
+        {
+            bool canBlade = currentPlayer.Gold >= crownBladePrice;
+            bool canPlate = currentPlayer.Gold >= royalPlatePrice;
+            bool canShield = currentPlayer.Gold >= crownShieldPrice;
+            bool canRing = currentPlayer.Gold >= signetRingPrice;
+            WriteSRMenuOption("1", $"Crown Blade - {crownBladePrice:N0}g - WeapPow {bladeWeapPow}", canBlade);
+            WriteSRMenuOption("2", $"Royal Guard Plate - {royalPlatePrice:N0}g - ArmPow {plateArmPow}", canPlate);
+            WriteSRMenuOption("3", $"Crown Shield - {crownShieldPrice:N0}g - ArmPow {shieldArmPow}", canShield);
+            WriteSRMenuOption("4", $"Signet Ring - {signetRingPrice:N0}g - +5 CHA, +5 STR", canRing);
+            WriteSRMenuOption("0", "Leave");
+        }
+        else
+        {
+            string bladeColor = currentPlayer.Gold >= crownBladePrice ? "white" : "darkgray";
+            terminal.SetColor("darkgray");
+            terminal.Write("  [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("1");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor(bladeColor);
+            terminal.WriteLine($"Crown Blade         {crownBladePrice,10:N0}g   WeapPow {bladeWeapPow}");
 
-        string plateColor = currentPlayer.Gold >= royalPlatePrice ? "white" : "darkgray";
-        terminal.SetColor("darkgray");
-        terminal.Write("  [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("2");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor(plateColor);
-        terminal.WriteLine($"Royal Guard Plate   {royalPlatePrice,10:N0}g   ArmPow {plateArmPow}");
+            string plateColor = currentPlayer.Gold >= royalPlatePrice ? "white" : "darkgray";
+            terminal.SetColor("darkgray");
+            terminal.Write("  [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("2");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor(plateColor);
+            terminal.WriteLine($"Royal Guard Plate   {royalPlatePrice,10:N0}g   ArmPow {plateArmPow}");
 
-        string shieldColor = currentPlayer.Gold >= crownShieldPrice ? "white" : "darkgray";
-        terminal.SetColor("darkgray");
-        terminal.Write("  [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("3");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor(shieldColor);
-        terminal.WriteLine($"Crown Shield        {crownShieldPrice,10:N0}g   ArmPow {shieldArmPow}");
+            string shieldColor = currentPlayer.Gold >= crownShieldPrice ? "white" : "darkgray";
+            terminal.SetColor("darkgray");
+            terminal.Write("  [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("3");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor(shieldColor);
+            terminal.WriteLine($"Crown Shield        {crownShieldPrice,10:N0}g   ArmPow {shieldArmPow}");
 
-        string ringColor = currentPlayer.Gold >= signetRingPrice ? "white" : "darkgray";
-        terminal.SetColor("darkgray");
-        terminal.Write("  [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("4");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor(ringColor);
-        terminal.WriteLine($"Signet Ring         {signetRingPrice,10:N0}g   +5 CHA, +5 STR");
+            string ringColor = currentPlayer.Gold >= signetRingPrice ? "white" : "darkgray";
+            terminal.SetColor("darkgray");
+            terminal.Write("  [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("4");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor(ringColor);
+            terminal.WriteLine($"Signet Ring         {signetRingPrice,10:N0}g   +5 CHA, +5 STR");
 
-        terminal.SetColor("darkgray");
-        terminal.Write("  [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("0");
-        terminal.SetColor("darkgray");
-        terminal.Write("] ");
-        terminal.SetColor("white");
-        terminal.WriteLine("Leave");
+            terminal.SetColor("darkgray");
+            terminal.Write("  [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("0");
+            terminal.SetColor("darkgray");
+            terminal.Write("] ");
+            terminal.SetColor("white");
+            terminal.WriteLine("Leave");
+        }
         terminal.WriteLine("");
 
         var input = await terminal.GetInput("  Purchase? ");
@@ -6737,10 +6844,7 @@ public class CastleLocation : BaseLocation
         var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                              THE CROWN                                       ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE CROWN", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -6788,8 +6892,7 @@ public class CastleLocation : BaseLocation
         await Task.Delay(1500);
 
         // Show faction benefits
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══ Benefits of The Crown ═══");
+        WriteSectionHeader("Benefits of The Crown", "bright_yellow");
         terminal.SetColor("white");
         terminal.WriteLine("• 10% discount at all legitimate shops");
         terminal.WriteLine("• Access to Royal Guard positions and military resources");
@@ -6802,8 +6905,7 @@ public class CastleLocation : BaseLocation
 
         if (!canJoin)
         {
-            terminal.SetColor("red");
-            terminal.WriteLine("═══ Requirements Not Met ═══");
+            WriteSectionHeader("Requirements Not Met", "red");
             terminal.SetColor("yellow");
             terminal.WriteLine(reason);
             terminal.WriteLine("");
@@ -6830,8 +6932,7 @@ public class CastleLocation : BaseLocation
         }
 
         // Can join - offer the choice
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("═══ Requirements Met ═══");
+        WriteSectionHeader("Requirements Met", "bright_green");
         terminal.SetColor("white");
         terminal.WriteLine("The Chancellor rises and extends a scroll sealed with the royal crest.");
         terminal.WriteLine("");
@@ -6870,10 +6971,7 @@ public class CastleLocation : BaseLocation
     private async Task PerformCrownOath(UsurperRemake.Systems.FactionSystem factionSystem)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                         THE OATH OF SERVICE                                  ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE OATH OF SERVICE", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -6913,10 +7011,7 @@ public class CastleLocation : BaseLocation
         // Actually join the faction
         factionSystem.JoinFaction(UsurperRemake.Systems.Faction.TheCrown, currentPlayer);
 
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║              YOU HAVE JOINED THE CROWN                                       ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("YOU HAVE JOINED THE CROWN", "bright_green");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
@@ -6948,10 +7043,7 @@ public class CastleLocation : BaseLocation
     private async Task CastleSiegeMenu()
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_red");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        { const string t = "CASTLE SIEGE"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("CASTLE SIEGE", "bright_red");
         terminal.WriteLine("");
 
         var backend = SaveSystem.Instance?.Backend as SqlSaveBackend;
@@ -7058,9 +7150,16 @@ public class CastleLocation : BaseLocation
 
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-        terminal.WriteLine("           THE SIEGE BEGINS!");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        if (!IsScreenReader)
+        {
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+            terminal.WriteLine("           THE SIEGE BEGINS!");
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        }
+        else
+        {
+            terminal.WriteLine("THE SIEGE BEGINS!");
+        }
         terminal.WriteLine("");
 
         // Calculate team power
@@ -7212,9 +7311,16 @@ public class CastleLocation : BaseLocation
             await backend.CompleteSiege(siegeId, "failed");
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-            terminal.WriteLine("          THE SIEGE HAS FAILED!");
-            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+            if (!IsScreenReader)
+            {
+                terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+                terminal.WriteLine("          THE SIEGE HAS FAILED!");
+                terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+            }
+            else
+            {
+                terminal.WriteLine("THE SIEGE HAS FAILED!");
+            }
             terminal.WriteLine("");
             terminal.SetColor("yellow");
             terminal.WriteLine("Your battered team retreats from the castle walls.");
@@ -7235,9 +7341,16 @@ public class CastleLocation : BaseLocation
         // PHASE 3: Challenge the King!
         terminal.ClearScreen();
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-        terminal.WriteLine("          ALL GUARDS DEFEATED — THE THRONE ROOM AWAITS!");
-        terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        if (!IsScreenReader)
+        {
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+            terminal.WriteLine("          ALL GUARDS DEFEATED — THE THRONE ROOM AWAITS!");
+            terminal.WriteLine("═══════════════════════════════════════════════════════════════");
+        }
+        else
+        {
+            terminal.WriteLine("ALL GUARDS DEFEATED - THE THRONE ROOM AWAITS!");
+        }
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -7402,10 +7515,7 @@ public class CastleLocation : BaseLocation
         await backend.CompleteSiege(siegeId, "victory");
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                    THE SIEGE IS VICTORIOUS!                                  ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE SIEGE IS VICTORIOUS!", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");

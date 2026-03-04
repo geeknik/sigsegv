@@ -312,6 +312,27 @@ namespace UsurperRemake.Systems
                     CREATE INDEX IF NOT EXISTS idx_team_wars_teams ON team_wars(challenger_team, defender_team, status);
                     CREATE INDEX IF NOT EXISTS idx_wizard_log_created ON wizard_log(created_at DESC);
                     CREATE INDEX IF NOT EXISTS idx_wizard_log_wizard ON wizard_log(wizard_name, created_at DESC);
+
+                    CREATE TABLE IF NOT EXISTS admin_commands (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        command TEXT NOT NULL,
+                        target_username TEXT,
+                        args TEXT,
+                        status TEXT DEFAULT 'pending',
+                        result TEXT,
+                        created_at TEXT DEFAULT (datetime('now')),
+                        executed_at TEXT,
+                        created_by TEXT DEFAULT 'admin'
+                    );
+
+                    CREATE TABLE IF NOT EXISTS snoop_buffer (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        target_username TEXT NOT NULL,
+                        line TEXT NOT NULL,
+                        created_at TEXT DEFAULT (datetime('now'))
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_snoop_target ON snoop_buffer(target_username, id);
+                    CREATE INDEX IF NOT EXISTS idx_admin_cmd_status ON admin_commands(status, id);
                 ";
                 cmd.ExecuteNonQuery();
             }
@@ -4324,6 +4345,127 @@ namespace UsurperRemake.Systems
         }
 
         // =====================================================================
+        // Admin Command Queue (Web Dashboard → MUD Server IPC)
+        // =====================================================================
+
+        /// <summary>Get all pending admin commands from the web dashboard.</summary>
+        public List<AdminCommand> GetPendingAdminCommands()
+        {
+            var commands = new List<AdminCommand>();
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT id, command, target_username, args
+                    FROM admin_commands WHERE status = 'pending'
+                    ORDER BY id LIMIT 20";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    commands.Add(new AdminCommand
+                    {
+                        Id = reader.GetInt32(0),
+                        Command = reader.GetString(1),
+                        TargetUsername = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        Args = reader.IsDBNull(3) ? null : reader.GetString(3)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Instance.LogError("SQL", $"GetPendingAdminCommands failed: {ex.Message}");
+            }
+            return commands;
+        }
+
+        /// <summary>Mark an admin command as successfully executed.</summary>
+        public void MarkAdminCommandExecuted(int id, string result)
+        {
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE admin_commands SET status = 'executed', result = @result,
+                    executed_at = datetime('now') WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@result", result);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Instance.LogError("SQL", $"MarkAdminCommandExecuted failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>Mark an admin command as failed.</summary>
+        public void MarkAdminCommandFailed(int id, string error)
+        {
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE admin_commands SET status = 'failed', result = @error,
+                    executed_at = datetime('now') WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@error", error);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Instance.LogError("SQL", $"MarkAdminCommandFailed failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>Write a line of snooped terminal output to the buffer.</summary>
+        public void WriteSnoopLine(string targetUsername, string line)
+        {
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
+                    INSERT INTO snoop_buffer (target_username, line)
+                    VALUES (LOWER(@username), @line)";
+                cmd.Parameters.AddWithValue("@username", targetUsername);
+                cmd.Parameters.AddWithValue("@line", line);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* Snoop buffer writes are best-effort */ }
+        }
+
+        /// <summary>Prune old snoop buffer entries (older than 5 minutes).</summary>
+        public void PruneSnoopBuffer()
+        {
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = "DELETE FROM snoop_buffer WHERE created_at < datetime('now', '-5 minutes')";
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* Best-effort cleanup */ }
+        }
+
+        /// <summary>Expire admin commands older than 60 seconds that are still pending.</summary>
+        public void ExpireStaleAdminCommands()
+        {
+            try
+            {
+                using var connection = OpenConnection();
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE admin_commands SET status = 'expired', result = 'Command expired (not picked up within 60s)',
+                    executed_at = datetime('now')
+                    WHERE status = 'pending' AND created_at < datetime('now', '-60 seconds')";
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* Best-effort cleanup */ }
+        }
+
+        // =====================================================================
         // Sleeping Player Vulnerability System
         // =====================================================================
 
@@ -4563,5 +4705,14 @@ namespace UsurperRemake.Systems
         public int TotalMessages { get; set; }
         public long TotalPlaytimeMinutes { get; set; }
         public long DatabaseSizeBytes { get; set; }
+    }
+
+    /// <summary>Represents a pending admin command from the web dashboard.</summary>
+    public class AdminCommand
+    {
+        public int Id { get; set; }
+        public string Command { get; set; } = "";
+        public string? TargetUsername { get; set; }
+        public string? Args { get; set; }
     }
 }

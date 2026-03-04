@@ -212,9 +212,10 @@
 <div id="dashboard">
   <div class="header">
     <h1>Usurper Reborn &mdash; Balance Dashboard</h1>
-    <div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
       <span class="refresh-info" id="last-refresh"></span>
       <button onclick="refreshAll()">Refresh</button>
+      <button onclick="goToAdmin()" style="color:#ffaa00; border-color:#ffaa00;">&larr; Server Admin</button>
       <button onclick="openPwModal()">Password</button>
       <button onclick="doLogout()">Logout</button>
     </div>
@@ -283,7 +284,7 @@
 
 <script>
 const API = '/api/balance';
-let token = localStorage.getItem('balance_token') || '';
+let token = localStorage.getItem('balance_token') || localStorage.getItem('admin_token') || '';
 let charts = {};
 
 // --- Auth ---
@@ -302,6 +303,7 @@ async function doLogin() {
     if (r.ok && d.token) {
       token = d.token;
       localStorage.setItem('balance_token', token);
+      localStorage.setItem('admin_token', token);
       showDashboard();
       if (d.mustChangePassword) {
         document.getElementById('pw-warning').style.display = 'flex';
@@ -314,9 +316,14 @@ async function doLogin() {
   }
 }
 
+function goToAdmin() {
+  window.location.href = '/admin';
+}
+
 function doLogout() {
   token = '';
   localStorage.removeItem('balance_token');
+  localStorage.removeItem('admin_token');
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
 }

@@ -2198,9 +2198,66 @@ public partial class TerminalEmulator
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // DB SNOOP CALLBACK (Web Admin Dashboard)
+    // ═══════════════════════════════════════════════════════════════════
+
+    /// <summary>Callback that receives plain-text output for web dashboard snoop.
+    /// Set by MudServer.ExecuteAdminCommand when a snoop_start command is received.</summary>
+    private Action<string>? _dbSnoopCallback;
+    private readonly StringBuilder _snoopLineBuffer = new StringBuilder();
+
+    /// <summary>Set or clear the DB snoop callback for web admin dashboard snooping.</summary>
+    public void SetDbSnoopCallback(Action<string>? callback)
+    {
+        _dbSnoopCallback = callback;
+        if (callback == null)
+            _snoopLineBuffer.Clear();
+    }
+
+    /// <summary>Forward output to the DB snoop callback if active, buffering until complete lines.</summary>
+    private void ForwardToDbSnoop(string rawAnsi)
+    {
+        var callback = _dbSnoopCallback;
+        if (callback == null) return;
+        try
+        {
+            // Strip ANSI escape codes for clean text output
+            var plain = System.Text.RegularExpressions.Regex.Replace(rawAnsi, @"\x1B\[[0-9;]*[a-zA-Z]", "");
+            if (string.IsNullOrEmpty(plain)) return;
+
+            _snoopLineBuffer.Append(plain);
+
+            // Flush complete lines to the callback
+            while (true)
+            {
+                var buf = _snoopLineBuffer.ToString();
+                int nlPos = buf.IndexOf('\n');
+                if (nlPos < 0) break;
+
+                var line = buf.Substring(0, nlPos).TrimEnd('\r');
+                _snoopLineBuffer.Remove(0, nlPos + 1);
+
+                if (line.Length > 0)
+                    callback(line);
+            }
+
+            // Safety: flush if buffer gets very large (e.g., screen-clearing output with no newlines)
+            if (_snoopLineBuffer.Length > 500)
+            {
+                callback(_snoopLineBuffer.ToString());
+                _snoopLineBuffer.Clear();
+            }
+        }
+        catch { /* Best-effort snoop */ }
+    }
+
     /// <summary>Forward raw ANSI output to all spectator streams (thread-safe).</summary>
     private void ForwardToSpectators(string rawAnsi)
     {
+        // Also forward to DB snoop callback for web admin dashboard
+        ForwardToDbSnoop(rawAnsi);
+
         List<TerminalEmulator> snapshot;
         lock (_spectatorLock)
         {

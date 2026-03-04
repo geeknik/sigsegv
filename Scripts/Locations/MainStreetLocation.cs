@@ -46,7 +46,7 @@ public class MainStreetLocation : BaseLocation
         {
             "Status",              // (S)tatus
             "Good Deeds",          // (G)ood Deeds
-            "Evil Deeds",          // (E)vil Deeds
+            "Wilderness",          // (E)xplore the Wilderness
             "News",                // (N)ews
             "World Events",        // ($) World Events
             "List Characters",     // (L)ist Characters
@@ -279,7 +279,9 @@ public class MainStreetLocation : BaseLocation
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("N"); terminal.SetColor("darkgray"); terminal.Write("]");
             terminal.SetColor("white"); terminal.Write("ews        ");
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("F"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.WriteLine("ame");
+            terminal.SetColor("white"); terminal.Write("ame        ");
+            terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("E"); terminal.SetColor("darkgray"); terminal.Write("]");
+            terminal.SetColor("bright_green"); terminal.WriteLine("xplore Wild");
         }
 
         // Tier 3 (Level 5+): Full menu
@@ -569,13 +571,14 @@ public class MainStreetLocation : BaseLocation
 
         terminal.WriteLine("");
 
-        // Row 5 - Information (S always, N/F tier 2+)
+        // Row 5 - Information (S always, N/F/E tier 2+)
         terminal.Write(" ");
         MI("S", "tatus", "white", C);
         if (tier >= 2)
         {
             MI("N", "ews", "white", C);
-            ML("F", "ame", "white");
+            MI("F", "ame", "white", C);
+            ML("E", "xplore Wild", "bright_green");
         }
         else
             terminal.WriteLine("");
@@ -733,6 +736,13 @@ public class MainStreetLocation : BaseLocation
             terminal.WriteLine("");
         }
 
+        if (tier >= 2)
+        {
+            terminal.WriteLine("Exploration:");
+            terminal.WriteLine("  E - Wilderness");
+            terminal.WriteLine("");
+        }
+
         terminal.WriteLine("Other:");
         if (tier >= 3)
         {
@@ -847,8 +857,8 @@ public class MainStreetLocation : BaseLocation
                 return false;
                 
             case "E":
-                await ShowEvilDeeds();
-                return false;
+                await NavigateToLocation(GameLocation.Wilderness);
+                return true;
                 
             case "V":
                 await NavigateToLocation(GameLocation.Master);
@@ -1076,36 +1086,6 @@ public class MainStreetLocation : BaseLocation
         await terminal.PressAnyKey();
     }
     
-    private async Task ShowEvilDeeds()
-    {
-        terminal.ClearScreen();
-        terminal.SetColor("red");
-        terminal.WriteLine("Evil Deeds");
-        terminal.WriteLine("==========");
-        terminal.WriteLine("");
-        terminal.SetColor("white");
-        terminal.WriteLine($"Your Darkness: {currentPlayer.Darkness}");
-        terminal.WriteLine($"Dark deeds left today: {currentPlayer.DarkNr}");
-        terminal.WriteLine("");
-        
-        if (currentPlayer.DarkNr > 0)
-        {
-            terminal.WriteLine("Available dark deeds:");
-            terminal.WriteLine("1. Rob from the poor");
-            terminal.WriteLine("2. Vandalize property");
-            terminal.WriteLine("3. Spread malicious rumors");
-            terminal.WriteLine("");
-            
-            var choice = await terminal.GetInput("Choose a deed (1-3, 0 to cancel): ");
-            await ProcessEvilDeed(choice);
-        }
-        else
-        {
-            terminal.WriteLine("You have caused enough trouble for today.", "yellow");
-        }
-        
-        await terminal.PressAnyKey();
-    }
     
     private async Task NavigateToTeamCorner()
     {
@@ -2042,25 +2022,6 @@ public class MainStreetLocation : BaseLocation
         }
     }
     
-    private async Task ProcessEvilDeed(string choice)
-    {
-        if (int.TryParse(choice, out int deed) && deed >= 1 && deed <= 3)
-        {
-            currentPlayer.DarkNr--;
-            currentPlayer.Darkness += 10;
-            
-            var deedName = deed switch
-            {
-                1 => "robbing from the poor",
-                2 => "vandalizing property", 
-                3 => "spreading malicious rumors",
-                _ => "performing an evil deed"
-            };
-            
-            terminal.WriteLine($"Your dark soul grows by {deedName}!", "red");
-            await Task.Delay(1500);
-        }
-    }
     
     /// <summary>
     /// Test combat system (DEBUG)
@@ -2795,7 +2756,7 @@ public class MainStreetLocation : BaseLocation
         terminal.WriteLine("=== ACTIONS ===");
         terminal.SetColor("white");
         terminal.WriteLine("  [G] Good Deeds    - Perform charitable acts (+Chivalry)");
-        terminal.WriteLine("  [E] Evil Deeds    - Commit dark acts (+Darkness)");
+        terminal.WriteLine("  [E] Wilderness    - Explore the wilds beyond the city gates");
         terminal.WriteLine("  [0] Talk to NPCs  - Interact with characters at your location");
         terminal.WriteLine("");
 

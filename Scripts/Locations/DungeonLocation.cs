@@ -2128,6 +2128,7 @@ public class DungeonLocation : BaseLocation
             DungeonEventType.Puzzle => ">> Strange mechanisms cover one wall <<",
             DungeonEventType.RestSpot => ">> This area seems relatively safe <<",
             DungeonEventType.MysteryEvent => ">> Something unusual catches your eye <<",
+            DungeonEventType.Settlement => ">> Lights and voices ahead — a settlement! <<",
             _ => ">> Something interesting is here <<"
         };
     }
@@ -4397,6 +4398,9 @@ public class DungeonLocation : BaseLocation
                 break;
             case DungeonEventType.SecretBoss:
                 await SecretBossEncounter();
+                break;
+            case DungeonEventType.Settlement:
+                await SettlementEncounter();
                 break;
             default:
                 await RandomDungeonEvent();
@@ -11278,6 +11282,353 @@ public class DungeonLocation : BaseLocation
         }
 
         return false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // DUNGEON SETTLEMENTS — safe outpost hubs at theme boundaries
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Settlement encounter — safe outpost with NPC, healing, trading, lore
+    /// </summary>
+    private async Task SettlementEncounter()
+    {
+        var player = GetCurrentPlayer();
+        var settlement = DungeonSettlementData.GetSettlement(currentDungeonLevel);
+        if (settlement == null) { await RandomDungeonEvent(); return; }
+
+        // Track first visit
+        bool firstVisit = !player.VisitedSettlements.Contains(settlement.Id);
+        if (firstVisit) player.VisitedSettlements.Add(settlement.Id);
+
+        // Broadcast to group
+        BroadcastDungeonEvent($"\u001b[33m  The party arrives at {settlement.Name}.\u001b[0m");
+
+        bool stayInSettlement = true;
+        while (stayInSettlement)
+        {
+            terminal.ClearScreen();
+            terminal.SetColor(settlement.ThemeColor);
+            terminal.WriteLine($"╔{'═'.ToString().PadRight(settlement.Name.Length + 4, '═')}╗");
+            terminal.WriteLine($"║  {settlement.Name}  ║");
+            terminal.WriteLine($"╚{'═'.ToString().PadRight(settlement.Name.Length + 4, '═')}╝");
+            terminal.WriteLine("");
+
+            // Description
+            terminal.SetColor("white");
+            foreach (var line in settlement.Description.Split('\n'))
+                terminal.WriteLine(line);
+            terminal.WriteLine("");
+
+            // NPC greeting
+            terminal.SetColor("bright_cyan");
+            terminal.Write($"{settlement.NPCName}");
+            terminal.SetColor("gray");
+            terminal.WriteLine($" ({settlement.NPCTitle})");
+            terminal.SetColor("white");
+            string greeting = firstVisit ? settlement.FirstGreeting : settlement.ReturnGreeting;
+            foreach (var line in greeting.Split('\n'))
+                terminal.WriteLine(line);
+            firstVisit = false; // Only show first greeting once per visit
+            terminal.WriteLine("");
+
+            // Menu
+            terminal.SetColor("bright_yellow");
+            if (settlement.HasHealing)
+            {
+                long healCost = CalculateSettlementHealCost(player, settlement);
+                terminal.WriteLine($"[H] Heal - Restore HP & Mana ({healCost}g)");
+            }
+            if (settlement.HasTrading)
+                terminal.WriteLine("[T] Trade - Buy supplies");
+            if (settlement.HasLore)
+            {
+                int totalLore = settlement.LoreFragments.Length;
+                int readLore = 0;
+                foreach (var frag in settlement.LoreFragments)
+                {
+                    string loreKey = $"{settlement.Id}_{System.Array.IndexOf(settlement.LoreFragments, frag)}";
+                    if (player.SettlementLoreRead.Contains(loreKey)) readLore++;
+                }
+                terminal.WriteLine($"[L] Lore - Ask about the depths ({readLore}/{totalLore} heard)");
+            }
+            terminal.SetColor("gray");
+            terminal.WriteLine("[R] Return to dungeon");
+            terminal.WriteLine("");
+
+            ShowStatusLine();
+
+            var choice = await terminal.GetInput("Your choice: ");
+
+            switch (choice.ToUpper())
+            {
+                case "H":
+                    if (settlement.HasHealing)
+                        await SettlementHeal(player, settlement);
+                    break;
+                case "T":
+                    if (settlement.HasTrading)
+                        await SettlementTrade(player, settlement);
+                    break;
+                case "L":
+                    if (settlement.HasLore)
+                        await SettlementLore(player, settlement);
+                    break;
+                case "R":
+                case "0":
+                case "Q":
+                    stayInSettlement = false;
+                    terminal.SetColor("gray");
+                    terminal.WriteLine($"\"{(settlement.Id == "last_hearth" ? "Stay alive out there." : "Safe travels, friend.")}\"", "cyan");
+                    await Task.Delay(1500);
+                    break;
+            }
+        }
+    }
+
+    private long CalculateSettlementHealCost(Character player, DungeonSettlement settlement)
+    {
+        // Cheaper than town healer, scaled to floor level
+        long baseCost = 10 + (currentDungeonLevel * 5);
+        return (long)(baseCost * settlement.HealCostMultiplier);
+    }
+
+    private async Task SettlementHeal(Character player, DungeonSettlement settlement)
+    {
+        long cost = CalculateSettlementHealCost(player, settlement);
+
+        if (player.Gold < cost)
+        {
+            terminal.WriteLine($"\"{(settlement.Id == "rat_king_market" ? "No gold, no service. That's the rule down here." : "I'm sorry, you don't have enough gold.")}\"", "yellow");
+            await Task.Delay(2000);
+            return;
+        }
+
+        if (player.HP >= player.MaxHP && player.Mana >= player.MaxMana)
+        {
+            terminal.WriteLine("\"You look healthy enough to me. Save your coin.\"", "cyan");
+            await Task.Delay(2000);
+            return;
+        }
+
+        player.Gold -= cost;
+
+        long hpHealed = (long)((player.MaxHP - player.HP) * settlement.HealEffectiveness);
+        long manaHealed = (long)((player.MaxMana - player.Mana) * settlement.HealEffectiveness);
+
+        player.HP = Math.Min(player.MaxHP, player.HP + hpHealed);
+        player.Mana = Math.Min(player.MaxMana, player.Mana + manaHealed);
+
+        // Cure poison at settlements
+        if (player.Poison > 0)
+        {
+            player.Poison = 0;
+            player.PoisonTurns = 0;
+            terminal.SetColor("green");
+            terminal.WriteLine("The poison in your veins is drawn out.");
+        }
+
+        terminal.SetColor("green");
+        if (hpHealed > 0) terminal.WriteLine($"Restored {hpHealed} HP.");
+        if (manaHealed > 0) terminal.WriteLine($"Restored {manaHealed} Mana.");
+        terminal.SetColor("gray");
+        terminal.WriteLine($"(-{cost} gold)");
+
+        // Broadcast to group
+        BroadcastDungeonEvent($"\u001b[32m  {player.Name} was healed at {settlement.Name}.\u001b[0m");
+
+        await Task.Delay(2000);
+    }
+
+    private async Task SettlementTrade(Character player, DungeonSettlement settlement)
+    {
+        bool shopping = true;
+        while (shopping)
+        {
+            terminal.ClearScreen();
+            terminal.SetColor(settlement.ThemeColor);
+            terminal.WriteLine($"{settlement.NPCName}'s Wares");
+            terminal.SetColor("gray");
+            terminal.WriteLine(new string('─', 40));
+            terminal.WriteLine("");
+
+            // Generate trade items based on floor level
+            var items = GetSettlementTradeItems(settlement);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                terminal.SetColor("white");
+                terminal.WriteLine($"  [{i + 1}] {items[i].name,-25} {items[i].cost:N0}g");
+            }
+
+            terminal.WriteLine("");
+            terminal.SetColor("bright_yellow");
+            terminal.WriteLine($"Your Gold: {player.Gold:N0}");
+            terminal.SetColor("gray");
+            terminal.WriteLine("[0] Done shopping");
+            terminal.WriteLine("");
+
+            var choice = await terminal.GetInput("Buy: ");
+
+            if (choice == "0" || choice.ToUpper() == "R" || choice.ToUpper() == "Q")
+            {
+                shopping = false;
+                continue;
+            }
+
+            if (int.TryParse(choice, out int idx) && idx >= 1 && idx <= items.Count)
+            {
+                var item = items[idx - 1];
+                if (player.Gold < item.cost)
+                {
+                    terminal.WriteLine("You don't have enough gold!", "red");
+                    await Task.Delay(1500);
+                }
+                else
+                {
+                    player.Gold -= item.cost;
+                    ApplySettlementPurchase(player, item.id);
+                    terminal.SetColor("green");
+                    terminal.WriteLine($"Purchased {item.name}!");
+                    terminal.SetColor("gray");
+                    terminal.WriteLine($"(-{item.cost} gold)");
+                    await Task.Delay(1500);
+                }
+            }
+        }
+    }
+
+    private List<(string id, string name, long cost)> GetSettlementTradeItems(DungeonSettlement settlement)
+    {
+        var items = new List<(string id, string name, long cost)>();
+        long priceScale = 1 + (currentDungeonLevel / 10);
+
+        foreach (var itemName in settlement.TradeItems)
+        {
+            switch (itemName)
+            {
+                case "Healing Potion":
+                    items.Add(("heal_potion", "Healing Potion", 25 * priceScale));
+                    break;
+                case "Mana Potion":
+                    items.Add(("mana_potion", "Mana Potion", 30 * priceScale));
+                    break;
+                case "Antidote":
+                    items.Add(("antidote", "Antidote", 20 * priceScale));
+                    break;
+                case "Healing Herb":
+                    items.Add(("healing_herb", "Healing Herb", 40 * priceScale));
+                    break;
+                case "Starbloom Essence":
+                    items.Add(("starbloom", "Starbloom Essence", 80 * priceScale));
+                    break;
+                case "Firebloom Petal":
+                    items.Add(("firebloom", "Firebloom Petal", 60 * priceScale));
+                    break;
+                case "Torch":
+                    items.Add(("torch", "Enchanted Torch", 15 * priceScale));
+                    break;
+                case "Lockpick":
+                    items.Add(("lockpick", "Lockpick Set", 50 * priceScale));
+                    break;
+                case "Smoke Bomb":
+                    items.Add(("smoke_bomb", "Smoke Bomb (flee aid)", 35 * priceScale));
+                    break;
+            }
+        }
+
+        return items;
+    }
+
+    private void ApplySettlementPurchase(Character player, string itemId)
+    {
+        switch (itemId)
+        {
+            case "heal_potion":
+                player.Healing = Math.Min(player.Healing + 1, player.MaxPotions);
+                break;
+            case "mana_potion":
+                player.ManaPotions = Math.Min(player.ManaPotions + 1, player.MaxManaPotions);
+                break;
+            case "antidote":
+                player.Antidotes = Math.Min(player.Antidotes + 1, player.MaxAntidotes);
+                break;
+            case "healing_herb":
+                if (player.HerbHealing < GameConfig.HerbMaxCarry[(int)HerbType.HealingHerb])
+                    player.HerbHealing++;
+                break;
+            case "starbloom":
+                if (player.HerbStarbloom < GameConfig.HerbMaxCarry[(int)HerbType.StarbloomEssence])
+                    player.HerbStarbloom++;
+                break;
+            case "firebloom":
+                if (player.HerbFirebloom < GameConfig.HerbMaxCarry[(int)HerbType.FirebloomPetal])
+                    player.HerbFirebloom++;
+                break;
+            case "torch":
+                // Torch: small temporary buff — not implemented as item, just heal 10 HP as flavor
+                player.HP = Math.Min(player.MaxHP, player.HP + 10);
+                break;
+            case "lockpick":
+                // Lockpick: +5 Dexterity temporarily (until next combat)
+                player.Dexterity += 2;
+                break;
+            case "smoke_bomb":
+                // Smoke bomb: small agility boost
+                player.Agility += 2;
+                break;
+        }
+    }
+
+    private async Task SettlementLore(Character player, DungeonSettlement settlement)
+    {
+        // Find the next unread lore fragment
+        string? unreadKey = null;
+        string? unreadText = null;
+
+        for (int i = 0; i < settlement.LoreFragments.Length; i++)
+        {
+            string key = $"{settlement.Id}_{i}";
+            if (!player.SettlementLoreRead.Contains(key))
+            {
+                unreadKey = key;
+                unreadText = settlement.LoreFragments[i];
+                break;
+            }
+        }
+
+        if (unreadText == null)
+        {
+            terminal.SetColor("gray");
+            terminal.WriteLine($"\"{settlement.NPCName} leans back thoughtfully.\"", "cyan");
+            terminal.WriteLine("\"I've told you everything I know about these depths.", "white");
+            terminal.WriteLine(" You'll have to discover the rest yourself.\"", "white");
+            await terminal.PressAnyKey();
+            return;
+        }
+
+        // Mark as read
+        player.SettlementLoreRead.Add(unreadKey!);
+
+        terminal.ClearScreen();
+        terminal.SetColor("bright_cyan");
+        terminal.WriteLine($"{settlement.NPCName} speaks...");
+        terminal.SetColor("gray");
+        terminal.WriteLine(new string('─', 40));
+        terminal.WriteLine("");
+
+        terminal.SetColor("white");
+        foreach (var line in unreadText.Split('\n'))
+            terminal.WriteLine(line);
+
+        terminal.WriteLine("");
+        terminal.SetColor("gray");
+        terminal.WriteLine($"(Lore fragment discovered)");
+
+        // Broadcast to group
+        BroadcastDungeonEvent($"\u001b[36m  {settlement.NPCName} shares knowledge of the depths.\u001b[0m");
+
+        await terminal.PressAnyKey();
     }
 
     /// <summary>

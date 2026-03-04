@@ -3081,109 +3081,162 @@ public abstract class BaseLocation
         while (!exitPrefs)
         {
             terminal.ClearScreen();
-            terminal.SetColor("bright_yellow");
-            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║                           QUICK PREFERENCES                                  ║");
-            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
-            terminal.WriteLine("");
 
-            terminal.SetColor("white");
-            terminal.WriteLine("Current Settings:");
-            terminal.WriteLine("");
-
-            // Combat Speed
-            string speedDesc = currentPlayer.CombatSpeed switch
+            if (currentPlayer.ScreenReaderMode)
             {
-                CombatSpeed.Instant => "Instant (no delays)",
-                CombatSpeed.Fast => "Fast (50% delays)",
-                _ => "Normal (full delays)"
-            };
-            terminal.WriteLine($"  Combat Speed: {speedDesc}", "yellow");
+                // Screen reader friendly: plain text, no box-drawing, no color switching
+                terminal.WriteLine("QUICK PREFERENCES");
+                terminal.WriteLine("");
 
-            // Auto-heal
-            terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}", "yellow");
+                string speedDesc = currentPlayer.CombatSpeed switch
+                {
+                    CombatSpeed.Instant => "Instant, no delays",
+                    CombatSpeed.Fast => "Fast, 50% delays",
+                    _ => "Normal, full delays"
+                };
 
-            // Skip intimate scenes
-            terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled (Fade to Black)" : "Disabled (Full Scenes)")}", "yellow");
+                terminal.WriteLine("Current Settings:");
+                terminal.WriteLine($"  Combat Speed: {speedDesc}");
+                terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}");
+                terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled" : "Disabled")}");
+                terminal.WriteLine($"  Screen Reader Mode: Enabled");
+                terminal.WriteLine($"  Alpha Telemetry: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? "Enabled" : "Disabled")}");
+                terminal.WriteLine($"  Color Theme: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)}");
+                terminal.WriteLine($"  Auto-Level Up: {(currentPlayer.AutoLevelUp ? "Enabled" : "Disabled")}");
+                terminal.WriteLine($"  Compact Mode: {(currentPlayer.CompactMode ? "Enabled" : "Disabled")}");
+                terminal.WriteLine($"  Auto-Equip: {(currentPlayer.AutoEquipDisabled ? "Disabled" : "Enabled")}");
+                terminal.WriteLine("");
 
-            // Screen reader mode
-            terminal.WriteLine($"  Screen Reader Mode: {(currentPlayer.ScreenReaderMode ? "Enabled (Simplified Text)" : "Disabled")}", "yellow");
-
-            // Telemetry
-            terminal.WriteLine($"  Alpha Telemetry: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? "Enabled (Sending Anonymous Stats)" : "Disabled")}", "yellow");
-
-            // Color Theme
-            terminal.WriteLine($"  Color Theme: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)} - {ColorTheme.GetThemeDescription(currentPlayer.ColorTheme)}", "yellow");
-
-            // Auto-Level
-            terminal.WriteLine($"  Auto-Level Up: {(currentPlayer.AutoLevelUp ? "Enabled (Level up automatically)" : "Disabled (Visit Level Master to level up)")}", "yellow");
-
-            // Compact Mode
-            terminal.WriteLine($"  Compact Mode: {(currentPlayer.CompactMode ? "Enabled (Mobile/Small Screen)" : "Disabled")}", "yellow");
-
-            // Terminal Font (only in WezTerm/local mode)
-            if (!UsurperRemake.BBS.DoorMode.IsInDoorMode && !UsurperRemake.BBS.DoorMode.IsOnlineMode)
-            {
-                terminal.WriteLine($"  Terminal Font: {ReadCurrentFont()}", "yellow");
+                terminal.WriteLine("Options:");
+                terminal.WriteLine("1. Toggle Combat Speed");
+                terminal.WriteLine("2. Toggle Auto-heal in Battle");
+                terminal.WriteLine("3. Toggle Skip Intimate Scenes");
+                terminal.WriteLine("4. Toggle Screen Reader Mode");
+                terminal.WriteLine("5. Toggle Alpha Telemetry");
+                terminal.WriteLine("6. Cycle Color Theme");
+                if (IsRunningInWezTerm())
+                    terminal.WriteLine("7. Change Terminal Font");
+                terminal.WriteLine("8. Toggle Auto-Level Up");
+                terminal.WriteLine("9. Toggle Compact Mode");
+                terminal.WriteLine("A. Toggle Auto-Equip");
+                terminal.WriteLine("0. Back");
+                terminal.WriteLine("");
             }
-            terminal.WriteLine("");
-
-            terminal.SetColor("white");
-            terminal.WriteLine("Options:");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("1");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Toggle Combat Speed (Normal -> Fast -> Instant)");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("2");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Toggle Auto-heal in Battle");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("3");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Toggle Skip Intimate Scenes");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("4");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Toggle Screen Reader Mode (Accessibility)");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("5");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Toggle Alpha Telemetry (Anonymous Stats)");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("6");
-            terminal.SetColor("white");
-            terminal.WriteLine($"] Color Theme (Current: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)})");
-            if (!UsurperRemake.BBS.DoorMode.IsInDoorMode && !UsurperRemake.BBS.DoorMode.IsOnlineMode)
+            else
             {
+                // Standard visual menu
+                terminal.SetColor("bright_yellow");
+                terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
+                terminal.WriteLine("║                           QUICK PREFERENCES                                  ║");
+                terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+                terminal.WriteLine("");
+
+                terminal.SetColor("white");
+                terminal.WriteLine("Current Settings:");
+                terminal.WriteLine("");
+
+                // Combat Speed
+                string speedDesc = currentPlayer.CombatSpeed switch
+                {
+                    CombatSpeed.Instant => "Instant (no delays)",
+                    CombatSpeed.Fast => "Fast (50% delays)",
+                    _ => "Normal (full delays)"
+                };
+                terminal.WriteLine($"  Combat Speed: {speedDesc}", "yellow");
+
+                // Auto-heal
+                terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}", "yellow");
+
+                // Skip intimate scenes
+                terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled (Fade to Black)" : "Disabled (Full Scenes)")}", "yellow");
+
+                // Screen reader mode
+                terminal.WriteLine($"  Screen Reader Mode: {(currentPlayer.ScreenReaderMode ? "Enabled (Simplified Text)" : "Disabled")}", "yellow");
+
+                // Telemetry
+                terminal.WriteLine($"  Alpha Telemetry: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? "Enabled (Sending Anonymous Stats)" : "Disabled")}", "yellow");
+
+                // Color Theme
+                terminal.WriteLine($"  Color Theme: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)} - {ColorTheme.GetThemeDescription(currentPlayer.ColorTheme)}", "yellow");
+
+                // Auto-Level
+                terminal.WriteLine($"  Auto-Level Up: {(currentPlayer.AutoLevelUp ? "Enabled (Level up automatically)" : "Disabled (Visit Level Master to level up)")}", "yellow");
+
+                // Compact Mode
+                terminal.WriteLine($"  Compact Mode: {(currentPlayer.CompactMode ? "Enabled (Mobile/Small Screen)" : "Disabled")}", "yellow");
+
+                // Auto-Equip
+                terminal.WriteLine($"  Auto-Equip: {(currentPlayer.AutoEquipDisabled ? "Disabled (Purchases go to inventory)" : "Enabled (Equip on purchase)")}", "yellow");
+
+                // Terminal Font (only when running inside WezTerm)
+                if (IsRunningInWezTerm())
+                {
+                    terminal.WriteLine($"  Terminal Font: {ReadCurrentFont()}", "yellow");
+                }
+                terminal.WriteLine("");
+
+                terminal.SetColor("white");
+                terminal.WriteLine("Options:");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("7");
+                terminal.Write("1");
                 terminal.SetColor("white");
-                terminal.WriteLine($"] Terminal Font (Current: {ReadCurrentFont()})");
+                terminal.WriteLine("] Toggle Combat Speed (Normal -> Fast -> Instant)");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("2");
+                terminal.SetColor("white");
+                terminal.WriteLine("] Toggle Auto-heal in Battle");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("3");
+                terminal.SetColor("white");
+                terminal.WriteLine("] Toggle Skip Intimate Scenes");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("4");
+                terminal.SetColor("white");
+                terminal.WriteLine("] Toggle Screen Reader Mode (Accessibility)");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("5");
+                terminal.SetColor("white");
+                terminal.WriteLine("] Toggle Alpha Telemetry (Anonymous Stats)");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("6");
+                terminal.SetColor("white");
+                terminal.WriteLine($"] Color Theme (Current: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)})");
+                if (IsRunningInWezTerm())
+                {
+                    terminal.Write("[");
+                    terminal.SetColor("bright_yellow");
+                    terminal.Write("7");
+                    terminal.SetColor("white");
+                    terminal.WriteLine($"] Terminal Font (Current: {ReadCurrentFont()})");
+                }
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("8");
+                terminal.SetColor("white");
+                terminal.WriteLine($"] Toggle Auto-Level Up (Current: {(currentPlayer.AutoLevelUp ? "ON" : "OFF")})");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("9");
+                terminal.SetColor("white");
+                terminal.WriteLine($"] Toggle Compact Mode (Current: {(currentPlayer.CompactMode ? "ON" : "OFF")})");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("A");
+                terminal.SetColor("white");
+                terminal.WriteLine($"] Toggle Auto-Equip (Current: {(currentPlayer.AutoEquipDisabled ? "OFF" : "ON")})");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("0");
+                terminal.SetColor("white");
+                terminal.WriteLine("] Back");
+                terminal.WriteLine("");
             }
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("8");
-            terminal.SetColor("white");
-            terminal.WriteLine($"] Toggle Auto-Level Up (Current: {(currentPlayer.AutoLevelUp ? "ON" : "OFF")})");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("9");
-            terminal.SetColor("white");
-            terminal.WriteLine($"] Toggle Compact Mode (Current: {(currentPlayer.CompactMode ? "ON" : "OFF")})");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("0");
-            terminal.SetColor("white");
-            terminal.WriteLine("] Back");
-            terminal.WriteLine("");
 
             var choice = await terminal.GetInput("Choice: ");
 
@@ -3282,10 +3335,10 @@ public abstract class BaseLocation
                     break;
 
                 case "7":
-                    // Cycle terminal font (only in WezTerm/local mode)
-                    if (!UsurperRemake.BBS.DoorMode.IsInDoorMode && !UsurperRemake.BBS.DoorMode.IsOnlineMode)
+                    // Cycle terminal font (only when running inside WezTerm)
+                    if (IsRunningInWezTerm())
                     {
-                        var fonts = new[] { "JetBrains Mono", "Cascadia Code", "Fira Code", "Iosevka", "Hack" };
+                        var fonts = new[] { "JetBrains Mono", "Cascadia Code", "Fira Code", "Iosevka", "Hack", "Kelmscott Mono" };
                         var currentFont = ReadCurrentFont();
                         int idx = Array.IndexOf(fonts, currentFont);
                         int next = (idx + 1) % fonts.Length;
@@ -3330,6 +3383,22 @@ public abstract class BaseLocation
                     await Task.Delay(1000);
                     break;
 
+                case "A":
+                    currentPlayer.AutoEquipDisabled = !currentPlayer.AutoEquipDisabled;
+                    if (currentPlayer.AutoEquipDisabled)
+                    {
+                        terminal.WriteLine("Auto-Equip DISABLED", "green");
+                        terminal.WriteLine("Shop purchases will go straight to inventory.", "white");
+                    }
+                    else
+                    {
+                        terminal.WriteLine("Auto-Equip ENABLED", "green");
+                        terminal.WriteLine("You'll be prompted to equip or inventory on purchase.", "white");
+                    }
+                    await GameEngine.Instance.SaveCurrentGame();
+                    await Task.Delay(1000);
+                    break;
+
                 case "0":
                 case "":
                     exitPrefs = true;
@@ -3341,6 +3410,105 @@ public abstract class BaseLocation
                     break;
             }
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Screen Reader Accessibility Helpers
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Whether the current player has screen reader mode enabled.
+    /// </summary>
+    protected bool IsScreenReader => currentPlayer?.ScreenReaderMode == true;
+
+    /// <summary>
+    /// Write a centered box header (╔═══╗ / ║ TITLE ║ / ╚═══╝).
+    /// In screen reader mode, outputs plain text title only.
+    /// </summary>
+    protected void WriteBoxHeader(string title, string color = "bright_cyan", int width = 78)
+    {
+        if (IsScreenReader)
+        {
+            terminal.WriteLine(title);
+            return;
+        }
+        terminal.SetColor(color);
+        terminal.WriteLine($"╔{new string('═', width)}╗");
+        int l = (width - title.Length) / 2;
+        int r = width - title.Length - l;
+        terminal.WriteLine($"║{new string(' ', l)}{title}{new string(' ', r)}║");
+        terminal.WriteLine($"╚{new string('═', width)}╝");
+    }
+
+    /// <summary>
+    /// Write a section header like "═══ Title ═══".
+    /// In screen reader mode, outputs plain text title only.
+    /// </summary>
+    protected void WriteSectionHeader(string title, string color = "white")
+    {
+        if (IsScreenReader)
+        {
+            terminal.WriteLine(title);
+            return;
+        }
+        terminal.SetColor(color);
+        terminal.WriteLine($"═══ {title} ═══");
+    }
+
+    /// <summary>
+    /// Write a thin divider line (───). In screen reader mode, outputs nothing.
+    /// </summary>
+    protected void WriteDivider(int width = 78, string color = "darkgray")
+    {
+        if (!IsScreenReader)
+        {
+            terminal.SetColor(color);
+            terminal.WriteLine(new string('─', width));
+        }
+    }
+
+    /// <summary>
+    /// Write a thick divider line (═══). In screen reader mode, outputs nothing.
+    /// </summary>
+    protected void WriteThickDivider(int width = 78, string color = "darkgray")
+    {
+        if (!IsScreenReader)
+        {
+            terminal.SetColor(color);
+            terminal.WriteLine(new string('═', width));
+        }
+    }
+
+    /// <summary>
+    /// Write a single menu option. In screen reader mode uses "K. Label" format.
+    /// In normal mode uses color-switched [K] Label format.
+    /// </summary>
+    protected void WriteSRMenuOption(string key, string label, bool available = true, string keyColor = "bright_yellow")
+    {
+        if (IsScreenReader)
+        {
+            terminal.WriteLine($"{key}. {label}");
+            return;
+        }
+        string textColor = available ? "white" : "dark_gray";
+        string actualKeyColor = available ? keyColor : "dark_gray";
+        terminal.SetColor("darkgray");
+        terminal.Write("[");
+        terminal.SetColor(actualKeyColor);
+        terminal.Write(key);
+        terminal.SetColor("darkgray");
+        terminal.Write("] ");
+        terminal.SetColor(textColor);
+        terminal.WriteLine(label);
+    }
+
+    /// <summary>
+    /// Check if we're running inside WezTerm (which supports font switching).
+    /// </summary>
+    private static bool IsRunningInWezTerm()
+    {
+        var termProgram = Environment.GetEnvironmentVariable("TERM_PROGRAM");
+        return string.Equals(termProgram, "WezTerm", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -4399,6 +4567,7 @@ public abstract class BaseLocation
 
         // Show temporary combat buffs (well-rested, god slayer, song, herbs)
         bool hasAnyBuff = currentPlayer.WellRestedCombats > 0 || currentPlayer.HasGodSlayerBuff
+            || currentPlayer.HasDarkPactBuff
             || currentPlayer.HasActiveSongBuff || currentPlayer.HasActiveHerbBuff
             || currentPlayer.LoversBlissCombats > 0 || currentPlayer.DivineBlessingCombats > 0;
         if (hasAnyBuff)
@@ -4409,6 +4578,11 @@ public abstract class BaseLocation
             {
                 terminal.SetColor("bright_yellow");
                 terminal.WriteLine($"  - God Slayer: +{(int)(currentPlayer.GodSlayerDamageBonus * 100)}% dmg, +{(int)(currentPlayer.GodSlayerDefenseBonus * 100)}% def ({currentPlayer.GodSlayerCombats} combats)");
+            }
+            if (currentPlayer.HasDarkPactBuff)
+            {
+                terminal.SetColor("dark_red");
+                terminal.WriteLine($"  - Dark Pact: +{(int)(currentPlayer.DarkPactDamageBonus * 100)}% dmg ({currentPlayer.DarkPactCombats} combats)");
             }
             if (currentPlayer.WellRestedCombats > 0)
             {

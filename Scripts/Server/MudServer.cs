@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using UsurperRemake.BBS;
@@ -52,6 +53,9 @@ public class MudServer
     /// <summary>Pending server shutdown countdown (null = not shutting down).</summary>
     public int? ShutdownCountdownSeconds { get; set; }
 
+    /// <summary>Shared SQL backend for admin command queue access.</summary>
+    private SqlSaveBackend? _sqlBackend;
+
     public MudServer(int port, string databasePath)
     {
         _port = port;
@@ -68,6 +72,7 @@ public class MudServer
 
         // Initialize the shared SQLite backend
         var sqlBackend = new SqlSaveBackend(_databasePath);
+        _sqlBackend = sqlBackend;
         SaveSystem.InitializeWithBackend(sqlBackend);
         Console.Error.WriteLine($"[MUD] SQLite backend initialized: {_databasePath}");
 
@@ -104,6 +109,10 @@ public class MudServer
         // Start idle timeout watchdog (checks every 60 seconds for idle players)
         var idleWatchdogTask = Task.Run(() => IdleWatchdogAsync(_cts.Token));
         Console.Error.WriteLine($"[MUD] Idle timeout watchdog started ({IdleTimeout.TotalMinutes} min)");
+
+        // Start admin command queue poller (checks every 3 seconds for web dashboard commands)
+        var adminPollerTask = Task.Run(() => AdminCommandPollerAsync(_cts.Token));
+        Console.Error.WriteLine("[MUD] Admin command queue poller started (3s interval)");
 
         // Start listening
         _listener = new TcpListener(IPAddress.Any, _port);
@@ -858,5 +867,199 @@ public class MudServer
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Polls admin_commands table every 3 seconds for commands from the web dashboard.
+    /// </summary>
+    private async Task AdminCommandPollerAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3), ct);
+            }
+            catch (OperationCanceledException) { break; }
+
+            if (_sqlBackend == null) continue;
+
+            try
+            {
+                var commands = _sqlBackend.GetPendingAdminCommands();
+                foreach (var cmd in commands)
+                {
+                    await ExecuteAdminCommand(cmd);
+                }
+
+                // Periodic cleanup
+                _sqlBackend.PruneSnoopBuffer();
+                _sqlBackend.ExpireStaleAdminCommands();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[MUD] Admin command poller error: {ex.Message}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Execute a single admin command from the web dashboard.
+    /// </summary>
+    private async Task ExecuteAdminCommand(AdminCommand cmd)
+    {
+        if (_sqlBackend == null) return;
+
+        string? reason = null;
+        string? message = null;
+        try
+        {
+            // Parse args JSON if present
+            if (!string.IsNullOrEmpty(cmd.Args))
+            {
+                using var doc = JsonDocument.Parse(cmd.Args);
+                var root = doc.RootElement;
+                if (root.TryGetProperty("reason", out var reasonEl))
+                    reason = reasonEl.GetString();
+                if (root.TryGetProperty("message", out var messageEl))
+                    message = messageEl.GetString();
+            }
+        }
+        catch { /* Args parsing is best-effort */ }
+
+        var target = cmd.TargetUsername?.ToLowerInvariant();
+        ActiveSessions.TryGetValue(target ?? "", out var session);
+
+        try
+        {
+            switch (cmd.Command)
+            {
+                case "kick":
+                    if (target == null)
+                    {
+                        _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target specified");
+                        return;
+                    }
+                    if (await KickPlayer(target, reason ?? "Kicked by admin"))
+                        _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Kicked {target}");
+                    else
+                        _sqlBackend.MarkAdminCommandFailed(cmd.Id, $"Player '{target}' is not online");
+                    break;
+
+                case "freeze":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    await _sqlBackend.SetFrozen(target, true, "admin-web");
+                    if (session != null)
+                    {
+                        session.IsFrozen = true;
+                        session.EnqueueMessage("\u001b[1;36m  *** You have been frozen by the gods. ***\u001b[0m");
+                    }
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Frozen {target}" + (session != null ? " (live)" : " (DB only, offline)"));
+                    break;
+
+                case "thaw":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    await _sqlBackend.SetFrozen(target, false);
+                    if (session != null)
+                    {
+                        session.IsFrozen = false;
+                        session.EnqueueMessage("\u001b[1;32m  *** The gods have thawed you. You may move again. ***\u001b[0m");
+                    }
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Thawed {target}");
+                    break;
+
+                case "mute":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    await _sqlBackend.SetMuted(target, true, "admin-web");
+                    if (session != null)
+                    {
+                        session.IsMuted = true;
+                        session.EnqueueMessage("\u001b[1;33m  *** You have been silenced by the gods. ***\u001b[0m");
+                    }
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Muted {target}");
+                    break;
+
+                case "unmute":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    await _sqlBackend.SetMuted(target, false);
+                    if (session != null)
+                    {
+                        session.IsMuted = false;
+                        session.EnqueueMessage("\u001b[1;32m  *** The gods have restored your voice. ***\u001b[0m");
+                    }
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Unmuted {target}");
+                    break;
+
+                case "slay":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    if (session != null)
+                    {
+                        session.EnqueueMessage("\u001b[1;31m  *** The gods have struck you down! ***\u001b[0m");
+                        // The player will die on their next action when HP is checked
+                        // We send a force-kill message — the session's game engine will handle death
+                    }
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Slay command sent to {target}" + (session == null ? " (offline — edit HP via player editor)" : ""));
+                    break;
+
+                case "message":
+                    if (target == null || string.IsNullOrEmpty(message))
+                    {
+                        _sqlBackend.MarkAdminCommandFailed(cmd.Id, "Missing target or message");
+                        return;
+                    }
+                    await _sqlBackend.SendMessage("Admin", target, "system", message);
+                    if (session != null)
+                        session.EnqueueMessage($"\u001b[1;33m  [Admin Message] {message}\u001b[0m");
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Message sent to {target}");
+                    break;
+
+                case "broadcast":
+                    ActiveBroadcast = string.IsNullOrEmpty(message) ? null : message;
+                    if (!string.IsNullOrEmpty(message))
+                        BroadcastToAll($"\u001b[1;33m  *** {message} ***\u001b[0m");
+                    _sqlBackend.MarkAdminCommandExecuted(cmd.Id, string.IsNullOrEmpty(message) ? "Broadcast cleared" : $"Broadcast set: {message}");
+                    break;
+
+                case "snoop_start":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    if (session?.Context?.Terminal != null)
+                    {
+                        var snoopTarget = target;
+                        session.Context.Terminal.SetDbSnoopCallback(line =>
+                            _sqlBackend.WriteSnoopLine(snoopTarget, line));
+                        _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Snoop started on {target}");
+                    }
+                    else
+                    {
+                        _sqlBackend.MarkAdminCommandFailed(cmd.Id, $"Player '{target}' is not online or has no terminal");
+                    }
+                    break;
+
+                case "snoop_stop":
+                    if (target == null) { _sqlBackend.MarkAdminCommandFailed(cmd.Id, "No target"); return; }
+                    if (session?.Context?.Terminal != null)
+                    {
+                        session.Context.Terminal.SetDbSnoopCallback(null);
+                        _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Snoop stopped on {target}");
+                    }
+                    else
+                    {
+                        _sqlBackend.MarkAdminCommandExecuted(cmd.Id, $"Snoop stop for {target} (already offline)");
+                    }
+                    break;
+
+                default:
+                    _sqlBackend.MarkAdminCommandFailed(cmd.Id, $"Unknown command: {cmd.Command}");
+                    break;
+            }
+
+            // Log all admin commands to the wizard audit log
+            _sqlBackend.LogWizardAction("admin-web", cmd.Command, target, cmd.Args);
+        }
+        catch (Exception ex)
+        {
+            _sqlBackend.MarkAdminCommandFailed(cmd.Id, $"Error: {ex.Message}");
+            Console.Error.WriteLine($"[MUD] Admin command '{cmd.Command}' failed for '{target}': {ex.Message}");
+        }
     }
 }

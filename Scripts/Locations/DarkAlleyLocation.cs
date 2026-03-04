@@ -188,6 +188,9 @@ namespace UsurperRemake.Locations
                     if (!IsUndergroundAccessAllowed()) { await ShowUndergroundRejection(); return false; }
                     await VisitSafeHouse();
                     return false;
+                case "E": // Evil Deeds (moved from Main Street)
+                    await ShowEvilDeeds();
+                    return false;
                 case "X": // Hidden easter egg - not shown in menu
                     await ExamineTheShadows();
                     return false;
@@ -460,6 +463,18 @@ namespace UsurperRemake.Locations
                 terminal.WriteLine("nformant");
             }
 
+            // Evil Deeds
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("E");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("red");
+            terminal.Write("vil Deeds ");
+            terminal.SetColor("gray");
+            terminal.WriteLine("- Commit dark acts (+Darkness)");
+
             // Navigation
             terminal.SetColor("darkgray");
             terminal.Write(" [");
@@ -524,7 +539,7 @@ namespace UsurperRemake.Locations
             if (specialItems.Count > 0)
                 ShowBBSMenuRow(specialItems.ToArray());
 
-            ShowBBSMenuRow(("R", "bright_yellow", "Return"));
+            ShowBBSMenuRow(("E", "red", "EvilDeeds"), ("R", "bright_yellow", "Return"));
 
             ShowBBSFooter();
         }
@@ -3162,6 +3177,434 @@ namespace UsurperRemake.Locations
 
             term.WriteLine("");
             await Task.Delay(2500);
+        }
+
+        #endregion
+
+        #region Evil Deeds — Tiered Dark Path (v0.49.4)
+
+        private enum DeedTier { Petty, Serious, Dark }
+
+        private record EvilDeedDef(
+            string Id, string Name, string Description, DeedTier Tier,
+            int DarknessGain, int MinLevel, int MinDarkness,
+            int GoldCost, int GoldRewardBase, int GoldRewardScale,
+            int XPReward, int ShadowsFaction, int CrownFaction,
+            float FailChance, int FailDamagePct, int FailGoldLoss,
+            bool GeneratesNews, string? NewsText, string? SpecialEffect);
+
+        private static readonly EvilDeedDef[] AllEvilDeeds = new[]
+        {
+            // ── Tier 1: Petty Crimes ──
+            new EvilDeedDef("rob_beggar", "Rob a Beggar",
+                "An old beggar dozes against the alley wall, a few copper coins\nscattered in his cup. He'd never even know they were gone.",
+                DeedTier.Petty, 5, 0, 0, 0, 15, 35, 0, 1, 0, 0.05f, 0, 0,
+                false, null, null),
+
+            new EvilDeedDef("vandalize_shrine", "Vandalize a Shrine",
+                "A small roadside shrine to the Seven sits unattended, its candles\nstill flickering. You topple it and scatter the offerings into the gutter.",
+                DeedTier.Petty, 8, 0, 0, 0, 0, 0, 0, 0, -1, 0f, 0, 0,
+                false, null, "chivalry_loss"),
+
+            new EvilDeedDef("spread_rumors", "Spread Venomous Rumors",
+                "The gossips near the well are always hungry for scandal. A well-placed\nlie about a merchant's debts could ruin someone — and entertain you.",
+                DeedTier.Petty, 6, 0, 0, 0, 0, 0, 10, 1, 0, 0.10f, 0, 0,
+                true, "{PLAYER} has been spreading dark whispers through town.", null),
+
+            new EvilDeedDef("poison_well", "Poison the Well",
+                "The public well serves dozens of families. A few drops of bitter\nnightshade, and by morning the healers will have their hands full.",
+                DeedTier.Petty, 10, 0, 0, 25, 0, 0, 0, 0, -2, 0.15f, 0, 50,
+                true, "The town well was poisoned! Guards are investigating.", null),
+
+            new EvilDeedDef("extort_shopkeeper", "Extort a Shopkeeper",
+                "The old cobbler on Anchor Road has been skimming the King's tax.\nYou know because you watched him do it. A quiet word, a meaningful look...",
+                DeedTier.Petty, 8, 0, 0, 0, 50, 100, 0, 0, 0, 0.10f, 0, 0,
+                false, null, null),
+
+            // ── Tier 2: Serious Crimes ──
+            new EvilDeedDef("desecrate_dead", "Desecrate the Dead",
+                "The cemetery holds more than memories. The recently buried are sometimes\ninterred with jewelry. The gravedigger looks the other way — for a price.",
+                DeedTier.Serious, 15, 5, 100, 30, 100, 200, 0, 0, 0, 0.15f, 10, 0,
+                false, null, null),
+
+            new EvilDeedDef("arson_market", "Arson in the Market",
+                "The timber-framed stalls of the lower market are tinder-dry. One spark\nand the chaos will keep the guards busy for hours — perfect cover.",
+                DeedTier.Serious, 20, 5, 100, 0, 0, 0, 25, 5, -5, 0.20f, 15, 0,
+                true, "Fire ravages the lower market! Arson suspected.", null),
+
+            new EvilDeedDef("blackmail_noble", "Blackmail a Noble",
+                "You've been watching Lord Aldric's midnight visits to the Dark Alley.\nA man of his position has much to lose. Your silence has a price.",
+                DeedTier.Serious, 15, 5, 100, 0, 200, 300, 0, 3, -3, 0.20f, 20, 100,
+                false, null, null),
+
+            new EvilDeedDef("whisper_noctura", "Whisper Noctura's Name",
+                "They say if you speak the Shadow Queen's true name three times in\nabsolute darkness, she hears you. In the deepest corner of the alley,\nwhere no torch reaches, you whisper: 'Noctura... Noctura... Noctura...'\nThe shadows thicken. Something answers.",
+                DeedTier.Serious, 25, 5, 100, 0, 0, 0, 50, 0, 0, 0.10f, 10, 0,
+                false, null, "noctura"),
+
+            new EvilDeedDef("sabotage_wagons", "Sabotage Crown Wagons",
+                "The Crown's supply caravan passes through the narrow streets at dawn.\nA loosened axle pin, a spooked horse — the King's soldiers go hungry\nwhile the rebels feast.",
+                DeedTier.Serious, 18, 5, 100, 0, 0, 0, 30, 8, -8, 0.15f, 0, 200,
+                true, "{PLAYER} is wanted for sabotaging Crown supply lines.", "shadows_bonus"),
+
+            // ── Tier 3: Dark Rituals ──
+            new EvilDeedDef("blood_maelketh", "Blood Offering to Maelketh",
+                "In a cellar beneath the alley, fanatics of the Broken Blade maintain\na hidden altar stained rust-red. They welcome you with hollow eyes.\nThe blade they offer is sharp. Your blood will feed a god's hunger.",
+                DeedTier.Dark, 40, 15, 400, 0, 0, 0, 100, 5, 0, 0.20f, 30, 0,
+                false, null, "blood_price"),
+
+            new EvilDeedDef("dark_pact", "Forge a Dark Pact",
+                "A figure in the alley offers something no merchant sells: certainty.\nSign your name in blood and ink blacker than midnight, and for ten\ncombats your blade will strike true. The price is written in letters\ntoo small to read.",
+                DeedTier.Dark, 30, 15, 400, 500, 0, 0, 75, 0, 0, 0.25f, 25, 0,
+                false, null, "dark_pact"),
+
+            new EvilDeedDef("thorgrim_law", "Invoke Thorgrim's Law",
+                "There is an older law than the King's. In the underground court beneath\nthe alley, you stand before a mockery of justice and pronounce sentence\non the weak. The shadows applaud.",
+                DeedTier.Dark, 35, 15, 400, 0, 0, 0, 80, 5, -5, 0.15f, 0, 200,
+                true, "A dark tribunal was held beneath the streets. The old laws stir.", "thorgrim"),
+
+            new EvilDeedDef("void_sacrifice", "Sacrifice to the Void",
+                "Beyond the alley, past the cellar, past tunnels that should not exist,\nthere is a place where the stone floor drops into nothing. The cultists\ncall it the Mouth. Cast something precious into it, and the Void\ngives power in return.",
+                DeedTier.Dark, 50, 15, 400, 1000, 0, 0, 150, 5, 0, 0.15f, 0, 2000,
+                false, null, "void"),
+
+            new EvilDeedDef("shatter_seal", "Shatter a Seal Fragment",
+                "The Seven Seals aren't just lore. Fragments of their power echo in\nhidden places. In the deepest part of the alley, you find such a\nfragment — a humming shard of ancient law. You could study it...\nor you could break it and drink in the power that spills out.",
+                DeedTier.Dark, 60, 15, 400, 0, 0, 0, 200, 0, 0, 0.10f, 25, 0,
+                true, "A tremor of dark energy ripples through the town. An ancient seal has been defiled.", "seal"),
+        };
+
+        private static readonly Random _deedRng = new();
+
+        private bool MeetsDeedRequirements(EvilDeedDef deed)
+        {
+            if (currentPlayer.Level < deed.MinLevel) return false;
+            if (currentPlayer.Darkness < deed.MinDarkness) return false;
+
+            // Special requirements
+            switch (deed.SpecialEffect)
+            {
+                case "noctura":
+                    // Requires encountering Noctura OR high darkness
+                    var story = StoryProgressionSystem.Instance;
+                    bool metNoctura = story.OldGodStates.TryGetValue(OldGodType.Noctura, out var ns) &&
+                        ns.Status != GodStatus.Unknown && ns.Status != GodStatus.Corrupted && ns.Status != GodStatus.Neutral;
+                    if (!metNoctura && currentPlayer.Darkness < 300) return false;
+                    break;
+                case "thorgrim":
+                    // Requires level 20+ or having encountered Thorgrim
+                    var story2 = StoryProgressionSystem.Instance;
+                    bool metThorgrim = story2.OldGodStates.TryGetValue(OldGodType.Thorgrim, out var ts) &&
+                        ts.Status != GodStatus.Unknown && ts.Status != GodStatus.Corrupted;
+                    if (currentPlayer.Level < 20 && !metThorgrim) return false;
+                    break;
+                case "seal":
+                    // Requires at least 1 seal collected, once per cycle
+                    if (StoryProgressionSystem.Instance.CollectedSeals.Count < 1) return false;
+                    if (currentPlayer.HasShatteredSealFragment) return false;
+                    break;
+                case "void":
+                    // The awakening grant is once-only, but the deed itself is repeatable
+                    break;
+            }
+            return true;
+        }
+
+        private async Task ShowEvilDeeds()
+        {
+            terminal.ClearScreen();
+
+            // Header
+            terminal.SetColor("bright_red");
+            terminal.WriteLine("╔══════════════════════════════════════════════════════════════════╗");
+            terminal.SetColor("bright_red");
+            terminal.WriteLine($"║{"EVIL DEEDS".PadLeft((66 + 10) / 2).PadRight(66)}║");
+            terminal.WriteLine("╚══════════════════════════════════════════════════════════════════╝");
+            terminal.WriteLine("");
+
+            // Stats
+            terminal.SetColor("gray");
+            terminal.Write("  Darkness: ");
+            terminal.SetColor("red");
+            terminal.Write($"{currentPlayer.Darkness}");
+            terminal.SetColor("gray");
+            terminal.Write("    Dark deeds remaining: ");
+            terminal.SetColor(currentPlayer.DarkNr > 0 ? "bright_yellow" : "red");
+            terminal.WriteLine($"{currentPlayer.DarkNr}");
+            terminal.WriteLine("");
+
+            if (currentPlayer.DarkNr <= 0)
+            {
+                terminal.SetColor("dark_red");
+                terminal.WriteLine("  The darkness has had its fill of you today.");
+                terminal.WriteLine("  Return tomorrow to continue your dark work.");
+                terminal.WriteLine("");
+                await terminal.PressAnyKey();
+                return;
+            }
+
+            // Build available deed list
+            var available = AllEvilDeeds.Where(MeetsDeedRequirements).ToList();
+
+            // Group by tier and display
+            int num = 1;
+            var indexMap = new Dictionary<int, EvilDeedDef>();
+
+            foreach (var tier in new[] { DeedTier.Petty, DeedTier.Serious, DeedTier.Dark })
+            {
+                var tierDeeds = available.Where(d => d.Tier == tier).ToList();
+                if (tierDeeds.Count == 0) continue;
+
+                var (tierName, tierColor, tierReq) = tier switch
+                {
+                    DeedTier.Petty => ("Petty Crimes", "yellow", ""),
+                    DeedTier.Serious => ("Serious Crimes", "bright_red", $"  (Lv{GameConfig.EvilDeedSeriousMinLevel}+, Dark {GameConfig.EvilDeedSeriousMinDarkness}+)"),
+                    DeedTier.Dark => ("Dark Rituals", "bright_magenta", $"  (Lv{GameConfig.EvilDeedDarkMinLevel}+, Dark {GameConfig.EvilDeedDarkMinDarkness}+)"),
+                    _ => ("", "white", "")
+                };
+
+                terminal.SetColor(tierColor);
+                terminal.Write($"  ── {tierName} ──");
+                if (tierReq.Length > 0) { terminal.SetColor("darkgray"); terminal.Write(tierReq); }
+                terminal.WriteLine("");
+
+                foreach (var deed in tierDeeds)
+                {
+                    indexMap[num] = deed;
+                    terminal.SetColor("darkgray");
+                    terminal.Write($"  [{num,2}] ");
+                    terminal.SetColor("white");
+                    terminal.Write(deed.Name.PadRight(28));
+                    terminal.SetColor("red");
+                    terminal.Write($"+{deed.DarknessGain} Dark ");
+                    if (deed.XPReward > 0) { terminal.SetColor("cyan"); terminal.Write($"+{deed.XPReward}XP "); }
+                    if (deed.GoldRewardBase > 0) { terminal.SetColor("bright_yellow"); terminal.Write($"+gold "); }
+                    if (deed.GoldCost > 0) { terminal.SetColor("yellow"); terminal.Write($"-{deed.GoldCost}g "); }
+                    if (deed.FailChance > 0) { terminal.SetColor("darkgray"); terminal.Write($"{(int)(deed.FailChance * 100)}%risk"); }
+                    terminal.WriteLine("");
+                    num++;
+                }
+                terminal.WriteLine("");
+            }
+
+            terminal.SetColor("gray");
+            var input = await terminal.GetInput("Choose a deed (0 to cancel): ");
+            if (!int.TryParse(input, out int choice) || choice == 0 || !indexMap.ContainsKey(choice))
+                return;
+
+            await ExecuteEvilDeed(indexMap[choice]);
+        }
+
+        private async Task ExecuteEvilDeed(EvilDeedDef deed)
+        {
+            terminal.ClearScreen();
+
+            // Show atmospheric description
+            terminal.SetColor("bright_red");
+            terminal.WriteLine($"── {deed.Name} ──");
+            terminal.WriteLine("");
+            terminal.SetColor("gray");
+            terminal.WriteLine(deed.Description);
+            terminal.WriteLine("");
+
+            // Show costs/risks
+            if (deed.GoldCost > 0)
+            {
+                if (currentPlayer.Gold < deed.GoldCost)
+                {
+                    terminal.SetColor("red");
+                    terminal.WriteLine($"You need {deed.GoldCost} gold. You only have {currentPlayer.Gold:N0}.");
+                    await terminal.PressAnyKey();
+                    return;
+                }
+                terminal.SetColor("yellow");
+                terminal.WriteLine($"  Cost: {deed.GoldCost} gold");
+            }
+            if (deed.SpecialEffect == "blood_price")
+            {
+                int hpCost = (int)(currentPlayer.MaxHP * 0.15f);
+                terminal.SetColor("red");
+                terminal.WriteLine($"  Blood price: ~{hpCost} HP");
+            }
+            if (deed.FailChance > 0)
+            {
+                terminal.SetColor("darkgray");
+                terminal.WriteLine($"  Risk of failure: {(int)(deed.FailChance * 100)}%");
+            }
+            terminal.WriteLine("");
+
+            var confirm = await terminal.GetInput("Commit this deed? (Y/N): ");
+            if (!confirm.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            terminal.WriteLine("");
+
+            // Deduct daily counter
+            currentPlayer.DarkNr--;
+
+            // Deduct gold cost upfront
+            if (deed.GoldCost > 0)
+                currentPlayer.Gold -= deed.GoldCost;
+
+            // Blood price (Maelketh offering)
+            if (deed.SpecialEffect == "blood_price")
+            {
+                int hpCost = (int)(currentPlayer.MaxHP * 0.15f);
+                currentPlayer.HP = Math.Max(1, currentPlayer.HP - hpCost);
+                terminal.SetColor("dark_red");
+                terminal.WriteLine($"The blade bites deep. You lose {hpCost} HP as blood spills across the altar.");
+            }
+
+            // Roll for failure
+            float effectiveFailChance = deed.FailChance;
+
+            // Noctura alliance reduces risk to 0
+            if (deed.SpecialEffect == "noctura")
+            {
+                var story = StoryProgressionSystem.Instance;
+                if (story.OldGodStates.TryGetValue(OldGodType.Noctura, out var ns) && ns.Status == GodStatus.Allied)
+                    effectiveFailChance = 0f;
+            }
+            // Shadows faction reduces sabotage risk
+            if (deed.SpecialEffect == "shadows_bonus" && FactionSystem.Instance?.PlayerFaction == Faction.TheShadows)
+                effectiveFailChance = 0.05f;
+
+            bool failed = _deedRng.NextDouble() < effectiveFailChance;
+
+            if (failed)
+            {
+                // ── FAILURE ──
+                terminal.SetColor("bright_red");
+                terminal.WriteLine("  *** CAUGHT! ***");
+                terminal.WriteLine("");
+
+                // Partial darkness (you tried)
+                currentPlayer.Darkness += Math.Max(3, deed.DarknessGain / 3);
+
+                if (deed.FailDamagePct > 0)
+                {
+                    int dmg = (int)(currentPlayer.MaxHP * deed.FailDamagePct / 100f);
+                    currentPlayer.HP = Math.Max(1, currentPlayer.HP - dmg);
+                    terminal.SetColor("red");
+                    terminal.WriteLine($"  You take {dmg} damage!");
+                }
+                if (deed.FailGoldLoss > 0)
+                {
+                    long loss = Math.Min(currentPlayer.Gold, deed.FailGoldLoss);
+                    currentPlayer.Gold -= loss;
+                    terminal.SetColor("yellow");
+                    terminal.WriteLine($"  You lose {loss:N0} gold!");
+                }
+
+                terminal.SetColor("gray");
+                terminal.WriteLine("  You slink back into the shadows, licking your wounds.");
+            }
+            else
+            {
+                // ── SUCCESS ──
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine("  The deed is done.");
+                terminal.WriteLine("");
+
+                // Darkness gain
+                currentPlayer.Darkness += deed.DarknessGain;
+                terminal.SetColor("red");
+                terminal.WriteLine($"  Darkness +{deed.DarknessGain}");
+
+                // Gold reward (level-scaled)
+                if (deed.GoldRewardBase > 0)
+                {
+                    long gold = deed.GoldRewardBase + _deedRng.Next(deed.GoldRewardScale) + (currentPlayer.Level * 2);
+                    currentPlayer.Gold += gold;
+                    terminal.SetColor("bright_yellow");
+                    terminal.WriteLine($"  Gold +{gold:N0}");
+                }
+
+                // XP
+                if (deed.XPReward > 0)
+                {
+                    long xp = deed.XPReward + (currentPlayer.Level * 3);
+                    currentPlayer.Experience += xp;
+                    terminal.SetColor("cyan");
+                    terminal.WriteLine($"  Experience +{xp:N0}");
+                }
+
+                // Faction changes
+                if (deed.ShadowsFaction != 0)
+                {
+                    int shadowsGain = deed.ShadowsFaction;
+                    // Shadows members get double rep from sabotage
+                    if (deed.SpecialEffect == "shadows_bonus" && FactionSystem.Instance?.PlayerFaction == Faction.TheShadows)
+                        shadowsGain *= 2;
+                    FactionSystem.Instance?.ModifyReputation(Faction.TheShadows, shadowsGain);
+                    terminal.SetColor("bright_magenta");
+                    terminal.WriteLine($"  Shadows standing {(shadowsGain > 0 ? "+" : "")}{shadowsGain}");
+                }
+                if (deed.CrownFaction != 0)
+                {
+                    FactionSystem.Instance?.ModifyReputation(Faction.TheCrown, deed.CrownFaction);
+                    terminal.SetColor("yellow");
+                    terminal.WriteLine($"  Crown standing {deed.CrownFaction}");
+                }
+
+                // Chivalry loss from shrine vandalism
+                if (deed.SpecialEffect == "chivalry_loss")
+                {
+                    currentPlayer.Chivalry = Math.Max(0, currentPlayer.Chivalry - 5);
+                    terminal.SetColor("white");
+                    terminal.WriteLine("  Chivalry -5");
+                }
+
+                // Dark Pact combat buff
+                if (deed.SpecialEffect == "dark_pact")
+                {
+                    currentPlayer.DarkPactCombats = GameConfig.DarkPactDuration;
+                    currentPlayer.DarkPactDamageBonus = GameConfig.DarkPactDamageBonus;
+                    terminal.SetColor("bright_magenta");
+                    terminal.WriteLine($"  Dark Pact active: +{(int)(GameConfig.DarkPactDamageBonus * 100)}% damage for {GameConfig.DarkPactDuration} combats!");
+                }
+
+                // Maelketh — reduced effect if defeated
+                if (deed.Id == "blood_maelketh")
+                {
+                    var story = StoryProgressionSystem.Instance;
+                    if (story.OldGodStates.TryGetValue(OldGodType.Maelketh, out var ms) && ms.Status == GodStatus.Defeated)
+                    {
+                        terminal.SetColor("darkgray");
+                        terminal.WriteLine("  The altar is cold. The Broken Blade is shattered.");
+                        terminal.WriteLine("  But darkness still lingers, and your blood still has power.");
+                        // Already gave full rewards via the normal path — flavor only
+                    }
+                }
+
+                // Void sacrifice — one-time awakening point
+                if (deed.SpecialEffect == "void" && !currentPlayer.HasTouchedTheVoid)
+                {
+                    currentPlayer.HasTouchedTheVoid = true;
+                    OceanPhilosophySystem.Instance?.GainInsight(10);
+                    terminal.SetColor("bright_cyan");
+                    terminal.WriteLine("  The Void whispers back. You glimpse something vast beneath reality.");
+                    terminal.WriteLine("  +Awakening insight");
+                }
+
+                // Seal fragment — once per cycle
+                if (deed.SpecialEffect == "seal")
+                {
+                    currentPlayer.HasShatteredSealFragment = true;
+                    terminal.SetColor("bright_magenta");
+                    terminal.WriteLine("  Ancient energy courses through you. The seal's echo shatters.");
+                }
+
+                // News event
+                if (deed.GeneratesNews && deed.NewsText != null)
+                {
+                    var newsText = deed.NewsText.Replace("{PLAYER}", currentPlayer.DisplayName);
+                    NewsSystem.Instance.Newsy(false, newsText);
+                }
+            }
+
+            terminal.WriteLine("");
+            await terminal.PressAnyKey();
         }
 
         #endregion

@@ -611,6 +611,7 @@ namespace UsurperRemake.Systems
                 CompactMode = player.CompactMode,
                 ColorTheme = player.ColorTheme,
                 AutoLevelUp = player.AutoLevelUp,
+                AutoEquipDisabled = player.AutoEquipDisabled,
                 TeamXPPercent = player.TeamXPPercent,
                 Loyalty = player.Loyalty,
                 Haunt = player.Haunt,
@@ -753,6 +754,18 @@ namespace UsurperRemake.Systems
                 SongBuffValue = player.SongBuffValue,
                 SongBuffValue2 = player.SongBuffValue2,
                 HeardLoreSongs = player.HeardLoreSongs?.ToList() ?? new List<int>(),
+
+                // Dungeon Settlements & Wilderness (v0.49.4)
+                VisitedSettlements = player.VisitedSettlements?.ToList() ?? new List<string>(),
+                SettlementLoreRead = player.SettlementLoreRead?.ToList() ?? new List<string>(),
+                WildernessExplorationsToday = player.WildernessExplorationsToday,
+                WildernessDiscoveries = player.WildernessDiscoveries?.ToList() ?? new List<string>(),
+
+                // Dark Pact & Evil Deed tracking (v0.49.4)
+                DarkPactCombats = player.DarkPactCombats,
+                DarkPactDamageBonus = player.DarkPactDamageBonus,
+                HasShatteredSealFragment = player.HasShatteredSealFragment,
+                HasTouchedTheVoid = player.HasTouchedTheVoid,
 
                 // Faction consumable properties (v0.40.2)
                 PoisonCoatingCombats = player.PoisonCoatingCombats,

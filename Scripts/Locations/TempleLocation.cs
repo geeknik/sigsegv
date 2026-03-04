@@ -18,11 +18,9 @@ using System.Threading.Tasks;
 /// </summary>
 public partial class TempleLocation : BaseLocation
 {
-    private new readonly TerminalEmulator terminal;
     private readonly LocationManager locationManager;
     private readonly GodSystem godSystem;
     private bool refreshMenu = true;
-    private new Character currentPlayer = null!;
     private Random random = new Random();
 
     // Old Gods integration
@@ -49,7 +47,7 @@ public partial class TempleLocation : BaseLocation
     
     public TempleLocation(TerminalEmulator terminal, LocationManager locationManager, GodSystem godSystem)
     {
-        this.terminal = terminal;
+        this.terminal = terminal;  // sets base class protected field
         this.locationManager = locationManager;
         this.godSystem = godSystem;
         
@@ -68,12 +66,10 @@ public partial class TempleLocation : BaseLocation
     /// </summary>
     public override async Task EnterLocation(Character player, TerminalEmulator term)
     {
-        // Set the terminal for this location
-        // Note: We use our own stored terminal from constructor, but update if needed
-        if (term != null && term != terminal)
-        {
-            // Use the provided terminal for consistency
-        }
+        // Set base class fields so helper methods (WriteBoxHeader, IsScreenReader, etc.) work
+        currentPlayer = player;
+        if (term != null)
+            terminal = term;
 
         // Run the temple's custom processing loop
         var destination = await ProcessLocation(player);
@@ -240,10 +236,7 @@ public partial class TempleLocation : BaseLocation
         terminal.ClearScreen();
 
         // Temple header - standardized format
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"TEMPLE OF THE GODS".PadLeft((77 + 18) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("TEMPLE OF THE GODS", "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -278,295 +271,380 @@ public partial class TempleLocation : BaseLocation
         }
         terminal.WriteLine("");
         
-        // Main menu options - standardized format
-        terminal.SetColor("cyan");
-        terminal.WriteLine("Temple Services:");
-        terminal.WriteLine("");
-
-        // Row 1
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("W");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("orship            ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("D");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("esecrate altar    ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("H");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("oly News");
-
-        // Row 2
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("A");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("ltars             ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("C");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("ontribute         ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("I");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("tem Sacrifice");
-
-        // Row 3
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("S");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("tatus             ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("G");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("od ranking        ");
-
-        terminal.SetColor("darkgray");
-        terminal.Write("[");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("P");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.Write("rophecies         ");
-
-        // Daily prayer option - show if player worships a god
+        // Main menu options
         string prayerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
-        if (!string.IsNullOrEmpty(prayerGod))
+        var story = StoryProgressionSystem.Instance;
+        var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
+        var immortalGods = await GetImmortalGodsAsync();
+
+        if (IsScreenReader)
         {
-            bool canPray = UsurperRemake.Systems.DivineBlessingSystem.Instance.CanPrayToday(currentPlayer.Name2);
-            if (canPray)
+            terminal.WriteLine("Temple Services:");
+            terminal.WriteLine("");
+            terminal.WriteLine("W. Worship");
+            terminal.WriteLine("D. Desecrate altar");
+            terminal.WriteLine("H. Holy News");
+            terminal.WriteLine("A. Altars");
+            terminal.WriteLine("C. Contribute");
+            terminal.WriteLine("I. Item Sacrifice");
+            terminal.WriteLine("S. Status");
+            terminal.WriteLine("G. God ranking");
+            terminal.WriteLine("P. Prophecies");
+
+            if (!string.IsNullOrEmpty(prayerGod))
+            {
+                bool canPray = UsurperRemake.Systems.DivineBlessingSystem.Instance.CanPrayToday(currentPlayer.Name2);
+                if (canPray)
+                    terminal.WriteLine("Y. Pray");
+                else
+                    terminal.WriteLine("(Prayed today)");
+            }
+
+            if (!story.CollectedSeals.Contains(UsurperRemake.Systems.SealType.Creation))
+                terminal.WriteLine("E. Examine Stones");
+
+            if (CanEnterDeepTemple())
+                terminal.WriteLine("T. The Deep Temple");
+
+            if (CanMeetMira())
+                terminal.WriteLine("M. Meditation Chapel (someone prays alone...)");
+
+            if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheFaith)
+            {
+                if (factionSystem.PlayerFaction == null)
+                    terminal.WriteLine("F. The Faith (seek the High Priestess...)");
+                else
+                    terminal.WriteLine("F. The Faith (you serve another...)");
+            }
+            else
+            {
+                terminal.WriteLine("You are a member of The Faith.");
+            }
+
+            if (FactionSystem.Instance?.HasTempleAccess() == true)
+            {
+                bool meditatedToday;
+                if (DoorMode.IsOnlineMode)
+                {
+                    var boundary = DailySystemManager.GetCurrentResetBoundary();
+                    meditatedToday = currentPlayer.LastInnerSanctumRealDate >= boundary;
+                }
+                else
+                {
+                    int today = DailySystemManager.Instance?.CurrentDay ?? 0;
+                    meditatedToday = currentPlayer.InnerSanctumLastDay >= today;
+                }
+                if (meditatedToday)
+                    terminal.WriteLine("N. Inner Sanctum (meditated today)");
+                else
+                    terminal.WriteLine($"N. Inner Sanctum ({GameConfig.InnerSanctumCost}g)");
+            }
+
+            if (immortalGods.Count > 0)
+            {
+                terminal.WriteLine("");
+                terminal.WriteLine("Ascended Gods:");
+                if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+                    terminal.WriteLine($"J. Join Immortal's Flock (Following: {currentPlayer.WorshippedGod})");
+                else
+                    terminal.WriteLine("J. Join Immortal's Flock (unaffiliated)");
+
+                if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+                {
+                    terminal.WriteLine("$. Sacrifice Gold (to your immortal god)");
+                    terminal.WriteLine("L. Leave Immortal's Faith");
+                }
+            }
+
+            terminal.WriteLine("R. Return");
+            terminal.WriteLine("");
+        }
+        else
+        {
+            terminal.SetColor("cyan");
+            terminal.WriteLine("Temple Services:");
+            terminal.WriteLine("");
+
+            // Row 1
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("W");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("orship            ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("D");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("esecrate altar    ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("H");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("oly News");
+
+            // Row 2
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("A");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("ltars             ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("C");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("ontribute         ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("I");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("tem Sacrifice");
+
+            // Row 3
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("S");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("tatus             ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("G");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("od ranking        ");
+
+            terminal.SetColor("darkgray");
+            terminal.Write("[");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("P");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.Write("rophecies         ");
+
+            // Daily prayer option - show if player worships a god
+            if (!string.IsNullOrEmpty(prayerGod))
+            {
+                bool canPray = UsurperRemake.Systems.DivineBlessingSystem.Instance.CanPrayToday(currentPlayer.Name2);
+                if (canPray)
+                {
+                    terminal.SetColor("darkgray");
+                    terminal.Write("[");
+                    terminal.SetColor("bright_yellow");
+                    terminal.Write("Y");
+                    terminal.SetColor("darkgray");
+                    terminal.Write("]");
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine(" Pray");
+                }
+                else
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("(Prayed today)");
+                }
+            }
+            else
+            {
+                terminal.WriteLine("");
+            }
+
+            // Ancient stones option - only show if Seal of Creation not collected
+            if (!story.CollectedSeals.Contains(UsurperRemake.Systems.SealType.Creation))
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("E");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("white");
+                terminal.Write("xamine Stones     ");
+            }
+            else
+            {
+                terminal.Write("                       ");
+            }
+
+            // Deep Temple option - only show if player meets requirements
+            if (CanEnterDeepTemple())
             {
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("Y");
+                terminal.Write("T");
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
-                terminal.SetColor("bright_green");
-                terminal.WriteLine(" Pray");
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine("he Deep Temple");
             }
             else
             {
-                terminal.SetColor("gray");
-                terminal.WriteLine("(Prayed today)");
-            }
-        }
-        else
-        {
-            terminal.WriteLine("");
-        }
-
-        // Ancient stones option - only show if Seal of Creation not collected
-        var story = StoryProgressionSystem.Instance;
-        if (!story.CollectedSeals.Contains(UsurperRemake.Systems.SealType.Creation))
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("E");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write("xamine Stones     ");
-        }
-        else
-        {
-            terminal.Write("                       ");
-        }
-
-        // Deep Temple option - only show if player meets requirements
-        if (CanEnterDeepTemple())
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write("[");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("T");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("bright_magenta");
-            terminal.WriteLine("he Deep Temple");
-        }
-        else
-        {
-            terminal.WriteLine("");
-        }
-
-        // Mira companion option - only show if she can be recruited
-        if (CanMeetMira())
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("M");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("bright_green");
-            terminal.Write("editation Chapel ");
-            terminal.SetColor("gray");
-            terminal.WriteLine("(someone prays alone...)");
-        }
-
-        // The Faith faction option - only show if player isn't already a member
-        var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
-        if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheFaith)
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("F");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("The Faith ");
-            if (factionSystem.PlayerFaction == null)
-            {
-                terminal.SetColor("gray");
-                terminal.WriteLine("(seek the High Priestess...)");
-            }
-            else
-            {
-                terminal.SetColor("dark_red");
-                terminal.WriteLine("(you serve another...)");
-            }
-        }
-        else
-        {
-            terminal.SetColor("bright_green");
-            terminal.WriteLine(" You are a member of The Faith.");
-        }
-
-        // Inner Sanctum (Faith only)
-        if (FactionSystem.Instance?.HasTempleAccess() == true)
-        {
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("N");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("cyan");
-            terminal.Write(" Inner Sanctum");
-            bool meditatedToday;
-            if (DoorMode.IsOnlineMode)
-            {
-                var boundary = DailySystemManager.GetCurrentResetBoundary();
-                meditatedToday = currentPlayer.LastInnerSanctumRealDate >= boundary;
-            }
-            else
-            {
-                int today = DailySystemManager.Instance?.CurrentDay ?? 0;
-                meditatedToday = currentPlayer.InnerSanctumLastDay >= today;
-            }
-            if (meditatedToday)
-            {
-                terminal.SetColor("gray");
-                terminal.WriteLine("  (meditated today)");
-            }
-            else
-            {
-                terminal.SetColor("bright_green");
-                terminal.WriteLine($"  ({GameConfig.InnerSanctumCost}g)");
-            }
-        }
-
-        // Immortal Worship section — only show if any ascended gods exist
-        var immortalGods = await GetImmortalGodsAsync();
-        if (immortalGods.Count > 0)
-        {
-            terminal.WriteLine("");
-            terminal.SetColor("bright_yellow");
-            terminal.WriteLine(" ── Ascended Gods ──");
-
-            terminal.SetColor("darkgray");
-            terminal.Write(" [");
-            terminal.SetColor("bright_yellow");
-            terminal.Write("J");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor("white");
-            terminal.Write("oin Immortal's Flock ");
-            if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
-            {
-                terminal.SetColor("bright_green");
-                terminal.WriteLine($"(Following: {currentPlayer.WorshippedGod})");
-            }
-            else
-            {
-                terminal.SetColor("gray");
-                terminal.WriteLine("(unaffiliated)");
+                terminal.WriteLine("");
             }
 
-            if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+            // Mira companion option - only show if she can be recruited
+            if (CanMeetMira())
             {
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("$");
+                terminal.Write("M");
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
-                terminal.SetColor("white");
-                terminal.Write("acrifice Gold       ");
+                terminal.SetColor("bright_green");
+                terminal.Write("editation Chapel ");
                 terminal.SetColor("gray");
-                terminal.WriteLine("(to your immortal god)");
+                terminal.WriteLine("(someone prays alone...)");
+            }
+
+            // The Faith faction option - only show if player isn't already a member
+            if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheFaith)
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("F");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("The Faith ");
+                if (factionSystem.PlayerFaction == null)
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("(seek the High Priestess...)");
+                }
+                else
+                {
+                    terminal.SetColor("dark_red");
+                    terminal.WriteLine("(you serve another...)");
+                }
+            }
+            else
+            {
+                terminal.SetColor("bright_green");
+                terminal.WriteLine(" You are a member of The Faith.");
+            }
+
+            // Inner Sanctum (Faith only)
+            if (FactionSystem.Instance?.HasTempleAccess() == true)
+            {
+                terminal.SetColor("darkgray");
+                terminal.Write(" [");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("N");
+                terminal.SetColor("darkgray");
+                terminal.Write("]");
+                terminal.SetColor("cyan");
+                terminal.Write(" Inner Sanctum");
+                bool meditatedToday;
+                if (DoorMode.IsOnlineMode)
+                {
+                    var boundary = DailySystemManager.GetCurrentResetBoundary();
+                    meditatedToday = currentPlayer.LastInnerSanctumRealDate >= boundary;
+                }
+                else
+                {
+                    int today = DailySystemManager.Instance?.CurrentDay ?? 0;
+                    meditatedToday = currentPlayer.InnerSanctumLastDay >= today;
+                }
+                if (meditatedToday)
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("  (meditated today)");
+                }
+                else
+                {
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine($"  ({GameConfig.InnerSanctumCost}g)");
+                }
+            }
+
+            // Immortal Worship section — only show if any ascended gods exist
+            if (immortalGods.Count > 0)
+            {
+                terminal.WriteLine("");
+                WriteSectionHeader("Ascended Gods", "bright_yellow");
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("L");
+                terminal.Write("J");
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine("eave Immortal's Faith");
-            }
-        }
+                terminal.Write("oin Immortal's Flock ");
+                if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+                {
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine($"(Following: {currentPlayer.WorshippedGod})");
+                }
+                else
+                {
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("(unaffiliated)");
+                }
 
-        terminal.SetColor("darkgray");
-        terminal.Write(" [");
-        terminal.SetColor("bright_yellow");
-        terminal.Write("R");
-        terminal.SetColor("darkgray");
-        terminal.Write("]");
-        terminal.SetColor("white");
-        terminal.WriteLine("eturn");
-        terminal.WriteLine("");
+                if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+                {
+                    terminal.SetColor("darkgray");
+                    terminal.Write(" [");
+                    terminal.SetColor("bright_yellow");
+                    terminal.Write("$");
+                    terminal.SetColor("darkgray");
+                    terminal.Write("]");
+                    terminal.SetColor("white");
+                    terminal.Write("acrifice Gold       ");
+                    terminal.SetColor("gray");
+                    terminal.WriteLine("(to your immortal god)");
+
+                    terminal.SetColor("darkgray");
+                    terminal.Write(" [");
+                    terminal.SetColor("bright_yellow");
+                    terminal.Write("L");
+                    terminal.SetColor("darkgray");
+                    terminal.Write("]");
+                    terminal.SetColor("white");
+                    terminal.WriteLine("eave Immortal's Faith");
+                }
+            }
+
+            terminal.SetColor("darkgray");
+            terminal.Write(" [");
+            terminal.SetColor("bright_yellow");
+            terminal.Write("R");
+            terminal.SetColor("darkgray");
+            terminal.Write("]");
+            terminal.SetColor("white");
+            terminal.WriteLine("eturn");
+            terminal.WriteLine("");
+        }
     }
 
     /// <summary>
@@ -810,7 +888,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Altars of the Gods ═══", "magenta");
+        WriteSectionHeader("Altars of the Gods", "magenta");
         terminal.WriteLine("");
         
         var activeGods = godSystem.GetActiveGods();
@@ -875,7 +953,7 @@ public partial class TempleLocation : BaseLocation
         else
         {
             terminal.WriteLine("   Immortals                Rank                Followers", "white");
-            terminal.WriteLine("═══════════════════════════════════════════════════════════", "magenta");
+            WriteThickDivider(59, "magenta");
 
             for (int i = 0; i < ranking.Count; i++)
             {
@@ -895,7 +973,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Holy News ═══", "cyan");
+        WriteSectionHeader("Holy News", "cyan");
         terminal.WriteLine("");
         terminal.WriteLine("The gods watch over the realm...", "white");
         terminal.WriteLine("Divine interventions shape the fate of mortals...", "white");
@@ -1015,7 +1093,7 @@ public partial class TempleLocation : BaseLocation
     private void DisplayGodListCompact(List<God> gods)
     {
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Available Gods ═══", "cyan");
+        WriteSectionHeader("Available Gods", "cyan");
         terminal.WriteLine("");
 
         if (gods.Count == 0)
@@ -1059,7 +1137,7 @@ public partial class TempleLocation : BaseLocation
     private void DisplayGodList()
     {
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Available Gods ═══", "cyan");
+        WriteSectionHeader("Available Gods", "cyan");
         terminal.WriteLine("");
 
         var activeGods = godSystem.GetActiveGods().OrderBy(g => g.Name).ToList();
@@ -1157,7 +1235,7 @@ public partial class TempleLocation : BaseLocation
         while (!done)
         {
             terminal.WriteLine("");
-            terminal.WriteLine($"═══ Sacrifice to {god.Name} ═══", "cyan");
+            WriteSectionHeader($"Sacrifice to {god.Name}", "cyan");
             terminal.WriteLine("");
             terminal.WriteLine("(G)old", "yellow");
             terminal.WriteLine("(S)tatus", "yellow");
@@ -1328,7 +1406,7 @@ public partial class TempleLocation : BaseLocation
     private async Task DisplayPlayerStatus()
     {
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Your Status ═══", "cyan");
+        WriteSectionHeader("Your Status", "cyan");
         terminal.WriteLine("");
         terminal.WriteLine($"Name: {currentPlayer.Name2}", "yellow");
         terminal.WriteLine($"Level: {currentPlayer.Level}", "yellow");
@@ -1358,7 +1436,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        terminal.WriteLine("═══ The Prophecies of the Old Gods ═══", "bright_magenta");
+        WriteSectionHeader("The Prophecies of the Old Gods", "bright_magenta");
         terminal.WriteLine("");
 
         // Random divine whisper intro
@@ -1508,9 +1586,7 @@ public partial class TempleLocation : BaseLocation
     private async Task DisplayDivineVision()
     {
         terminal.WriteLine("");
-        terminal.WriteLine("╔═══════════════════════════════════════════════════════════════╗", "bright_cyan");
-        terminal.WriteLine("║              A VISION OVERTAKES YOU                           ║", "bright_cyan");
-        terminal.WriteLine("╚═══════════════════════════════════════════════════════════════╝", "bright_cyan");
+        WriteBoxHeader("A VISION OVERTAKES YOU", "bright_cyan", 63);
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -1603,7 +1679,7 @@ public partial class TempleLocation : BaseLocation
 
         terminal.ClearScreen();
         terminal.WriteLine("");
-        terminal.WriteLine("═══ THE DEEP TEMPLE ═══", "bright_yellow");
+        WriteSectionHeader("THE DEEP TEMPLE", "bright_yellow");
         terminal.WriteLine("");
         terminal.WriteLine("You descend stone steps worn smooth by millennia of pilgrims.", "white");
         terminal.WriteLine("The torches here burn with pale, flickering flames.", "white");
@@ -1705,7 +1781,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        terminal.WriteLine("═══ Item Sacrifice ═══", "cyan");
+        WriteSectionHeader("Item Sacrifice", "cyan");
         terminal.WriteLine("");
 
         string currentGod = godSystem.GetPlayerGod(currentPlayer.Name2);
@@ -2341,10 +2417,7 @@ public partial class TempleLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════╗");
-        { const string t = "MEDITATION CHAPEL"; int l = (66 - t.Length) / 2, r = 66 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("MEDITATION CHAPEL", "bright_green", 66);
         terminal.WriteLine("");
         await Task.Delay(1000);
 
@@ -2542,10 +2615,7 @@ public partial class TempleLocation : BaseLocation
         var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                              THE FAITH                                       ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE FAITH", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -2595,8 +2665,7 @@ public partial class TempleLocation : BaseLocation
         await Task.Delay(1500);
 
         // Show faction benefits
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("═══ Benefits of The Faith ═══");
+        WriteSectionHeader("Benefits of The Faith", "bright_yellow");
         terminal.SetColor("white");
         terminal.WriteLine("• 25% discount on healing services at all healers");
         terminal.WriteLine("• Access to special healing prayers and blessings");
@@ -2609,8 +2678,7 @@ public partial class TempleLocation : BaseLocation
 
         if (!canJoin)
         {
-            terminal.SetColor("red");
-            terminal.WriteLine("═══ Requirements Not Met ═══");
+            WriteSectionHeader("Requirements Not Met", "red");
             terminal.SetColor("yellow");
             terminal.WriteLine(reason);
             terminal.WriteLine("");
@@ -2629,8 +2697,7 @@ public partial class TempleLocation : BaseLocation
         }
 
         // Can join - offer the choice
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("═══ Requirements Met ═══");
+        WriteSectionHeader("Requirements Met", "bright_green");
         terminal.SetColor("white");
         terminal.WriteLine("High Priestess Mirael extends her hand toward you.");
         terminal.WriteLine("");
@@ -2669,10 +2736,7 @@ public partial class TempleLocation : BaseLocation
     private async Task PerformFaithOath(UsurperRemake.Systems.FactionSystem factionSystem)
     {
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║                         THE SACRED OATH                                      ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE SACRED OATH", "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -2706,10 +2770,7 @@ public partial class TempleLocation : BaseLocation
         // Actually join the faction
         factionSystem.JoinFaction(UsurperRemake.Systems.Faction.TheFaith, currentPlayer);
 
-        terminal.SetColor("bright_green");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine("║              YOU HAVE JOINED THE FAITH                                       ║");
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("YOU HAVE JOINED THE FAITH", "bright_green");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
@@ -2768,10 +2829,7 @@ public partial class TempleLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_cyan");
-        terminal.WriteLine("╔══════════════════════════════════════════════════════════════════╗");
-        { const string t = "THE INNER SANCTUM"; int l = (66 - t.Length) / 2, r = 66 - t.Length - l; terminal.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
-        terminal.WriteLine("╚══════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("THE INNER SANCTUM", "bright_cyan", 66);
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -2907,10 +2965,7 @@ public partial class TempleLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        terminal.SetColor("bright_yellow");
-        terminal.WriteLine("╔═════════════════════════════════════════════════════════════════════════════╗");
-        terminal.WriteLine($"║{"ALTARS OF THE ASCENDED".PadLeft((77 + 22) / 2).PadRight(77)}║");
-        terminal.WriteLine("╚═════════════════════════════════════════════════════════════════════════════╝");
+        WriteBoxHeader("ALTARS OF THE ASCENDED", "bright_yellow");
         terminal.WriteLine("");
 
         for (int i = 0; i < gods.Count; i++)

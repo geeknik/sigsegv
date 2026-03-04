@@ -403,18 +403,30 @@ public static class TrainingSystem
     /// </summary>
     public static ProficiencyLevel GetSkillProficiency(Character character, string skillId)
     {
-        if (character.SkillProficiencies.TryGetValue(skillId, out var proficiency))
-        {
-            return proficiency;
-        }
+        ProficiencyLevel stored = ProficiencyLevel.Untrained;
+        bool hasStored = character.SkillProficiencies.TryGetValue(skillId, out var storedVal);
+        if (hasStored) stored = storedVal;
 
-        // Default: Untrained for unknown skills, Average for class skills
+        // Class skills: NPCs/companions scale with level (they can't visit the training hall)
         if (IsClassSkill(character.Class, skillId))
         {
-            return ProficiencyLevel.Average;
+            if (character is NPC || character.IsCompanion)
+            {
+                ProficiencyLevel levelDefault = character.Level switch
+                {
+                    >= 50 => ProficiencyLevel.Superb,
+                    >= 35 => ProficiencyLevel.Expert,
+                    >= 20 => ProficiencyLevel.Skilled,
+                    >= 10 => ProficiencyLevel.Good,
+                    _ => ProficiencyLevel.Average
+                };
+                return (ProficiencyLevel)Math.Max((int)stored, (int)levelDefault);
+            }
+            // Players default to Average — they can train at the Level Master
+            if (!hasStored) return ProficiencyLevel.Average;
         }
 
-        return ProficiencyLevel.Untrained;
+        return stored;
     }
 
     /// <summary>

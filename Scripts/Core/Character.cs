@@ -122,6 +122,7 @@ public class Character
     public bool CompactMode { get; set; }             // compact menus for mobile/small screen SSH
     public ColorThemeType ColorTheme { get; set; } = ColorThemeType.Default;  // player-selected color theme
     public bool AutoLevelUp { get; set; } = true;  // auto-level when XP threshold met (on by default)
+    public bool AutoEquipDisabled { get; set; }      // when true, shop purchases go straight to inventory
     public int[] TeamXPPercent { get; set; } = new int[] { 100, 0, 0, 0, 0 };  // per-slot XP percentage (player + 4 teammates, aggregate <= 100)
     public CharacterClass Class { get; set; }       // class
     public int Loyalty { get; set; }                // loyalty% (0-100)
@@ -522,6 +523,15 @@ public class Character
     public float GodSlayerDefenseBonus { get; set; } = 0f; // +defense% while buff active
     public bool HasGodSlayerBuff => GodSlayerCombats > 0;
 
+    // Dark Pact buff (Evil Deeds ritual, v0.49.4)
+    public int DarkPactCombats { get; set; }
+    public float DarkPactDamageBonus { get; set; }
+    public bool HasDarkPactBuff => DarkPactCombats > 0;
+
+    // Evil deed tracking (v0.49.4)
+    public bool HasShatteredSealFragment { get; set; }  // once per cycle
+    public bool HasTouchedTheVoid { get; set; }          // once per cycle (awakening grant)
+
     // Song buff tracking (Music Shop performances)
     public int SongBuffType { get; set; }       // 0=none, 1=WarMarch, 2=IronLullaby, 3=Fortune, 4=BattleHymn
     public int SongBuffCombats { get; set; }    // Remaining combats for active song buff
@@ -531,6 +541,14 @@ public class Character
 
     // Old God lore songs heard (for awakening tracking)
     public HashSet<int> HeardLoreSongs { get; set; } = new();
+
+    // Dungeon settlements (v0.49.4)
+    public HashSet<string> VisitedSettlements { get; set; } = new();
+    public HashSet<string> SettlementLoreRead { get; set; } = new();
+
+    // Wilderness exploration (v0.49.4)
+    public int WildernessExplorationsToday { get; set; } = 0;
+    public HashSet<string> WildernessDiscoveries { get; set; } = new();
 
     // Faction consumable properties (v0.40.2)
     public int PoisonCoatingCombats { get; set; } = 0;  // Combats remaining with poison coating

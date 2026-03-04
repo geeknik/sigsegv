@@ -299,8 +299,8 @@ public class ArmorShopLocation : BaseLocation
     private List<Equipment> GetShopArmorForSlot(EquipmentSlot slot)
     {
         var items = EquipmentDatabase.GetShopArmor(slot);
-        int playerLevel = currentPlayer.Level;
-        return items.Where(i => i.MinLevel <= playerLevel + 15 && i.MinLevel >= Math.Max(1, playerLevel - 20)).ToList();
+        // Show all items — players can buy for inventory to equip on NPCs/companions
+        return items;
     }
 
     private void ShowSlotItems(EquipmentSlot slot)
@@ -638,46 +638,38 @@ public class ArmorShopLocation : BaseLocation
             return;
         }
 
-        // Check class restriction
+        // Check if player can personally equip this item
+        bool canEquipPersonally = true;
+        string cantEquipReason = "";
+
         if (item.ClassRestrictions != null && item.ClassRestrictions.Count > 0
             && !item.ClassRestrictions.Contains(currentPlayer.Class))
         {
+            canEquipPersonally = false;
+            cantEquipReason = $"Class restriction: {GetClassTag(item)}";
+        }
+        else if (item.RequiresGood && currentPlayer.Chivalry <= currentPlayer.Darkness)
+        {
+            canEquipPersonally = false;
+            cantEquipReason = "Requires good alignment";
+        }
+        else if (item.RequiresEvil && currentPlayer.Darkness <= currentPlayer.Chivalry)
+        {
+            canEquipPersonally = false;
+            cantEquipReason = "Requires evil alignment";
+        }
+        else if (currentPlayer.Level < item.MinLevel)
+        {
+            canEquipPersonally = false;
+            cantEquipReason = $"Requires level {item.MinLevel} (you are level {currentPlayer.Level})";
+        }
+
+        if (!canEquipPersonally)
+        {
             terminal.WriteLine("");
-            terminal.SetColor("red");
-            terminal.Write($"{item.Name} can only be used by: ");
             terminal.SetColor("yellow");
-            terminal.WriteLine(GetClassTag(item));
-            await Pause();
-            return;
-        }
-
-        // Check alignment requirements
-        if (item.RequiresGood && currentPlayer.Chivalry <= currentPlayer.Darkness)
-        {
-            terminal.WriteLine("");
-            terminal.SetColor("red");
-            terminal.WriteLine($"{item.Name} requires a good alignment!");
-            await Pause();
-            return;
-        }
-
-        if (item.RequiresEvil && currentPlayer.Darkness <= currentPlayer.Chivalry)
-        {
-            terminal.WriteLine("");
-            terminal.SetColor("red");
-            terminal.WriteLine($"{item.Name} requires an evil alignment!");
-            await Pause();
-            return;
-        }
-
-        // Check level requirement
-        if (currentPlayer.Level < item.MinLevel)
-        {
-            terminal.WriteLine("");
-            terminal.SetColor("red");
-            terminal.WriteLine($"{item.Name} requires level {item.MinLevel} (you are level {currentPlayer.Level})!");
-            await Pause();
-            return;
+            terminal.WriteLine($"Warning: {cantEquipReason}");
+            terminal.WriteLine("This item will go to your inventory (for companions/NPCs).");
         }
 
         // Show tax breakdown
@@ -719,34 +711,61 @@ public class ArmorShopLocation : BaseLocation
         // Process city tax share from this sale
         CityControlSystem.Instance.ProcessSaleTax(adjustedPrice);
 
-        // Equip the item (will auto-unequip old item)
-        if (currentPlayer.EquipItem(item, out string message))
+        if (canEquipPersonally && !currentPlayer.AutoEquipDisabled)
         {
-            terminal.SetColor("bright_green");
+            // Ask whether to equip or send to inventory
             terminal.WriteLine("");
-            terminal.WriteLine($"You purchased and equipped {item.Name}!");
-            terminal.SetColor("gray");
-            terminal.WriteLine(message);
+            terminal.SetColor("cyan");
+            var equipChoice = await terminal.GetInput("[E]quip now or [I]nventory? ");
+            if (equipChoice.Trim().ToUpper().StartsWith("I"))
+            {
+                var invItem = currentPlayer.ConvertEquipmentToLegacyItem(item);
+                currentPlayer.Inventory.Add(invItem);
+                terminal.SetColor("bright_green");
+                terminal.WriteLine($"You purchased {item.Name} — added to inventory.");
+            }
+            else
+            {
+                // Equip the item (will auto-unequip old item)
+                if (currentPlayer.EquipItem(item, out string message))
+                {
+                    terminal.SetColor("bright_green");
+                    terminal.WriteLine("");
+                    terminal.WriteLine($"You purchased and equipped {item.Name}!");
+                    terminal.SetColor("gray");
+                    terminal.WriteLine(message);
 
-            // Recalculate combat stats
-            currentPlayer.RecalculateStats();
+                    // Recalculate combat stats
+                    currentPlayer.RecalculateStats();
 
-            // Track shop purchase telemetry
-            TelemetrySystem.Instance.TrackShopTransaction(
-                "armor", "buy", item.Name, armorTotalWithTax,
-                currentPlayer.Level, currentPlayer.Gold
-            );
-
-            // Check for equipment quest completion
-            QuestSystem.OnEquipmentPurchased(currentPlayer, item);
+                }
+                else
+                {
+                    // Equip failed — add to inventory instead
+                    var invItem = currentPlayer.ConvertEquipmentToLegacyItem(item);
+                    currentPlayer.Inventory.Add(invItem);
+                    terminal.SetColor("yellow");
+                    terminal.WriteLine("");
+                    terminal.WriteLine($"Couldn't equip {item.Name} — added to inventory.");
+                }
+            }
         }
         else
         {
-            terminal.SetColor("red");
-            terminal.WriteLine($"Failed to equip: {message}");
-            // Refund
-            currentPlayer.Gold += armorTotalWithTax;
+            // Can't equip personally — add to inventory for companions/NPCs
+            var invItem = currentPlayer.ConvertEquipmentToLegacyItem(item);
+            currentPlayer.Inventory.Add(invItem);
+            terminal.SetColor("bright_green");
+            terminal.WriteLine("");
+            terminal.WriteLine($"You purchased {item.Name} — added to inventory.");
         }
+
+        // Track purchase (all paths — equip, inventory, or can't-equip)
+        TelemetrySystem.Instance.TrackShopTransaction(
+            "armor", "buy", item.Name, armorTotalWithTax,
+            currentPlayer.Level, currentPlayer.Gold
+        );
+        QuestSystem.OnEquipmentPurchased(currentPlayer, item);
 
         // Auto-save after purchase
         await SaveSystem.Instance.AutoSave(currentPlayer);

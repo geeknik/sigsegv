@@ -1114,6 +1114,9 @@ public static class LootGenerator
 
             ApplyEffectsToItem(item, effects, isWeapon: false);
 
+            // Apply stat bonuses based on template name (e.g., "Sash of Focus" → +INT/+Mana)
+            ApplyThematicBonuses(item, template.Name, finalPower);
+
             if (isCursed)
             {
                 item.Armor = (int)(item.Armor * 1.25f);
@@ -1125,6 +1128,71 @@ public static class LootGenerator
             item.IsIdentified = !ShouldBeUnidentified(rarity);
 
             return item;
+        }
+
+        /// <summary>
+        /// Applies stat bonuses based on template name keywords, giving armor pieces
+        /// thematic identity beyond their base defense value.
+        /// </summary>
+        private static void ApplyThematicBonuses(Item item, string templateName, int finalPower)
+        {
+            var name = templateName.ToLowerInvariant();
+
+            int primaryStat = Math.Max(1, finalPower / 5);
+            int secondaryStat = Math.Max(1, finalPower / 7);
+            int hpBonus = finalPower;
+            int manaBonus = Math.Max(1, finalPower * 3 / 4);
+
+            // Caster/Focus themed → Wisdom + Mana
+            if (name.Contains("focus") || name.Contains("wizard") || name.Contains("archmage") ||
+                name.Contains("arcane") || name.Contains("enchanted") || name.Contains("mystic") ||
+                name.Contains("mage"))
+            {
+                item.Wisdom += primaryStat;
+                item.Mana += manaBonus;
+            }
+            // Holy/Divine themed → Wisdom + HP
+            else if (name.Contains("holy") || name.Contains("sacred") || name.Contains("blessed") ||
+                     name.Contains("divine") || name.Contains("faith") || name.Contains("priest") ||
+                     name.Contains("diadem") || name.Contains("paladin"))
+            {
+                item.Wisdom += primaryStat;
+                item.HP += hpBonus;
+            }
+            // Shadow/Stealth themed → Dexterity + Agility
+            else if (name.Contains("shadow") || name.Contains("thief") || name.Contains("night") ||
+                     name.Contains("stalker") || name.Contains("death") || name.Contains("phantom"))
+            {
+                item.Dexterity += primaryStat;
+                item.Agility += secondaryStat;
+            }
+            // Warrior/Battle themed → Strength + HP
+            else if (name.Contains("war ") || name.Contains("battle") || name.Contains("titan") ||
+                     name.Contains("berserker") || name.Contains("barbarian") || name.Contains("spiked"))
+            {
+                item.Strength += primaryStat;
+                item.HP += hpBonus;
+            }
+            // Dragon themed → Strength + Defence + HP
+            else if (name.Contains("dragon"))
+            {
+                item.Strength += secondaryStat;
+                item.Defence += secondaryStat;
+                item.HP += hpBonus / 2;
+            }
+            // Ranger/Scout/Elven themed → Dexterity + Agility
+            else if (name.Contains("ranger") || name.Contains("scout") || name.Contains("elven") ||
+                     name.Contains("forest"))
+            {
+                item.Dexterity += primaryStat;
+                item.Agility += secondaryStat;
+            }
+            // Premium material themed → HP + Defence
+            else if (name.Contains("mithril") || name.Contains("adamantine"))
+            {
+                item.HP += hpBonus;
+                item.Defence += secondaryStat;
+            }
         }
 
         private static Item CreateAccessoryFromTemplate(
