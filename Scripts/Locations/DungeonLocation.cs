@@ -54,6 +54,10 @@ public class DungeonLocation : BaseLocation
 
     public override async Task EnterLocation(Character player, TerminalEmulator term)
     {
+        // Set base class fields so WriteSectionHeader/WriteDivider etc. work
+        currentPlayer = player;
+        terminal = term;
+
         // GROUP FOLLOWER CHECK: If this player is in a group but not the leader,
         // and the leader is already in the dungeon, enter as a follower instead.
         var group = GroupSystem.Instance?.GetGroupFor(player?.Name2 ?? "");

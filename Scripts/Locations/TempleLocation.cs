@@ -534,7 +534,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("The Faith ");
+                terminal.Write(" The Faith ");
                 if (factionSystem.PlayerFaction == null)
                 {
                     terminal.SetColor("gray");

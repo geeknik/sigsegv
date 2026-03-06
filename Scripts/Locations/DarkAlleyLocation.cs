@@ -2219,6 +2219,9 @@ namespace UsurperRemake.Locations
 
             if (currentPlayer.Gold <= 0) return (0, 1.0f);
 
+            // Cap max bet based on level to prevent gold farming exploit
+            long maxBet = Math.Min(currentPlayer.Gold, (long)currentPlayer.Level * 500);
+
             terminal.SetColor("yellow");
             terminal.WriteLine("Place a side bet on the fight?");
             WriteSRMenuOption("1", "1.5x (safe)");
@@ -2232,9 +2235,9 @@ namespace UsurperRemake.Locations
             multiplier = betChoice == "1" ? 1.5f : betChoice == "2" ? 2.0f : 3.0f;
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"How much to wager? (max {currentPlayer.Gold:N0}): ");
+            terminal.WriteLine($"How much to wager? (max {maxBet:N0}): ");
             var amountStr = await terminal.GetInput("> ");
-            if (long.TryParse(amountStr, out long amt) && amt > 0 && amt <= currentPlayer.Gold)
+            if (long.TryParse(amountStr, out long amt) && amt > 0 && amt <= maxBet)
             {
                 betAmount = amt;
                 currentPlayer.Gold -= amt;

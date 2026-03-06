@@ -287,11 +287,21 @@ public class GodSystem
     }
     
     /// <summary>
-    /// Get player's god name
+    /// Get player's god name. Returns empty if the god no longer exists in the system.
     /// </summary>
     public string GetPlayerGod(string playerName)
     {
-        return playerGods.ContainsKey(playerName) ? playerGods[playerName] : "";
+        if (!playerGods.ContainsKey(playerName))
+            return "";
+        var godName = playerGods[playerName];
+        // Validate god still exists — stale/invalid entries get cleaned up
+        if (!string.IsNullOrEmpty(godName) && !VerifyGodExists(godName))
+        {
+            playerGods.Remove(playerName);
+            UsurperRemake.Systems.DebugLogger.Instance.LogInfo("TEMPLE", $"Cleaned up invalid god '{godName}' for {playerName}");
+            return "";
+        }
+        return godName;
     }
     
     /// <summary>

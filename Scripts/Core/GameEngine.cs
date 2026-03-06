@@ -2435,6 +2435,18 @@ public partial class GameEngine
                 await dailyManager.CheckDailyReset();
             }
 
+            // Dual-worship cleanup: player can't worship both an elder god and a player-god
+            if (currentPlayer != null && !string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+            {
+                var elderGod = UsurperRemake.GodSystemSingleton.Instance?.GetPlayerGod(currentPlayer.Name2);
+                if (!string.IsNullOrEmpty(elderGod))
+                {
+                    // Elder god takes priority — clear the player-god worship
+                    DebugLogger.Instance.LogWarning("WORSHIP", $"Dual worship detected for {currentPlayer.Name2}: elder god '{elderGod}' + immortal '{currentPlayer.WorshippedGod}'. Clearing immortal.");
+                    currentPlayer.WorshippedGod = "";
+                }
+            }
+
             // Online mode: cache divine boon effects for mortals who worship a player-god
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null
                 && !string.IsNullOrEmpty(currentPlayer.WorshippedGod)
