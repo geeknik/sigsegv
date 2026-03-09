@@ -421,7 +421,8 @@ public class WeaponShopLocation : BaseLocation
         {
             bool canAfford = currentPlayer.Gold >= item.Value;
             bool meetsLevel = currentPlayer.Level >= item.MinLevel;
-            bool meetsClass = item.ClassRestrictions == null || item.ClassRestrictions.Count == 0
+            bool isPrestige = currentPlayer.Class >= CharacterClass.Tidesworn;
+            bool meetsClass = isPrestige || item.ClassRestrictions == null || item.ClassRestrictions.Count == 0
                 || item.ClassRestrictions.Contains(currentPlayer.Class);
             bool canBuy = canAfford && meetsLevel && meetsClass;
 
@@ -726,7 +727,8 @@ public class WeaponShopLocation : BaseLocation
         bool canEquipPersonally = true;
         string cantEquipReason = "";
 
-        if (item.ClassRestrictions != null && item.ClassRestrictions.Count > 0
+        if (currentPlayer.Class < CharacterClass.Tidesworn
+            && item.ClassRestrictions != null && item.ClassRestrictions.Count > 0
             && !item.ClassRestrictions.Contains(currentPlayer.Class))
         {
             canEquipPersonally = false;

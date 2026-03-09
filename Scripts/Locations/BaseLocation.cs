@@ -3662,7 +3662,7 @@ public abstract class BaseLocation
     /// <summary>
     /// Check if we're running inside WezTerm (which supports font switching).
     /// </summary>
-    private static bool IsRunningInWezTerm()
+    internal static bool IsRunningInWezTerm()
     {
         var termProgram = Environment.GetEnvironmentVariable("TERM_PROGRAM");
         return string.Equals(termProgram, "WezTerm", StringComparison.OrdinalIgnoreCase);
@@ -3672,7 +3672,7 @@ public abstract class BaseLocation
     /// Read the current terminal font preference from font-choice.txt.
     /// Returns "JetBrains Mono" if no preference file exists.
     /// </summary>
-    private static string ReadCurrentFont()
+    internal static string ReadCurrentFont()
     {
         try
         {
@@ -3691,7 +3691,7 @@ public abstract class BaseLocation
     /// Write the terminal font preference to font-choice.txt.
     /// WezTerm auto-reloads its config and picks up the change.
     /// </summary>
-    private static void WriteTerminalFont(string fontName)
+    internal static void WriteTerminalFont(string fontName)
     {
         try
         {

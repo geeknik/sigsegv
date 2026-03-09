@@ -5,5 +5,5 @@
 
 cd /d "%~dp0"
 title Usurper Reborn
-mode con: cols=80 lines=50
+mode con: cols=80 lines=50 2>nul
 UsurperReborn.exe --local --screen-reader

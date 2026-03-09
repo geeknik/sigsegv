@@ -13195,6 +13195,16 @@ public partial class CombatEngine
     /// </summary>
     private async Task MonsterAttacksCompanion(Monster monster, Character companion, CombatResult result)
     {
+        // Check if companion will dodge (from Time Stop, abilities, etc.)
+        if (companion.DodgeNextAttack)
+        {
+            companion.DodgeNextAttack = false;
+            terminal.SetColor("bright_cyan");
+            terminal.WriteLine($"{companion.DisplayName} deftly dodges {monster.TheNameOrName}'s attack!");
+            await Task.Delay(GetCombatDelay(600));
+            return;
+        }
+
         terminal.SetColor("red");
         terminal.WriteLine($"{monster.TheNameOrName} turns its attention to {companion.DisplayName}!");
         await Task.Delay(GetCombatDelay(500));
@@ -13297,6 +13307,9 @@ public partial class CombatEngine
             int armAbsorbMax = (int)(Math.Sqrt(companion.ArmPow) * 5);
             companionDefense += random.Next(0, armAbsorbMax + 1);
         }
+        // Apply buff spell bonuses (protection spells, Time Stop, etc.)
+        companionDefense += companion.MagicACBonus;
+        companionDefense += companion.TempDefenseBonus;
 
         long actualDamage = Math.Max(1, monsterAttack - companionDefense);
 

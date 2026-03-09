@@ -971,14 +971,16 @@ public class Equipment
             return false;
         }
 
-        if (ClassRestrictions.Count > 0 && !ClassRestrictions.Contains(character.Class))
+        // Prestige classes bypass all class and armor weight restrictions
+        bool isPrestige = character.Class >= CharacterClass.Tidesworn;
+        if (!isPrestige && ClassRestrictions.Count > 0 && !ClassRestrictions.Contains(character.Class))
         {
             reason = $"Cannot be used by {character.Class}";
             return false;
         }
 
         // Armor weight class restrictions
-        if (WeightClass != ArmorWeightClass.None)
+        if (!isPrestige && WeightClass != ArmorWeightClass.None)
         {
             var maxWeight = GameConfig.GetMaxArmorWeight(character.Class);
             if ((int)WeightClass > (int)maxWeight)

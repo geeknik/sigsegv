@@ -1303,6 +1303,8 @@ public partial class GameEngine
                 terminal.WriteLine(GameConfig.CompactMode
                     ? "  Z. Compact Mode: ON"
                     : "  Z. Compact Mode: OFF", GameConfig.CompactMode ? "bright_green" : "white");
+                if (BaseLocation.IsRunningInWezTerm())
+                    terminal.WriteLine($"  F. Terminal Font: {BaseLocation.ReadCurrentFont()}", "white");
                 terminal.WriteLine("");
 
                 terminal.WriteLine("  Q. Quit", "gray");
@@ -1423,6 +1425,18 @@ public partial class GameEngine
                     terminal.WriteLine("Compact Mode: OFF");
                 }
 
+                if (BaseLocation.IsRunningInWezTerm())
+                {
+                    terminal.SetColor("darkgray");
+                    terminal.Write("  [");
+                    terminal.SetColor("bright_cyan");
+                    terminal.Write("F");
+                    terminal.SetColor("darkgray");
+                    terminal.Write("] ");
+                    terminal.SetColor("white");
+                    terminal.WriteLine($"Terminal Font: {BaseLocation.ReadCurrentFont()}");
+                }
+
                 terminal.WriteLine("");
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -1499,6 +1513,20 @@ public partial class GameEngine
                         terminal.WriteLine("Full-size menus restored.", "white");
                     }
                     await Task.Delay(1500);
+                    break;
+                case "F":
+                    if (BaseLocation.IsRunningInWezTerm())
+                    {
+                        var fonts = new[] { "JetBrains Mono", "Cascadia Code", "Fira Code", "Iosevka", "Hack", "Kelmscott Mono" };
+                        var currentFont = BaseLocation.ReadCurrentFont();
+                        int idx = Array.IndexOf(fonts, currentFont);
+                        int next = (idx + 1) % fonts.Length;
+                        BaseLocation.WriteTerminalFont(fonts[next]);
+                        terminal.WriteLine("");
+                        terminal.WriteLine($"Terminal font set to: {fonts[next]}", "green");
+                        terminal.WriteLine("  Font will update in the terminal momentarily.", "white");
+                        await Task.Delay(800);
+                    }
                     break;
                 case "Q":
                     IsIntentionalExit = true;
@@ -2277,7 +2305,11 @@ public partial class GameEngine
             // A second merge here would create duplicate Quest objects, orphaning the ones in player.ActiveQuests.
 
             // Restore story systems (companions, children, seals, etc.)
-            SaveSystem.Instance.RestoreStorySystems(saveData.StorySystems);
+            // In online mode, only restore this player's god entry — other players' stale
+            // snapshots would overwrite their current worship choices in the shared GodSystem.
+            string? godRestoreFilter = (UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
+                ? currentPlayer.Name2 : null;
+            SaveSystem.Instance.RestoreStorySystems(saveData.StorySystems, godRestoreFilter);
 
             // Migration: sync RelationshipSystem with RomanceTracker for saves affected by
             // the bidirectional key bug (pre-v0.42.4). If RomanceTracker says Lover/Spouse/FWB
@@ -2438,11 +2470,21 @@ public partial class GameEngine
                 await dailyManager.CheckDailyReset();
             }
 
-            // Dual-worship cleanup: player can't worship both an elder god and a player-god
-            if (currentPlayer != null && !string.IsNullOrEmpty(currentPlayer.WorshippedGod))
+            // Manwe worship cleanup: Manwe (Supreme Creator / final boss) is not a valid
+            // worship target — players could select it at the temple due to missing filter.
+            if (currentPlayer != null)
             {
-                var elderGod = UsurperRemake.GodSystemSingleton.Instance?.GetPlayerGod(currentPlayer.Name2);
-                if (!string.IsNullOrEmpty(elderGod))
+                var godSystem = UsurperRemake.GodSystemSingleton.Instance;
+                var elderGod = godSystem?.GetPlayerGod(currentPlayer.Name2);
+                if (elderGod == GameConfig.SupremeCreatorName)
+                {
+                    DebugLogger.Instance.LogWarning("WORSHIP", $"Cleaned up invalid Manwe worship for {currentPlayer.Name2}");
+                    godSystem?.SetPlayerGod(currentPlayer.Name2, "");
+                    elderGod = "";
+                }
+
+                // Dual-worship cleanup: player can't worship both an elder god and a player-god
+                if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod) && !string.IsNullOrEmpty(elderGod))
                 {
                     // Elder god takes priority — clear the player-god worship
                     DebugLogger.Instance.LogWarning("WORSHIP", $"Dual worship detected for {currentPlayer.Name2}: elder god '{elderGod}' + immortal '{currentPlayer.WorshippedGod}'. Clearing immortal.");
@@ -3024,7 +3066,11 @@ public partial class GameEngine
         }
 
         // Restore story systems (companions, children, seals, etc.)
-        SaveSystem.Instance.RestoreStorySystems(saveData.StorySystems);
+        // In online mode, only restore this player's god entry — other players' stale
+        // snapshots would overwrite their current worship choices in the shared GodSystem.
+        string? godFilter = (UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
+            ? currentPlayer.Name2 : null;
+        SaveSystem.Instance.RestoreStorySystems(saveData.StorySystems, godFilter);
 
         // In online mode, override royal court, children, and marriages with world_state
         // (authoritative source). RestoreStorySystems loaded stale data from the player's

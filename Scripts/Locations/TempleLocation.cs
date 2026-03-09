@@ -1003,7 +1003,9 @@ public partial class TempleLocation : BaseLocation
     /// </summary>
     private async Task<God?> SelectGod(string prompt = "Select a god", bool requireConfirmation = true)
     {
-        var activeGods = godSystem.GetActiveGods().OrderBy(g => g.Name).ToList();
+        var activeGods = godSystem.GetActiveGods()
+            .Where(g => g.Id != "SUPREME") // Exclude Manwe (system god, not worshippable)
+            .OrderBy(g => g.Name).ToList();
         if (activeGods.Count == 0)
         {
             terminal.WriteLine("No gods are available.", "red");
@@ -1148,7 +1150,9 @@ public partial class TempleLocation : BaseLocation
         WriteSectionHeader("Available Gods", "cyan");
         terminal.WriteLine("");
 
-        var activeGods = godSystem.GetActiveGods().OrderBy(g => g.Name).ToList();
+        var activeGods = godSystem.GetActiveGods()
+            .Where(g => g.Id != "SUPREME") // Exclude Manwe (system god, not worshippable)
+            .OrderBy(g => g.Name).ToList();
 
         if (activeGods.Count == 0)
         {

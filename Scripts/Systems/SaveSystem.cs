@@ -1919,7 +1919,7 @@ namespace UsurperRemake.Systems
         /// Restore story systems state from save data
         /// Note: Restoration is best-effort - systems may not support all restore operations
         /// </summary>
-        public void RestoreStorySystems(StorySystemsData? data)
+        public void RestoreStorySystems(StorySystemsData? data, string? onlyRestoreGodForPlayer = null)
         {
             if (data == null) return;
 
@@ -2011,11 +2011,16 @@ namespace UsurperRemake.Systems
             catch { /* System not available */ }
 
             // God System - restore player worship data
+            // In online mode, only restore this player's god entry — other players' entries
+            // in the snapshot may be stale and would overwrite their current worship choices.
             try
             {
                 var godSystem = UsurperRemake.GodSystemSingleton.Instance;
                 foreach (var kvp in data.PlayerGods)
                 {
+                    if (onlyRestoreGodForPlayer != null &&
+                        !kvp.Key.Equals(onlyRestoreGodForPlayer, StringComparison.OrdinalIgnoreCase))
+                        continue;
                     godSystem.SetPlayerGod(kvp.Key, kvp.Value);
                 }
             }

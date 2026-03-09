@@ -2,7 +2,7 @@
 
 ## A Persistent Online Text RPG with a Living World
 
-**ALPHA v0.50.6** | **FREE AND OPEN SOURCE** | **GPL v2**
+**ALPHA v0.50.7** | **FREE AND OPEN SOURCE** | **GPL v2**
 
 60+ autonomous NPCs wake up, go to work, visit taverns, fall in love, get married, have children, age, and eventually die of old age — all while you're offline. Log back in, read the news feed, and discover that the blacksmith married the barmaid, the king was assassinated, or a new generation just came of age. The world doesn't wait for you.
 
@@ -31,7 +31,7 @@ The core of Usurper Reborn is a 24/7 agent-based simulation. NPCs aren't quest d
 Beyond the simulation, there's a deep RPG with 100+ hours of content.
 
 ### Character Building
-- **11 Classes** — Warrior, Paladin, Assassin, Magician, Cleric, Ranger, Bard, Sage, Barbarian, Alchemist, Jester — each with unique abilities and combat stamina mechanics
+- **11 Classes + 5 Prestige** — Warrior, Paladin, Assassin, Magician, Cleric, Ranger, Bard, Sage, Barbarian, Alchemist, Jester — plus 5 NG+ prestige classes (Tidesworn, Wavecaller, Cyclebreaker, Abysswarden, Voidreaver) unlocked by completing different endings
 - **10 Races** — Human, Elf, Dwarf, Hobbit, Half-Elf, Orc, Gnome, Troll, Gnoll, Mutant — with race-specific lifespans, stats, and lore
 - **75 Spells** across 3 caster classes, 44 class abilities, meaningful stat scaling
 
@@ -261,6 +261,9 @@ For detailed BBS setup instructions, see [DOCS/BBS_DOOR_SETUP.md](DOCS/BBS_DOOR_
 - Additional companion personal quest storylines
 - Expanded faction recruitment ceremonies
 
+### v0.50.7 - Loot Variety, Prestige Fixes & Ally Combat Buffs
+Prestige classes bypass all equipment restrictions. Loot template expansion for all classes (6 new "All" weapons, 5 body armor, 20+ per-slot armor, 3 shields). Buff spells (Time Stop, protection) now apply to NPC allies in combat. God worship persistence fix for online mode. Font selection on main menu for WezTerm users. Prestige classes added to website.
+
 ### v0.50.6 - Gear Inspector & TLS Fixes
 New `/gear` (`/eq`) command shows detailed per-item equipment breakdown with all stats, enchantments, proc effects, and totals. Windows 7 TLS 1.2 fixes for auto-updater download, telemetry, and bug reports.
 
@@ -338,7 +341,7 @@ Join our Discord server for discussions, feedback, and updates:
 
 *"You are not a wave fighting the ocean. You ARE the ocean, dreaming of being a wave."*
 
-## Known Issues (Alpha v0.50.5)
+## Known Issues (Alpha v0.50.7)
 - Save files from earlier alpha versions may not be fully compatible
 - BBS FOSSIL mode not supported (use `--stdio` flag for FOSSIL-based BBSes)
 - Steam features only work when game is launched through Steam client
@@ -347,4 +350,4 @@ Join our Discord server for discussions, feedback, and updates:
 
 ---
 
-**Status**: ALPHA v0.50.6 — The world is running. [Watch it live.](https://usurper-reborn.net)
+**Status**: ALPHA v0.50.7 — The world is running. [Watch it live.](https://usurper-reborn.net)
