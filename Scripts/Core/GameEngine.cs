@@ -5345,7 +5345,7 @@ public partial class GameEngine
         if (worldSimulator == null) return;
 
         // Guard against old saves that don't have SaveTime (defaults to DateTime.MinValue)
-        // Without this, upgrading to v0.60.0 would trigger a full 7-day catch-up for every player
+        // Without this, upgrading to v0.51.0 would trigger a full 7-day catch-up for every player
         if (saveTime == default || saveTime.Year < 2020) return;
 
         var absence = DateTime.Now - saveTime;

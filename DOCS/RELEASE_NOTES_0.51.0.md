@@ -1,4 +1,4 @@
-# Usurper Reborn v0.60.0 - "Babel" (Localization Update)
+# Usurper Reborn v0.51.0 - "Babel" (Localization Update)
 
 ## Localization System
 
@@ -11,7 +11,7 @@ Usurper Reborn now supports multiple languages! The game ships with full English
 - **Persistent**: Your language preference saves with your character and restores on login
 - **Graceful fallback**: If a translation is missing for your language, the game falls back to English, then to the raw key name — no crashes or blank text
 
-### What's Translated (v0.60.0)
+### What's Translated (v0.51.0)
 
 The entire game UI is localized — 13,589 keys covering:
 
@@ -92,8 +92,8 @@ Affects: Main Street menu (17 items), Healer menu (10 items), quick command bar 
 - **World sim catch-up: thread-unsafe buffer null check** — `_catchUpBuffer != null` was checked outside the lock in `Newsy()`, creating a race condition with `ClearCatchUpBuffer()`. Moved inside the lock.
 - **World sim catch-up: NPC immigration every tick** — `ProcessNPCImmigration()` ran every tick during catch-up instead of being gated by `runVolatileSystems`, causing population explosion. Now gated.
 - **World sim catch-up: respawn queue debug log spam** — Respawn queue additions logged on every tick during catch-up, generating thousands of debug entries. Suppressed during catch-up.
-- **Old saves trigger full 7-day catch-up on upgrade (CRITICAL)** — Pre-0.60.0 saves have `SaveTime == DateTime.MinValue` (field didn't exist). The catch-up system calculated 2000+ years of absence and ran the maximum 20,160-tick simulation on every first login after upgrading. Now returns early if `SaveTime` is before 2020.
-- **Old saves show "0001-01-01" on character selection** — Save slot display showed nonsensical dates for pre-0.60.0 saves. Now hides the "Last played" line for saves without valid timestamps.
+- **Old saves trigger full 7-day catch-up on upgrade (CRITICAL)** — Pre-0.51.0 saves have `SaveTime == DateTime.MinValue` (field didn't exist). The catch-up system calculated 2000+ years of absence and ran the maximum 20,160-tick simulation on every first login after upgrading. Now returns early if `SaveTime` is before 2020.
+- **Old saves show "0001-01-01" on character selection** — Save slot display showed nonsensical dates for pre-0.51.0 saves. Now hides the "Last played" line for saves without valid timestamps.
 - **Missing Localization folder crashes prompts** — BBS sysops who deploy only exe+dll without the `Localization/` folder saw raw key names (e.g., `"ui.your_choice"`) instead of English text. Added built-in English fallback dictionary with ~70 critical UI keys (prompts, status bar, combat actions, equipment slots, save/load messages).
 
 ## New Features
@@ -110,7 +110,7 @@ When loading a single-player save after being away, the world now fast-forwards 
 
 ## Files Changed
 
-- `Scripts/Core/GameConfig.cs` — Version 0.60.0; `Language` AsyncLocal property (per-session for MUD mode)
+- `Scripts/Core/GameConfig.cs` — Version 0.51.0; `Language` AsyncLocal property (per-session for MUD mode)
 - `Scripts/Core/Character.cs` — `Language` property on character for save persistence
 - `Scripts/Systems/LocalizationSystem.cs` — **NEW** — `Loc` static class with `Get()`, `Has()`, `GetLanguageName()`, `GetNextLanguage()`; JSON loader with fallback chain; comment key filtering
 - `Localization/en.json` — **NEW** — 13,589 English localization keys covering entire game
