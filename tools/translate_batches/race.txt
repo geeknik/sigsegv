@@ -1,2 +1,0 @@
-race.gnoll=Gnoll
-race.hobbit=Hobbit

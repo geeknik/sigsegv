@@ -1,2 +1,0 @@
-sysop_location.bbs_name=  BBS: {0}
-sysop_location.error_label=Error

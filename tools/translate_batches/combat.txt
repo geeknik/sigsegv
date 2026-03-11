@@ -1,2 +1,0 @@
-combat.drug_drain=[Drug Side Effect] The drugs drain {0} HP from your body!
-combat.speed_normal=Normal

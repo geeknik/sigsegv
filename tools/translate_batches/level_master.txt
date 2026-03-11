@@ -1,1 +1,0 @@
-level_master.bbs_pts={0}pts

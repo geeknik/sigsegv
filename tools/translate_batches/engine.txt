@@ -1,9 +1,0 @@
-engine.credits_original_name=    Usurper: Halls of Avarice (1993)
-engine.credits_reborn=  USURPER REBORN:
-engine.credits_subtitle=USURPER REBORN
-engine.main_title_box=USURPER REBORN
-engine.menu_admin=Admin
-engine.menu_sysop=SysOp
-engine.section_info=  INFO
-engine.section_info_visual=  ── INFO 
-engine.title_version=v{0} "{1}"

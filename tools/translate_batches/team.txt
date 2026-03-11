@@ -1,3 +1,0 @@
-team.bbs_info= Info:
-team.war_record=({0}-{1}) {2}g
-team.war_vs=vs {0} 

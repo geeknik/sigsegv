@@ -1,2 +1,0 @@
-ability.available=Available Abilities
-ability.locked=Locked (level too low)

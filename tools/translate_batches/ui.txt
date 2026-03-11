@@ -1,2 +1,0 @@
-ui.back=[B]ack
-ui.neutral=Neutral

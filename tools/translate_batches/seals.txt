@@ -1,7 +1,0 @@
-seals.face_manwe_see_more=When you face Manwe, you will see more than others.
-seals.fourth_path=If you can meet certain conditions, a fourth path opens.
-seals.knowledge_understanding=This knowledge grants you understanding.
-seals.not_destroyer=Not destroyer. Not savior. Not defiant.
-seals.true_ending_possible=THE TRUE ENDING IS NOW POSSIBLE
-seals.uncovered_history=You have uncovered the complete history of the gods.
-seals.understand_choices=You will understand his choices. His regrets.

@@ -1,2 +1,0 @@
-old_god.defeated_xp=  +{0} XP
-old_god.saved_xp=  +{0} XP
