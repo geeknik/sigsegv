@@ -20,17 +20,17 @@ public class WildernessLocation : BaseLocation
 
         terminal.ClearScreen();
 
-        WriteBoxHeader("THE WILDERNESS", "bright_green");
+        WriteBoxHeader(Loc.Get("wilderness.header"), "bright_green");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("Beyond the city gates, untamed lands stretch in every direction.");
-        terminal.WriteLine("Danger and discovery await those bold enough to venture forth.");
+        terminal.WriteLine(Loc.Get("wilderness.intro_line1"));
+        terminal.WriteLine(Loc.Get("wilderness.intro_line2"));
         terminal.WriteLine("");
 
         int remaining = GameConfig.WildernessMaxDailyExplorations - currentPlayer.WildernessExplorationsToday;
         terminal.SetColor(remaining > 0 ? "bright_yellow" : "red");
-        terminal.WriteLine($"Expeditions remaining: {remaining}/{GameConfig.WildernessMaxDailyExplorations}");
+        terminal.WriteLine(Loc.Get("wilderness.expeditions_remaining", remaining, GameConfig.WildernessMaxDailyExplorations));
         terminal.WriteLine("");
 
         // Show regions
@@ -38,8 +38,8 @@ public class WildernessLocation : BaseLocation
         {
             bool canAccess = currentPlayer.Level >= region.MinLevel;
             terminal.SetColor(canAccess ? region.ThemeColor : "darkgray");
-            string levelReq = region.MinLevel > 1 ? $" (Level {region.MinLevel}+)" : " (Any level)";
-            string lockIcon = canAccess ? "" : (IsScreenReader ? " LOCKED" : " [LOCKED]");
+            string levelReq = region.MinLevel > 1 ? Loc.Get("wilderness.level_req", region.MinLevel) : Loc.Get("wilderness.any_level");
+            string lockIcon = canAccess ? "" : (IsScreenReader ? Loc.Get("wilderness.locked") : Loc.Get("wilderness.locked_bracket"));
             terminal.WriteLine(IsScreenReader
                 ? $"  {region.DirectionKey}. {region.Name,-24} - {region.Direction}{levelReq}{lockIcon}"
                 : $"  [{region.DirectionKey}] {region.Name,-24} - {region.Direction}{levelReq}{lockIcon}");
@@ -54,12 +54,12 @@ public class WildernessLocation : BaseLocation
             int revisitsLeft = GameConfig.WildernessMaxDailyRevisits - currentPlayer.WildernessRevisitsToday;
             terminal.SetColor("bright_cyan");
             terminal.WriteLine(IsScreenReader
-                ? $"  D. Discoveries ({discoveryCount} found, {revisitsLeft} revisits left)"
-                : $"  [D] Discoveries ({discoveryCount} found, {revisitsLeft} revisits left)");
+                ? Loc.Get("wilderness.discoveries_sr", discoveryCount, revisitsLeft)
+                : Loc.Get("wilderness.discoveries_visual", discoveryCount, revisitsLeft));
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine(IsScreenReader ? "  R. Return to Main Street" : "  [R] Return to Main Street");
+        terminal.WriteLine(IsScreenReader ? Loc.Get("wilderness.return_sr") : Loc.Get("wilderness.return_visual"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -69,12 +69,12 @@ public class WildernessLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_green");
-        terminal.WriteLine("=== THE WILDERNESS ===");
+        terminal.WriteLine(Loc.Get("wilderness.bbs_header"));
         terminal.WriteLine("");
 
         int remaining = GameConfig.WildernessMaxDailyExplorations - currentPlayer.WildernessExplorationsToday;
         terminal.SetColor(remaining > 0 ? "bright_yellow" : "red");
-        terminal.WriteLine($"Expeditions: {remaining}/{GameConfig.WildernessMaxDailyExplorations}");
+        terminal.WriteLine(Loc.Get("wilderness.bbs_expeditions", remaining, GameConfig.WildernessMaxDailyExplorations));
 
         foreach (var region in WildernessData.Regions)
         {
@@ -86,9 +86,9 @@ public class WildernessLocation : BaseLocation
         if (currentPlayer.WildernessDiscoveries.Count > 0)
         {
             int revisitsLeft = GameConfig.WildernessMaxDailyRevisits - currentPlayer.WildernessRevisitsToday;
-            terminal.WriteLine($"[D] Discoveries ({currentPlayer.WildernessDiscoveries.Count}, {revisitsLeft} revisits)");
+            terminal.WriteLine(Loc.Get("wilderness.bbs_discoveries", currentPlayer.WildernessDiscoveries.Count, revisitsLeft));
         }
-        terminal.WriteLine("[R] Return");
+        terminal.WriteLine(Loc.Get("wilderness.bbs_return"));
         terminal.WriteLine("");
         ShowStatusLine();
     }
@@ -113,7 +113,7 @@ public class WildernessLocation : BaseLocation
 
             case "R":
             case "Q":
-                terminal.WriteLine("You return through the city gates.", "gray");
+                terminal.WriteLine(Loc.Get("wilderness.return_city"), "gray");
                 await Task.Delay(1500);
                 throw new LocationExitException(GameLocation.MainStreet);
 
@@ -136,7 +136,7 @@ public class WildernessLocation : BaseLocation
         if (currentPlayer.Level < region.MinLevel)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"The {region.Name} is too dangerous for you. (Requires level {region.MinLevel})");
+            terminal.WriteLine(Loc.Get("wilderness.region_too_dangerous", region.Name, region.MinLevel));
             await Task.Delay(2000);
             return;
         }
@@ -145,7 +145,7 @@ public class WildernessLocation : BaseLocation
         if (currentPlayer.WildernessExplorationsToday >= GameConfig.WildernessMaxDailyExplorations)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You're too tired for another expedition today. Rest and try tomorrow.");
+            terminal.WriteLine(Loc.Get("wilderness.too_tired"));
             await Task.Delay(2000);
             return;
         }
@@ -201,7 +201,7 @@ public class WildernessLocation : BaseLocation
         string monsterName = region.MonsterNames[_random.Next(region.MonsterNames.Length)];
 
         terminal.SetColor("red");
-        terminal.WriteLine($"A {monsterName} emerges from the {region.Name.ToLower()}!");
+        terminal.WriteLine(Loc.Get("wilderness.monster_emerges", monsterName, region.Name.ToLower()));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -227,7 +227,7 @@ public class WildernessLocation : BaseLocation
             long bonusGold = (long)(_random.Next(10, 30) * (1 + region.MinLevel / 10.0));
             currentPlayer.Gold += bonusGold;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"You search the area and find {bonusGold} additional gold.");
+            terminal.WriteLine(Loc.Get("wilderness.bonus_gold", bonusGold));
         }
 
         await terminal.PressAnyKey();
@@ -238,7 +238,7 @@ public class WildernessLocation : BaseLocation
         var result = region.ForagingResults[_random.Next(region.ForagingResults.Length)];
 
         terminal.SetColor("green");
-        terminal.WriteLine("You search the area carefully...");
+        terminal.WriteLine(Loc.Get("wilderness.search_area"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -262,12 +262,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HerbHealing++;
                     terminal.SetColor("green");
-                    terminal.WriteLine("Found: Healing Herb (+1)");
+                    terminal.WriteLine(Loc.Get("wilderness.found_healing_herb"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Your herb pouch is full.");
+                    terminal.WriteLine(Loc.Get("wilderness.herb_pouch_full"));
                 }
                 break;
             case "herb_ironbark":
@@ -275,12 +275,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HerbIronbark++;
                     terminal.SetColor("green");
-                    terminal.WriteLine("Found: Ironbark Root (+1)");
+                    terminal.WriteLine(Loc.Get("wilderness.found_ironbark"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Your herb pouch is full.");
+                    terminal.WriteLine(Loc.Get("wilderness.herb_pouch_full"));
                 }
                 break;
             case "herb_firebloom":
@@ -288,12 +288,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HerbFirebloom++;
                     terminal.SetColor("green");
-                    terminal.WriteLine("Found: Firebloom Petal (+1)");
+                    terminal.WriteLine(Loc.Get("wilderness.found_firebloom"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Your herb pouch is full.");
+                    terminal.WriteLine(Loc.Get("wilderness.herb_pouch_full"));
                 }
                 break;
             case "herb_starbloom":
@@ -301,12 +301,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HerbStarbloom++;
                     terminal.SetColor("green");
-                    terminal.WriteLine("Found: Starbloom Essence (+1)");
+                    terminal.WriteLine(Loc.Get("wilderness.found_starbloom"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Your herb pouch is full.");
+                    terminal.WriteLine(Loc.Get("wilderness.herb_pouch_full"));
                 }
                 break;
             case "herb_swift":
@@ -314,12 +314,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HerbSwiftthistle++;
                     terminal.SetColor("green");
-                    terminal.WriteLine("Found: Swiftthistle (+1)");
+                    terminal.WriteLine(Loc.Get("wilderness.found_swiftthistle"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Your herb pouch is full.");
+                    terminal.WriteLine(Loc.Get("wilderness.herb_pouch_full"));
                 }
                 break;
             case "heal_small":
@@ -328,12 +328,12 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HP += healSmall;
                     terminal.SetColor("green");
-                    terminal.WriteLine($"You eat the foraged food. (+{healSmall} HP)");
+                    terminal.WriteLine(Loc.Get("wilderness.eat_foraged_food", healSmall));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("A pleasant snack, but you're already healthy.");
+                    terminal.WriteLine(Loc.Get("wilderness.already_healthy"));
                 }
                 break;
             case "heal_medium":
@@ -342,30 +342,30 @@ public class WildernessLocation : BaseLocation
                 {
                     currentPlayer.HP += healMed;
                     terminal.SetColor("green");
-                    terminal.WriteLine($"The medicinal plant restores your health. (+{healMed} HP)");
+                    terminal.WriteLine(Loc.Get("wilderness.medicinal_plant", healMed));
                 }
                 break;
             case "gold_small":
                 long goldS = 20 * levelScale + _random.Next(20);
                 currentPlayer.Gold += goldS;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Worth {goldS} gold!");
+                terminal.WriteLine(Loc.Get("wilderness.worth_gold", goldS));
                 break;
             case "gold_medium":
                 long goldM = 50 * levelScale + _random.Next(50);
                 currentPlayer.Gold += goldM;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Worth {goldM} gold!");
+                terminal.WriteLine(Loc.Get("wilderness.worth_gold", goldM));
                 break;
             case "gold_large":
                 long goldL = 100 * levelScale + _random.Next(100);
                 currentPlayer.Gold += goldL;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Worth {goldL} gold!");
+                terminal.WriteLine(Loc.Get("wilderness.worth_gold", goldL));
                 break;
             case "nothing":
                 terminal.SetColor("gray");
-                terminal.WriteLine("Better luck next time.");
+                terminal.WriteLine(Loc.Get("wilderness.better_luck"));
                 break;
         }
     }
@@ -375,7 +375,7 @@ public class WildernessLocation : BaseLocation
         string ruins = region.RuinsEncounters[_random.Next(region.RuinsEncounters.Length)];
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("You discover ruins in the wilderness...");
+        terminal.WriteLine(Loc.Get("wilderness.discover_ruins"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -384,10 +384,10 @@ public class WildernessLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("[S] Search for treasure   [L] Leave it alone");
+        terminal.WriteLine(Loc.Get("wilderness.ruins_search_or_leave"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Your choice: ");
+        var choice = await GetChoice();
 
         if (choice.ToUpper() == "S")
         {
@@ -398,14 +398,14 @@ public class WildernessLocation : BaseLocation
                 long gold = 30 + (long)(currentPlayer.Level * 3) + _random.Next(50);
                 currentPlayer.Gold += gold;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"You find {gold} gold hidden in the ruins!");
+                terminal.WriteLine(Loc.Get("wilderness.ruins_gold_found", gold));
 
                 // Small chance of a healing potion
                 if (_random.Next(100) < 30)
                 {
                     currentPlayer.Healing = Math.Min(currentPlayer.Healing + 1, currentPlayer.MaxPotions);
                     terminal.SetColor("green");
-                    terminal.WriteLine("You also find a dusty healing potion!");
+                    terminal.WriteLine(Loc.Get("wilderness.ruins_potion_found"));
                 }
             }
             else if (roll < 80)
@@ -413,18 +413,18 @@ public class WildernessLocation : BaseLocation
                 long damage = Math.Max(1, currentPlayer.MaxHP / 10);
                 currentPlayer.HP = Math.Max(1, currentPlayer.HP - damage);
                 terminal.SetColor("red");
-                terminal.WriteLine($"A hidden trap springs! You take {damage} damage!");
+                terminal.WriteLine(Loc.Get("wilderness.ruins_trap", damage));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The ruins have already been picked clean.");
+                terminal.WriteLine(Loc.Get("wilderness.ruins_picked_clean"));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You move on, leaving the ruins undisturbed.");
+            terminal.WriteLine(Loc.Get("wilderness.ruins_leave"));
         }
 
         await terminal.PressAnyKey();
@@ -439,10 +439,10 @@ public class WildernessLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("[T] Talk   [L] Leave");
+        terminal.WriteLine(Loc.Get("wilderness.traveler_talk_or_leave"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Your choice: ");
+        var choice = await GetChoice();
 
         if (choice.ToUpper() == "T")
         {
@@ -453,31 +453,31 @@ public class WildernessLocation : BaseLocation
                 // Trade offer
                 long cost = 20 + _random.Next(30);
                 terminal.SetColor("white");
-                terminal.WriteLine($"The {traveler.name} offers to sell you a healing potion for {cost} gold.");
+                terminal.WriteLine(Loc.Get("wilderness.traveler_sell_potion", traveler.name, cost));
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("[Y] Buy   [N] Decline");
-                var buy = await terminal.GetInput("Your choice: ");
+                terminal.WriteLine(Loc.Get("wilderness.traveler_buy_or_decline"));
+                var buy = await GetChoice();
                 if (buy.ToUpper() == "Y" && currentPlayer.Gold >= cost)
                 {
                     currentPlayer.Gold -= cost;
                     currentPlayer.Healing = Math.Min(currentPlayer.Healing + 1, currentPlayer.MaxPotions);
                     terminal.SetColor("green");
-                    terminal.WriteLine("Purchased!");
+                    terminal.WriteLine(Loc.Get("wilderness.traveler_purchased"));
                 }
                 else if (buy.ToUpper() == "Y")
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("You don't have enough gold.");
+                    terminal.WriteLine(Loc.Get("ui.not_enough_gold_plain"));
                 }
             }
             else if (roll < 70)
             {
                 // Lore / hint
                 terminal.SetColor("white");
-                terminal.WriteLine($"The {traveler.name} shares wisdom of the wilds.");
+                terminal.WriteLine(Loc.Get("wilderness.traveler_shares_wisdom", traveler.name));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"The deeper dungeon levels hold treasures beyond imagining,");
-                terminal.WriteLine(" but the Old Gods sleep there. Tread carefully.\"");
+                terminal.WriteLine(Loc.Get("wilderness.traveler_lore_line1"));
+                terminal.WriteLine(Loc.Get("wilderness.traveler_lore_line2"));
             }
             else
             {
@@ -485,13 +485,13 @@ public class WildernessLocation : BaseLocation
                 long heal = currentPlayer.MaxHP / 8;
                 currentPlayer.HP = Math.Min(currentPlayer.MaxHP, currentPlayer.HP + heal);
                 terminal.SetColor("green");
-                terminal.WriteLine($"The {traveler.name} shares food and drink. (+{heal} HP)");
+                terminal.WriteLine(Loc.Get("wilderness.traveler_shares_food", traveler.name, heal));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You nod and continue on your way.");
+            terminal.WriteLine(Loc.Get("wilderness.traveler_nod_leave"));
         }
 
         await terminal.PressAnyKey();
@@ -500,16 +500,16 @@ public class WildernessLocation : BaseLocation
     private async Task ShrineEncounter(WildernessRegion region)
     {
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("You discover a weathered shrine at the roadside.");
-        terminal.WriteLine("Ancient symbols glow faintly in the stone.");
+        terminal.WriteLine(Loc.Get("wilderness.shrine_discover"));
+        terminal.WriteLine(Loc.Get("wilderness.shrine_symbols"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("[P] Pray   [L] Leave");
+        terminal.WriteLine(Loc.Get("wilderness.shrine_pray_or_leave"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Your choice: ");
+        var choice = await GetChoice();
 
         if (choice.ToUpper() == "P")
         {
@@ -522,9 +522,9 @@ public class WildernessLocation : BaseLocation
                 long mana = currentPlayer.MaxMana / 4;
                 currentPlayer.Mana = Math.Min(currentPlayer.MaxMana, currentPlayer.Mana + mana);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("A warm light envelops you. Your wounds close and your mind clears.");
-                if (heal > 0) terminal.WriteLine($"  +{heal} HP");
-                if (mana > 0) terminal.WriteLine($"  +{mana} Mana");
+                terminal.WriteLine(Loc.Get("wilderness.shrine_warm_light"));
+                if (heal > 0) terminal.WriteLine(Loc.Get("wilderness.shrine_hp", heal));
+                if (mana > 0) terminal.WriteLine(Loc.Get("wilderness.shrine_mana", mana));
             }
             else if (roll < 55)
             {
@@ -534,17 +534,17 @@ public class WildernessLocation : BaseLocation
                 if (stat == 0)
                 {
                     currentPlayer.Strength += 1;
-                    terminal.WriteLine("The shrine blesses you with strength. (+1 STR)");
+                    terminal.WriteLine(Loc.Get("wilderness.shrine_str"));
                 }
                 else if (stat == 1)
                 {
                     currentPlayer.Dexterity += 1;
-                    terminal.WriteLine("The shrine blesses you with agility. (+1 DEX)");
+                    terminal.WriteLine(Loc.Get("wilderness.shrine_dex"));
                 }
                 else
                 {
                     currentPlayer.Wisdom += 1;
-                    terminal.WriteLine("The shrine blesses you with wisdom. (+1 WIS)");
+                    terminal.WriteLine(Loc.Get("wilderness.shrine_wis"));
                 }
             }
             else if (roll < 75)
@@ -553,19 +553,19 @@ public class WildernessLocation : BaseLocation
                 long xp = 10 + currentPlayer.Level * 5;
                 currentPlayer.Experience += xp;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Ancient knowledge flows into you. (+{xp} XP)");
+                terminal.WriteLine(Loc.Get("wilderness.shrine_xp", xp));
             }
             else
             {
                 // Nothing special
                 terminal.SetColor("gray");
-                terminal.WriteLine("You feel a moment of peace, but nothing else happens.");
+                terminal.WriteLine(Loc.Get("wilderness.shrine_peace"));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You pass the shrine by.");
+            terminal.WriteLine(Loc.Get("wilderness.shrine_pass"));
         }
 
         await terminal.PressAnyKey();
@@ -589,13 +589,13 @@ public class WildernessLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("★ DISCOVERY ★");
+        terminal.WriteLine(Loc.Get("wilderness.discovery_star"));
         terminal.SetColor("white");
-        terminal.WriteLine($"You've found: {discovery.Name}");
+        terminal.WriteLine(Loc.Get("wilderness.discovery_found", discovery.Name));
         terminal.SetColor("gray");
         terminal.WriteLine(discovery.Description);
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("(You can revisit this location from the Discoveries menu)");
+        terminal.WriteLine(Loc.Get("wilderness.discovery_revisit_hint"));
 
         NewsSystem.Instance?.Newsy($"☆ {currentPlayer.Name} discovered {discovery.Name} in the {region.Name}!");
 
@@ -607,16 +607,16 @@ public class WildernessLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("Your Discoveries");
+            terminal.WriteLine(Loc.Get("wilderness.discoveries_title"));
         else
-            terminal.WriteLine("═══ Your Discoveries ═══");
+            terminal.WriteLine(Loc.Get("wilderness.discoveries_title_visual"));
         terminal.WriteLine("");
 
         if (currentPlayer.WildernessDiscoveries.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You haven't discovered anything yet.");
-            terminal.WriteLine("Explore the wilderness to find hidden locations.");
+            terminal.WriteLine(Loc.Get("wilderness.no_discoveries"));
+            terminal.WriteLine(Loc.Get("wilderness.no_discoveries_hint"));
             await terminal.PressAnyKey();
             return;
         }
@@ -639,10 +639,10 @@ public class WildernessLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine(IsScreenReader ? "0. Return" : "[0] Return");
+        terminal.WriteLine(IsScreenReader ? Loc.Get("wilderness.discoveries_return_sr") : Loc.Get("wilderness.discoveries_return_visual"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Visit: ");
+        var choice = await terminal.GetInput(Loc.Get("wilderness.discoveries_visit_prompt"));
 
         if (int.TryParse(choice, out int idx) && idx >= 1 && idx <= allDiscoveries.Count)
         {
@@ -652,7 +652,7 @@ public class WildernessLocation : BaseLocation
             if (currentPlayer.WildernessRevisitsToday >= GameConfig.WildernessMaxDailyRevisits)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You've already revisited enough discoveries for today.");
+                terminal.WriteLine(Loc.Get("wilderness.revisits_exhausted"));
                 await Task.Delay(2000);
                 return;
             }

@@ -253,7 +253,7 @@ public class StreetEncounterSystem
         EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "HOSTILE ENCOUNTER!", "bright_red");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.hostile.title"), "bright_red");
         terminal.WriteLine("");
 
         // Find or create an attacker
@@ -264,24 +264,24 @@ public class StreetEncounterSystem
         }
 
         terminal.SetColor("red");
-        terminal.WriteLine($"  {attacker.Name} blocks your path!");
+        terminal.WriteLine(Loc.Get("street_encounter.hostile.blocks_path", attacker.Name));
         terminal.SetColor("yellow");
         terminal.WriteLine($"  \"{GetHostilePhrase(attacker)}\"");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"  Level {attacker.Level} {attacker.Class} - HP: {attacker.HP}/{attacker.MaxHP}");
+        terminal.WriteLine(Loc.Get("street_encounter.hostile.stats", attacker.Name, attacker.Level, attacker.Class, attacker.HP, attacker.MaxHP));
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("F", "bright_yellow");
-        terminal.Write("]ight  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_fight")}  [", "white");
         terminal.Write("R", "bright_yellow");
-        terminal.Write("]un  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_run")}  [", "white");
         terminal.Write("B", "bright_yellow");
-        terminal.Write("]ribe  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_bribe")}  [", "white");
         terminal.Write("T", "bright_yellow");
-        terminal.WriteLine("]alk", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.hostile.opt_talk")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -317,7 +317,7 @@ public class StreetEncounterSystem
     private async Task ProcessPickpocketEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "PICKPOCKET!", "yellow");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.pickpocket.title"), "yellow");
         terminal.WriteLine("");
 
         // Dexterity check to notice
@@ -328,15 +328,15 @@ public class StreetEncounterSystem
         if (noticed)
         {
             terminal.SetColor("green");
-            terminal.WriteLine("  You feel a hand reaching for your coin purse!");
+            terminal.WriteLine(Loc.Get("street_encounter.pickpocket.feel_hand"));
             terminal.WriteLine("");
             terminal.Write("  [", "white");
             terminal.Write("G", "bright_yellow");
-            terminal.Write("]rab them  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.pickpocket.opt_grab")}  [", "white");
             terminal.Write("S", "bright_yellow");
-            terminal.Write("]hout for guards  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.pickpocket.opt_shout")}  [", "white");
             terminal.Write("I", "bright_yellow");
-            terminal.WriteLine("]gnore", "white");
+            terminal.WriteLine($"]{Loc.Get("street_encounter.pickpocket.opt_ignore")}", "white");
 
             string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
 
@@ -349,7 +349,7 @@ public class StreetEncounterSystem
 
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  You grab the {thief.Name}!");
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.grab_thief", thief.Name));
                 await Task.Delay(1000);
 
                 await FightNPC(player, thief, result, terminal);
@@ -358,16 +358,16 @@ public class StreetEncounterSystem
             {
                 terminal.WriteLine("");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  \"Guards! Guards!\" you shout.");
-                terminal.WriteLine("  The thief flees into the crowd.");
-                result.Message = "Pickpocket scared away by guards.";
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.shout_guards"));
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.thief_flees"));
+                result.Message = Loc.Get("street_encounter.pickpocket.msg_scared_away");
             }
             else
             {
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("  You pretend not to notice. The thief slinks away.");
-                result.Message = "Pickpocket encounter avoided.";
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.pretend_not_notice"));
+                result.Message = Loc.Get("street_encounter.pickpocket.msg_avoided");
             }
         }
         else
@@ -378,16 +378,16 @@ public class StreetEncounterSystem
             {
                 player.Gold -= stolenAmount;
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Someone bumps into you on the street...");
-                terminal.WriteLine($"  Later, you realize {stolenAmount} gold is missing!");
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.bumps_into"));
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.gold_missing", stolenAmount));
                 result.GoldLost = stolenAmount;
-                result.Message = $"Pickpocketed for {stolenAmount} gold!";
+                result.Message = Loc.Get("street_encounter.pickpocket.msg_stolen", stolenAmount);
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Someone bumps into you, but finds nothing to steal.");
-                result.Message = "Pickpocket found nothing.";
+                terminal.WriteLine(Loc.Get("street_encounter.pickpocket.nothing_to_steal"));
+                result.Message = Loc.Get("street_encounter.pickpocket.msg_found_nothing");
             }
         }
 
@@ -400,29 +400,29 @@ public class StreetEncounterSystem
     private async Task ProcessBrawlEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "TAVERN BRAWL!", "bright_yellow");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.brawl.title"), "bright_yellow");
         terminal.WriteLine("");
 
-        string[] brawlReasons = {
-            "A drunk spills ale on you!",
-            "Someone accuses you of cheating at dice!",
-            "A patron insults your appearance!",
-            "You're caught in the middle of a bar fight!",
-            "A mercenary picks a fight with you!",
-            "Someone claims you're sitting in their seat!"
+        string[] brawlReasonKeys = {
+            "street_encounter.brawl.reason_ale",
+            "street_encounter.brawl.reason_dice",
+            "street_encounter.brawl.reason_insult",
+            "street_encounter.brawl.reason_bar_fight",
+            "street_encounter.brawl.reason_mercenary",
+            "street_encounter.brawl.reason_seat"
         };
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {brawlReasons[_random.Next(brawlReasons.Length)]}");
+        terminal.WriteLine($"  {Loc.Get(brawlReasonKeys[_random.Next(brawlReasonKeys.Length)])}");
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("F", "bright_yellow");
-        terminal.Write("]ight  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.brawl.opt_fight")}  [", "white");
         terminal.Write("D", "bright_yellow");
-        terminal.Write("]uck and run  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.brawl.opt_duck")}  [", "white");
         terminal.Write("B", "bright_yellow");
-        terminal.WriteLine("]uy them a drink", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.brawl.opt_buy_drink")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -436,7 +436,7 @@ public class StreetEncounterSystem
             brawler.Name2 = brawlerName; brawler.Name1 = brawlerName;
 
             terminal.SetColor("red");
-            terminal.WriteLine($"  {brawler.Name} squares up against you!");
+            terminal.WriteLine(Loc.Get("street_encounter.brawl.squares_up", brawler.Name));
             await Task.Delay(1000);
 
             await FightNPC(player, brawler, result, terminal, isBrawl: true);
@@ -447,16 +447,16 @@ public class StreetEncounterSystem
             if (dexCheck >= 10)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("  You duck under a flying chair and escape the brawl!");
-                result.Message = "Escaped tavern brawl.";
+                terminal.WriteLine(Loc.Get("street_encounter.brawl.duck_escape"));
+                result.Message = Loc.Get("street_encounter.brawl.msg_escaped");
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  You try to escape but get hit by a flying mug!");
+                terminal.WriteLine(Loc.Get("street_encounter.brawl.hit_by_mug"));
                 player.HP -= _random.Next(5, 15);
                 if (player.HP < 1) player.HP = 1;
-                result.Message = "Got hit escaping brawl.";
+                result.Message = Loc.Get("street_encounter.brawl.msg_hit_escaping");
             }
         }
         else if (choice == "B")
@@ -465,15 +465,15 @@ public class StreetEncounterSystem
             {
                 player.Gold -= 20;
                 terminal.SetColor("green");
-                terminal.WriteLine("  You buy a round of drinks and defuse the situation!");
-                terminal.WriteLine("  The brawlers toast to your health!");
+                terminal.WriteLine(Loc.Get("street_encounter.brawl.buy_round"));
+                terminal.WriteLine(Loc.Get("street_encounter.brawl.toast_health"));
                 result.GoldLost = 20;
-                result.Message = "Bought drinks to avoid brawl.";
+                result.Message = Loc.Get("street_encounter.brawl.msg_bought_drinks");
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  You don't have enough gold! The brawl continues!");
+                terminal.WriteLine(Loc.Get("street_encounter.brawl.not_enough_gold"));
                 var brawler = CreateRandomHostileNPC(player.Level);
                 brawler.Name2 = "Angry Drunk"; brawler.Name1 = "Angry Drunk";
                 await FightNPC(player, brawler, result, terminal, isBrawl: true);
@@ -490,7 +490,7 @@ public class StreetEncounterSystem
         EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "CHALLENGE!", "bright_cyan");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.challenge.title"), "bright_cyan");
         terminal.WriteLine("");
 
         // Find an NPC near player's level
@@ -501,22 +501,22 @@ public class StreetEncounterSystem
         }
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  {challenger.Name} walks up to you, looking for a fight.");
+        terminal.WriteLine(Loc.Get("street_encounter.challenge.walks_up", challenger.Name));
         terminal.SetColor("yellow");
         terminal.WriteLine($"  \"{GetChallengePhrase(challenger, player)}\"");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"  {challenger.Name} - Level {challenger.Level} {challenger.Class}");
+        terminal.WriteLine(Loc.Get("street_encounter.challenge.info", challenger.Name, challenger.Level, challenger.Class));
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("A", "bright_yellow");
-        terminal.Write("]ccept challenge  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.challenge.opt_accept")}  [", "white");
         terminal.Write("D", "bright_yellow");
-        terminal.Write("]ecline  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.challenge.opt_decline")}  [", "white");
         terminal.Write("I", "bright_yellow");
-        terminal.WriteLine("]nsult them", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.challenge.opt_insult")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -524,27 +524,27 @@ public class StreetEncounterSystem
         if (choice == "A")
         {
             terminal.SetColor("green");
-            terminal.WriteLine("  \"Let us fight with honor!\" you declare.");
+            terminal.WriteLine(Loc.Get("street_encounter.challenge.accept_honor"));
             await Task.Delay(1000);
             await FightNPC(player, challenger, result, terminal, isHonorDuel: true);
         }
         else if (choice == "D")
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  \"Not today,\" you reply.");
+            terminal.WriteLine(Loc.Get("street_encounter.challenge.decline_reply"));
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {challenger.Name} scoffs but lets you pass.");
+            terminal.WriteLine(Loc.Get("street_encounter.challenge.scoffs", challenger.Name));
 
             // Declining hurts reputation slightly
             player.Fame = Math.Max(0, player.Fame - 5);
-            result.Message = "Declined a challenge. (-5 Fame)";
+            result.Message = Loc.Get("street_encounter.challenge.msg_declined");
         }
         else if (choice == "I")
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You insult their honor!");
+            terminal.WriteLine(Loc.Get("street_encounter.challenge.insult_honor"));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  {challenger.Name}: \"You'll pay for that!\"");
+            terminal.WriteLine(Loc.Get("street_encounter.challenge.pay_for_that", challenger.Name));
             await Task.Delay(1000);
 
             // They attack with anger bonus
@@ -562,23 +562,23 @@ public class StreetEncounterSystem
         EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "AMBUSH!", "bright_red");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.mugging.title"), "bright_red");
         terminal.WriteLine("");
 
         int muggerCount = _random.Next(2, 4);
         terminal.SetColor("red");
-        terminal.WriteLine($"  {muggerCount} thugs emerge from the shadows!");
+        terminal.WriteLine(Loc.Get("street_encounter.mugging.thugs_emerge", muggerCount));
         terminal.SetColor("yellow");
-        terminal.WriteLine("  \"Your gold or your life!\"");
+        terminal.WriteLine(Loc.Get("street_encounter.mugging.gold_or_life"));
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("F", "bright_yellow");
-        terminal.Write("]ight  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_fight")}  [", "white");
         terminal.Write("S", "bright_yellow");
-        terminal.Write("]urrender gold  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.mugging.opt_surrender")}  [", "white");
         terminal.Write("R", "bright_yellow");
-        terminal.WriteLine("]un for it", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.mugging.opt_run")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -586,7 +586,7 @@ public class StreetEncounterSystem
         if (choice == "F")
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You draw your weapon and prepare to fight!");
+            terminal.WriteLine(Loc.Get("street_encounter.mugging.draw_weapon"));
             await Task.Delay(1000);
 
             // Create multiple monsters for multi-monster combat
@@ -623,13 +623,13 @@ public class StreetEncounterSystem
                 long loot = _random.Next(50, 150) * muggerCount;
                 player.Gold += loot;
                 terminal.SetColor("green");
-                terminal.WriteLine($"  You defeated the muggers and found {loot} gold on their bodies!");
+                terminal.WriteLine(Loc.Get("street_encounter.mugging.defeated_found_gold", loot));
                 result.GoldGained = loot;
-                result.Message = $"Defeated {muggerCount} muggers!";
+                result.Message = Loc.Get("street_encounter.mugging.msg_defeated", muggerCount);
             }
             else
             {
-                result.Message = "Lost to muggers...";
+                result.Message = Loc.Get("street_encounter.mugging.msg_lost");
             }
         }
         else if (choice == "S")
@@ -638,11 +638,11 @@ public class StreetEncounterSystem
             player.Gold -= surrenderAmount;
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  You hand over {surrenderAmount} gold.");
+            terminal.WriteLine(Loc.Get("street_encounter.mugging.hand_over", surrenderAmount));
             terminal.SetColor("gray");
-            terminal.WriteLine("  The thugs take your gold and disappear into the shadows.");
+            terminal.WriteLine(Loc.Get("street_encounter.mugging.thugs_disappear"));
             result.GoldLost = surrenderAmount;
-            result.Message = $"Surrendered {surrenderAmount} gold to muggers.";
+            result.Message = Loc.Get("street_encounter.mugging.msg_surrendered", surrenderAmount);
         }
         else if (choice == "R")
         {
@@ -650,13 +650,13 @@ public class StreetEncounterSystem
             if (_random.Next(100) < escapeChance)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("  You sprint away and lose them in the streets!");
-                result.Message = "Escaped from muggers.";
+                terminal.WriteLine(Loc.Get("street_encounter.mugging.sprint_escape"));
+                result.Message = Loc.Get("street_encounter.mugging.msg_escaped");
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  They catch you and beat you badly!");
+                terminal.WriteLine(Loc.Get("street_encounter.mugging.caught_beaten"));
 
                 int damage = _random.Next(20, 50);
                 player.HP -= damage;
@@ -665,9 +665,9 @@ public class StreetEncounterSystem
                 long stolenGold = Math.Min(player.Gold, _random.Next(50, 200));
                 player.Gold -= stolenGold;
 
-                terminal.WriteLine($"  You take {damage} damage and lose {stolenGold} gold.");
+                terminal.WriteLine(Loc.Get("street_encounter.mugging.damage_and_gold", damage, stolenGold));
                 result.GoldLost = stolenGold;
-                result.Message = "Caught by muggers!";
+                result.Message = Loc.Get("street_encounter.mugging.msg_caught");
             }
         }
 
@@ -680,7 +680,7 @@ public class StreetEncounterSystem
     private async Task ProcessGangEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "GANG ENCOUNTER!", "bright_magenta");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.gang.title"), "bright_magenta");
         terminal.WriteLine("");
 
         bool playerHasTeam = !string.IsNullOrEmpty(player.Team);
@@ -713,37 +713,37 @@ public class StreetEncounterSystem
         }
 
         terminal.SetColor("magenta");
-        terminal.WriteLine($"  Members of the {gangName} block your path!");
+        terminal.WriteLine(Loc.Get("street_encounter.gang.block_path", gangName));
         terminal.WriteLine("");
 
         if (playerHasTeam)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  \"We hear you're with {player.Team}...\"");
-            terminal.WriteLine("  \"This is our territory!\"");
+            terminal.WriteLine(Loc.Get("street_encounter.gang.heard_team", player.Team));
+            terminal.WriteLine(Loc.Get("street_encounter.gang.our_territory"));
             terminal.WriteLine("");
 
             terminal.Write("  [", "white");
             terminal.Write("F", "bright_yellow");
-            terminal.Write("]ight for territory  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.gang.opt_fight_territory")}  [", "white");
             terminal.Write("N", "bright_yellow");
-            terminal.Write("]egotiate  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.gang.opt_negotiate")}  [", "white");
             terminal.Write("L", "bright_yellow");
-            terminal.WriteLine("]eave", "white");
+            terminal.WriteLine($"]{Loc.Get("street_encounter.gang.opt_leave")}", "white");
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  \"You look like you could use some friends...\"");
+            terminal.WriteLine(Loc.Get("street_encounter.gang.need_friends"));
             terminal.WriteLine("");
 
             terminal.Write("  [", "white");
             terminal.Write("J", "bright_yellow");
-            terminal.Write("]oin them  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.gang.opt_join")}  [", "white");
             terminal.Write("R", "bright_yellow");
-            terminal.Write("]efuse  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.gang.opt_refuse")}  [", "white");
             terminal.Write("F", "bright_yellow");
-            terminal.WriteLine("]ight", "white");
+            terminal.WriteLine($"]{Loc.Get("street_encounter.hostile.opt_fight")}", "white");
         }
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -751,7 +751,7 @@ public class StreetEncounterSystem
         if (choice == "F")
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  \"Wrong answer!\" they shout.");
+            terminal.WriteLine(Loc.Get("street_encounter.gang.wrong_answer"));
 
             // Create gang leader
             var gangLeader = CreateRandomHostileNPC(player.Level + 2);
@@ -763,14 +763,14 @@ public class StreetEncounterSystem
             {
                 player.Fame += 20;
                 terminal.SetColor("green");
-                terminal.WriteLine($"  Word spreads of your victory over the {gangName}!");
-                terminal.WriteLine("  (+20 Fame)");
+                terminal.WriteLine(Loc.Get("street_encounter.gang.victory_spreads", gangName));
+                terminal.WriteLine(Loc.Get("street_encounter.gang.plus_fame"));
             }
         }
         else if (choice == "J" && !playerHasTeam)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  The gang looks you over...");
+            terminal.WriteLine(Loc.Get("street_encounter.gang.looks_you_over"));
             await Task.Delay(1000);
 
             // Check if this is an actual existing team with members
@@ -779,7 +779,7 @@ public class StreetEncounterSystem
             if (player.Level >= 3 && isRealTeam)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine($"  \"Welcome to the {gangName}!\"");
+                terminal.WriteLine(Loc.Get("street_encounter.gang.welcome", gangName));
 
                 // Properly join the team with password
                 player.Team = gangName;
@@ -794,7 +794,7 @@ public class StreetEncounterSystem
                     teamRecord.MemberNames.Add(player.Name2);
                 }
 
-                result.Message = $"Joined the {gangName}!";
+                result.Message = Loc.Get("street_encounter.gang.msg_joined", gangName);
 
                 // Announce to news
                 NewsSystem.Instance?.WriteTeamNews("Gang Recruitment!",
@@ -803,16 +803,16 @@ public class StreetEncounterSystem
             else if (player.Level < 3)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  \"Come back when you're stronger, weakling!\"");
-                result.Message = "Too weak to join gang.";
+                terminal.WriteLine(Loc.Get("street_encounter.gang.too_weak"));
+                result.Message = Loc.Get("street_encounter.gang.msg_too_weak");
             }
             else
             {
                 // Team doesn't actually exist - decline the invitation
                 terminal.SetColor("yellow");
-                terminal.WriteLine("  The gang members exchange looks and back away...");
-                terminal.WriteLine("  \"Actually, we're not recruiting right now.\"");
-                result.Message = "Gang decided not to recruit.";
+                terminal.WriteLine(Loc.Get("street_encounter.gang.not_recruiting_1"));
+                terminal.WriteLine(Loc.Get("street_encounter.gang.not_recruiting_2"));
+                result.Message = Loc.Get("street_encounter.gang.msg_not_recruiting");
             }
         }
         else if (choice == "N" || choice == "L" || choice == "R")
@@ -821,13 +821,13 @@ public class StreetEncounterSystem
             if (charismaCheck >= 12 || choice == "L")
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("  They let you pass... this time.");
-                result.Message = "Avoided gang confrontation.";
+                terminal.WriteLine(Loc.Get("street_encounter.gang.let_you_pass"));
+                result.Message = Loc.Get("street_encounter.gang.msg_avoided");
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  \"Nobody refuses us!\"");
+                terminal.WriteLine(Loc.Get("street_encounter.gang.nobody_refuses"));
                 var gangMember = CreateRandomHostileNPC(player.Level);
                 gangMember.Name2 = $"{gangName} Enforcer"; gangMember.Name1 = gangMember.Name2;
                 await FightNPC(player, gangMember, result, terminal);
@@ -843,28 +843,28 @@ public class StreetEncounterSystem
     private async Task ProcessRomanticEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "ROMANTIC ENCOUNTER", "bright_magenta");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.romance.title"), "bright_magenta");
         terminal.WriteLine("");
 
-        string[] admirerNames = player.Sex == CharacterSex.Male ?
-            new[] { "Lovely maiden", "Beautiful stranger", "Mysterious woman", "Charming lady" } :
-            new[] { "Handsome stranger", "Dashing rogue", "Mysterious man", "Charming gentleman" };
+        string[] admirerKeys = player.Sex == CharacterSex.Male ?
+            new[] { "street_encounter.romance.admirer_maiden", "street_encounter.romance.admirer_beautiful", "street_encounter.romance.admirer_mysterious_w", "street_encounter.romance.admirer_charming_w" } :
+            new[] { "street_encounter.romance.admirer_handsome", "street_encounter.romance.admirer_dashing", "street_encounter.romance.admirer_mysterious_m", "street_encounter.romance.admirer_charming_m" };
 
-        string admirer = admirerNames[_random.Next(admirerNames.Length)];
+        string admirer = Loc.Get(admirerKeys[_random.Next(admirerKeys.Length)]);
 
         terminal.SetColor("magenta");
-        terminal.WriteLine($"  A {admirer} catches your eye and approaches...");
+        terminal.WriteLine(Loc.Get("street_encounter.romance.approaches", admirer));
         terminal.SetColor("yellow");
-        terminal.WriteLine("  \"Hey. Buy me a drink?\"");
+        terminal.WriteLine(Loc.Get("street_encounter.romance.buy_drink"));
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("Y", "bright_yellow");
-        terminal.Write("]es  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.romance.opt_yes")}  [", "white");
         terminal.Write("N", "bright_yellow");
-        terminal.Write("]o thanks  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.romance.opt_no")}  [", "white");
         terminal.Write("F", "bright_yellow");
-        terminal.WriteLine("]lirt back", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.romance.opt_flirt")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -872,7 +872,7 @@ public class StreetEncounterSystem
         if (choice == "Y" || choice == "F")
         {
             terminal.SetColor("magenta");
-            terminal.WriteLine("  You spend a pleasant time together...");
+            terminal.WriteLine(Loc.Get("street_encounter.romance.pleasant_time"));
             await Task.Delay(1500);
 
             // Random outcomes
@@ -880,9 +880,9 @@ public class StreetEncounterSystem
             if (outcome < 60)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("  You have a wonderful conversation and make a new friend!");
+                terminal.WriteLine(Loc.Get("street_encounter.romance.wonderful_conversation"));
                 player.Charisma = Math.Min(player.Charisma + 1, 30);
-                result.Message = "Made a romantic connection. (+1 Charisma)";
+                result.Message = Loc.Get("street_encounter.romance.msg_connection");
             }
             else if (outcome < 80)
             {
@@ -892,27 +892,27 @@ public class StreetEncounterSystem
                 {
                     player.Gold -= stolen;
                     terminal.SetColor("red");
-                    terminal.WriteLine("  You wake up later to find your purse lighter...");
-                    terminal.WriteLine($"  They stole {stolen} gold!");
+                    terminal.WriteLine(Loc.Get("street_encounter.romance.purse_lighter"));
+                    terminal.WriteLine(Loc.Get("street_encounter.romance.stole_gold", stolen));
                     result.GoldLost = stolen;
-                    result.Message = "Romantic encounter was a scam!";
+                    result.Message = Loc.Get("street_encounter.romance.msg_scam");
                 }
             }
             else
             {
                 // Genuine connection
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("  They give you a small token of affection.");
+                terminal.WriteLine(Loc.Get("street_encounter.romance.token_affection"));
                 player.Fame += 5;
-                result.Message = "Romantic encounter. (+5 Fame)";
+                result.Message = Loc.Get("street_encounter.romance.msg_fame");
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  \"Perhaps another time,\" you say.");
-            terminal.WriteLine("  They smile and walk away.");
-            result.Message = "Declined romantic encounter.";
+            terminal.WriteLine(Loc.Get("street_encounter.romance.another_time"));
+            terminal.WriteLine(Loc.Get("street_encounter.romance.smile_walk_away"));
+            result.Message = Loc.Get("street_encounter.romance.msg_declined");
         }
 
         terminal.WriteLine("");
@@ -926,7 +926,7 @@ public class StreetEncounterSystem
         EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "TRAVELING MERCHANT", "bright_yellow");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.merchant.title"), "bright_yellow");
         terminal.WriteLine("");
 
         bool shadyMerchant = location == GameLocation.DarkAlley;
@@ -934,15 +934,15 @@ public class StreetEncounterSystem
         if (shadyMerchant)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  A cloaked figure beckons from the shadows...");
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.cloaked_figure"));
             terminal.SetColor("yellow");
-            terminal.WriteLine("  \"Psst! Want to buy something... special?\"");
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.buy_special"));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  A traveling merchant waves you over.");
-            terminal.WriteLine("  \"Fine wares! Rare items! Best prices in town!\"");
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.waves_over"));
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.fine_wares"));
         }
         terminal.WriteLine("");
 
@@ -960,10 +960,10 @@ public class StreetEncounterSystem
         }
         terminal.Write("  [", "white");
         terminal.Write("0", "bright_yellow");
-        terminal.WriteLine("] No thanks", "white");
+        terminal.WriteLine($"] {Loc.Get("street_encounter.merchant.no_thanks")}", "white");
         terminal.WriteLine("");
 
-        string choice = await terminal.GetInput("Buy which item? ");
+        string choice = await terminal.GetInput(Loc.Get("street_encounter.merchant.buy_prompt"));
         if (int.TryParse(choice, out int itemChoice) && itemChoice >= 1 && itemChoice <= items.Count)
         {
             var item = items[itemChoice - 1];
@@ -976,23 +976,23 @@ public class StreetEncounterSystem
                 ApplyMerchantItem(player, item);
 
                 terminal.SetColor("green");
-                terminal.WriteLine($"  You purchase the {item.Name}!");
+                terminal.WriteLine(Loc.Get("street_encounter.merchant.purchased", item.Name));
                 if (!string.IsNullOrEmpty(item.Description))
                     terminal.WriteLine($"  {item.Description}", "cyan");
                 result.GoldLost = item.Price;
-                result.Message = $"Bought {item.Name} from merchant.";
+                result.Message = Loc.Get("street_encounter.merchant.msg_bought", item.Name);
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  You don't have enough gold!");
+                terminal.WriteLine(Loc.Get("street_encounter.merchant.not_enough_gold"));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  \"Come back anytime!\" the merchant calls.");
-            result.Message = "Declined merchant's wares.";
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.come_back"));
+            result.Message = Loc.Get("street_encounter.merchant.msg_declined");
         }
 
         await Task.Delay(2000);
@@ -1004,24 +1004,24 @@ public class StreetEncounterSystem
     private async Task ProcessBeggarEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "BEGGAR", "gray");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.beggar.title"), "gray");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("  A ragged beggar approaches you...");
+        terminal.WriteLine(Loc.Get("street_encounter.beggar.approaches"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("  \"Please, kind adventurer, spare a few coins for the poor?\"");
+        terminal.WriteLine(Loc.Get("street_encounter.beggar.spare_coins"));
         terminal.WriteLine("");
 
         terminal.Write("  [", "white");
         terminal.Write("G", "bright_yellow");
-        terminal.Write("]ive gold (10)  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.beggar.opt_give")}  [", "white");
         terminal.Write("L", "bright_yellow");
-        terminal.Write("]arge donation (50)  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.beggar.opt_large")}  [", "white");
         terminal.Write("I", "bright_yellow");
-        terminal.Write("]gnore  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.pickpocket.opt_ignore")}  [", "white");
         terminal.Write("R", "bright_yellow");
-        terminal.WriteLine("]ob them", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.beggar.opt_rob")}", "white");
         terminal.WriteLine("");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
@@ -1031,30 +1031,30 @@ public class StreetEncounterSystem
             player.Gold -= 10;
             player.Chivalry += 5;
             terminal.SetColor("green");
-            terminal.WriteLine("  The beggar thanks you profusely!");
-            terminal.WriteLine("  (+5 Chivalry)");
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.thanks"));
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.plus_chivalry", 5));
             result.GoldLost = 10;
-            result.Message = "Gave gold to beggar.";
+            result.Message = Loc.Get("street_encounter.beggar.msg_gave");
         }
         else if (choice == "L" && player.Gold >= 50)
         {
             player.Gold -= 50;
             player.Chivalry += 20;
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  \"Bless you, kind soul!\" the beggar weeps with joy.");
-            terminal.WriteLine("  (+20 Chivalry)");
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.bless_you"));
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.plus_chivalry", 20));
 
             // Chance for a reward
             if (_random.Next(100) < 20)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  The beggar hands you a strange amulet...");
-                terminal.WriteLine("  \"This brought me luck once. May it serve you well.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.beggar.strange_amulet"));
+                terminal.WriteLine(Loc.Get("street_encounter.beggar.luck_amulet"));
                 // TODO: Add amulet to inventory
             }
 
             result.GoldLost = 50;
-            result.Message = "Made large donation to beggar.";
+            result.Message = Loc.Get("street_encounter.beggar.msg_large_donation");
         }
         else if (choice == "R")
         {
@@ -1065,16 +1065,16 @@ public class StreetEncounterSystem
             player.Gold += foundGold;
 
             terminal.SetColor("red");
-            terminal.WriteLine("  You rob the beggar of their meager possessions...");
-            terminal.WriteLine($"  You find {foundGold} gold. (+15 Darkness, -10 Chivalry)");
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.rob_possessions"));
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.rob_result", foundGold));
             result.GoldGained = foundGold;
-            result.Message = "Robbed a beggar.";
+            result.Message = Loc.Get("street_encounter.beggar.msg_robbed");
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You walk past without a word.");
-            result.Message = "Ignored beggar.";
+            terminal.WriteLine(Loc.Get("street_encounter.beggar.walk_past"));
+            result.Message = Loc.Get("street_encounter.beggar.msg_ignored");
         }
 
         await Task.Delay(2000);
@@ -1086,11 +1086,11 @@ public class StreetEncounterSystem
     private async Task ProcessRumorEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "RUMORS", "cyan");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.rumor.title"), "cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("  You overhear an interesting conversation...");
+        terminal.WriteLine(Loc.Get("street_encounter.rumor.overhear"));
         terminal.WriteLine("");
 
         string rumor = GetRandomRumor(player);
@@ -1098,7 +1098,7 @@ public class StreetEncounterSystem
         terminal.WriteLine($"  \"{rumor}\"");
         terminal.WriteLine("");
 
-        result.Message = "Heard an interesting rumor.";
+        result.Message = Loc.Get("street_encounter.rumor.msg_heard");
         await terminal.PressAnyKey();
     }
 
@@ -1108,11 +1108,11 @@ public class StreetEncounterSystem
     private async Task ProcessGuardPatrolEncounter(Character player, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "GUARD PATROL", "bright_white");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.guard.title"), "bright_white");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("  A patrol of town guards approaches...");
+        terminal.WriteLine(Loc.Get("street_encounter.guard.patrol_approaches"));
 
         bool wanted = player.Darkness > 100;
 
@@ -1120,10 +1120,10 @@ public class StreetEncounterSystem
         if (wanted && (FactionSystem.Instance?.HasGuardFavor() ?? false))
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  The patrol leader squints at you, then notices your Crown insignia.");
-            terminal.WriteLine("  \"...Move along. Crown business.\"");
+            terminal.WriteLine(Loc.Get("street_encounter.guard.crown_insignia"));
+            terminal.WriteLine(Loc.Get("street_encounter.guard.crown_business"));
             terminal.SetColor("gray");
-            terminal.WriteLine("  The guards step aside without another word.");
+            terminal.WriteLine(Loc.Get("street_encounter.guard.step_aside"));
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
@@ -1132,27 +1132,27 @@ public class StreetEncounterSystem
         if (wanted)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  \"Halt! We've been looking for you!\"");
+            terminal.WriteLine(Loc.Get("street_encounter.guard.halt"));
             terminal.SetColor("magenta");
-            terminal.WriteLine($"  (Theyre looking for you — Darkness: {player.Darkness})");
+            terminal.WriteLine(Loc.Get("street_encounter.guard.looking_for_you", player.Darkness));
             terminal.WriteLine("");
 
             terminal.Write("  [", "white");
             terminal.Write("S", "bright_yellow");
-            terminal.Write("]urrender  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.guard.opt_surrender")}  [", "white");
             terminal.Write("F", "bright_yellow");
-            terminal.Write("]ight  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_fight")}  [", "white");
             terminal.Write("R", "bright_yellow");
-            terminal.Write("]un  [", "white");
+            terminal.Write($"]{Loc.Get("street_encounter.hostile.opt_run")}  [", "white");
             terminal.Write("B", "bright_yellow");
-            terminal.WriteLine("]ribe (100 gold)", "white");
+            terminal.WriteLine($"]{Loc.Get("street_encounter.guard.opt_bribe")}", "white");
 
             string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
 
             if (choice == "S")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("  The guards arrest you and take you to prison...");
+                terminal.WriteLine(Loc.Get("street_encounter.guard.arrested"));
                 terminal.WriteLine("");
 
                 // Confiscate some gold
@@ -1161,16 +1161,16 @@ public class StreetEncounterSystem
                 {
                     player.Gold -= confiscated;
                     terminal.SetColor("red");
-                    terminal.WriteLine($"  The guards confiscate {confiscated} gold!");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.confiscate", confiscated));
                 }
 
                 int sentence = GameConfig.DefaultPrisonSentence;
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  You are sentenced to {sentence} day{(sentence == 1 ? "" : "s")} in prison.");
+                terminal.WriteLine(Loc.Get("street_encounter.guard.sentenced", sentence));
                 await Task.Delay(2000);
 
                 player.DaysInPrison = (byte)Math.Min(255, sentence);
-                result.Message = "Arrested by guards!";
+                result.Message = Loc.Get("street_encounter.guard.msg_arrested");
                 throw new LocationExitException(GameLocation.Prison);
             }
             else if (choice == "F")
@@ -1184,22 +1184,22 @@ public class StreetEncounterSystem
                 {
                     player.Darkness += 30;
                     terminal.SetColor("red");
-                    terminal.WriteLine("  (+30 Darkness for attacking guards)");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.darkness_guards"));
                 }
                 else if (player.IsAlive)
                 {
                     // Lost the fight but survived — arrested
                     terminal.SetColor("yellow");
                     terminal.WriteLine("");
-                    terminal.WriteLine("  The guards overpower you and clap you in irons!");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.overpowered"));
                     int sentence = GameConfig.DefaultPrisonSentence + 2; // Extra for resisting with violence
                     player.Darkness += 30;
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  You are sentenced to {sentence} days in prison for resisting arrest.");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.sentenced_resisting", sentence));
                     await Task.Delay(2000);
 
                     player.DaysInPrison = (byte)Math.Min(255, sentence);
-                    result.Message = "Defeated and arrested!";
+                    result.Message = Loc.Get("street_encounter.guard.msg_defeated_arrested");
                     throw new LocationExitException(GameLocation.Prison);
                 }
             }
@@ -1207,9 +1207,9 @@ public class StreetEncounterSystem
             {
                 player.Gold -= 100;
                 terminal.SetColor("green");
-                terminal.WriteLine("  The guards pocket your gold and look the other way...");
+                terminal.WriteLine(Loc.Get("street_encounter.guard.bribed"));
                 result.GoldLost = 100;
-                result.Message = "Bribed guards.";
+                result.Message = Loc.Get("street_encounter.guard.msg_bribed");
             }
             else if (choice == "R")
             {
@@ -1217,24 +1217,24 @@ public class StreetEncounterSystem
                 if (escape < 40 + player.Dexterity)
                 {
                     terminal.SetColor("green");
-                    terminal.WriteLine("  You escape into the crowd!");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.escape_crowd"));
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("  The guards catch you!");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.catch_you"));
                     terminal.WriteLine("");
 
                     // Extra day for resisting
                     int sentence = GameConfig.DefaultPrisonSentence + 1;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  \"Running from the law, eh? That'll cost you extra!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.running_extra"));
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  You are sentenced to {sentence} days in prison.");
+                    terminal.WriteLine(Loc.Get("street_encounter.guard.sentenced_days", sentence));
                     await Task.Delay(2000);
 
                     player.DaysInPrison = (byte)Math.Min(255, sentence);
-                    result.Message = "Caught by guards!";
+                    result.Message = Loc.Get("street_encounter.guard.msg_caught");
                     throw new LocationExitException(GameLocation.Prison);
                 }
             }
@@ -1242,9 +1242,9 @@ public class StreetEncounterSystem
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  \"Stay out of trouble, citizen.\"");
-            terminal.WriteLine("  The guards continue on their patrol.");
-            result.Message = "Questioned by guards.";
+            terminal.WriteLine(Loc.Get("street_encounter.guard.stay_out_trouble"));
+            terminal.WriteLine(Loc.Get("street_encounter.guard.continue_patrol"));
+            result.Message = Loc.Get("street_encounter.guard.msg_questioned");
         }
 
         await Task.Delay(2000);
@@ -1257,13 +1257,13 @@ public class StreetEncounterSystem
         EncounterResult result, TerminalEmulator terminal)
     {
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "AMBUSH!", "bright_red");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.ambush.title"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("red");
-        terminal.WriteLine("  Assassins leap from the shadows!");
+        terminal.WriteLine(Loc.Get("street_encounter.ambush.assassins_leap"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("  \"Someone paid good gold to see you dead!\"");
+        terminal.WriteLine(Loc.Get("street_encounter.ambush.paid_gold"));
         terminal.WriteLine("");
 
         // No choice - must fight
@@ -1276,7 +1276,7 @@ public class StreetEncounterSystem
         player.HP -= firstStrikeDamage;
 
         terminal.SetColor("red");
-        terminal.WriteLine($"  The assassin's first strike hits for {firstStrikeDamage} damage!");
+        terminal.WriteLine(Loc.Get("street_encounter.ambush.first_strike", firstStrikeDamage));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -1287,9 +1287,9 @@ public class StreetEncounterSystem
             if (result.Victory)
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  You find a note on the assassin's body...");
-                terminal.WriteLine("  \"Contract: Eliminate the one called " + player.Name2 + "\"");
-                terminal.WriteLine("  The signature is unreadable.");
+                terminal.WriteLine(Loc.Get("street_encounter.ambush.find_note"));
+                terminal.WriteLine(Loc.Get("street_encounter.ambush.contract", player.Name2));
+                terminal.WriteLine(Loc.Get("street_encounter.ambush.unreadable"));
             }
         }
         else
@@ -1483,25 +1483,25 @@ public class StreetEncounterSystem
         fleeChance = Math.Clamp(fleeChance, 10, 90);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  You try to run away...");
+        terminal.WriteLine(Loc.Get("street_encounter.flee.try_run"));
         await Task.Delay(1000);
 
         if (_random.Next(100) < fleeChance)
         {
             terminal.SetColor("green");
-            terminal.WriteLine("  You escape successfully!");
-            result.Message = "Fled from encounter.";
+            terminal.WriteLine(Loc.Get("street_encounter.flee.escape_success"));
+            result.Message = Loc.Get("street_encounter.flee.msg_fled");
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"  {npc.Name} catches you!");
-            terminal.WriteLine("  They attack while your back is turned!");
+            terminal.WriteLine(Loc.Get("street_encounter.flee.catches_you", npc.Name));
+            terminal.WriteLine(Loc.Get("street_encounter.flee.attack_back_turned"));
 
             // Take damage from failed flee
             int damage = _random.Next(10, 25);
             player.HP -= damage;
-            terminal.WriteLine($"  You take {damage} damage!");
+            terminal.WriteLine(Loc.Get("street_encounter.flee.take_damage", damage));
 
             await Task.Delay(1000);
 
@@ -1520,14 +1520,14 @@ public class StreetEncounterSystem
         long bribeAmount = npc.Level * 20 + _random.Next(20, 50);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  \"How about {bribeAmount} gold and we forget this happened?\"");
+        terminal.WriteLine(Loc.Get("street_encounter.bribe.offer", bribeAmount));
         await Task.Delay(500);
 
         if (player.Gold < bribeAmount)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You don't have enough gold!");
-            terminal.WriteLine($"  {npc.Name} attacks!");
+            terminal.WriteLine(Loc.Get("street_encounter.merchant.not_enough_gold"));
+            terminal.WriteLine(Loc.Get("street_encounter.bribe.npc_attacks", npc.Name));
             await Task.Delay(1000);
             await FightNPC(player, npc, result, terminal);
             return;
@@ -1535,9 +1535,9 @@ public class StreetEncounterSystem
 
         terminal.Write("  [", "white");
         terminal.Write("Y", "bright_yellow");
-        terminal.Write($"]es, pay {bribeAmount}  [", "white");
+        terminal.Write($"]{Loc.Get("street_encounter.bribe.opt_yes", bribeAmount)}  [", "white");
         terminal.Write("N", "bright_yellow");
-        terminal.WriteLine("]o, fight instead", "white");
+        terminal.WriteLine($"]{Loc.Get("street_encounter.bribe.opt_no")}", "white");
 
         string choice = (await terminal.GetKeyInput()).ToUpperInvariant();
 
@@ -1548,15 +1548,15 @@ public class StreetEncounterSystem
             {
                 player.Gold -= bribeAmount;
                 terminal.SetColor("green");
-                terminal.WriteLine($"  {npc.Name} takes your gold and leaves.");
+                terminal.WriteLine(Loc.Get("street_encounter.bribe.takes_gold_leaves", npc.Name));
                 result.GoldLost = bribeAmount;
-                result.Message = $"Bribed {npc.Name} for {bribeAmount} gold.";
+                result.Message = Loc.Get("street_encounter.bribe.msg_bribed", npc.Name, bribeAmount);
             }
             else
             {
                 player.Gold -= bribeAmount;
                 terminal.SetColor("red");
-                terminal.WriteLine($"  {npc.Name} takes your gold and attacks anyway!");
+                terminal.WriteLine(Loc.Get("street_encounter.bribe.takes_gold_attacks", npc.Name));
                 result.GoldLost = bribeAmount;
                 await Task.Delay(1000);
                 await FightNPC(player, npc, result, terminal);
@@ -1574,7 +1574,7 @@ public class StreetEncounterSystem
     private async Task AttemptTalk(Character player, NPC npc, EncounterResult result, TerminalEmulator terminal)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine("  You try to reason with them...");
+        terminal.WriteLine(Loc.Get("street_encounter.talk.try_reason"));
         await Task.Delay(1000);
 
         int talkChance = 20 + (int)(player.Charisma - 10) * 4;
@@ -1583,13 +1583,13 @@ public class StreetEncounterSystem
         if (_random.Next(100) < talkChance)
         {
             terminal.SetColor("green");
-            terminal.WriteLine($"  {npc.Name} reconsiders and walks away.");
-            result.Message = "Talked down hostile encounter.";
+            terminal.WriteLine(Loc.Get("street_encounter.talk.reconsiders", npc.Name));
+            result.Message = Loc.Get("street_encounter.talk.msg_talked_down");
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"  {npc.Name} isn't interested in talking!");
+            terminal.WriteLine(Loc.Get("street_encounter.talk.not_interested", npc.Name));
             await Task.Delay(1000);
             await FightNPC(player, npc, result, terminal);
         }
@@ -1768,16 +1768,16 @@ public class StreetEncounterSystem
         // Get dynamic rumors based on game state
         var rumors = new List<string>
         {
-            "They say the dungeons have gotten more dangerous lately...",
-            "I heard the King is looking for brave adventurers.",
-            "Strange creatures have been spotted near the Dark Alley.",
-            "The temple priests are offering blessings to those who donate.",
-            "There's a fortune to be made in monster hunting!",
-            "The guild masters are always looking for new recruits.",
-            "Watch your back in the alleys at night...",
-            "The weapon shop just got a new shipment of fine blades.",
-            "Some say there's a secret passage in the dungeons...",
-            "The market traders have exotic goods from distant lands."
+            Loc.Get("street_encounter.rumor.dungeons_dangerous"),
+            Loc.Get("street_encounter.rumor.king_adventurers"),
+            Loc.Get("street_encounter.rumor.strange_creatures"),
+            Loc.Get("street_encounter.rumor.temple_blessings"),
+            Loc.Get("street_encounter.rumor.fortune_hunting"),
+            Loc.Get("street_encounter.rumor.guild_recruits"),
+            Loc.Get("street_encounter.rumor.watch_back"),
+            Loc.Get("street_encounter.rumor.weapon_shipment"),
+            Loc.Get("street_encounter.rumor.secret_passage"),
+            Loc.Get("street_encounter.rumor.exotic_goods")
         };
 
         // Add NPC-specific rumors
@@ -1785,8 +1785,8 @@ public class StreetEncounterSystem
         if (npcs != null && npcs.Count > 0)
         {
             var randomNPC = npcs[_random.Next(npcs.Count)];
-            rumors.Add($"I saw {randomNPC.Name} at the {randomNPC.CurrentLocation ?? "inn"} earlier.");
-            rumors.Add($"They say {randomNPC.Name} is looking to form a team.");
+            rumors.Add(Loc.Get("street_encounter.rumor.saw_npc", randomNPC.Name, randomNPC.CurrentLocation ?? "inn"));
+            rumors.Add(Loc.Get("street_encounter.rumor.npc_team", randomNPC.Name));
         }
 
         return rumors[_random.Next(rumors.Count)];
@@ -1885,11 +1885,11 @@ public class StreetEncounterSystem
         var result = new EncounterResult { EncounterOccurred = true, Type = EncounterType.HostileNPC };
 
         terminal.ClearScreen();
-        UIHelper.WriteBoxHeader(terminal, "ATTACK!", "bright_red");
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("street_encounter.attack.title"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("red");
-        terminal.WriteLine($"  You attack {target.Name2}!");
+        terminal.WriteLine(Loc.Get("street_encounter.attack.you_attack", target.Name2));
         terminal.WriteLine("");
 
         // Convert target to NPC if needed
@@ -2104,12 +2104,12 @@ public class StreetEncounterSystem
             {
                 terminal.ClearScreen();
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {grudgeNpc.Name2} steps out of the shadows, fists clenched...");
-                terminal.WriteLine($"  ...then sees you clearly and hesitates.");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.steps_out", grudgeNpc.Name2));
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.hesitates"));
                 terminal.SetColor("dark_yellow");
-                terminal.WriteLine($"  The level {grudgeNpc.Level} {grudgeNpc.Class} thinks better of it and melts back into the crowd.");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.thinks_better", grudgeNpc.Level, grudgeNpc.Class));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  (Self-preservation overrides grudge — {levelGap} level gap)");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.self_preservation", levelGap));
                 await terminal.PressAnyKey();
                 result.EncounterOccurred = false;
                 return;
@@ -2144,11 +2144,11 @@ public class StreetEncounterSystem
             long guardDmg = grudgeNpc.MaxHP / 4;
             grudgeNpc.HP = Math.Max(1, grudgeNpc.HP - guardDmg);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  A royal guard rushes to your aid!");
+            terminal.WriteLine(Loc.Get("street_encounter.grudge.guard_rushes"));
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  The guard strikes {grudgeNpc.Name2} for {guardDmg} damage before being pushed back.");
+            terminal.WriteLine(Loc.Get("street_encounter.grudge.guard_strikes", grudgeNpc.Name2, guardDmg));
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {grudgeNpc.Name2} is wounded but still standing. ({grudgeNpc.HP}/{grudgeNpc.MaxHP} HP)");
+            terminal.WriteLine(Loc.Get("street_encounter.grudge.wounded_standing", grudgeNpc.Name2, grudgeNpc.HP, grudgeNpc.MaxHP));
             terminal.WriteLine("");
         }
 
@@ -2159,21 +2159,21 @@ public class StreetEncounterSystem
             grudgeNpc.Strength = (long)(grudgeNpc.Strength * (1.0f + GameConfig.MurderGrudgeRageBonusSTR));
             grudgeNpc.HP = (long)Math.Min(grudgeNpc.MaxHP * (1.0f + GameConfig.MurderGrudgeRageBonusHP), grudgeNpc.MaxHP * 1.5f);
 
-            UIHelper.DrawBoxTop(terminal, "MURDER REVENGE!", "dark_red");
+            UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.grudge.murder_revenge_title"), "dark_red");
             UIHelper.DrawBoxEmpty(terminal, "dark_red");
-            UIHelper.DrawBoxLine(terminal, $"  {grudgeNpc.Name2} emerges from the shadows, burning with fury.", "dark_red", "white");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.emerges_fury", grudgeNpc.Name2), "dark_red", "white");
             UIHelper.DrawBoxEmpty(terminal, "dark_red");
-            UIHelper.DrawBoxLine(terminal, $"  \"You thought you could murder me and get away with it?!\"", "dark_red", "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  \"I crawled back from death for THIS moment!\"", "dark_red", "bright_red");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.murder_quote_1"), "dark_red", "bright_red");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.murder_quote_2"), "dark_red", "bright_red");
             UIHelper.DrawBoxEmpty(terminal, "dark_red");
-            UIHelper.DrawBoxLine(terminal, $"  Level {grudgeNpc.Level} {grudgeNpc.Class} — HP: {grudgeNpc.HP}/{grudgeNpc.MaxHP} (ENRAGED)", "dark_red", "bright_yellow");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.enraged_stats", grudgeNpc.Level, grudgeNpc.Class, grudgeNpc.HP, grudgeNpc.MaxHP), "dark_red", "bright_yellow");
             UIHelper.DrawBoxEmpty(terminal, "dark_red");
             UIHelper.DrawBoxSeparator(terminal, "dark_red");
-            UIHelper.DrawMenuOption(terminal, "F", "Fight", "dark_red", "bright_yellow", "white");
-            UIHelper.DrawMenuOption(terminal, "R", "Run", "dark_red", "bright_yellow", "gray");
+            UIHelper.DrawMenuOption(terminal, "F", Loc.Get("street_encounter.grudge.opt_fight"), "dark_red", "bright_yellow", "white");
+            UIHelper.DrawMenuOption(terminal, "R", Loc.Get("street_encounter.grudge.opt_run"), "dark_red", "bright_yellow", "gray");
             UIHelper.DrawBoxBottom(terminal, "dark_red");
 
-            var choice = await terminal.GetInput("\n  Your response? ");
+            var choice = await terminal.GetInput(Loc.Get("street_encounter.grudge.your_response"));
 
             if (choice.Trim().ToUpper() == "R")
             {
@@ -2181,12 +2181,12 @@ public class StreetEncounterSystem
                 if (_random.Next(100) < fleeChance)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"\n  You barely escape {grudgeNpc.Name2}'s wrath!");
+                    terminal.WriteLine(Loc.Get("street_encounter.grudge.barely_escape", grudgeNpc.Name2));
                 }
                 else
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"\n  {grudgeNpc.Name2} cuts off your escape! \"You're not getting away this time!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.grudge.cuts_off_escape", grudgeNpc.Name2));
                     await FightNPC(player, grudgeNpc, result, terminal);
                 }
             }
@@ -2199,7 +2199,7 @@ public class StreetEncounterSystem
             if (result.Victory)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\n  {grudgeNpc.Name2} goes down again. So much for revenge.");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.murder_goes_down", grudgeNpc.Name2));
                 grudgeNpc.Memory?.RecordEvent(new MemoryEvent
                 {
                     Type = MemoryType.Defeated,
@@ -2215,11 +2215,11 @@ public class StreetEncounterSystem
                 long goldTaken = player.Gold / 5; // Take 20% for murder revenge (more severe)
                 player.Gold -= goldTaken;
                 terminal.SetColor("dark_red");
-                terminal.WriteLine($"\n  {grudgeNpc.Name2} stands over you, satisfied.");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.stands_over", grudgeNpc.Name2));
                 terminal.SetColor("red");
-                terminal.WriteLine($"  \"Now we're even. But I won't forget.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.now_even"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  They take {goldTaken:N0} gold.");
+                terminal.WriteLine(Loc.Get("street_encounter.grudge.take_gold", goldTaken));
                 result.GoldLost = goldTaken;
                 NewsSystem.Instance?.Newsy($"{grudgeNpc.Name2} got bloody revenge on {player.Name2}!");
             }
@@ -2227,24 +2227,24 @@ public class StreetEncounterSystem
         else if (isWitnessRevenge)
         {
             // === WITNESS REVENGE — Saw the player murder someone ===
-            UIHelper.DrawBoxTop(terminal, "WITNESS CONFRONTATION!", "bright_red");
+            UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.witness.title"), "bright_red");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  {grudgeNpc.Name2} steps in front of you, glaring.", "bright_red", "white");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.witness.steps_in_front", grudgeNpc.Name2), "bright_red", "white");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
             if (!string.IsNullOrEmpty(victimName))
-                UIHelper.DrawBoxLine(terminal, $"  \"I saw what you did to {victimName}. You'll answer for that.\"", "bright_red", "bright_cyan");
+                UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.witness.saw_victim", victimName), "bright_red", "bright_cyan");
             else
-                UIHelper.DrawBoxLine(terminal, $"  \"I saw what you did. Murderer. You'll answer for that.\"", "bright_red", "bright_cyan");
+                UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.witness.saw_murder"), "bright_red", "bright_cyan");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  Level {grudgeNpc.Level} {grudgeNpc.Class} — HP: {grudgeNpc.HP}/{grudgeNpc.MaxHP}", "bright_red", "yellow");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.witness.stats", grudgeNpc.Level, grudgeNpc.Class, grudgeNpc.HP, grudgeNpc.MaxHP), "bright_red", "yellow");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
             UIHelper.DrawBoxSeparator(terminal, "bright_red");
-            UIHelper.DrawMenuOption(terminal, "F", "Fight", "bright_red", "bright_yellow", "white");
-            UIHelper.DrawMenuOption(terminal, "B", $"Bribe ({grudgeNpc.Level * 50}g)", "bright_red", "bright_yellow", "yellow");
-            UIHelper.DrawMenuOption(terminal, "R", "Run", "bright_red", "bright_yellow", "gray");
+            UIHelper.DrawMenuOption(terminal, "F", Loc.Get("street_encounter.grudge.opt_fight"), "bright_red", "bright_yellow", "white");
+            UIHelper.DrawMenuOption(terminal, "B", Loc.Get("street_encounter.witness.opt_bribe", grudgeNpc.Level * 50), "bright_red", "bright_yellow", "yellow");
+            UIHelper.DrawMenuOption(terminal, "R", Loc.Get("street_encounter.grudge.opt_run"), "bright_red", "bright_yellow", "gray");
             UIHelper.DrawBoxBottom(terminal, "bright_red");
 
-            var choice = await terminal.GetInput("\n  Your response? ");
+            var choice = await terminal.GetInput(Loc.Get("street_encounter.grudge.your_response"));
 
             switch (choice.Trim().ToUpper())
             {
@@ -2253,7 +2253,7 @@ public class StreetEncounterSystem
                     if (result.Victory)
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} falls. One less witness.");
+                        terminal.WriteLine(Loc.Get("street_encounter.witness.one_less", grudgeNpc.Name2));
                         player.Darkness += 10; // Extra darkness for silencing a witness
                         NewsSystem.Instance?.Newsy($"{player.Name2} defeated {grudgeNpc.Name2} who confronted them!");
                     }
@@ -2262,7 +2262,7 @@ public class StreetEncounterSystem
                         long goldTaken = player.Gold / 10;
                         player.Gold -= goldTaken;
                         terminal.SetColor("red");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} takes {goldTaken:N0} gold. \"Justice is served.\"");
+                        terminal.WriteLine(Loc.Get("street_encounter.witness.justice_served", grudgeNpc.Name2, goldTaken));
                         result.GoldLost = goldTaken;
                         NewsSystem.Instance?.Newsy($"{grudgeNpc.Name2} brought justice to {player.Name2}!");
                     }
@@ -2277,16 +2277,16 @@ public class StreetEncounterSystem
                         {
                             player.Gold -= witnessBribe;
                             terminal.SetColor("yellow");
-                            terminal.WriteLine($"\n  {grudgeNpc.Name2} takes the {witnessBribe} gold and looks away.");
+                            terminal.WriteLine(Loc.Get("street_encounter.witness.takes_bribe", grudgeNpc.Name2, witnessBribe));
                             terminal.SetColor("gray");
-                            terminal.WriteLine($"  \"I didn't see anything. But my memory might come back...\"");
+                            terminal.WriteLine(Loc.Get("street_encounter.witness.didnt_see"));
                             result.GoldLost = witnessBribe;
                         }
                         else
                         {
                             player.Gold -= witnessBribe;
                             terminal.SetColor("bright_red");
-                            terminal.WriteLine($"\n  \"You think gold will buy my silence?!\" They take it AND attack!");
+                            terminal.WriteLine(Loc.Get("street_encounter.witness.gold_buy_silence"));
                             result.GoldLost = witnessBribe;
                             await FightNPC(player, grudgeNpc, result, terminal);
                         }
@@ -2294,7 +2294,7 @@ public class StreetEncounterSystem
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine($"\n  Not enough gold! {grudgeNpc.Name2} attacks!");
+                        terminal.WriteLine(Loc.Get("street_encounter.witness.not_enough_attacks", grudgeNpc.Name2));
                         await FightNPC(player, grudgeNpc, result, terminal);
                     }
                     break;
@@ -2304,12 +2304,12 @@ public class StreetEncounterSystem
                     if (_random.Next(100) < fleeChance)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"\n  You slip away from {grudgeNpc.Name2}. For now...");
+                        terminal.WriteLine(Loc.Get("street_encounter.witness.slip_away", grudgeNpc.Name2));
                     }
                     else
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} catches you! \"Running makes you look guilty!\"");
+                        terminal.WriteLine(Loc.Get("street_encounter.witness.catches_guilty", grudgeNpc.Name2));
                         await FightNPC(player, grudgeNpc, result, terminal);
                     }
                     break;
@@ -2318,23 +2318,23 @@ public class StreetEncounterSystem
         else
         {
             // === STANDARD GRUDGE — Defeated in combat ===
-            UIHelper.DrawBoxTop(terminal, "GRUDGE CONFRONTATION!", "bright_red");
+            UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.grudge.standard_title"), "bright_red");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  {grudgeNpc.Name2} is waiting for you. Doesnt look happy.", "bright_red", "white");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.waiting_unhappy", grudgeNpc.Name2), "bright_red", "white");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  \"You thought I'd forget what you did to me? Think again.\"", "bright_red", "bright_cyan");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.grudge.think_again"), "bright_red", "bright_cyan");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
-            UIHelper.DrawBoxLine(terminal, $"  Level {grudgeNpc.Level} {grudgeNpc.Class} — HP: {grudgeNpc.HP}/{grudgeNpc.MaxHP}", "bright_red", "yellow");
+            UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.witness.stats", grudgeNpc.Level, grudgeNpc.Class, grudgeNpc.HP, grudgeNpc.MaxHP), "bright_red", "yellow");
             UIHelper.DrawBoxEmpty(terminal, "bright_red");
             UIHelper.DrawBoxSeparator(terminal, "bright_red");
-            UIHelper.DrawMenuOption(terminal, "F", "Fight", "bright_red", "bright_yellow", "white");
-            UIHelper.DrawMenuOption(terminal, "A", "Apologize", "bright_red", "bright_yellow", "white");
+            UIHelper.DrawMenuOption(terminal, "F", Loc.Get("street_encounter.grudge.opt_fight"), "bright_red", "bright_yellow", "white");
+            UIHelper.DrawMenuOption(terminal, "A", Loc.Get("street_encounter.grudge.opt_apologize"), "bright_red", "bright_yellow", "white");
             long bribeCost = grudgeNpc.Level * 30;
-            UIHelper.DrawMenuOption(terminal, "B", $"Bribe ({bribeCost}g)", "bright_red", "bright_yellow", "yellow");
-            UIHelper.DrawMenuOption(terminal, "R", "Run", "bright_red", "bright_yellow", "gray");
+            UIHelper.DrawMenuOption(terminal, "B", Loc.Get("street_encounter.witness.opt_bribe", bribeCost), "bright_red", "bright_yellow", "yellow");
+            UIHelper.DrawMenuOption(terminal, "R", Loc.Get("street_encounter.grudge.opt_run"), "bright_red", "bright_yellow", "gray");
             UIHelper.DrawBoxBottom(terminal, "bright_red");
 
-            var choice = await terminal.GetInput("\n  Your response? ");
+            var choice = await terminal.GetInput(Loc.Get("street_encounter.grudge.your_response"));
 
             switch (choice.ToUpper())
             {
@@ -2343,7 +2343,7 @@ public class StreetEncounterSystem
                     if (result.Victory)
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} goes down. That settles that.");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.settles_that", grudgeNpc.Name2));
                         grudgeNpc.Memory?.RecordEvent(new MemoryEvent
                         {
                             Type = MemoryType.Defeated,
@@ -2359,7 +2359,7 @@ public class StreetEncounterSystem
                         long goldTaken = player.Gold / 10;
                         player.Gold -= goldTaken;
                         terminal.SetColor("red");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} takes {goldTaken} gold and walks away satisfied.");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.takes_gold_satisfied", grudgeNpc.Name2, goldTaken));
                         result.GoldLost = goldTaken;
                         NewsSystem.Instance?.Newsy($"{grudgeNpc.Name2} got revenge on {player.Name2}!");
                     }
@@ -2370,9 +2370,9 @@ public class StreetEncounterSystem
                     if (_random.Next(100) < apologyChance)
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} hesitates... then lowers their fists.");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.lowers_fists", grudgeNpc.Name2));
                         terminal.SetColor("white");
-                        terminal.WriteLine($"  \"Fine. But don't cross me again.\"");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.dont_cross"));
                         grudgeNpc.Memory?.RecordEvent(new MemoryEvent
                         {
                             Type = MemoryType.SocialInteraction,
@@ -2386,9 +2386,9 @@ public class StreetEncounterSystem
                     else
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"\n  \"SORRY doesn't cut it!\"");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.sorry_not_enough"));
                         terminal.SetColor("white");
-                        terminal.WriteLine($"  {grudgeNpc.Name2} attacks with fury! (+15% STR)");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.attacks_fury", grudgeNpc.Name2));
                         grudgeNpc.Strength = (long)(grudgeNpc.Strength * 1.15);
                         await FightNPC(player, grudgeNpc, result, terminal);
                     }
@@ -2402,9 +2402,9 @@ public class StreetEncounterSystem
                         {
                             player.Gold -= bribeCost;
                             terminal.SetColor("yellow");
-                            terminal.WriteLine($"\n  {grudgeNpc.Name2} pockets the {bribeCost} gold.");
+                            terminal.WriteLine(Loc.Get("street_encounter.grudge.pockets_gold", grudgeNpc.Name2, bribeCost));
                             terminal.SetColor("white");
-                            terminal.WriteLine($"  \"We're even. For now.\"");
+                            terminal.WriteLine(Loc.Get("street_encounter.grudge.even_for_now"));
                             result.GoldLost = bribeCost;
                             grudgeNpc.Memory?.RecordEvent(new MemoryEvent
                             {
@@ -2419,7 +2419,7 @@ public class StreetEncounterSystem
                         {
                             player.Gold -= bribeCost;
                             terminal.SetColor("bright_red");
-                            terminal.WriteLine($"\n  {grudgeNpc.Name2} takes the gold AND attacks!");
+                            terminal.WriteLine(Loc.Get("street_encounter.grudge.takes_gold_attacks", grudgeNpc.Name2));
                             result.GoldLost = bribeCost;
                             await FightNPC(player, grudgeNpc, result, terminal);
                         }
@@ -2427,7 +2427,7 @@ public class StreetEncounterSystem
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine($"\n  You don't have enough gold! {grudgeNpc.Name2} attacks!");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.not_enough_attacks", grudgeNpc.Name2));
                         await FightNPC(player, grudgeNpc, result, terminal);
                     }
                     break;
@@ -2437,12 +2437,12 @@ public class StreetEncounterSystem
                     if (_random.Next(100) < fleeChance)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"\n  You slip away before {grudgeNpc.Name2} can react!");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.slip_away", grudgeNpc.Name2));
                     }
                     else
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"\n  {grudgeNpc.Name2} catches you! They get the first strike!");
+                        terminal.WriteLine(Loc.Get("street_encounter.grudge.catches_first_strike", grudgeNpc.Name2));
                         await FightNPC(player, grudgeNpc, result, terminal);
                     }
                     break;
@@ -2467,10 +2467,10 @@ public class StreetEncounterSystem
             {
                 terminal.ClearScreen();
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {spouse.Name2} storms toward you, face twisted with anger...");
-                terminal.WriteLine($"  ...then stops short, remembering who they're dealing with.");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.storms_toward", spouse.Name2));
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.stops_short"));
                 terminal.SetColor("dark_yellow");
-                terminal.WriteLine($"  \"This isn't over,\" they hiss, retreating to find another way.");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.not_over"));
                 await terminal.PressAnyKey();
                 result.EncounterOccurred = false;
                 return;
@@ -2481,21 +2481,21 @@ public class StreetEncounterSystem
         string partnerName = RelationshipSystem.GetSpouseName(spouse);
 
         terminal.ClearScreen();
-        UIHelper.DrawBoxTop(terminal, "JEALOUS SPOUSE!", "bright_red");
+        UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.spouse.title"), "bright_red");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
-        UIHelper.DrawBoxLine(terminal, $"  {spouse.Name2} is standing right in front of you. Fists clenched.", "bright_red", "white");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.spouse.fists_clenched", spouse.Name2), "bright_red", "white");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
-        UIHelper.DrawBoxLine(terminal, $"  \"I know what you've been doing with {partnerName}.\"", "bright_red", "bright_cyan");
-        UIHelper.DrawBoxLine(terminal, $"  \"Did you think I wouldn't find out?\"", "bright_red", "cyan");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.spouse.know_doing", partnerName), "bright_red", "bright_cyan");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.spouse.find_out"), "bright_red", "cyan");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
         UIHelper.DrawBoxSeparator(terminal, "bright_red");
-        UIHelper.DrawMenuOption(terminal, "D", "Deny everything", "bright_red", "bright_yellow", "white");
-        UIHelper.DrawMenuOption(terminal, "A", "Admit and apologize", "bright_red", "bright_yellow", "white");
-        UIHelper.DrawMenuOption(terminal, "T", "Taunt them", "bright_red", "bright_yellow", "red");
-        UIHelper.DrawMenuOption(terminal, "F", "Fight", "bright_red", "bright_yellow", "white");
+        UIHelper.DrawMenuOption(terminal, "D", Loc.Get("street_encounter.spouse.opt_deny"), "bright_red", "bright_yellow", "white");
+        UIHelper.DrawMenuOption(terminal, "A", Loc.Get("street_encounter.spouse.opt_admit"), "bright_red", "bright_yellow", "white");
+        UIHelper.DrawMenuOption(terminal, "T", Loc.Get("street_encounter.spouse.opt_taunt"), "bright_red", "bright_yellow", "red");
+        UIHelper.DrawMenuOption(terminal, "F", Loc.Get("street_encounter.grudge.opt_fight"), "bright_red", "bright_yellow", "white");
         UIHelper.DrawBoxBottom(terminal, "bright_red");
 
-        var choice = await terminal.GetInput("\n  Your response? ");
+        var choice = await terminal.GetInput(Loc.Get("street_encounter.grudge.your_response"));
 
         switch (choice.ToUpper())
         {
@@ -2504,9 +2504,9 @@ public class StreetEncounterSystem
                 if (_random.Next(100) < denyChance)
                 {
                     terminal.SetColor("cyan");
-                    terminal.WriteLine($"\n  \"I don't know what you're talking about. We're just friends.\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.spouse.just_friends"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {spouse.Name2} looks uncertain and backs down.");
+                    terminal.WriteLine(Loc.Get("street_encounter.spouse.looks_uncertain", spouse.Name2));
 
                     // Reduce suspicion
                     var affairs = NPCMarriageRegistry.Instance?.GetAllAffairs();
@@ -2525,22 +2525,22 @@ public class StreetEncounterSystem
                 else
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"\n  \"LIAR! I've seen the looks between you two!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.spouse.liar"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {spouse.Name2} attacks in a rage!");
+                    terminal.WriteLine(Loc.Get("street_encounter.spouse.attacks_rage", spouse.Name2));
                     await FightNPC(player, spouse, result, terminal);
                 }
                 break;
 
             case "A": // Admit
                 terminal.SetColor("white");
-                terminal.WriteLine($"\n  \"You're right. I'm sorry. It was wrong of me.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.admit_sorry"));
                 terminal.SetColor("yellow");
                 long damage = 10 + _random.Next(15);
                 player.HP = Math.Max(1, player.HP - damage);
-                terminal.WriteLine($"  {spouse.Name2} punches you! (-{damage} HP)");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.punches_you", spouse.Name2, damage));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  \"Stay away from {partnerName}. This is your only warning.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.stay_away", partnerName));
 
                 // Reduce suspicion significantly
                 var admitAffairs = NPCMarriageRegistry.Instance?.GetAllAffairs();
@@ -2562,9 +2562,9 @@ public class StreetEncounterSystem
 
             case "T": // Taunt
                 terminal.SetColor("red");
-                terminal.WriteLine($"\n  \"Maybe if you were a better spouse, {partnerName} wouldn't need to look elsewhere.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.taunt_better", partnerName));
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"  {spouse.Name2} ROARS with fury! (+25% STR)");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.roars_fury", spouse.Name2));
                 spouse.Strength = (long)(spouse.Strength * 1.25);
                 await FightNPC(player, spouse, result, terminal);
 
@@ -2578,7 +2578,7 @@ public class StreetEncounterSystem
 
             default: // Fight
                 terminal.SetColor("white");
-                terminal.WriteLine($"\n  \"If that's how you want to settle this...\"");
+                terminal.WriteLine(Loc.Get("street_encounter.spouse.settle_this"));
                 await FightNPC(player, spouse, result, terminal);
                 player.Darkness += 10;
 
@@ -2598,44 +2598,44 @@ public class StreetEncounterSystem
         var king = CastleLocation.GetCurrentKing();
 
         terminal.ClearScreen();
-        UIHelper.DrawBoxTop(terminal, "THRONE CHALLENGE!", "bright_yellow");
+        UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.throne.title"), "bright_yellow");
         UIHelper.DrawBoxEmpty(terminal, "bright_yellow");
-        UIHelper.DrawBoxLine(terminal, $"  {challenger.Name2}, Level {challenger.Level} {challenger.Class}, confronts you.", "bright_yellow", "white");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.throne.confronts", challenger.Name2, challenger.Level, challenger.Class), "bright_yellow", "white");
         UIHelper.DrawBoxEmpty(terminal, "bright_yellow");
-        UIHelper.DrawBoxLine(terminal, $"  \"Your times up. Im taking that throne.\"", "bright_yellow", "bright_cyan");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.throne.times_up"), "bright_yellow", "bright_cyan");
         UIHelper.DrawBoxEmpty(terminal, "bright_yellow");
         UIHelper.DrawBoxSeparator(terminal, "bright_yellow");
-        UIHelper.DrawMenuOption(terminal, "A", "Accept the challenge", "bright_yellow", "bright_yellow", "bright_green");
-        UIHelper.DrawMenuOption(terminal, "D", "Dismiss (send guards)", "bright_yellow", "bright_yellow", "white");
-        UIHelper.DrawMenuOption(terminal, "N", "Negotiate", "bright_yellow", "bright_yellow", "white");
-        UIHelper.DrawMenuOption(terminal, "I", "Imprison them", "bright_yellow", "bright_yellow", "red");
+        UIHelper.DrawMenuOption(terminal, "A", Loc.Get("street_encounter.throne.opt_accept"), "bright_yellow", "bright_yellow", "bright_green");
+        UIHelper.DrawMenuOption(terminal, "D", Loc.Get("street_encounter.throne.opt_dismiss"), "bright_yellow", "bright_yellow", "white");
+        UIHelper.DrawMenuOption(terminal, "N", Loc.Get("street_encounter.throne.opt_negotiate"), "bright_yellow", "bright_yellow", "white");
+        UIHelper.DrawMenuOption(terminal, "I", Loc.Get("street_encounter.throne.opt_imprison"), "bright_yellow", "bright_yellow", "red");
         UIHelper.DrawBoxBottom(terminal, "bright_yellow");
 
-        var choice = await terminal.GetInput("\n  Your decree, Majesty? ");
+        var choice = await terminal.GetInput(Loc.Get("street_encounter.throne.your_decree"));
 
         switch (choice.ToUpper())
         {
             case "A": // Accept
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"\n  \"I accept your challenge. Let us settle this with steel!\"");
+                terminal.WriteLine(Loc.Get("street_encounter.throne.accept_steel"));
                 await FightNPC(player, challenger, result, terminal);
 
                 if (result.Victory)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"\n  {challenger.Name2} goes down! Still king.");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.still_king", challenger.Name2));
                     player.Fame += 25;
 
                     // Imprison the challenger
                     NPCSpawnSystem.Instance?.ImprisonNPC(challenger, 7);
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  {challenger.Name2} is imprisoned for 7 days.");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.imprisoned", challenger.Name2, 7));
                     NewsSystem.Instance?.Newsy($"King {player.Name2} defeated {challenger.Name2}'s throne challenge! The challenger is imprisoned.");
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  You are defeated! {challenger.Name2} claims the throne!");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.defeated_claims", challenger.Name2));
                     player.King = false;
                     player.RoyalMercenaries?.Clear(); // Dismiss bodyguards on dethronement
                     player.RecalculateStats(); // Remove Royal Authority HP bonus
@@ -2656,24 +2656,24 @@ public class StreetEncounterSystem
                     if (avgLoyalty >= 30)
                     {
                         terminal.SetColor("white");
-                        terminal.WriteLine($"\n  \"Guards! Remove this fool from my sight!\"");
+                        terminal.WriteLine(Loc.Get("street_encounter.throne.guards_remove"));
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  Your loyal guards drag {challenger.Name2} away.");
+                        terminal.WriteLine(Loc.Get("street_encounter.throne.guards_drag", challenger.Name2));
                         NewsSystem.Instance?.Newsy($"King {player.Name2}'s guards repelled {challenger.Name2}'s challenge.");
                     }
                     else
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"\n  Your guards hesitate... their loyalty wavers!");
+                        terminal.WriteLine(Loc.Get("street_encounter.throne.guards_hesitate"));
                         terminal.SetColor("white");
-                        terminal.WriteLine($"  You must face {challenger.Name2} yourself!");
+                        terminal.WriteLine(Loc.Get("street_encounter.throne.face_yourself", challenger.Name2));
                         await FightNPC(player, challenger, result, terminal);
                     }
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  You have no guards! You must face {challenger.Name2} yourself!");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.no_guards", challenger.Name2));
                     await FightNPC(player, challenger, result, terminal);
                 }
                 break;
@@ -2683,9 +2683,9 @@ public class StreetEncounterSystem
                 if (_random.Next(100) < negotiateChance)
                 {
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine($"\n  \"Perhaps there's a role for someone of your talents in my court.\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.offer_role"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {challenger.Name2} considers... \"A seat on the court? That could work.\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.considers_seat", challenger.Name2));
 
                     if (king != null)
                     {
@@ -2702,9 +2702,9 @@ public class StreetEncounterSystem
                 else
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"\n  \"I don't want a SEAT. I want the THRONE!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.want_throne"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {challenger.Name2} attacks!");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.challenger_attacks", challenger.Name2));
                     await FightNPC(player, challenger, result, terminal);
                 }
                 break;
@@ -2713,7 +2713,7 @@ public class StreetEncounterSystem
                 if (king?.Guards != null && king.Guards.Count > 0)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  \"Seize them! 14 days in the dungeon for treason!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.seize_treason"));
 
                     NPCSpawnSystem.Instance?.ImprisonNPC(challenger, 14);
 
@@ -2722,16 +2722,16 @@ public class StreetEncounterSystem
                         guard.Loyalty = Math.Max(0, guard.Loyalty - 10);
 
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  {challenger.Name2} is dragged away. Your guards exchange uneasy glances.");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.dragged_away", challenger.Name2));
                     player.Darkness += 5;
                     NewsSystem.Instance?.Newsy($"King {player.Name2} imprisoned {challenger.Name2} for challenging the throne.");
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  Without guards, you can't imprison anyone!");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.no_guards_imprison"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {challenger.Name2} laughs and attacks!");
+                    terminal.WriteLine(Loc.Get("street_encounter.throne.laughs_attacks", challenger.Name2));
                     await FightNPC(player, challenger, result, terminal);
                 }
                 break;
@@ -2749,40 +2749,40 @@ public class StreetEncounterSystem
         string rivalTeam = rival.Team ?? "Unknown";
 
         terminal.ClearScreen();
-        UIHelper.DrawBoxTop(terminal, "TURF WAR!", "bright_red");
+        UIHelper.DrawBoxTop(terminal, Loc.Get("street_encounter.turf.title"), "bright_red");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
-        UIHelper.DrawBoxLine(terminal, $"  Members of '{rivalTeam}' surround you.", "bright_red", "white");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.turf.surround", rivalTeam), "bright_red", "white");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
-        UIHelper.DrawBoxLine(terminal, $"  {rival.Name2}: \"Your team's hold on this city ends now!\"", "bright_red", "bright_cyan");
+        UIHelper.DrawBoxLine(terminal, Loc.Get("street_encounter.turf.hold_ends", rival.Name2), "bright_red", "bright_cyan");
         UIHelper.DrawBoxEmpty(terminal, "bright_red");
         UIHelper.DrawBoxSeparator(terminal, "bright_red");
-        UIHelper.DrawMenuOption(terminal, "F", "Fight their champion", "bright_red", "bright_yellow", "bright_green");
+        UIHelper.DrawMenuOption(terminal, "F", Loc.Get("street_encounter.turf.opt_fight"), "bright_red", "bright_yellow", "bright_green");
         long payoffCost = rival.Level * 50;
-        UIHelper.DrawMenuOption(terminal, "P", $"Pay them off ({payoffCost}g)", "bright_red", "bright_yellow", "yellow");
-        UIHelper.DrawMenuOption(terminal, "S", "Surrender turf", "bright_red", "bright_yellow", "gray");
-        UIHelper.DrawMenuOption(terminal, "R", "Run", "bright_red", "bright_yellow", "gray");
+        UIHelper.DrawMenuOption(terminal, "P", Loc.Get("street_encounter.turf.opt_pay", payoffCost), "bright_red", "bright_yellow", "yellow");
+        UIHelper.DrawMenuOption(terminal, "S", Loc.Get("street_encounter.turf.opt_surrender"), "bright_red", "bright_yellow", "gray");
+        UIHelper.DrawMenuOption(terminal, "R", Loc.Get("street_encounter.grudge.opt_run"), "bright_red", "bright_yellow", "gray");
         UIHelper.DrawBoxBottom(terminal, "bright_red");
 
-        var choice = await terminal.GetInput("\n  Your response? ");
+        var choice = await terminal.GetInput(Loc.Get("street_encounter.grudge.your_response"));
 
         switch (choice.ToUpper())
         {
             case "F": // Fight champion
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"\n  \"I'll fight your best. Bring it on!\"");
+                terminal.WriteLine(Loc.Get("street_encounter.turf.fight_best"));
                 await FightNPC(player, rival, result, terminal);
 
                 if (result.Victory)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"\n  {rival.Name2} goes down! '{rivalTeam}' backs off.");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.backs_off", rival.Name2, rivalTeam));
                     player.Fame += 20;
                     NewsSystem.Instance?.Newsy($"{player.Name2} defended their turf by defeating {rival.Name2} of '{rivalTeam}'!");
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  '{rivalTeam}' cheers. You lost.");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.cheers_lost", rivalTeam));
                     NewsSystem.Instance?.Newsy($"'{rivalTeam}' defeated {player.Name2} in a turf war!");
                 }
                 break;
@@ -2792,27 +2792,27 @@ public class StreetEncounterSystem
                 {
                     player.Gold -= payoffCost;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"\n  You hand over {payoffCost} gold.");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.hand_over", payoffCost));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {rival.Name2}: \"Smart move. We'll leave you alone... for now.\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.smart_move", rival.Name2));
                     result.GoldLost = payoffCost;
                     NewsSystem.Instance?.Newsy($"{player.Name2} paid off '{rivalTeam}' to avoid a turf war.");
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  You don't have enough gold!");
+                    terminal.WriteLine(Loc.Get("street_encounter.merchant.not_enough_gold"));
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {rival.Name2}: \"Then we settle this the hard way!\"");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.hard_way", rival.Name2));
                     await FightNPC(player, rival, result, terminal);
                 }
                 break;
 
             case "S": // Surrender
                 terminal.SetColor("gray");
-                terminal.WriteLine($"\n  \"Fine. Take it. It's yours.\"");
+                terminal.WriteLine(Loc.Get("street_encounter.turf.surrender"));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  '{rivalTeam}' takes control of the area. Your reputation takes a hit.");
+                terminal.WriteLine(Loc.Get("street_encounter.turf.takes_control", rivalTeam));
                 player.Fame = Math.Max(0, player.Fame - 10);
                 NewsSystem.Instance?.Newsy($"{player.Name2} surrendered turf to '{rivalTeam}' without a fight.");
                 break;
@@ -2822,12 +2822,12 @@ public class StreetEncounterSystem
                 if (_random.Next(100) < fleeChance)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"\n  You dodge through the crowd and escape!");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.dodge_escape"));
                 }
                 else
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"\n  They cut off your escape! {rival.Name2} attacks!");
+                    terminal.WriteLine(Loc.Get("street_encounter.turf.cut_off", rival.Name2));
                     await FightNPC(player, rival, result, terminal);
                 }
                 break;
@@ -2886,12 +2886,12 @@ public class StreetEncounterSystem
         if (backstabBonus > 0.15f)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"  Your assassin training grants a devastating first strike! (-{(int)(backstabBonus * 100)}% enemy HP)");
+            terminal.WriteLine(Loc.Get("street_encounter.murder.assassin_strike", (int)(backstabBonus * 100)));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  You catch them off guard! (-{(int)(backstabBonus * 100)}% enemy HP)");
+            terminal.WriteLine(Loc.Get("street_encounter.murder.off_guard", (int)(backstabBonus * 100)));
         }
         terminal.WriteLine("");
 
@@ -2969,7 +2969,7 @@ public class StreetEncounterSystem
             if (witnesses.Count > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  {witnesses.Count} witness{(witnesses.Count > 1 ? "es" : "")} saw the murder!");
+                terminal.WriteLine(Loc.Get("street_encounter.murder.witnesses", witnesses.Count));
             }
 
             // === QUEST COMPLETION ===
@@ -3007,7 +3007,7 @@ public class StreetEncounterSystem
                 {
                     // Crown/King bounties are state-sanctioned — no blood price
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  (Sanctioned kill — your conscience is clear.)");
+                    terminal.WriteLine(Loc.Get("street_encounter.murder.sanctioned"));
                 }
                 else if (bountyInitiator == GameConfig.FactionInitiatorShadows)
                 {
@@ -3015,13 +3015,13 @@ public class StreetEncounterSystem
                     if (_random.NextDouble() < GameConfig.ShadowContractBloodPriceSkipChance)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("  (A clean job. No loose ends, no guilt.)");
+                        terminal.WriteLine(Loc.Get("street_encounter.murder.clean_job"));
                     }
                     else
                     {
                         WorldSimulator.ApplyBloodPrice(player, realNpc, GameConfig.MurderWeightPerShadowContract, isDeliberate: true);
                         terminal.SetColor("dark_red");
-                        terminal.WriteLine("  (Contract or not, you still see their face...)");
+                        terminal.WriteLine(Loc.Get("street_encounter.murder.see_face"));
                     }
                 }
                 else
@@ -3040,7 +3040,7 @@ public class StreetEncounterSystem
                     var victimFaction = realNpc.NPCFaction.Value;
                     factionSystem.ModifyReputation(victimFaction, -GameConfig.MurderFactionStandingPenalty);
                     terminal.SetColor("dark_red");
-                    terminal.WriteLine($"  Your standing with {victimFaction} has dropped sharply!");
+                    terminal.WriteLine(Loc.Get("street_encounter.murder.faction_drop", victimFaction));
                 }
             }
 

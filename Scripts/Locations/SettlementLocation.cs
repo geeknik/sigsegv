@@ -33,36 +33,36 @@ public class SettlementLocation : BaseLocation
         int settlers = state.SettlerNames.Count;
 
         // Header
-        WriteBoxHeader("THE  OUTSKIRTS", "bright_yellow", 70);
+        WriteBoxHeader(Loc.Get("settlement.header"), "bright_yellow", 70);
         terminal.WriteLine("");
 
         // Dynamic description based on settlement size
         terminal.SetColor("white");
         if (settlers < 8)
         {
-            terminal.WriteLine("A handful of rough shelters cluster in a clearing beyond the gates.");
-            terminal.WriteLine("Cookfire smoke rises lazily. The settlers eye you with cautious hope.");
+            terminal.WriteLine(Loc.Get("settlement.desc_small_1"));
+            terminal.WriteLine(Loc.Get("settlement.desc_small_2"));
         }
         else if (settlers < 12)
         {
-            terminal.WriteLine("A growing community has taken root here. Rough-hewn buildings line");
-            terminal.WriteLine("muddy paths. The sound of hammers and conversation fills the air.");
+            terminal.WriteLine(Loc.Get("settlement.desc_medium_1"));
+            terminal.WriteLine(Loc.Get("settlement.desc_medium_2"));
         }
         else
         {
-            terminal.WriteLine("A bustling frontier settlement stretches before you. What began as");
-            terminal.WriteLine("a few tents is becoming a proper town, alive with purpose.");
+            terminal.WriteLine(Loc.Get("settlement.desc_large_1"));
+            terminal.WriteLine(Loc.Get("settlement.desc_large_2"));
         }
         terminal.WriteLine("");
 
         // Settlement stats
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  Settlers: {settlers}/{GameConfig.SettlementMaxNPCs}    Treasury: {state.CommunalTreasury:N0} gold");
+        terminal.WriteLine(Loc.Get("settlement.stats", settlers, GameConfig.SettlementMaxNPCs, $"{state.CommunalTreasury:N0}"));
         terminal.WriteLine("");
 
         // Buildings status (compact)
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  Buildings:");
+        terminal.WriteLine(Loc.Get("settlement.buildings_label"));
         foreach (var kvp in state.Buildings.OrderByDescending(b => (int)b.Value.Tier))
         {
             var b = kvp.Value;
@@ -70,7 +70,7 @@ public class SettlementLocation : BaseLocation
             bool isActive = state.ActiveBuilding == kvp.Key;
             // Show "In Progress" instead of "Not Started" when actively being built
             string tier = (isActive && b.Tier == BuildingTier.None && b.ResourcePool > 0)
-                ? "In Progress"
+                ? Loc.Get("settlement.in_progress")
                 : SettlementSystem.GetTierDisplayName(b.Tier);
             string color = b.Tier switch
             {
@@ -80,7 +80,7 @@ public class SettlementLocation : BaseLocation
                 _ => isActive ? "cyan" : "darkgray"
             };
 
-            string active = isActive ? " [BUILDING...]" : "";
+            string active = isActive ? Loc.Get("settlement.building_active") : "";
             terminal.SetColor(color);
             terminal.Write($"    {name,-16} ");
             terminal.SetColor("white");
@@ -97,7 +97,7 @@ public class SettlementLocation : BaseLocation
                     int filled = (int)(pct * 15);
                     terminal.SetColor("bright_cyan");
                     if (IsScreenReader)
-                        terminal.Write($" {pct * 100:F0}% complete");
+                        terminal.Write(Loc.Get("settlement.pct_complete", $"{pct * 100:F0}"));
                     else
                         terminal.Write($" [{"".PadRight(filled, '#').PadRight(15, '.')}] {pct * 100:F0}%");
                 }
@@ -112,11 +112,11 @@ public class SettlementLocation : BaseLocation
         terminal.SetColor("gray");
         if (settlers > 0)
         {
-            terminal.Write("  Settlers: ");
+            terminal.Write(Loc.Get("settlement.settlers_label"));
             terminal.SetColor("white");
             var names = state.SettlerNames.Take(8).ToList();
             terminal.Write(string.Join(", ", names));
-            if (settlers > 8) terminal.Write($" (+{settlers - 8} more)");
+            if (settlers > 8) terminal.Write(Loc.Get("settlement.settlers_more", settlers - 8));
             terminal.WriteLine("");
             terminal.WriteLine("");
         }
@@ -126,7 +126,7 @@ public class SettlementLocation : BaseLocation
         if (proposedBuilt.Count > 0)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  Settler-Built:");
+            terminal.WriteLine(Loc.Get("settlement.settler_built_label"));
             foreach (var kvp in proposedBuilt.OrderByDescending(b => (int)b.Value.Tier))
             {
                 var template = SettlementSystem.Instance.GetProposalTemplate(kvp.Key);
@@ -138,7 +138,7 @@ public class SettlementLocation : BaseLocation
                     BuildingTier.Built => "green",
                     _ => "yellow"
                 };
-                string active = state.ActiveProposedBuildingId == kvp.Key ? " [BUILDING...]" : "";
+                string active = state.ActiveProposedBuildingId == kvp.Key ? Loc.Get("settlement.building_active") : "";
                 terminal.SetColor(color);
                 terminal.Write($"    {name,-16} ");
                 terminal.SetColor("white");
@@ -153,7 +153,7 @@ public class SettlementLocation : BaseLocation
                         int filled = (int)(pct * 15);
                         terminal.SetColor("bright_cyan");
                         if (IsScreenReader)
-                            terminal.Write($" {pct * 100:F0}% complete");
+                            terminal.Write(Loc.Get("settlement.pct_complete", $"{pct * 100:F0}"));
                         else
                             terminal.Write($" [{"".PadRight(filled, '#').PadRight(15, '.')}] {pct * 100:F0}%");
                     }
@@ -172,11 +172,11 @@ public class SettlementLocation : BaseLocation
             if (propTemplate != null)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  ** {state.CurrentProposal.ProposerName} proposes: {propTemplate.Name} **");
+                terminal.WriteLine(Loc.Get("settlement.proposal_active", state.CurrentProposal.ProposerName, propTemplate.Name));
                 terminal.SetColor("gray");
                 int dispFor = state.CurrentProposal.SupportVotes + Math.Max(0, state.CurrentProposal.PlayerVoteWeight);
                 int dispAgainst = state.CurrentProposal.OpposeVotes + Math.Max(0, -state.CurrentProposal.PlayerVoteWeight);
-                terminal.WriteLine($"     Votes: {dispFor} for / {dispAgainst} against ({state.CurrentProposal.TicksRemaining} ticks left)");
+                terminal.WriteLine(Loc.Get("settlement.proposal_votes", dispFor, dispAgainst, state.CurrentProposal.TicksRemaining));
                 terminal.WriteLine("");
             }
         }
@@ -185,15 +185,15 @@ public class SettlementLocation : BaseLocation
         terminal.SetColor("bright_yellow");
         if (IsScreenReader)
         {
-            terminal.WriteLine("  V. View Building Details");
-            terminal.WriteLine("  C. Contribute Gold");
-            terminal.WriteLine("  P. Proposals");
+            terminal.WriteLine(Loc.Get("settlement.menu_view_sr"));
+            terminal.WriteLine(Loc.Get("settlement.menu_contribute_sr"));
+            terminal.WriteLine(Loc.Get("settlement.menu_proposals_sr"));
         }
         else
         {
-            terminal.WriteLine("  [V] View Building Details");
-            terminal.WriteLine("  [C] Contribute Gold");
-            terminal.WriteLine("  [P] Proposals");
+            terminal.WriteLine(Loc.Get("settlement.menu_view"));
+            terminal.WriteLine(Loc.Get("settlement.menu_contribute"));
+            terminal.WriteLine(Loc.Get("settlement.menu_proposals"));
         }
 
         var services = SettlementSystem.Instance.GetAvailableServices();
@@ -201,11 +201,11 @@ public class SettlementLocation : BaseLocation
         if (services.Count > 0 || proposedServices.Count > 0)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine(IsScreenReader ? "  S. Settlement Services" : "  [S] Settlement Services");
+            terminal.WriteLine(IsScreenReader ? Loc.Get("settlement.menu_services_sr") : Loc.Get("settlement.menu_services"));
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine(IsScreenReader ? "  R. Return to Main Street" : "  [R] Return to Main Street");
+        terminal.WriteLine(IsScreenReader ? Loc.Get("settlement.menu_return_sr") : Loc.Get("settlement.menu_return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -218,9 +218,9 @@ public class SettlementLocation : BaseLocation
         int settlers = state.SettlerNames.Count;
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("=== THE OUTSKIRTS ===");
+        terminal.WriteLine(Loc.Get("settlement.bbs_header"));
         terminal.SetColor("white");
-        terminal.WriteLine($"Settlers: {settlers}/{GameConfig.SettlementMaxNPCs}  Treasury: {state.CommunalTreasury:N0}g");
+        terminal.WriteLine(Loc.Get("settlement.bbs_stats", settlers, GameConfig.SettlementMaxNPCs, $"{state.CommunalTreasury:N0}"));
 
         // Compact building list
         foreach (var kvp in state.Buildings.Where(b => b.Value.Tier > BuildingTier.None || state.ActiveBuilding == b.Key))
@@ -239,7 +239,7 @@ public class SettlementLocation : BaseLocation
             {
                 long cost = GameConfig.SettlementBuildingCosts[nextTier];
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"  Building: {SettlementSystem.GetBuildingDisplayName(state.ActiveBuilding.Value)} ({ab.ResourcePool:N0}/{cost:N0})");
+                terminal.WriteLine(Loc.Get("settlement.bbs_building", SettlementSystem.GetBuildingDisplayName(state.ActiveBuilding.Value), $"{ab.ResourcePool:N0}", $"{cost:N0}"));
             }
         }
 
@@ -261,12 +261,12 @@ public class SettlementLocation : BaseLocation
                 terminal.SetColor("cyan");
                 int bFor = state.CurrentProposal.SupportVotes + Math.Max(0, state.CurrentProposal.PlayerVoteWeight);
                 int bAgainst = state.CurrentProposal.OpposeVotes + Math.Max(0, -state.CurrentProposal.PlayerVoteWeight);
-                terminal.WriteLine($"  Proposal: {pt.Name} ({bFor}Y/{bAgainst}N)");
+                terminal.WriteLine(Loc.Get("settlement.bbs_proposal", pt.Name, bFor, bAgainst));
             }
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("[V]Details [C]Contribute [P]Proposals [S]Services [R]Return");
+        terminal.WriteLine(Loc.Get("settlement.bbs_menu"));
         terminal.WriteLine("");
         ShowStatusLine();
     }
@@ -295,7 +295,7 @@ public class SettlementLocation : BaseLocation
 
             case "R":
             case "Q":
-                terminal.WriteLine("You head back through the gates to Main Street.", "gray");
+                terminal.WriteLine(Loc.Get("settlement.return_to_main"), "gray");
                 await Task.Delay(1000);
                 throw new LocationExitException(GameLocation.MainStreet);
 
@@ -317,7 +317,7 @@ public class SettlementLocation : BaseLocation
         var state = SettlementSystem.Instance.State;
 
         terminal.WriteLine("");
-        WriteBoxHeader("BUILDING STATUS", "bright_yellow", 38);
+        WriteBoxHeader(Loc.Get("settlement.building_status"), "bright_yellow", 38);
         terminal.WriteLine("");
 
         foreach (SettlementBuilding building in Enum.GetValues(typeof(SettlementBuilding)))
@@ -342,7 +342,7 @@ public class SettlementLocation : BaseLocation
                     float pct = cost > 0 ? Math.Min(1f, (float)bs.ResourcePool / cost) : 0f;
                     int filled = (int)(pct * 20);
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine($"    Progress: [{"".PadRight(filled, '#').PadRight(20, '.')}] {bs.ResourcePool:N0}/{cost:N0} gold ({pct * 100:F0}%)");
+                    terminal.WriteLine(Loc.Get("settlement.building_progress", "".PadRight(filled, '#').PadRight(20, '.'), $"{bs.ResourcePool:N0}", $"{cost:N0}", $"{pct * 100:F0}"));
                 }
             }
 
@@ -360,27 +360,27 @@ public class SettlementLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Your gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("settlement.your_gold", $"{currentPlayer.Gold:N0}"));
 
         if (currentPlayer.Gold <= 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You have no gold to contribute.");
+            terminal.WriteLine(Loc.Get("ui.no_gold_to_contribute"));
             await terminal.PressAnyKey();
             return;
         }
 
-        string input = await terminal.GetInput("Amount to contribute (or 0 to cancel): ");
+        string input = await terminal.GetInput(Loc.Get("settlement.contribute_prompt"));
         if (!long.TryParse(input, out long amount) || amount <= 0)
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             return;
         }
 
         if (amount > currentPlayer.Gold)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You don't have that much gold!");
+            terminal.WriteLine(Loc.Get("settlement.not_that_much_gold"));
             await terminal.PressAnyKey();
             return;
         }
@@ -389,12 +389,12 @@ public class SettlementLocation : BaseLocation
         SettlementSystem.Instance.ContributeGold(currentPlayer.Name, amount);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"You contribute {amount:N0} gold to the settlement.");
+        terminal.WriteLine(Loc.Get("settlement.contribute_success", $"{amount:N0}"));
         terminal.SetColor("white");
 
         long totalContrib = SettlementSystem.Instance.State.PlayerContributions
             .GetValueOrDefault(currentPlayer.Name, 0);
-        terminal.WriteLine($"Your total contributions: {totalContrib:N0} gold");
+        terminal.WriteLine(Loc.Get("settlement.total_contributions", $"{totalContrib:N0}"));
 
         currentPlayer.Statistics?.RecordGoldSpent(amount);
         PersistSettlementIfOnline();
@@ -414,14 +414,14 @@ public class SettlementLocation : BaseLocation
         {
             terminal.SetColor("gray");
             terminal.WriteLine("");
-            terminal.WriteLine("No services available yet. The settlement needs more buildings!");
+            terminal.WriteLine(Loc.Get("settlement.no_services"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine("Available Services:");
+        terminal.WriteLine(Loc.Get("settlement.available_services"));
         terminal.SetColor("white");
         foreach (var (key, label, _) in services)
         {
@@ -436,12 +436,12 @@ public class SettlementLocation : BaseLocation
             }
         }
         terminal.SetColor("gray");
-        terminal.WriteLine(IsScreenReader ? "  0. Cancel" : "  [0] Cancel");
+        terminal.WriteLine(IsScreenReader ? Loc.Get("settlement.cancel_sr") : Loc.Get("settlement.cancel"));
         terminal.WriteLine("");
 
-        string input = await terminal.GetInput("Your choice: ");
+        string input = await GetChoice();
         input = input.Trim();
-        if (input == "0") { terminal.WriteLine("Cancelled.", "gray"); return; }
+        if (input == "0") { terminal.WriteLine(Loc.Get("ui.cancelled"), "gray"); return; }
 
         // Check core services
         var service = services.FirstOrDefault(s => s.key == input);
@@ -459,7 +459,7 @@ public class SettlementLocation : BaseLocation
             return;
         }
 
-        terminal.WriteLine("Cancelled.", "gray");
+        terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
     }
 
     private async Task UseService(SettlementBuilding building)
@@ -495,17 +495,17 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The settlers share a hearty meal with you by the tavern fire.");
-        terminal.WriteLine("You feel inspired and ready for battle.");
+        terminal.WriteLine(Loc.Get("settlement.tavern_desc_1"));
+        terminal.WriteLine(Loc.Get("settlement.tavern_desc_2"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: +{GameConfig.SettlementXPBonus * 100:F0}% XP for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_xp_buff", $"{GameConfig.SettlementXPBonus * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.XPBonus;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -519,7 +519,7 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.SettlementShrineUsedToday)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The shrine's healing power is spent for today. Return tomorrow.");
+            terminal.WriteLine(Loc.Get("settlement.shrine_spent"));
             await terminal.PressAnyKey();
             return;
         }
@@ -527,7 +527,7 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HP >= currentPlayer.MaxHP)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You are already at full health.");
+            terminal.WriteLine(Loc.Get("settlement.already_full_hp"));
             await terminal.PressAnyKey();
             return;
         }
@@ -539,10 +539,10 @@ public class SettlementLocation : BaseLocation
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The shrine tender guides you to a quiet alcove.");
-        terminal.WriteLine("Warmth spreads through you as your wounds mend.");
+        terminal.WriteLine(Loc.Get("settlement.shrine_desc_1"));
+        terminal.WriteLine(Loc.Get("settlement.shrine_desc_2"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Healed {healAmount} HP! (HP: {currentPlayer.HP}/{currentPlayer.MaxHP})");
+        terminal.WriteLine(Loc.Get("settlement.healed_hp", healAmount, currentPlayer.HP, currentPlayer.MaxHP));
 
         await terminal.PressAnyKey();
     }
@@ -552,17 +552,17 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The settlement guards share their patrol techniques with you.");
-        terminal.WriteLine("You feel more aware of threats and better prepared to defend.");
+        terminal.WriteLine(Loc.Get("settlement.palisade_desc_1"));
+        terminal.WriteLine(Loc.Get("settlement.palisade_desc_2"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: +{GameConfig.SettlementDefenseBonus * 100:F0}% defense for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_defense_buff", $"{GameConfig.SettlementDefenseBonus * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.DefenseBonus;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -578,7 +578,7 @@ public class SettlementLocation : BaseLocation
         if (unidentified == null)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no unidentified items.");
+            terminal.WriteLine(Loc.Get("ui.no_unidentified_items"));
             await terminal.PressAnyKey();
             return;
         }
@@ -586,9 +586,9 @@ public class SettlementLocation : BaseLocation
         unidentified.IsIdentified = true;
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The settlement craftsman examines your item carefully...");
+        terminal.WriteLine(Loc.Get("settlement.workshop_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Identified: {unidentified.Name}!");
+        terminal.WriteLine(Loc.Get("settlement.workshop_identified", unidentified.Name));
 
         await terminal.PressAnyKey();
     }
@@ -597,48 +597,48 @@ public class SettlementLocation : BaseLocation
     {
         terminal.SetColor("cyan");
         terminal.WriteLine("");
-        string input = await terminal.GetInput("Which dungeon floor to scout? (1-100): ");
+        string input = await terminal.GetInput(Loc.Get("settlement.watchtower_prompt"));
         if (!int.TryParse(input, out int floor) || floor < 1 || floor > 100)
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine($"The watchtower scouts report on Floor {floor}:");
+        terminal.WriteLine(Loc.Get("settlement.watchtower_report", floor));
         terminal.SetColor("white");
 
         // Generate some useful info about the floor
         var sampleMonster = MonsterGenerator.GenerateMonster(floor);
         if (sampleMonster != null)
         {
-            terminal.WriteLine($"  Creatures sighted: Level ~{sampleMonster.Level} monsters");
-            terminal.WriteLine($"  Example: {sampleMonster.Name}");
+            terminal.WriteLine(Loc.Get("settlement.watchtower_creatures", sampleMonster.Level));
+            terminal.WriteLine(Loc.Get("settlement.watchtower_example", sampleMonster.Name));
         }
 
         // Check for special floors
         var specialFloors = new Dictionary<int, string>
         {
-            { 15, "An ancient seal radiates power here." },
-            { 25, "The presence of Maelketh lingers." },
-            { 30, "A seal awaits a worthy claimant." },
-            { 40, "Veloura's domain stretches here." },
-            { 45, "A seal shimmers in the darkness." },
-            { 55, "Thorgrim guards this depth." },
-            { 60, "An ancient seal hums with energy." },
-            { 70, "Noctura's shadows dominate." },
-            { 80, "A seal of tremendous power waits." },
-            { 85, "Aurelion's radiance blinds." },
-            { 95, "Terravok shakes the earth." },
-            { 99, "The final seal beckons." },
-            { 100, "Manwe, the Eternal, awaits." }
+            { 15, Loc.Get("settlement.special_floor_15") },
+            { 25, Loc.Get("settlement.special_floor_25") },
+            { 30, Loc.Get("settlement.special_floor_30") },
+            { 40, Loc.Get("settlement.special_floor_40") },
+            { 45, Loc.Get("settlement.special_floor_45") },
+            { 55, Loc.Get("settlement.special_floor_55") },
+            { 60, Loc.Get("settlement.special_floor_60") },
+            { 70, Loc.Get("settlement.special_floor_70") },
+            { 80, Loc.Get("settlement.special_floor_80") },
+            { 85, Loc.Get("settlement.special_floor_85") },
+            { 95, Loc.Get("settlement.special_floor_95") },
+            { 99, Loc.Get("settlement.special_floor_99") },
+            { 100, Loc.Get("settlement.special_floor_100") }
         };
 
         if (specialFloors.TryGetValue(floor, out string hint))
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  Special: {hint}");
+            terminal.WriteLine(Loc.Get("settlement.watchtower_special", hint));
         }
 
         await terminal.PressAnyKey();
@@ -651,7 +651,7 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.SettlementGoldClaimedToday)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You've already claimed your share today. Come back tomorrow.");
+            terminal.WriteLine(Loc.Get("settlement.council_claimed_today"));
             await terminal.PressAnyKey();
             return;
         }
@@ -659,7 +659,7 @@ public class SettlementLocation : BaseLocation
         if (state.CommunalTreasury <= 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The communal treasury is empty.");
+            terminal.WriteLine(Loc.Get("settlement.treasury_empty"));
             await terminal.PressAnyKey();
             return;
         }
@@ -688,11 +688,11 @@ public class SettlementLocation : BaseLocation
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The council elder counts out your share from the treasury.");
+        terminal.WriteLine(Loc.Get("settlement.council_elder"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Received: {share:N0} gold!");
+        terminal.WriteLine(Loc.Get("settlement.received_gold", $"{share:N0}"));
         terminal.SetColor("gray");
-        terminal.WriteLine($"  Remaining treasury: {state.CommunalTreasury:N0} gold");
+        terminal.WriteLine(Loc.Get("settlement.remaining_treasury", $"{state.CommunalTreasury:N0}"));
 
         PersistSettlementIfOnline();
         await terminal.PressAnyKey();
@@ -702,9 +702,9 @@ public class SettlementLocation : BaseLocation
     {
         terminal.SetColor("bright_yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("The settlers display their wares on rough wooden tables.");
+        terminal.WriteLine(Loc.Get("settlement.market_desc"));
         terminal.SetColor("gray");
-        terminal.WriteLine("(Market stall trading coming in a future update!)");
+        terminal.WriteLine(Loc.Get("settlement.market_coming_soon"));
         await terminal.PressAnyKey();
     }
 
@@ -718,7 +718,7 @@ public class SettlementLocation : BaseLocation
         var proposal = state.CurrentProposal;
 
         terminal.WriteLine("");
-        WriteBoxHeader("SETTLEMENT PROPOSALS", "bright_cyan", 38);
+        WriteBoxHeader(Loc.Get("settlement.proposals"), "bright_cyan", 38);
         terminal.WriteLine("");
 
         if (proposal != null)
@@ -727,35 +727,35 @@ public class SettlementLocation : BaseLocation
             if (template != null)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  Active Proposal: {template.Name}");
+                terminal.WriteLine(Loc.Get("settlement.active_proposal", template.Name));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  Proposed by: {proposal.ProposerName}");
+                terminal.WriteLine(Loc.Get("settlement.proposed_by", proposal.ProposerName));
                 terminal.SetColor("gray");
                 terminal.WriteLine($"  \"{template.Description}\"");
                 terminal.SetColor("white");
-                terminal.WriteLine($"  Effect: {template.EffectDescription}");
+                terminal.WriteLine(Loc.Get("settlement.proposal_effect", template.EffectDescription));
                 terminal.WriteLine("");
                 terminal.SetColor("cyan");
 
                 int totalFor = proposal.SupportVotes + Math.Max(0, proposal.PlayerVoteWeight);
                 int totalAgainst = proposal.OpposeVotes + Math.Max(0, -proposal.PlayerVoteWeight);
-                terminal.WriteLine($"  Support: {totalFor}    Oppose: {totalAgainst}    (Resolves in {proposal.TicksRemaining} ticks)");
+                terminal.WriteLine(Loc.Get("settlement.proposal_support_oppose", totalFor, totalAgainst, proposal.TicksRemaining));
                 terminal.WriteLine("");
 
                 terminal.SetColor("bright_green");
                 terminal.WriteLine(IsScreenReader
-                    ? $"  E. Endorse ({GameConfig.SettlementEndorsementCost:N0} gold, +2 support)"
-                    : $"  [E] Endorse ({GameConfig.SettlementEndorsementCost:N0} gold, +2 support)");
+                    ? Loc.Get("settlement.endorse_sr", $"{GameConfig.SettlementEndorsementCost:N0}")
+                    : Loc.Get("settlement.endorse", $"{GameConfig.SettlementEndorsementCost:N0}"));
                 terminal.SetColor("red");
                 terminal.WriteLine(IsScreenReader
-                    ? $"  O. Oppose (+2 against)"
-                    : $"  [O] Oppose (+2 against)");
+                    ? Loc.Get("settlement.oppose_sr")
+                    : Loc.Get("settlement.oppose"));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No active proposals. The settlers are focused on other work.");
+            terminal.WriteLine(Loc.Get("settlement.no_active_proposals"));
         }
 
         // Show NPC-proposed buildings
@@ -764,7 +764,7 @@ public class SettlementLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  Settler-Built Structures:");
+            terminal.WriteLine(Loc.Get("settlement.settler_built_structures"));
             foreach (var kvp in proposed.OrderByDescending(b => (int)b.Value.Tier))
             {
                 var tmpl = SettlementSystem.Instance.GetProposalTemplate(kvp.Key);
@@ -782,10 +782,10 @@ public class SettlementLocation : BaseLocation
 
         terminal.SetColor("gray");
         terminal.WriteLine("");
-        terminal.WriteLine(IsScreenReader ? "  0. Back" : "  [0] Back");
+        terminal.WriteLine(IsScreenReader ? Loc.Get("settlement.back_sr") : Loc.Get("settlement.back"));
         terminal.WriteLine("");
 
-        string input = await terminal.GetInput("Your choice: ");
+        string input = await GetChoice();
         input = input.Trim().ToUpper();
 
         if (input == "E" && proposal != null)
@@ -795,12 +795,12 @@ public class SettlementLocation : BaseLocation
             if (myVote != 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You've already cast your vote on this proposal.");
+                terminal.WriteLine(Loc.Get("settlement.already_voted"));
             }
             else if (currentPlayer.Gold < GameConfig.SettlementEndorsementCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You need {GameConfig.SettlementEndorsementCost:N0} gold to endorse a proposal.");
+                terminal.WriteLine(Loc.Get("settlement.need_gold_endorse", $"{GameConfig.SettlementEndorsementCost:N0}"));
             }
             else
             {
@@ -808,7 +808,7 @@ public class SettlementLocation : BaseLocation
                 SettlementSystem.Instance.VoteOnProposal(voterName, 2);
                 currentPlayer.Statistics?.RecordGoldSpent(GameConfig.SettlementEndorsementCost);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("You endorse the proposal! Your influence sways the settlers.");
+                terminal.WriteLine(Loc.Get("settlement.endorse_success"));
                 PersistSettlementIfOnline();
             }
             await terminal.PressAnyKey();
@@ -820,13 +820,13 @@ public class SettlementLocation : BaseLocation
             if (myVote != 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You've already cast your vote on this proposal.");
+                terminal.WriteLine(Loc.Get("settlement.already_voted"));
             }
             else
             {
                 SettlementSystem.Instance.VoteOnProposal(voterName, -2);
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You speak against the proposal. The settlers reconsider.");
+                terminal.WriteLine(Loc.Get("settlement.oppose_success"));
                 PersistSettlementIfOnline();
             }
             await terminal.PressAnyKey();
@@ -870,7 +870,7 @@ public class SettlementLocation : BaseLocation
                 break;
             default:
                 terminal.SetColor("gray");
-                terminal.WriteLine("This service is not yet available.");
+                terminal.WriteLine(Loc.Get("settlement.service_not_available"));
                 await terminal.PressAnyKey();
                 break;
         }
@@ -881,16 +881,16 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("You spar with the arena fighters, learning their aggressive techniques.");
+        terminal.WriteLine(Loc.Get("settlement.arena_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: +{GameConfig.SettlementDamageBonus * 100:F0}% damage for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_damage_buff", $"{GameConfig.SettlementDamageBonus * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.DamageBonus;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -904,16 +904,16 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The thieves share their secrets of finding hidden treasures.");
+        terminal.WriteLine(Loc.Get("settlement.thieves_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: +{GameConfig.SettlementGoldBonus * 100:F0}% gold find for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_gold_buff", $"{GameConfig.SettlementGoldBonus * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.GoldBonus;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -927,7 +927,7 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.SettlementCircleUsedToday)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The mystic circle's energy is depleted for today. Return tomorrow.");
+            terminal.WriteLine(Loc.Get("settlement.mystic_depleted"));
             await terminal.PressAnyKey();
             return;
         }
@@ -939,7 +939,7 @@ public class SettlementLocation : BaseLocation
             if (currentPlayer.Mana >= currentPlayer.MaxMana)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("Your mana is already full.");
+                terminal.WriteLine(Loc.Get("settlement.mana_already_full"));
                 await terminal.PressAnyKey();
                 return;
             }
@@ -949,9 +949,9 @@ public class SettlementLocation : BaseLocation
 
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine("The mystic circle hums with power. Arcane energy flows into you.");
+            terminal.WriteLine(Loc.Get("settlement.mystic_mana_desc"));
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  Restored {restoreAmount} MP! (MP: {currentPlayer.Mana}/{currentPlayer.MaxMana})");
+            terminal.WriteLine(Loc.Get("settlement.restored_mp", restoreAmount, currentPlayer.Mana, currentPlayer.MaxMana));
         }
         else
         {
@@ -959,7 +959,7 @@ public class SettlementLocation : BaseLocation
             if (currentPlayer.HP >= currentPlayer.MaxHP)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You are already at full health.");
+                terminal.WriteLine(Loc.Get("settlement.already_full_hp"));
                 await terminal.PressAnyKey();
                 return;
             }
@@ -969,9 +969,9 @@ public class SettlementLocation : BaseLocation
 
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine("The mystic circle pulses with restorative energy, mending your wounds.");
+            terminal.WriteLine(Loc.Get("settlement.mystic_hp_desc"));
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  Restored {restoreAmount} HP! (HP: {currentPlayer.HP}/{currentPlayer.MaxHP})");
+            terminal.WriteLine(Loc.Get("settlement.restored_hp", restoreAmount, currentPlayer.HP, currentPlayer.MaxHP));
         }
 
         await terminal.PressAnyKey();
@@ -982,16 +982,16 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The jailers teach you how to spot and avoid traps.");
+        terminal.WriteLine(Loc.Get("settlement.prison_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: -{GameConfig.SettlementTrapResist * 100:F0}% trap damage for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_trap_resist", $"{GameConfig.SettlementTrapResist * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.TrapResist;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -1004,16 +1004,16 @@ public class SettlementLocation : BaseLocation
     {
         terminal.SetColor("cyan");
         terminal.WriteLine("");
-        string input = await terminal.GetInput("Which dungeon floor to scout? (scouts will check 3 floors): ");
+        string input = await terminal.GetInput(Loc.Get("settlement.scouts_prompt"));
         if (!int.TryParse(input, out int startFloor) || startFloor < 1 || startFloor > 98)
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The scouts fan out and report back:");
+        terminal.WriteLine(Loc.Get("settlement.scouts_report"));
 
         for (int f = startFloor; f <= Math.Min(startFloor + 2, 100); f++)
         {
@@ -1021,7 +1021,7 @@ public class SettlementLocation : BaseLocation
             var monster = MonsterGenerator.GenerateMonster(f);
             if (monster != null)
             {
-                terminal.WriteLine($"  Floor {f}: Level ~{monster.Level} ({monster.Name})");
+                terminal.WriteLine(Loc.Get("settlement.scouts_floor", f, monster.Level, monster.Name));
             }
         }
 
@@ -1033,16 +1033,16 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.HasSettlementBuff)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have a settlement buff active!");
+            terminal.WriteLine(Loc.Get("ui.settlement_buff_active"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("You spend time studying ancient tomes in the library.");
+        terminal.WriteLine(Loc.Get("settlement.library_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Gained: +{GameConfig.SettlementLibraryXPBonus * 100:F0}% XP for {GameConfig.SettlementBuffDuration} combats!");
+        terminal.WriteLine(Loc.Get("settlement.gained_library_xp", $"{GameConfig.SettlementLibraryXPBonus * 100:F0}", GameConfig.SettlementBuffDuration));
 
         currentPlayer.SettlementBuffType = (int)SettlementBuffType.LibraryXP;
         currentPlayer.SettlementBuffCombats = GameConfig.SettlementBuffDuration;
@@ -1056,7 +1056,7 @@ public class SettlementLocation : BaseLocation
         if (currentPlayer.SettlementHerbClaimedToday)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The herbalist has already given you a herb today. Come back tomorrow.");
+            terminal.WriteLine(Loc.Get("settlement.herbalist_claimed"));
             await terminal.PressAnyKey();
             return;
         }
@@ -1072,7 +1072,7 @@ public class SettlementLocation : BaseLocation
         if (currentCount >= maxCarry)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You're already carrying the maximum number of {HerbData.GetName(herb)}.");
+            terminal.WriteLine(Loc.Get("settlement.herbalist_max_carry", HerbData.GetName(herb)));
             await terminal.PressAnyKey();
             return;
         }
@@ -1083,9 +1083,9 @@ public class SettlementLocation : BaseLocation
 
         terminal.SetColor("bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("The herbalist rummages through dried bundles and hands you something.");
+        terminal.WriteLine(Loc.Get("settlement.herbalist_desc"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Received: {HerbData.GetName(herb)}!");
+        terminal.WriteLine(Loc.Get("settlement.herbalist_received", HerbData.GetName(herb)));
         terminal.SetColor("gray");
         terminal.WriteLine($"  ({HerbData.GetDescription(herb)})");
 
@@ -1096,15 +1096,15 @@ public class SettlementLocation : BaseLocation
     {
         terminal.SetColor("bright_yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("The Gambling Hall buzzes with dice rolls and cheers.");
+        terminal.WriteLine(Loc.Get("settlement.gambling_header"));
         terminal.SetColor("white");
-        terminal.WriteLine($"Your gold: {currentPlayer.Gold:N0}  (Max bet: {GameConfig.SettlementGambleMaxBet:N0})");
+        terminal.WriteLine(Loc.Get("settlement.gambling_gold_info", $"{currentPlayer.Gold:N0}", $"{GameConfig.SettlementGambleMaxBet:N0}"));
         terminal.WriteLine("");
 
-        string input = await terminal.GetInput("How much gold to wager? (0 to leave): ");
+        string input = await terminal.GetInput(Loc.Get("settlement.gambling_prompt"));
         if (!long.TryParse(input, out long bet) || bet <= 0)
         {
-            terminal.WriteLine("You walk away from the tables.", "gray");
+            terminal.WriteLine(Loc.Get("settlement.gambling_walk_away"), "gray");
             return;
         }
 
@@ -1112,7 +1112,7 @@ public class SettlementLocation : BaseLocation
         if (bet > currentPlayer.Gold)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You don't have that much gold!");
+            terminal.WriteLine(Loc.Get("settlement.not_that_much_gold"));
             await terminal.PressAnyKey();
             return;
         }
@@ -1125,16 +1125,16 @@ public class SettlementLocation : BaseLocation
             long winnings = bet * 2;
             currentPlayer.Gold += winnings;
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"The dice favor you! You win {winnings:N0} gold!");
+            terminal.WriteLine(Loc.Get("settlement.gambling_win", $"{winnings:N0}"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Bad luck! You lose {bet:N0} gold.");
+            terminal.WriteLine(Loc.Get("settlement.gambling_lose", $"{bet:N0}"));
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"Gold remaining: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("settlement.gambling_remaining", $"{currentPlayer.Gold:N0}"));
         await terminal.PressAnyKey();
     }
 
@@ -1142,23 +1142,23 @@ public class SettlementLocation : BaseLocation
     {
         var hints = new[]
         {
-            "The deeper you go, the stronger the rewards... and the dangers.",
-            "Ancient seals wait on floors 15, 30, 45, 60, 80, and 99.",
-            "Old Gods guard floors 25, 40, 55, 70, 85, 95, and 100.",
-            "Companions found in the Inn have their own quests and stories.",
-            "The King's favor can be won... or taken by force.",
-            "Some weapons carry enchantments that reveal themselves in battle.",
-            "The settlement grows stronger with each building completed.",
-            "NPC settlers build what their hearts desire. Different settlers, different towns.",
-            "Herbs gathered from your garden can turn the tide of battle.",
-            "There are multiple endings to discover. Will you become a god?",
+            Loc.Get("settlement.oracle_hint_0"),
+            Loc.Get("settlement.oracle_hint_1"),
+            Loc.Get("settlement.oracle_hint_2"),
+            Loc.Get("settlement.oracle_hint_3"),
+            Loc.Get("settlement.oracle_hint_4"),
+            Loc.Get("settlement.oracle_hint_5"),
+            Loc.Get("settlement.oracle_hint_6"),
+            Loc.Get("settlement.oracle_hint_7"),
+            Loc.Get("settlement.oracle_hint_8"),
+            Loc.Get("settlement.oracle_hint_9"),
         };
 
         string hint = hints[_random.Next(hints.Length)];
 
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("");
-        terminal.WriteLine("The veiled oracle speaks in a distant voice:");
+        terminal.WriteLine(Loc.Get("settlement.oracle_intro"));
         terminal.SetColor("white");
         terminal.WriteLine($"  \"{hint}\"");
         terminal.WriteLine("");

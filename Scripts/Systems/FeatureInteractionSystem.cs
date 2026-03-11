@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UsurperRemake.UI;
+using UsurperRemake.Utils;
 
 namespace UsurperRemake.Systems;
 
@@ -135,12 +136,12 @@ public class FeatureInteractionSystem
         var lore = GetLoreForLevel(level, theme, feature);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(800);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Something catches your attention:");
+        terminal.WriteLine(Loc.Get("feature.catches_attention"));
         terminal.WriteLine("");
         terminal.SetColor("white");
 
@@ -159,7 +160,7 @@ public class FeatureInteractionSystem
             long xp = CalculateScaledReward(level, 50, 150);
             player.Experience += xp;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"This knowledge enlightens you. (+{xp} XP)");
+            terminal.WriteLine(Loc.Get("feature.knowledge_xp", xp));
             outcome.ExperienceGained = xp;
         }
 
@@ -170,20 +171,20 @@ public class FeatureInteractionSystem
             {
                 player.Chivalry += amount;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"You feel drawn toward the light... (+{amount} Chivalry)");
+                terminal.WriteLine(Loc.Get("feature.drawn_to_light", amount));
             }
             else
             {
                 player.Darkness += amount;
                 terminal.SetColor("dark_magenta");
-                terminal.WriteLine($"You feel drawn toward the darkness... (+{amount} Darkness)");
+                terminal.WriteLine(Loc.Get("feature.drawn_to_darkness", amount));
             }
         }
 
         if (lore.RevealsOldGod != null)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"You sense {lore.RevealsOldGod}'s presence in these depths...");
+            terminal.WriteLine(Loc.Get("feature.sense_presence", lore.RevealsOldGod));
             // Could trigger story flag here
         }
 
@@ -599,7 +600,7 @@ public class FeatureInteractionSystem
         var (stat, statName, statValue) = GetRelevantStat(feature, player);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
@@ -614,9 +615,9 @@ public class FeatureInteractionSystem
         bool success = total >= difficulty;
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"[{statName} Check - DC {difficulty}]");
+        terminal.WriteLine(Loc.Get("feature.stat_check", statName, difficulty));
         terminal.SetColor("white");
-        terminal.WriteLine($"You rolled {roll} + {statBonus} ({statName} bonus) = {total}");
+        terminal.WriteLine(Loc.Get("feature.roll_result", roll, statBonus, statName, total));
         await Task.Delay(800);
         terminal.WriteLine("");
 
@@ -652,7 +653,7 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome, string stat)
     {
         terminal.SetColor("bright_green");
-        terminal.WriteLine("SUCCESS!");
+        terminal.WriteLine(Loc.Get("feature.success"));
         terminal.WriteLine("");
         await Task.Delay(500);
 
@@ -664,8 +665,8 @@ public class FeatureInteractionSystem
             // Stat boost (temporary but useful)
             int boost = 2 + (level / 20);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Your expertise reveals hidden knowledge!");
-            terminal.WriteLine($"+{boost} {stat} for the rest of this floor!");
+            terminal.WriteLine(Loc.Get("feature.hidden_knowledge"));
+            terminal.WriteLine(Loc.Get("feature.stat_boost", boost, stat));
 
             // Apply temporary stat boost based on stat name
             switch (stat)
@@ -681,7 +682,7 @@ public class FeatureInteractionSystem
             long gold = CalculateScaledReward(level, 100, 300);
             player.Gold += gold;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Your skill is rewarded handsomely! +{gold} gold!");
+            terminal.WriteLine(Loc.Get("feature.gold_reward", gold));
             outcome.GoldGained = gold;
         }
         else if (rewardType < 80)
@@ -690,7 +691,7 @@ public class FeatureInteractionSystem
             int potions = 1 + (level / 30);
             player.Healing = Math.Min(player.MaxPotions, player.Healing + potions);
             terminal.SetColor("green");
-            terminal.WriteLine($"You find {potions} healing potion{(potions > 1 ? "s" : "")} hidden inside!");
+            terminal.WriteLine(Loc.Get("feature.find_potions", potions, potions > 1 ? "s" : ""));
         }
         else
         {
@@ -698,7 +699,7 @@ public class FeatureInteractionSystem
             long xp = CalculateScaledReward(level, 75, 200);
             player.Experience += xp;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"The challenge itself teaches you something. +{xp} XP!");
+            terminal.WriteLine(Loc.Get("feature.challenge_xp", xp));
             outcome.ExperienceGained = xp;
         }
     }
@@ -707,7 +708,7 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome, string stat)
     {
         terminal.SetColor("red");
-        terminal.WriteLine("FAILED!");
+        terminal.WriteLine(Loc.Get("feature.failed"));
         terminal.WriteLine("");
         await Task.Delay(500);
 
@@ -719,14 +720,14 @@ public class FeatureInteractionSystem
             long damage = level + random.Next(1, 10);
             player.HP = Math.Max(1, player.HP - damage);
             terminal.SetColor("red");
-            terminal.WriteLine($"Your failure costs you. -{damage} HP");
+            terminal.WriteLine(Loc.Get("feature.failure_damage", damage));
             outcome.DamageTaken = damage;
         }
         else if (failureType < 70)
         {
             // No consequence, just failure
             terminal.SetColor("gray");
-            terminal.WriteLine("Nothing happens. Perhaps another approach would work.");
+            terminal.WriteLine(Loc.Get("feature.nothing_happens"));
         }
         else
         {
@@ -734,7 +735,7 @@ public class FeatureInteractionSystem
             long xp = CalculateScaledReward(level, 20, 50);
             player.Experience += xp;
             terminal.SetColor("cyan");
-            terminal.WriteLine($"You learn from your mistake. +{xp} XP");
+            terminal.WriteLine(Loc.Get("feature.learn_mistake", xp));
             outcome.ExperienceGained = xp;
         }
     }
@@ -749,7 +750,7 @@ public class FeatureInteractionSystem
         var choice = GetMoralChoice(feature, level);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
@@ -762,14 +763,14 @@ public class FeatureInteractionSystem
 
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("What do you do?");
+        terminal.WriteLine(Loc.Get("feature.what_do_you_do"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine($"[1] {choice.Option1.Description}");
         terminal.SetColor("bright_magenta");
         terminal.WriteLine($"[2] {choice.Option2.Description}");
         terminal.SetColor("gray");
-        terminal.WriteLine("[3] Walk away");
+        terminal.WriteLine($"[3] {Loc.Get("feature.walk_away")}");
         terminal.WriteLine("");
 
         var input = await terminal.GetInput("> ");
@@ -785,8 +786,8 @@ public class FeatureInteractionSystem
                 break;
             default:
                 terminal.SetColor("gray");
-                terminal.WriteLine("You decide this is not your concern.");
-                terminal.WriteLine("Sometimes wisdom is knowing when to walk away.");
+                terminal.WriteLine(Loc.Get("feature.not_your_concern"));
+                terminal.WriteLine(Loc.Get("feature.wisdom_walk_away"));
                 break;
         }
 
@@ -809,12 +810,12 @@ public class FeatureInteractionSystem
             if (option.AlignmentShift > 0)
             {
                 player.Chivalry += amount;
-                terminal.WriteLine($"Your soul shifts toward the light... (+{amount} Chivalry)", "bright_cyan");
+                terminal.WriteLine(Loc.Get("feature.soul_toward_light", amount), "bright_cyan");
             }
             else
             {
                 player.Darkness += amount;
-                terminal.WriteLine($"Your soul shifts toward the darkness... (+{amount} Darkness)", "dark_red");
+                terminal.WriteLine(Loc.Get("feature.soul_toward_darkness", amount), "dark_red");
             }
         }
 
@@ -967,14 +968,14 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
         var className = player.Class.ToString();
         terminal.SetColor("bright_magenta");
         var article = "aeiouAEIOU".Contains(className[0]) ? "an" : "a";
-        terminal.WriteLine($"Your training as {article} {className} reveals something others would miss:");
+        terminal.WriteLine(Loc.Get("feature.class_training_reveals", article, className));
         terminal.WriteLine("");
         await Task.Delay(400);
 
@@ -992,78 +993,78 @@ public class FeatureInteractionSystem
             case CharacterClass.Warrior:
             case CharacterClass.Barbarian:
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("You spot weaknesses in the dungeon's defenses.");
-                terminal.WriteLine("The next battle will be easier.");
+                terminal.WriteLine(Loc.Get("feature.spot_weaknesses"));
+                terminal.WriteLine(Loc.Get("feature.next_battle_easier"));
                 player.TempAttackBonus += 5 + (level / 10);
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"+{5 + (level / 10)} Attack Power for next combat!");
+                terminal.WriteLine(Loc.Get("feature.attack_power_bonus", 5 + (level / 10)));
                 break;
 
             case CharacterClass.Magician:
             case CharacterClass.Sage:
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine("Magical residue clings to this place.");
-                terminal.WriteLine("You absorb what you can.");
+                terminal.WriteLine(Loc.Get("feature.magical_residue"));
+                terminal.WriteLine(Loc.Get("feature.absorb_magic"));
                 int manaGain = 10 + (level / 5);
                 player.Mana = Math.Min(player.MaxMana, player.Mana + manaGain);
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"+{manaGain} Mana restored!");
+                terminal.WriteLine(Loc.Get("feature.mana_restored", manaGain));
                 break;
 
             case CharacterClass.Cleric:
             case CharacterClass.Paladin:
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("Divine presence lingers here. You offer a prayer.");
+                terminal.WriteLine(Loc.Get("feature.divine_presence"));
                 long heal = player.MaxHP / 4;
                 player.HP = Math.Min(player.MaxHP, player.HP + heal);
                 terminal.SetColor("green");
-                terminal.WriteLine($"+{heal} HP from divine blessing!");
+                terminal.WriteLine(Loc.Get("feature.divine_heal", heal));
                 break;
 
             case CharacterClass.Assassin:
                 terminal.SetColor("dark_gray");
-                terminal.WriteLine("You notice hidden passages others would miss.");
-                terminal.WriteLine("Someone left supplies for those who know where to look.");
+                terminal.WriteLine(Loc.Get("feature.hidden_passages"));
+                terminal.WriteLine(Loc.Get("feature.hidden_supplies"));
                 int vials = 1 + (level / 25);
                 player.PoisonVials = Math.Min(GameConfig.MaxPoisonVials, player.PoisonVials + vials);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"+{vials} poison vial{(vials > 1 ? "s" : "")}! (Total: {player.PoisonVials})");
+                terminal.WriteLine(Loc.Get("feature.poison_vials", vials, vials > 1 ? "s" : "", player.PoisonVials));
                 terminal.SetColor("gray");
-                terminal.WriteLine("Use [B] Coat Blade during combat to apply a poison.");
+                terminal.WriteLine(Loc.Get("feature.coat_blade_hint"));
                 break;
 
             case CharacterClass.Ranger:
                 terminal.SetColor("green");
-                terminal.WriteLine("Your wilderness training helps you find resources.");
+                terminal.WriteLine(Loc.Get("feature.wilderness_resources"));
                 long gold = CalculateScaledReward(level, 50, 150);
                 player.Gold += gold;
                 int healing = 1;
                 player.Healing = Math.Min(player.MaxPotions, player.Healing + healing);
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"+{gold} gold in sellable materials!");
+                terminal.WriteLine(Loc.Get("feature.sellable_materials", gold));
                 terminal.SetColor("green");
-                terminal.WriteLine("+1 herbal remedy!");
+                terminal.WriteLine(Loc.Get("feature.herbal_remedy"));
                 outcome.GoldGained = gold;
                 break;
 
             case CharacterClass.Bard:
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("You remember an old song about this place...");
-                terminal.WriteLine("The melody reveals ancient secrets.");
+                terminal.WriteLine(Loc.Get("feature.old_song"));
+                terminal.WriteLine(Loc.Get("feature.melody_secrets"));
                 long xp = CalculateScaledReward(level, 75, 175);
                 player.Experience += xp;
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"+{xp} XP from bardic knowledge!");
+                terminal.WriteLine(Loc.Get("feature.bardic_xp", xp));
                 outcome.ExperienceGained = xp;
                 break;
 
             default:
                 terminal.SetColor("white");
-                terminal.WriteLine("You find something useful.");
+                terminal.WriteLine(Loc.Get("feature.find_useful"));
                 long defaultGold = CalculateScaledReward(level, 30, 100);
                 player.Gold += defaultGold;
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"+{defaultGold} gold!");
+                terminal.WriteLine(Loc.Get("feature.plus_gold", defaultGold));
                 outcome.GoldGained = defaultGold;
                 break;
         }
@@ -1077,12 +1078,12 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("This looks dangerous, but potentially rewarding.");
+        terminal.WriteLine(Loc.Get("feature.looks_dangerous"));
         terminal.WriteLine("");
 
         // Show the risk/reward proposition
@@ -1092,15 +1093,15 @@ public class FeatureInteractionSystem
         successChance = Math.Clamp(successChance, 20, 85);
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Potential reward: {potentialGold} gold");
+        terminal.WriteLine(Loc.Get("feature.potential_reward", potentialGold));
         terminal.SetColor("red");
-        terminal.WriteLine($"Potential risk: {potentialDamage} damage");
+        terminal.WriteLine(Loc.Get("feature.potential_risk", potentialDamage));
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Success chance: {successChance}% (based on DEX/INT)");
+        terminal.WriteLine(Loc.Get("feature.success_chance", successChance));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("Do you take the risk? (Y/N)");
+        terminal.WriteLine(Loc.Get("feature.take_risk"));
 
         var input = await terminal.GetInput("> ");
 
@@ -1112,22 +1113,22 @@ public class FeatureInteractionSystem
             if (roll < successChance)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("SUCCESS!");
-                terminal.WriteLine($"You carefully extract the treasure!");
+                terminal.WriteLine(Loc.Get("feature.success"));
+                terminal.WriteLine(Loc.Get("feature.extract_treasure"));
                 player.Gold += potentialGold;
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"+{potentialGold} gold!");
+                terminal.WriteLine(Loc.Get("feature.plus_gold", potentialGold));
                 outcome.GoldGained = potentialGold;
                 outcome.Success = true;
             }
             else
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("FAILURE!");
-                terminal.WriteLine("A trap springs!");
+                terminal.WriteLine(Loc.Get("feature.failed"));
+                terminal.WriteLine(Loc.Get("feature.trap_springs"));
                 player.HP = Math.Max(1, player.HP - potentialDamage);
                 terminal.SetColor("red");
-                terminal.WriteLine($"-{potentialDamage} HP!");
+                terminal.WriteLine(Loc.Get("feature.minus_hp", potentialDamage));
                 outcome.DamageTaken = potentialDamage;
                 outcome.Success = false;
 
@@ -1137,7 +1138,7 @@ public class FeatureInteractionSystem
                     long partialGold = potentialGold / 3;
                     player.Gold += partialGold;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"But you managed to grab {partialGold} gold!");
+                    terminal.WriteLine(Loc.Get("feature.grabbed_gold", partialGold));
                     outcome.GoldGained = partialGold;
                 }
             }
@@ -1145,8 +1146,8 @@ public class FeatureInteractionSystem
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Wisdom is knowing when to walk away.");
-            terminal.WriteLine("You leave the treasure undisturbed.");
+            terminal.WriteLine(Loc.Get("feature.wisdom_leave"));
+            terminal.WriteLine(Loc.Get("feature.leave_undisturbed"));
         }
 
         await terminal.PressAnyKey();
@@ -1160,12 +1161,12 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("Something about this feels... familiar.");
+        terminal.WriteLine(Loc.Get("feature.feels_familiar"));
         terminal.WriteLine("");
         await Task.Delay(800);
 
@@ -1173,7 +1174,7 @@ public class FeatureInteractionSystem
         var memory = GetMemoryFragment(level);
 
         terminal.SetColor("dark_magenta");
-        terminal.WriteLine("A fragment of memory surfaces:");
+        terminal.WriteLine(Loc.Get("feature.memory_surfaces"));
         terminal.WriteLine("");
         terminal.SetColor("white");
 
@@ -1191,13 +1192,13 @@ public class FeatureInteractionSystem
         player.Mental = Math.Min(100, player.Mental + 1); // Slight mental boost from memory recovery
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("The memory fades, but something remains...");
+        terminal.WriteLine(Loc.Get("feature.memory_fades"));
 
         // Grant XP for memory discovery
         long xp = CalculateScaledReward(level, 50, 150);
         player.Experience += xp;
         terminal.SetColor("yellow");
-        terminal.WriteLine($"+{xp} XP");
+        terminal.WriteLine(Loc.Get("feature.plus_xp", xp));
         outcome.ExperienceGained = xp;
         outcome.MemoryTriggered = true;
         outcome.Success = true;
@@ -1274,12 +1275,12 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         await Task.Delay(600);
 
         terminal.SetColor("bright_blue");
-        terminal.WriteLine("For a moment, everything stops.");
+        terminal.WriteLine(Loc.Get("feature.everything_stops"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
@@ -1303,13 +1304,13 @@ public class FeatureInteractionSystem
         catch { /* System may not be initialized */ }
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("You feel... different. More awake.");
+        terminal.WriteLine(Loc.Get("feature.feel_different"));
 
         // Ocean insights grant significant XP
         long xp = CalculateScaledReward(level, 100, 250);
         player.Experience += xp;
         terminal.SetColor("yellow");
-        terminal.WriteLine($"+{xp} XP");
+        terminal.WriteLine(Loc.Get("feature.plus_xp", xp));
         outcome.ExperienceGained = xp;
         outcome.OceanInsightGained = true;
         outcome.Success = true;
@@ -1393,7 +1394,7 @@ public class FeatureInteractionSystem
         TerminalEmulator terminal, FeatureOutcome outcome)
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You {feature.Interaction.ToString().ToLower()} the {feature.Name}...");
+        terminal.WriteLine(Loc.Get("feature.interact_with", feature.Interaction.ToString().ToLower(), feature.Name));
         terminal.WriteLine("");
         terminal.SetColor("white");
         terminal.WriteLine(feature.Description);
@@ -1408,7 +1409,7 @@ public class FeatureInteractionSystem
             long gold = CalculateScaledReward(level, 30, 100);
             player.Gold += gold;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You find {gold} gold!");
+            terminal.WriteLine(Loc.Get("feature.find_gold", gold));
             outcome.GoldGained = gold;
         }
         else if (roll < 55)
@@ -1416,27 +1417,27 @@ public class FeatureInteractionSystem
             long xp = CalculateScaledReward(level, 25, 75);
             player.Experience += xp;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You learn something. +{xp} XP");
+            terminal.WriteLine(Loc.Get("feature.learn_something", xp));
             outcome.ExperienceGained = xp;
         }
         else if (roll < 70)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Nothing of interest here.");
+            terminal.WriteLine(Loc.Get("feature.nothing_interest"));
         }
         else if (roll < 85)
         {
             int potion = 1;
             player.Healing = Math.Min(player.MaxPotions, player.Healing + potion);
             terminal.SetColor("green");
-            terminal.WriteLine("You find a healing potion!");
+            terminal.WriteLine(Loc.Get("feature.find_healing_potion"));
         }
         else
         {
             long damage = level + random.Next(5, 15);
             player.HP = Math.Max(1, player.HP - damage);
             terminal.SetColor("red");
-            terminal.WriteLine($"A trap! You take {damage} damage!");
+            terminal.WriteLine(Loc.Get("feature.trap_damage", damage));
             outcome.DamageTaken = damage;
         }
 

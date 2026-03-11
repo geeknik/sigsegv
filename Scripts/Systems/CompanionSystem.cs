@@ -456,7 +456,7 @@ namespace UsurperRemake.Systems
 
             if (player.Level < companion.RecruitLevel)
             {
-                terminal.WriteLine($"{companion.Name} doesn't think you're ready yet.", "yellow");
+                terminal.WriteLine(Loc.Get("companion.not_ready", companion.Name), "yellow");
                 return false;
             }
 
@@ -474,11 +474,11 @@ namespace UsurperRemake.Systems
             {
                 activeCompanions.Add(id);
                 companion.IsActive = true;
-                terminal.WriteLine($"{companion.Name} joins your party!", "bright_green");
+                terminal.WriteLine(Loc.Get("companion.joins_party", companion.Name), "bright_green");
             }
             else
             {
-                terminal.WriteLine($"{companion.Name} will wait for you at the tavern.", "cyan");
+                terminal.WriteLine(Loc.Get("companion.waits_tavern", companion.Name), "cyan");
             }
 
             OnCompanionRecruited?.Invoke(id);
@@ -1010,7 +1010,7 @@ namespace UsurperRemake.Systems
                     if (itemsReturned > 0 && terminal != null)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"\n{companion.Name}'s equipment ({itemsReturned} item{(itemsReturned != 1 ? "s" : "")}) has been returned to your inventory.");
+                        terminal.WriteLine(Loc.Get("companion.equipment_returned", companion.Name, itemsReturned));
                     }
                 }
             }
@@ -1033,9 +1033,9 @@ namespace UsurperRemake.Systems
             if (terminal != null)
             {
                 terminal.SetColor("dark_magenta");
-                terminal.WriteLine($"  A wave of grief washes over you. (Stage: Denial)");
+                terminal.WriteLine(Loc.Get("companion.grief_onset"));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Your grief will affect your combat performance.");
+                terminal.WriteLine(Loc.Get("companion.grief_combat_warning"));
                 terminal.WriteLine("");
             }
 
@@ -1225,7 +1225,7 @@ namespace UsurperRemake.Systems
                     companion.EquippedItems.Clear();
                     if (itemsReturned > 0)
                     {
-                        pendingNotifications.Enqueue($"{companion.Name}'s equipment ({itemsReturned} item{(itemsReturned != 1 ? "s" : "")}) has been returned to your inventory.");
+                        pendingNotifications.Enqueue(Loc.Get("companion.equipment_returned_notify", companion.Name, itemsReturned));
                     }
                 }
             }
@@ -1258,7 +1258,7 @@ namespace UsurperRemake.Systems
         private async Task DisplayRecruitmentScene(Companion companion, TerminalEmulator terminal)
         {
             terminal.Clear();
-            UIHelper.WriteBoxHeader(terminal, "N E W   C O M P A N I O N", "bright_cyan", 66);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("companion.new_companion_header"), "bright_cyan", 66);
             terminal.WriteLine("");
 
             terminal.WriteLine($"  {companion.Name}", "bright_white");
@@ -1268,8 +1268,8 @@ namespace UsurperRemake.Systems
             terminal.WriteLine(companion.Description, "white");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Role: {companion.CombatRole}", "yellow");
-            terminal.WriteLine($"  Abilities: {string.Join(", ", companion.Abilities)}", "yellow");
+            terminal.WriteLine(Loc.Get("companion.role_label", companion.CombatRole), "yellow");
+            terminal.WriteLine(Loc.Get("companion.abilities_label", string.Join(", ", companion.Abilities)), "yellow");
             terminal.WriteLine("");
 
             // Show a hint of their deeper story
@@ -1278,7 +1278,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine($"  \"{companion.DialogueHints[0]}\"", "dark_cyan");
             }
 
-            await terminal.GetInputAsync("\nPress Enter to welcome them...");
+            await terminal.GetInputAsync(Loc.Get("companion.press_enter_welcome"));
         }
 
         private async Task DisplayDeathScene(Companion companion, DeathType type, string circumstance, TerminalEmulator terminal)
@@ -1291,7 +1291,7 @@ namespace UsurperRemake.Systems
             await Task.Delay(500);
             if (GameConfig.ScreenReaderMode)
             {
-                terminal.WriteLine("FALLEN", "dark_red");
+                terminal.WriteLine(Loc.Get("companion.fallen_header"), "dark_red");
             }
             else
             {
@@ -1327,9 +1327,9 @@ namespace UsurperRemake.Systems
 
             // The moment of passing
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {companion.Name} goes still.");
+            terminal.WriteLine(Loc.Get("companion.goes_still", companion.Name));
             await Task.Delay(1200);
-            terminal.WriteLine("  Thats it. Theyre gone.");
+            terminal.WriteLine(Loc.Get("companion.gone"));
             terminal.WriteLine("");
 
             await Task.Delay(2000);
@@ -1341,8 +1341,8 @@ namespace UsurperRemake.Systems
 
             // Final message
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {companion.Name} is dead.");
-            terminal.WriteLine("  No coming back from this one.");
+            terminal.WriteLine(Loc.Get("companion.is_dead", companion.Name));
+            terminal.WriteLine(Loc.Get("companion.no_coming_back"));
             terminal.WriteLine("");
 
             await Task.Delay(1500);
@@ -1361,7 +1361,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("white");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter when you are ready...");
+            await terminal.GetInputAsync(Loc.Get("companion.press_enter_ready"));
         }
 
         /// <summary>
@@ -1690,7 +1690,7 @@ namespace UsurperRemake.Systems
             if (terminal != null && activeCompanions.Count > 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"Companion XP (+{companionXP} each):");
+                terminal.WriteLine(Loc.Get("companion.xp_header", companionXP));
             }
 
             foreach (var companion in activeCompanions)
@@ -1744,7 +1744,7 @@ namespace UsurperRemake.Systems
                 ApplyCompanionLevelUpStats(companion);
 
                 terminal?.SetColor("bright_green");
-                terminal?.WriteLine($"  {companion.Name} has reached level {companion.Level}!");
+                terminal?.WriteLine(Loc.Get("companion.reached_level", companion.Name, companion.Level));
 
                 // Update loyalty slightly on level up (bonding through shared experience)
                 ModifyLoyalty(companion.Id, 1, "Leveled up through shared combat");

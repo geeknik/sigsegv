@@ -35,57 +35,57 @@ public class MarketplaceLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        WriteBoxHeader("AUCTION HOUSE", "bright_cyan", 77);
+        WriteBoxHeader(Loc.Get("marketplace.header_visual"), "bright_cyan", 77);
         terminal.WriteLine("");
 
         // Atmospheric description
         var stats = MarketplaceSystem.Instance.GetStatistics();
         terminal.SetColor("white");
-        terminal.Write("A cavernous hall of polished stone, lined with glass display cases and ");
-        terminal.WriteLine("wooden");
-        terminal.Write("stalls. ");
+        terminal.Write(Loc.Get("marketplace.atmo_desc1"));
+        terminal.WriteLine(Loc.Get("marketplace.atmo_desc2"));
+        terminal.Write(Loc.Get("marketplace.atmo_desc3"));
         if (stats.TotalListings > 10)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("The air buzzes with haggling voices and the clink of coin purses.");
+            terminal.WriteLine(Loc.Get("marketplace.atmo_busy"));
         }
         else if (stats.TotalListings > 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("A few merchants stand behind their stalls, calling to passersby.");
+            terminal.WriteLine(Loc.Get("marketplace.atmo_few"));
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("The stalls stand mostly empty today, dust settling on the counters.");
+            terminal.WriteLine(Loc.Get("marketplace.atmo_empty"));
         }
         terminal.WriteLine("");
 
         // Auctioneer flavor
         terminal.SetColor("yellow");
-        terminal.Write("Grimjaw");
+        terminal.Write(Loc.Get("marketplace.grimjaw"));
         terminal.SetColor("gray");
-        terminal.Write(", the half-orc auctioneer, looms behind the registry desk. ");
+        terminal.Write(Loc.Get("marketplace.grimjaw_desc"));
         if (stats.TotalListings == 0)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("He yawns.");
+            terminal.WriteLine(Loc.Get("marketplace.grimjaw_yawn"));
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"Slow day. You selling or just wasting my time?\"");
+            terminal.WriteLine(Loc.Get("marketplace.grimjaw_slow"));
         }
         else if (stats.TotalListings < 5)
         {
             terminal.SetColor("white");
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"Got a few things worth looking at. Browse the board.\"");
+            terminal.WriteLine(Loc.Get("marketplace.grimjaw_few"));
         }
         else
         {
             terminal.SetColor("white");
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"Plenty of goods today! Step up, step up!\"");
+            terminal.WriteLine(Loc.Get("marketplace.grimjaw_plenty"));
         }
         terminal.WriteLine("");
 
@@ -93,7 +93,7 @@ public class MarketplaceLocation : BaseLocation
         if (stats.TotalListings > 0)
         {
             terminal.SetColor("cyan");
-            terminal.Write("  Listings: ");
+            terminal.Write(Loc.Get("marketplace.listings_label"));
             terminal.SetColor("white");
             terminal.Write($"{stats.TotalListings}");
             terminal.SetColor("gray");
@@ -101,7 +101,7 @@ public class MarketplaceLocation : BaseLocation
             if (stats.PlayerListings > 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.Write($"{stats.PlayerListings} player");
+                terminal.Write(Loc.Get("marketplace.player_count", stats.PlayerListings));
             }
             if (stats.PlayerListings > 0 && stats.NPCListings > 0)
             {
@@ -111,13 +111,13 @@ public class MarketplaceLocation : BaseLocation
             if (stats.NPCListings > 0)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.Write($"{stats.NPCListings} NPC");
+                terminal.Write(Loc.Get("marketplace.npc_count", stats.NPCListings));
             }
             terminal.SetColor("gray");
             terminal.Write(")");
 
             terminal.SetColor("gray");
-            terminal.Write("   Total value: ");
+            terminal.Write(Loc.Get("marketplace.total_value"));
             terminal.SetColor("bright_yellow");
             terminal.WriteLine($"{stats.TotalValue:N0} {GameConfig.MoneyType}");
         }
@@ -127,7 +127,7 @@ public class MarketplaceLocation : BaseLocation
 
         // Menu
         terminal.SetColor("cyan");
-        terminal.WriteLine("What would you like to do?");
+        terminal.WriteLine(Loc.Get("marketplace.what_to_do"));
         terminal.WriteLine("");
 
         // Row 1
@@ -138,7 +138,7 @@ public class MarketplaceLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("heck bulletin board   ");
+        terminal.Write(Loc.Get("marketplace.menu_check"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -147,7 +147,7 @@ public class MarketplaceLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("uy item        ");
+        terminal.Write(Loc.Get("marketplace.menu_buy"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -156,7 +156,7 @@ public class MarketplaceLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("dd item");
+        terminal.WriteLine(Loc.Get("marketplace.menu_add"));
 
         // Row 2
         terminal.SetColor("darkgray");
@@ -166,7 +166,7 @@ public class MarketplaceLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("tatus                 ");
+        terminal.Write(Loc.Get("marketplace.menu_status"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -175,7 +175,7 @@ public class MarketplaceLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("eturn");
+        terminal.WriteLine(Loc.Get("marketplace.menu_return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -187,21 +187,21 @@ public class MarketplaceLocation : BaseLocation
     private void DisplayLocationBBS()
     {
         terminal.ClearScreen();
-        ShowBBSHeader("AUCTION HOUSE");
+        ShowBBSHeader(Loc.Get("marketplace.header_visual"));
 
         // 1-line description with listing count
         var stats = MarketplaceSystem.Instance.GetStatistics();
         terminal.SetColor("white");
         if (stats.TotalListings > 0)
         {
-            terminal.Write(" Grimjaw's auction hall. ");
+            terminal.Write(Loc.Get("marketplace.bbs_hall"));
             terminal.SetColor("cyan");
             terminal.Write($"{stats.TotalListings}");
             terminal.SetColor("gray");
-            terminal.Write(" listings");
+            terminal.Write(Loc.Get("marketplace.bbs_listings"));
             if (stats.TotalValue > 0)
             {
-                terminal.Write(" worth ");
+                terminal.Write(Loc.Get("marketplace.bbs_worth"));
                 terminal.SetColor("yellow");
                 terminal.Write($"{stats.TotalValue:N0}g");
             }
@@ -209,14 +209,14 @@ public class MarketplaceLocation : BaseLocation
         }
         else
         {
-            terminal.WriteLine(" Grimjaw's auction hall stands mostly empty. \"Slow day.\"");
+            terminal.WriteLine(Loc.Get("marketplace.bbs_empty"));
         }
 
         ShowBBSNPCs();
         terminal.WriteLine("");
 
         // Menu rows
-        ShowBBSMenuRow(("C", "bright_yellow", "Browse"), ("B", "bright_yellow", "Buy"), ("A", "bright_yellow", "AddItem"), ("S", "bright_yellow", "Status"), ("R", "bright_yellow", "Return"));
+        ShowBBSMenuRow(("C", "bright_yellow", Loc.Get("marketplace.bbs_browse")), ("B", "bright_yellow", Loc.Get("marketplace.bbs_buy")), ("A", "bright_yellow", Loc.Get("marketplace.bbs_add")), ("S", "bright_yellow", Loc.Get("marketplace.bbs_status")), ("R", "bright_yellow", Loc.Get("marketplace.bbs_return")));
 
         ShowBBSFooter();
     }
@@ -224,23 +224,23 @@ public class MarketplaceLocation : BaseLocation
     private void DisplayLocationSR()
     {
         terminal.ClearScreen();
-        terminal.WriteLine("AUCTION HOUSE");
+        terminal.WriteLine(Loc.Get("marketplace.sr_title"));
         terminal.WriteLine("");
 
         var stats = MarketplaceSystem.Instance.GetStatistics();
-        terminal.WriteLine($"Listings: {stats.TotalListings} ({stats.PlayerListings} player, {stats.NPCListings} NPC)");
+        terminal.WriteLine(Loc.Get("marketplace.sr_listings", stats.TotalListings, stats.PlayerListings, stats.NPCListings));
         if (stats.TotalValue > 0)
-            terminal.WriteLine($"Total value: {stats.TotalValue:N0} {GameConfig.MoneyType}");
-        terminal.WriteLine($"Your gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("marketplace.sr_total_value", $"{stats.TotalValue:N0}", GameConfig.MoneyType));
+        terminal.WriteLine(Loc.Get("marketplace.sr_your_gold", $"{currentPlayer.Gold:N0}"));
         terminal.WriteLine("");
 
         ShowNPCsInLocation();
 
-        WriteSRMenuOption("C", "Check bulletin board");
-        WriteSRMenuOption("B", "Buy item");
-        WriteSRMenuOption("A", "Add item for sale");
-        WriteSRMenuOption("S", "Status");
-        WriteSRMenuOption("R", "Return to Main Street");
+        WriteSRMenuOption("C", Loc.Get("marketplace.bulletin"));
+        WriteSRMenuOption("B", Loc.Get("marketplace.buy"));
+        WriteSRMenuOption("A", Loc.Get("marketplace.sell"));
+        WriteSRMenuOption("S", Loc.Get("marketplace.status"));
+        WriteSRMenuOption("R", Loc.Get("marketplace.return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -280,22 +280,22 @@ public class MarketplaceLocation : BaseLocation
         MarketplaceSystem.Instance.CleanupExpiredListings();
         terminal.ClearScreen();
 
-        WriteBoxHeader("AUCTION HOUSE \u2014 LISTINGS", "bright_cyan", 77);
+        WriteBoxHeader(Loc.Get("marketplace.listings"), "bright_cyan", 77);
         terminal.WriteLine("");
 
         var listings = MarketplaceSystem.Instance.GetAllListings();
         if (listings.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  The bulletin board is bare. A few old nails jut from the cork.");
+            terminal.WriteLine(Loc.Get("marketplace.board_empty1"));
             terminal.SetColor("yellow");
-            terminal.WriteLine("\n  Grimjaw shrugs. \"Nothing posted. Come back later, or list something yourself.\"");
+            terminal.WriteLine(Loc.Get("marketplace.board_empty2"));
         }
         else
         {
             // Column headers
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {"#",-4} {"Item",-30} {"Price",-16} {"Seller",-18} {"Age"}");
+            terminal.WriteLine($"  {Loc.Get("marketplace.col_num"),-4} {Loc.Get("marketplace.col_item"),-30} {Loc.Get("marketplace.col_price"),-16} {Loc.Get("marketplace.col_seller"),-18} {Loc.Get("marketplace.col_age")}");
             if (!IsScreenReader)
             {
                 terminal.SetColor("darkgray");
@@ -306,8 +306,8 @@ public class MarketplaceLocation : BaseLocation
             foreach (var listing in listings)
             {
                 var age = (DateTime.Now - listing.Posted).Days;
-                string ageStr = age == 0 ? "new" : $"{age}d";
-                string sellerDisplay = listing.IsNPCSeller ? $"{listing.Seller} (NPC)" : listing.Seller;
+                string ageStr = age == 0 ? Loc.Get("marketplace.age_new") : $"{age}d";
+                string sellerDisplay = listing.IsNPCSeller ? $"{listing.Seller} {Loc.Get("marketplace.npc_tag")}" : listing.Seller;
 
                 // Item number
                 terminal.SetColor("darkgray");
@@ -346,17 +346,17 @@ public class MarketplaceLocation : BaseLocation
 
         if (listings.Count == 0)
         {
-            terminal.WriteLine("Nothing available for purchase.", "yellow");
+            terminal.WriteLine(Loc.Get("marketplace.nothing_available"), "yellow");
             await Task.Delay(1500);
             return;
         }
 
         await ShowBoard();
-        var input = await terminal.GetInput("Enter number of item to buy (or Q to cancel): ");
+        var input = await terminal.GetInput(Loc.Get("marketplace.buy_prompt"));
         if (input.Trim().Equals("Q", StringComparison.OrdinalIgnoreCase)) return;
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > listings.Count)
         {
-            terminal.WriteLine("Invalid selection.", "red");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -366,14 +366,14 @@ public class MarketplaceLocation : BaseLocation
         // Don't allow buying your own items
         if (listing.Seller == currentPlayer.DisplayName && !listing.IsNPCSeller)
         {
-            terminal.WriteLine("You cannot buy your own listing!", "red");
+            terminal.WriteLine(Loc.Get("marketplace.cant_buy_own"), "red");
             await Task.Delay(1500);
             return;
         }
 
         if (currentPlayer.Gold < listing.Price)
         {
-            terminal.WriteLine("You cannot afford that item!", "red");
+            terminal.WriteLine(Loc.Get("marketplace.cant_afford"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -382,7 +382,7 @@ public class MarketplaceLocation : BaseLocation
         int actualIndex = MarketplaceSystem.Instance.Listings.IndexOf(listing);
         if (actualIndex < 0)
         {
-            terminal.WriteLine("Item no longer available.", "red");
+            terminal.WriteLine(Loc.Get("marketplace.no_longer_available"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -392,14 +392,14 @@ public class MarketplaceLocation : BaseLocation
         {
             var purchasedItem = listing.Item.Clone();
             currentPlayer.Inventory.Add(purchasedItem);
-            terminal.WriteLine("Transaction complete! The item is now yours.", "bright_green");
+            terminal.WriteLine(Loc.Get("marketplace.transaction_complete"), "bright_green");
 
             // Auto-equip if it's better than current weapon/armor (legacy system compatibility)
             bool equipped = false;
             if (purchasedItem.Type == global::ObjType.Weapon && purchasedItem.Attack > currentPlayer.WeapPow)
             {
                 currentPlayer.WeapPow = purchasedItem.Attack;
-                terminal.WriteLine($"Equipped {purchasedItem.Name}! (+{purchasedItem.Attack} weapon power)", "bright_cyan");
+                terminal.WriteLine(Loc.Get("marketplace.equipped_weapon", purchasedItem.Name, purchasedItem.Attack), "bright_cyan");
                 equipped = true;
             }
             else if ((purchasedItem.Type == global::ObjType.Body || purchasedItem.Type == global::ObjType.Head ||
@@ -407,7 +407,7 @@ public class MarketplaceLocation : BaseLocation
                      && purchasedItem.Armor > currentPlayer.ArmPow)
             {
                 currentPlayer.ArmPow = purchasedItem.Armor;
-                terminal.WriteLine($"Equipped {purchasedItem.Name}! (+{purchasedItem.Armor} armor power)", "bright_cyan");
+                terminal.WriteLine(Loc.Get("marketplace.equipped_armor", purchasedItem.Name, purchasedItem.Armor), "bright_cyan");
                 equipped = true;
             }
 
@@ -432,7 +432,7 @@ public class MarketplaceLocation : BaseLocation
         }
         else
         {
-            terminal.WriteLine("Transaction failed!", "red");
+            terminal.WriteLine(Loc.Get("marketplace.transaction_failed"), "red");
         }
 
         await Task.Delay(2000);
@@ -444,24 +444,24 @@ public class MarketplaceLocation : BaseLocation
         var sellable = currentPlayer.Inventory.Where(it => it != null).ToList();
         if (sellable.Count == 0)
         {
-            terminal.WriteLine("You have nothing to sell.", "yellow");
+            terminal.WriteLine(Loc.Get("marketplace.nothing_to_sell"), "yellow");
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("cyan");
-        terminal.WriteLine("Your Inventory:");
+        terminal.WriteLine(Loc.Get("marketplace.your_inventory"));
         for (int i = 0; i < sellable.Count; i++)
         {
-            terminal.WriteLine($"{i + 1}. {sellable[i].GetDisplayName()} (Value: {sellable[i].Value:N0})");
+            terminal.WriteLine($"{i + 1}. {sellable[i].GetDisplayName()} ({Loc.Get("marketplace.value_label")}: {sellable[i].Value:N0})");
         }
 
-        var input = await terminal.GetInput("Enter number of item to sell (or Q to cancel): ");
+        var input = await terminal.GetInput(Loc.Get("marketplace.sell_prompt"));
         if (input.Trim().Equals("Q", StringComparison.OrdinalIgnoreCase)) return;
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > sellable.Count)
         {
-            terminal.WriteLine("Invalid selection.", "red");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -469,8 +469,8 @@ public class MarketplaceLocation : BaseLocation
         var item = sellable[choice - 1];
 
         // Suggest a price based on item value
-        terminal.WriteLine($"\nSuggested price: {item.Value:N0} {GameConfig.MoneyType}");
-        terminal.WriteLine("Enter the price for the item (or press Enter for suggested price):");
+        terminal.WriteLine(Loc.Get("marketplace.suggested_price", $"{item.Value:N0}", GameConfig.MoneyType));
+        terminal.WriteLine(Loc.Get("marketplace.enter_price"));
         var priceInput = await terminal.GetInput();
 
         long price;
@@ -480,7 +480,7 @@ public class MarketplaceLocation : BaseLocation
         }
         else if (!long.TryParse(priceInput, out price) || price < 0)
         {
-            terminal.WriteLine("Invalid price format.", "red");
+            terminal.WriteLine(Loc.Get("marketplace.invalid_price"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -488,7 +488,7 @@ public class MarketplaceLocation : BaseLocation
         // Add item to marketplace via MarketplaceSystem
         MarketplaceSystem.Instance.ListItem(currentPlayer.DisplayName, item.Clone(), price);
         currentPlayer.Inventory.Remove(item);
-        terminal.WriteLine("Item listed successfully!", "bright_green");
+        terminal.WriteLine(Loc.Get("marketplace.item_listed"), "bright_green");
         await Task.Delay(2000);
     }
 
@@ -496,7 +496,7 @@ public class MarketplaceLocation : BaseLocation
     {
         terminal.ClearScreen();
 
-        WriteBoxHeader("AUCTION HOUSE \u2014 YOUR STATUS", "bright_cyan", 77);
+        WriteBoxHeader(Loc.Get("marketplace.your_status"), "bright_cyan", 77);
         terminal.WriteLine("");
 
         var allListings = MarketplaceSystem.Instance.GetAllListings();
@@ -504,7 +504,7 @@ public class MarketplaceLocation : BaseLocation
 
         // Your listings section
         terminal.SetColor("cyan");
-        terminal.WriteLine("  Your Active Listings:");
+        terminal.WriteLine(Loc.Get("marketplace.your_listings"));
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
@@ -514,14 +514,14 @@ public class MarketplaceLocation : BaseLocation
         if (myListings.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You have nothing listed for sale.");
+            terminal.WriteLine(Loc.Get("marketplace.nothing_listed"));
         }
         else
         {
             foreach (var listing in myListings)
             {
                 var age = (DateTime.Now - listing.Posted).Days;
-                string ageStr = age == 0 ? "today" : $"{age}d ago";
+                string ageStr = age == 0 ? Loc.Get("marketplace.posted_today") : Loc.Get("marketplace.posted_ago", age);
                 terminal.SetColor("white");
                 terminal.Write($"    {listing.Item.GetDisplayName()}");
                 terminal.SetColor("gray");
@@ -537,32 +537,32 @@ public class MarketplaceLocation : BaseLocation
         // Market overview
         var stats = MarketplaceSystem.Instance.GetStatistics();
         terminal.SetColor("cyan");
-        terminal.WriteLine("  Market Overview:");
+        terminal.WriteLine(Loc.Get("marketplace.market_overview"));
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
             terminal.WriteLine("  ─────────────────────────────────────────────────────────");
         }
         terminal.SetColor("gray");
-        terminal.Write("    Total listings: ");
+        terminal.Write(Loc.Get("marketplace.total_listings_label"));
         terminal.SetColor("white");
         terminal.Write($"{stats.TotalListings}");
         terminal.SetColor("gray");
         terminal.Write("   (");
         terminal.SetColor("bright_green");
-        terminal.Write($"{stats.PlayerListings} player");
+        terminal.Write(Loc.Get("marketplace.player_count", stats.PlayerListings));
         terminal.SetColor("gray");
         terminal.Write(", ");
         terminal.SetColor("bright_cyan");
-        terminal.Write($"{stats.NPCListings} NPC");
+        terminal.Write(Loc.Get("marketplace.npc_count", stats.NPCListings));
         terminal.SetColor("gray");
         terminal.WriteLine(")");
         terminal.SetColor("gray");
-        terminal.Write("    Total value:    ");
+        terminal.Write(Loc.Get("marketplace.total_value_label"));
         terminal.SetColor("bright_yellow");
         terminal.WriteLine($"{stats.TotalValue:N0} {GameConfig.MoneyType}");
         terminal.SetColor("gray");
-        terminal.Write("    Your gold:      ");
+        terminal.Write(Loc.Get("marketplace.your_gold_label"));
         terminal.SetColor("yellow");
         terminal.WriteLine($"{currentPlayer.Gold:N0} {GameConfig.MoneyType}");
         terminal.WriteLine("");

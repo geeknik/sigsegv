@@ -450,6 +450,24 @@ public class DailySystemManager
     }
     
     /// <summary>
+    /// Lightweight daily reset for world sim catch-up mode.
+    /// Increments the day counter and resets companion daily flags.
+    /// Does NOT touch the player, display messages, auto-save, or write news markers.
+    /// News file maintenance is skipped — catch-up events go to buffer, not file.
+    /// </summary>
+    public void RunCatchUpDailyReset()
+    {
+        currentDay++;
+
+        // Sync StoryProgressionSystem's game day counter
+        try { StoryProgressionSystem.Instance.CurrentGameDay = currentDay; }
+        catch { }
+
+        // Reset companion daily flags so they can act again
+        CompanionSystem.Instance?.ResetDailyFlags();
+    }
+
+    /// <summary>
     /// Process NPC activities during player absence
     /// </summary>
     private Task ProcessNPCsDuringAbsence(TimeSpan timeSpan)

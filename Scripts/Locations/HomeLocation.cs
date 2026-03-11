@@ -65,33 +65,33 @@ public class HomeLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        WriteBoxHeader("YOUR HOME", "bright_cyan");
+        WriteBoxHeader(Loc.Get("home.header"), "bright_cyan");
         terminal.WriteLine("");
 
         // Quick stats bar
         terminal.SetColor("gray");
-        terminal.Write("  HP: ");
+        terminal.Write($"  {Loc.Get("home.stat_hp")}");
         terminal.SetColor(currentPlayer.HP < currentPlayer.MaxHP / 4 ? "red" : (currentPlayer.HP < currentPlayer.MaxHP / 2 ? "yellow" : "bright_green"));
         terminal.Write($"{currentPlayer.HP}/{currentPlayer.MaxHP}");
         terminal.SetColor("gray");
         if (currentPlayer.IsManaClass)
         {
-            terminal.Write("  |  Mana: ");
+            terminal.Write($"  |  {Loc.Get("home.stat_mana")}");
             terminal.SetColor("bright_blue");
             terminal.Write($"{currentPlayer.Mana}/{currentPlayer.MaxMana}");
         }
         else
         {
-            terminal.Write("  |  Stamina: ");
+            terminal.Write($"  |  {Loc.Get("home.stat_stamina")}");
             terminal.SetColor("bright_yellow");
             terminal.Write($"{currentPlayer.CurrentCombatStamina}/{currentPlayer.MaxCombatStamina}");
         }
         terminal.SetColor("gray");
-        terminal.Write("  |  Gold: ");
+        terminal.Write($"  |  {Loc.Get("home.stat_gold")}");
         terminal.SetColor("bright_yellow");
         terminal.Write($"{currentPlayer.Gold:N0}");
         terminal.SetColor("gray");
-        terminal.Write("  |  Potions: ");
+        terminal.Write($"  |  {Loc.Get("home.stat_potions")}");
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{currentPlayer.Healing}");
         terminal.WriteLine("");
@@ -102,43 +102,43 @@ public class HomeLocation : BaseLocation
         switch (currentPlayer.HomeLevel)
         {
             case 0:
-                terminal.Write("You stand in a drafty, dilapidated shack. The walls are thin and the roof leaks.");
+                terminal.Write(Loc.Get("home.desc_level0"));
                 break;
             case 1:
-                terminal.Write("Your home has seen some repairs. The walls are patched, keeping out the worst of the wind.");
+                terminal.Write(Loc.Get("home.desc_level1"));
                 break;
             case 2:
-                terminal.Write("A sturdy cottage with solid walls and a proper door. It feels like a real home.");
+                terminal.Write(Loc.Get("home.desc_level2"));
                 break;
             case 3:
-                terminal.Write("A comfortable home with good furniture and warm light.");
+                terminal.Write(Loc.Get("home.desc_level3"));
                 break;
             case 4:
-                terminal.Write("A fine manor with quality furnishings and elegant decor.");
+                terminal.Write(Loc.Get("home.desc_level4"));
                 break;
             default:
-                terminal.Write("A grand estate befitting a hero, beautifully appointed throughout.");
+                terminal.Write(Loc.Get("home.desc_level5"));
                 break;
         }
         // Bed detail
         switch (currentPlayer.BedLevel)
         {
-            case 0: terminal.Write(" A moth-eaten straw pile serves as your bed."); break;
-            case 1: terminal.Write(" A simple cot sits in the corner."); break;
-            case 2: terminal.Write(" A sturdy wooden bed frame holds a thin mattress."); break;
-            case 3: terminal.Write(" A plush feather mattress promises restful sleep."); break;
-            case 4: terminal.Write(" An ornate four-poster bed dominates the bedroom."); break;
-            default: terminal.Write(" A magnificent canopy bed draped in silk awaits you."); break;
+            case 0: terminal.Write(Loc.Get("home.bed_level0")); break;
+            case 1: terminal.Write(Loc.Get("home.bed_level1")); break;
+            case 2: terminal.Write(Loc.Get("home.bed_level2")); break;
+            case 3: terminal.Write(Loc.Get("home.bed_level3")); break;
+            case 4: terminal.Write(Loc.Get("home.bed_level4")); break;
+            default: terminal.Write(Loc.Get("home.bed_level5")); break;
         }
         // Hearth detail
         switch (currentPlayer.HearthLevel)
         {
-            case 0: terminal.Write(" A cold firepit sits unused."); break;
-            case 1: terminal.Write(" A simple hearth crackles with warmth."); break;
-            case 2: terminal.Write(" A stone fireplace radiates steady heat."); break;
-            case 3: terminal.Write(" An iron stove fills the room with comforting warmth."); break;
-            case 4: terminal.Write(" A grand fireplace roars with inviting flames."); break;
-            default: terminal.Write(" An eternal flame burns without fuel, filling every room with warmth."); break;
+            case 0: terminal.Write(Loc.Get("home.hearth_level0")); break;
+            case 1: terminal.Write(Loc.Get("home.hearth_level1")); break;
+            case 2: terminal.Write(Loc.Get("home.hearth_level2")); break;
+            case 3: terminal.Write(Loc.Get("home.hearth_level3")); break;
+            case 4: terminal.Write(Loc.Get("home.hearth_level4")); break;
+            default: terminal.Write(Loc.Get("home.hearth_level5")); break;
         }
         terminal.WriteLine("");
         // Chest and garden on second line if upgraded
@@ -148,13 +148,13 @@ public class HomeLocation : BaseLocation
         if (currentPlayer.GardenLevel > 0)
             extras.Add(GardenNames[Math.Clamp(currentPlayer.GardenLevel, 0, 5)].ToLower());
         if (currentPlayer.HasStudy)
-            extras.Add("a study lined with books");
+            extras.Add(Loc.Get("home.extra_study"));
         if (currentPlayer.HasServants)
-            extras.Add("servants' quarters");
+            extras.Add(Loc.Get("home.extra_servants"));
         if (extras.Count > 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You also have " + string.Join(", ", extras) + ".");
+            terminal.WriteLine(Loc.Get("home.you_also_have", string.Join(", ", extras)));
         }
         terminal.WriteLine("");
 
@@ -163,19 +163,19 @@ public class HomeLocation : BaseLocation
         int restsLeft = Math.Max(0, maxRests - currentPlayer.HomeRestsToday);
         int recoveryPct = (int)(GameConfig.HomeRecoveryPercent[Math.Clamp(currentPlayer.HomeLevel, 0, 5)] * 100);
         terminal.SetColor("gray");
-        terminal.Write("  Rest: ");
+        terminal.Write($"  {Loc.Get("home.stat_rest")}");
         terminal.SetColor(restsLeft > 0 ? "bright_green" : "red");
         terminal.Write($"{restsLeft}/{maxRests} today ({recoveryPct}%)");
         if (currentPlayer.ChestLevel > 0)
         {
             int maxCapacity = GameConfig.ChestCapacity[Math.Clamp(currentPlayer.ChestLevel, 0, 5)];
             terminal.SetColor("gray");
-            terminal.Write("  |  Chest: ");
+            terminal.Write($"  |  {Loc.Get("home.stat_chest")}");
             terminal.SetColor("cyan");
             terminal.Write($"{Chest.Count}/{maxCapacity}");
         }
         terminal.SetColor("gray");
-        terminal.Write("  |  Potions: ");
+        terminal.Write($"  |  {Loc.Get("home.stat_potions")}");
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{currentPlayer.Healing}");
         terminal.WriteLine("");
@@ -221,18 +221,18 @@ public class HomeLocation : BaseLocation
             if (partnersAtHome.Count > 0)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.Write($"{string.Join(" and ", partnersAtHome)} {(partnersAtHome.Count == 1 ? "is" : "are")} here with you");
+                terminal.Write(Loc.Get("home.partners_here", string.Join(" and ", partnersAtHome), partnersAtHome.Count == 1 ? Loc.Get("home.partners_is") : Loc.Get("home.partners_are")));
                 if (children.Count > 0)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.Write($" ({children.Count} child{(children.Count != 1 ? "ren" : "")})");
+                    terminal.Write(Loc.Get("home.children_count", children.Count, children.Count != 1 ? Loc.Get("home.children_ren") : ""));
                 }
                 terminal.WriteLine(".");
             }
             else if (children.Count > 0)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Your {children.Count} child{(children.Count != 1 ? "ren are" : " is")} here.");
+                terminal.WriteLine(Loc.Get("home.children_here", children.Count, children.Count != 1 ? Loc.Get("home.children_ren_are") : Loc.Get("home.children_is")));
             }
 
             if (partnersAway.Count > 0)
@@ -240,7 +240,7 @@ public class HomeLocation : BaseLocation
                 terminal.SetColor("gray");
                 foreach (var (name, loc) in partnersAway)
                 {
-                    terminal.WriteLine($"  {name} is at {loc}.");
+                    terminal.WriteLine(Loc.Get("home.partner_at_location", name, loc));
                 }
             }
             terminal.WriteLine("");
@@ -260,35 +260,35 @@ public class HomeLocation : BaseLocation
         bool hasTrophies = currentPlayer.HasTrophyRoom;
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("--- Home Activities ---");
+        terminal.WriteLine($"--- {Loc.Get("home.activities")} ---");
         terminal.WriteLine("");
 
         // Row 1: Core actions
-        WriteMenuCol(" ", "E", "Rest & Recover", true);
-        WriteMenuCol("", "U", "Upgrades", true);
-        WriteMenuNL("", "S", "Status", true);
+        WriteMenuCol(" ", "E", Loc.Get("home.rest"), true);
+        WriteMenuCol("", "U", Loc.Get("home.upgrades"), true);
+        WriteMenuNL("", "S", Loc.Get("dungeon.status"), true);
 
         // Row 2: Chest operations (dimmed if no chest)
-        WriteMenuCol(" ", "D", "Deposit Item", hasChest);
-        WriteMenuCol("", "W", "Withdraw Item", hasChest);
-        WriteMenuNL("", "L", "List Chest", hasChest);
+        WriteMenuCol(" ", "D", Loc.Get("home.deposit"), hasChest);
+        WriteMenuCol("", "W", Loc.Get("home.withdraw"), hasChest);
+        WriteMenuNL("", "L", Loc.Get("home.list_chest"), hasChest);
 
         // Row 3: Garden, Herbs, Trophies, Family
-        WriteMenuCol(" ", "A", "Gather Herbs", hasGarden);
-        WriteMenuCol("", "J", "Use Herb", currentPlayer.TotalHerbCount > 0);
-        WriteMenuNL("", "T", "Trophies", hasTrophies);
+        WriteMenuCol(" ", "A", Loc.Get("home.gather_herbs"), hasGarden);
+        WriteMenuCol("", "J", Loc.Get("home.use_herb"), currentPlayer.TotalHerbCount > 0);
+        WriteMenuNL("", "T", Loc.Get("home.trophies"), hasTrophies);
 
-        WriteMenuCol(" ", "F", "Family", true);
+        WriteMenuCol(" ", "F", Loc.Get("home.family"), true);
 
         // Row 4: Romance
-        WriteMenuCol(" ", "P", "Partner Time", true);
-        WriteMenuCol("", "B", "Bedroom", true);
-        WriteMenuNL("", "!", "Resurrect", true);
+        WriteMenuCol(" ", "P", Loc.Get("home.partner"), true);
+        WriteMenuCol("", "B", Loc.Get("home.bedroom"), true);
+        WriteMenuNL("", "!", Loc.Get("home.resurrect"), true);
 
         // Row 5: Items
-        WriteMenuCol(" ", "I", "Inventory", true);
-        WriteMenuCol("", "G", "Gear Partner", true);
-        WriteMenuNL("", "H", "Heal (Potion)", true);
+        WriteMenuCol(" ", "I", Loc.Get("dungeon.inventory"), true);
+        WriteMenuCol("", "G", Loc.Get("home.gear_partner"), true);
+        WriteMenuNL("", "H", Loc.Get("home.heal_potion"), true);
 
         terminal.WriteLine("");
 
@@ -298,8 +298,8 @@ public class HomeLocation : BaseLocation
             if (IsScreenReader)
             {
                 string sleepLabel = DailySystemManager.CanRestForNight(currentPlayer)
-                    ? "Sleep (advance to morning)"
-                    : "Wait until nightfall";
+                    ? Loc.Get("home.sleep")
+                    : Loc.Get("home.wait_night");
                 terminal.WriteLine($" Z. {sleepLabel}");
             }
             else
@@ -313,12 +313,12 @@ public class HomeLocation : BaseLocation
                 if (DailySystemManager.CanRestForNight(currentPlayer))
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("Sleep (advance to morning)");
+                    terminal.WriteLine(Loc.Get("home.sleep"));
                 }
                 else
                 {
                     terminal.SetColor("dark_cyan");
-                    terminal.WriteLine("Wait until nightfall");
+                    terminal.WriteLine(Loc.Get("home.wait_night"));
                 }
             }
         }
@@ -326,7 +326,7 @@ public class HomeLocation : BaseLocation
         {
             if (IsScreenReader)
             {
-                terminal.WriteLine(" Z. Sleep (safe, logout)");
+                terminal.WriteLine($" Z. {Loc.Get("home.sleep_safe")}");
             }
             else
             {
@@ -337,12 +337,12 @@ public class HomeLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Sleep (safe — logout)");
+                terminal.WriteLine(Loc.Get("home.sleep_safe"));
             }
         }
 
         // Navigation row
-        WriteMenuNL(" ", "R", "Return", true);
+        WriteMenuNL(" ", "R", Loc.Get("home.return_label"), true);
 
         terminal.WriteLine("");
     }
@@ -401,18 +401,18 @@ public class HomeLocation : BaseLocation
     private void DisplayLocationBBS()
     {
         terminal.ClearScreen();
-        ShowBBSHeader("YOUR HOME");
+        ShowBBSHeader(Loc.Get("home.header"));
 
         // 1-line description based on home level
         terminal.SetColor("white");
         string bbsDesc = currentPlayer.HomeLevel switch
         {
-            0 => " A drafty shack with a leaky roof and moth-eaten straw pile.",
-            1 => " A patched-up home. The walls keep out the worst of the wind.",
-            2 => " A sturdy cottage with solid walls. Feels like a real home.",
-            3 => " A comfortable home with good furniture and warm light.",
-            4 => " A fine manor with elegant decor. The envy of townsfolk.",
-            _ => " A grand estate befitting a hero. Luxury and serenity abound."
+            0 => Loc.Get("home.bbs_desc_level0"),
+            1 => Loc.Get("home.bbs_desc_level1"),
+            2 => Loc.Get("home.bbs_desc_level2"),
+            3 => Loc.Get("home.bbs_desc_level3"),
+            4 => Loc.Get("home.bbs_desc_level4"),
+            _ => Loc.Get("home.bbs_desc_level5")
         };
         terminal.WriteLine(bbsDesc);
 
@@ -421,13 +421,13 @@ public class HomeLocation : BaseLocation
         int bbsRestsLeft = Math.Max(0, bbsMaxRests - currentPlayer.HomeRestsToday);
         int bbsRecovery = (int)(GameConfig.HomeRecoveryPercent[Math.Clamp(currentPlayer.HomeLevel, 0, 5)] * 100);
         terminal.SetColor("gray");
-        terminal.Write($" Rest:{bbsRestsLeft}/{bbsMaxRests}({bbsRecovery}%)");
+        terminal.Write(Loc.Get("home.bbs_rest_label", bbsRestsLeft, bbsMaxRests, bbsRecovery));
         if (currentPlayer.ChestLevel > 0)
         {
             int maxCap = GameConfig.ChestCapacity[Math.Clamp(currentPlayer.ChestLevel, 0, 5)];
-            terminal.Write($"  Chest:{Chest.Count}/{maxCap}");
+            terminal.Write(Loc.Get("home.bbs_chest_label", Chest.Count, maxCap));
         }
-        terminal.Write($"  Potions:");
+        terminal.Write(Loc.Get("home.bbs_potions_label"));
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{currentPlayer.Healing}");
 
@@ -451,11 +451,11 @@ public class HomeLocation : BaseLocation
         {
             terminal.SetColor("bright_magenta");
             if (partnersAtHome.Count > 0)
-                terminal.Write($" {string.Join(", ", partnersAtHome)} here");
+                terminal.Write(Loc.Get("home.bbs_partners_here", string.Join(", ", partnersAtHome)));
             if (children.Count > 0)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.Write($" {children.Count} child{(children.Count != 1 ? "ren" : "")}");
+                terminal.Write(Loc.Get("home.bbs_children", children.Count, children.Count != 1 ? Loc.Get("home.children_ren") : ""));
             }
             terminal.WriteLine("");
         }
@@ -463,23 +463,23 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine("");
 
         // Menu rows - consistent layout regardless of upgrades
-        ShowBBSMenuRow(("E", "bright_yellow", "Rest"), ("U", "bright_yellow", "Upgrades"), ("S", "bright_yellow", "Status"));
-        ShowBBSMenuRow(("D", "bright_yellow", "Deposit"), ("W", "bright_yellow", "Withdraw"), ("L", "bright_yellow", "List Chest"));
-        ShowBBSMenuRow(("A", "bright_yellow", "Herbs"), ("T", "bright_yellow", "Trophies"), ("F", "bright_yellow", "Family"));
-        ShowBBSMenuRow(("P", "bright_yellow", "Partner"), ("B", "bright_yellow", "Bedroom"), ("!", "bright_yellow", "Resurrect"));
-        ShowBBSMenuRow(("I", "bright_yellow", "Inventory"), ("G", "bright_yellow", "Gear"), ("H", "bright_yellow", "Heal(Pot)"));
+        ShowBBSMenuRow(("E", "bright_yellow", Loc.Get("home.rest")), ("U", "bright_yellow", Loc.Get("home.upgrades")), ("S", "bright_yellow", Loc.Get("dungeon.status")));
+        ShowBBSMenuRow(("D", "bright_yellow", Loc.Get("home.deposit")), ("W", "bright_yellow", Loc.Get("home.withdraw")), ("L", "bright_yellow", Loc.Get("home.list_chest")));
+        ShowBBSMenuRow(("A", "bright_yellow", Loc.Get("home.gather_herbs")), ("T", "bright_yellow", Loc.Get("home.trophies")), ("F", "bright_yellow", Loc.Get("home.family")));
+        ShowBBSMenuRow(("P", "bright_yellow", Loc.Get("home.partner")), ("B", "bright_yellow", Loc.Get("home.bedroom")), ("!", "bright_yellow", Loc.Get("home.resurrect")));
+        ShowBBSMenuRow(("I", "bright_yellow", Loc.Get("dungeon.inventory")), ("G", "bright_yellow", Loc.Get("home.gear_partner")), ("H", "bright_yellow", Loc.Get("home.heal_potion")));
         if (!UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null)
         {
-            string zLabel = DailySystemManager.CanRestForNight(currentPlayer) ? "Sleep" : "Wait";
-            ShowBBSMenuRow(("Z", "bright_yellow", zLabel), ("R", "bright_yellow", "Return"));
+            string zLabel = DailySystemManager.CanRestForNight(currentPlayer) ? Loc.Get("home.sleep") : Loc.Get("home.wait_night");
+            ShowBBSMenuRow(("Z", "bright_yellow", zLabel), ("R", "bright_yellow", Loc.Get("home.return_label")));
         }
         else if (UsurperRemake.BBS.DoorMode.IsOnlineMode && currentPlayer != null && currentPlayer.HasReinforcedDoor)
         {
-            ShowBBSMenuRow(("Z", "bright_yellow", "Sleep(Safe)"), ("R", "bright_yellow", "Return"));
+            ShowBBSMenuRow(("Z", "bright_yellow", Loc.Get("home.sleep_safe")), ("R", "bright_yellow", Loc.Get("home.return_label")));
         }
         else
         {
-            ShowBBSMenuRow(("R", "bright_yellow", "Return"));
+            ShowBBSMenuRow(("R", "bright_yellow", Loc.Get("home.return_label")));
         }
 
         ShowBBSFooter();
@@ -511,7 +511,7 @@ public class HomeLocation : BaseLocation
             case "D":
                 if (currentPlayer.ChestLevel <= 0)
                 {
-                    terminal.WriteLine("You don't have a chest yet. Visit [U]pgrades to buy one.", "yellow");
+                    terminal.WriteLine(Loc.Get("home.no_chest"), "yellow");
                     await terminal.WaitForKey();
                 }
                 else
@@ -520,7 +520,7 @@ public class HomeLocation : BaseLocation
             case "W":
                 if (currentPlayer.ChestLevel <= 0)
                 {
-                    terminal.WriteLine("You don't have a chest yet. Visit [U]pgrades to buy one.", "yellow");
+                    terminal.WriteLine(Loc.Get("home.no_chest"), "yellow");
                     await terminal.WaitForKey();
                 }
                 else
@@ -529,7 +529,7 @@ public class HomeLocation : BaseLocation
             case "L":
                 if (currentPlayer.ChestLevel <= 0)
                 {
-                    terminal.WriteLine("You don't have a chest yet. Visit [U]pgrades to buy one.", "yellow");
+                    terminal.WriteLine(Loc.Get("home.no_chest"), "yellow");
                     await terminal.WaitForKey();
                 }
                 else
@@ -547,7 +547,7 @@ public class HomeLocation : BaseLocation
             case "T":
                 if (!currentPlayer.HasTrophyRoom)
                 {
-                    terminal.WriteLine("You don't have a Trophy Room yet. Visit Upgrades to purchase one!", "yellow");
+                    terminal.WriteLine(Loc.Get("home.no_trophy_room"), "yellow");
                     await terminal.WaitForKey();
                 }
                 else
@@ -618,11 +618,11 @@ public class HomeLocation : BaseLocation
         {
             terminal.SetColor("yellow");
             if (homeLevel == 0)
-                terminal.WriteLine("Your straw pile is too uncomfortable to rest on again today.");
+                terminal.WriteLine(Loc.Get("home.rest_straw_uncomfort"));
             else
-                terminal.WriteLine("You've already rested as much as you can today.");
+                terminal.WriteLine(Loc.Get("home.rest_maxed"));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Rests used: {currentPlayer.HomeRestsToday}/{maxRests}. Try again tomorrow.");
+            terminal.WriteLine(Loc.Get("home.rest_used_today", currentPlayer.HomeRestsToday, maxRests));
             await terminal.WaitForKey();
             return;
         }
@@ -631,16 +631,16 @@ public class HomeLocation : BaseLocation
         switch (homeLevel)
         {
             case 0:
-                terminal.WriteLine("You curl up on the moth-eaten straw pile...", "gray");
+                terminal.WriteLine(Loc.Get("home.rest_straw"), "gray");
                 break;
             case 1:
-                terminal.WriteLine("You lie down on your simple cot...", "gray");
+                terminal.WriteLine(Loc.Get("home.rest_cot"), "gray");
                 break;
             case 2:
-                terminal.WriteLine("You rest in your wooden bed...", "gray");
+                terminal.WriteLine(Loc.Get("home.rest_wooden"), "gray");
                 break;
             default:
-                terminal.WriteLine("You relax in the comfort of your bed...", "gray");
+                terminal.WriteLine(Loc.Get("home.rest_comfort"), "gray");
                 break;
         }
         await Task.Delay(1500);
@@ -657,20 +657,20 @@ public class HomeLocation : BaseLocation
 
         if (currentPlayer.MurderWeight >= 3f)
         {
-            terminal.WriteLine("You rest, but dark memories haunt your sleep...", "dark_red");
+            terminal.WriteLine(Loc.Get("home.rest_grief"), "dark_red");
         }
 
         if (restEfficiency >= 1.0f)
         {
-            terminal.WriteLine("You feel completely rejuvenated!", "bright_green");
+            terminal.WriteLine(Loc.Get("home.rest_rejuvenated"), "bright_green");
         }
         else
         {
             terminal.SetColor("green");
             if (currentPlayer.IsManaClass)
-                terminal.WriteLine($"Recovered {healAmount} HP and {manaAmount} mana. ({(int)(restEfficiency * 100)}% recovery)");
+                terminal.WriteLine(Loc.Get("home.rest_recovered_mana", healAmount, manaAmount, (int)(restEfficiency * 100)));
             else
-                terminal.WriteLine($"Recovered {healAmount} HP. ({(int)(restEfficiency * 100)}% recovery)");
+                terminal.WriteLine(Loc.Get("home.rest_recovered_hp", healAmount, (int)(restEfficiency * 100)));
         }
 
         currentPlayer.HomeRestsToday++;
@@ -681,7 +681,7 @@ public class HomeLocation : BaseLocation
             int oldFatigue = currentPlayer.Fatigue;
             currentPlayer.Fatigue = Math.Max(0, currentPlayer.Fatigue - GameConfig.FatigueReductionHomeRest);
             if (currentPlayer.Fatigue < oldFatigue)
-                terminal.WriteLine($"You feel refreshed. (Fatigue -{oldFatigue - currentPlayer.Fatigue})", "bright_green");
+                terminal.WriteLine(Loc.Get("home.rest_fatigue_refreshed", oldFatigue - currentPlayer.Fatigue), "bright_green");
         }
 
         // Apply Well-Rested buff from Hearth
@@ -693,13 +693,13 @@ public class HomeLocation : BaseLocation
             currentPlayer.WellRestedCombats = combats;
             currentPlayer.WellRestedBonus = bonus;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"The warmth of your hearth invigorates you! (+{(int)(bonus * 100)}% damage/defense for {combats} combats)");
+            terminal.WriteLine(Loc.Get("home.rest_hearth_buff", (int)(bonus * 100), combats));
         }
 
         // Show remaining rests
         int restsLeft = maxRests - currentPlayer.HomeRestsToday;
         terminal.SetColor("gray");
-        terminal.WriteLine($"Rests remaining today: {restsLeft}/{maxRests}");
+        terminal.WriteLine(Loc.Get("home.rest_remaining", restsLeft, maxRests));
 
         // Check for dreams during rest at home (nightmares take priority)
         var dream = DreamSystem.Instance.GetDreamForRest(currentPlayer, 0);
@@ -708,7 +708,7 @@ public class HomeLocation : BaseLocation
             await Task.Delay(1500);
             terminal.WriteLine("");
             terminal.SetColor("dark_magenta");
-            terminal.WriteLine("As sleep takes you, dreams unfold...");
+            terminal.WriteLine(Loc.Get("home.sleep_dreams"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
@@ -757,7 +757,7 @@ public class HomeLocation : BaseLocation
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\n  You bar the reinforced door and drift into a safe sleep...");
+        terminal.WriteLine($"\n  {Loc.Get("home.sleep_reinforced")}");
         throw new LocationExitException(GameLocation.NoWhere);
     }
 
@@ -769,7 +769,7 @@ public class HomeLocation : BaseLocation
         if (!DailySystemManager.CanRestForNight(currentPlayer))
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("It's not late enough to sleep for the night. Try waiting until evening.");
+            terminal.WriteLine(Loc.Get("home.sleep_not_evening"));
             await terminal.WaitForKey();
             return;
         }
@@ -781,16 +781,16 @@ public class HomeLocation : BaseLocation
         switch (homeLevel)
         {
             case 0:
-                terminal.WriteLine("You burrow into the straw pile for the night...", "gray");
+                terminal.WriteLine(Loc.Get("home.sleep_straw"), "gray");
                 break;
             case 1:
-                terminal.WriteLine("You stretch out on your cot and close your eyes...", "gray");
+                terminal.WriteLine(Loc.Get("home.sleep_cot"), "gray");
                 break;
             case 2:
-                terminal.WriteLine("You climb into your wooden bed and pull the blanket over you...", "gray");
+                terminal.WriteLine(Loc.Get("home.sleep_wooden"), "gray");
                 break;
             default:
-                terminal.WriteLine("You settle into the comfort of your bed for a full night's sleep...", "gray");
+                terminal.WriteLine(Loc.Get("home.sleep_comfort"), "gray");
                 break;
         }
         await Task.Delay(1500);
@@ -809,21 +809,21 @@ public class HomeLocation : BaseLocation
 
         if (currentPlayer.MurderWeight >= 3f)
         {
-            terminal.WriteLine("Dark memories invade your dreams, leaving you less than fully rested...", "dark_red");
+            terminal.WriteLine(Loc.Get("home.sleep_grief"), "dark_red");
         }
 
         if (restEfficiency >= 1.0f)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("You wake feeling completely refreshed!");
+            terminal.WriteLine(Loc.Get("home.sleep_refreshed"));
         }
         else
         {
             terminal.SetColor("green");
             if (currentPlayer.IsManaClass)
-                terminal.WriteLine($"Recovered {healAmount} HP, {manaAmount} mana. ({(int)(restEfficiency * 100)}% recovery)");
+                terminal.WriteLine(Loc.Get("home.sleep_recovered_mana", healAmount, manaAmount, (int)(restEfficiency * 100)));
             else
-                terminal.WriteLine($"Recovered {healAmount} HP, {staminaAmount} stamina. ({(int)(restEfficiency * 100)}% recovery)");
+                terminal.WriteLine(Loc.Get("home.sleep_recovered_stamina", healAmount, staminaAmount, (int)(restEfficiency * 100)));
         }
 
         // Apply Well-Rested buff from Hearth
@@ -835,7 +835,7 @@ public class HomeLocation : BaseLocation
             currentPlayer.WellRestedCombats = combats;
             currentPlayer.WellRestedBonus = bonus;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"The warmth of your hearth invigorates you! (+{(int)(bonus * 100)}% damage/defense for {combats} combats)");
+            terminal.WriteLine(Loc.Get("home.rest_hearth_buff", (int)(bonus * 100), combats));
         }
 
         // Check for dreams
@@ -845,7 +845,7 @@ public class HomeLocation : BaseLocation
             await Task.Delay(1500);
             terminal.WriteLine("");
             terminal.SetColor("dark_magenta");
-            terminal.WriteLine("As sleep takes you, dreams unfold...");
+            terminal.WriteLine(Loc.Get("home.sleep_dreams"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
@@ -874,11 +874,11 @@ public class HomeLocation : BaseLocation
         // Advance to morning
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("You drift off to sleep...");
+        terminal.WriteLine(Loc.Get("home.sleep_drift"));
         await Task.Delay(2000);
         await DailySystemManager.Instance.RestAndAdvanceToMorning(currentPlayer);
         terminal.SetColor("yellow");
-        terminal.WriteLine($"A new day dawns. (Day {DailySystemManager.Instance.CurrentDay})");
+        terminal.WriteLine(Loc.Get("home.sleep_new_day", DailySystemManager.Instance.CurrentDay));
         await Task.Delay(1500);
 
         await terminal.WaitForKey();
@@ -891,7 +891,7 @@ public class HomeLocation : BaseLocation
 
         if (gardenLevel <= 0)
         {
-            terminal.WriteLine("You don't have a herb garden. Visit [U]pgrades to build one.", "yellow");
+            terminal.WriteLine(Loc.Get("home.no_herb_garden"), "yellow");
             await terminal.WaitForKey();
             return;
         }
@@ -900,9 +900,9 @@ public class HomeLocation : BaseLocation
         if (herbsLeft <= 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You've already gathered all the herbs your garden can produce today.");
+            terminal.WriteLine(Loc.Get("home.herbs_gathered_today"));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Herbs gathered: {currentPlayer.HerbsGatheredToday}/{maxHerbs}. Try again tomorrow.");
+            terminal.WriteLine(Loc.Get("home.herb_gathered_count", currentPlayer.HerbsGatheredToday, maxHerbs));
             await terminal.WaitForKey();
             return;
         }
@@ -910,15 +910,15 @@ public class HomeLocation : BaseLocation
         while (herbsLeft > 0)
         {
             terminal.ClearScreen();
-            WriteSectionHeader("HERB GARDEN", "bright_green");
+            WriteSectionHeader(Loc.Get("home.herb_garden"), "bright_green");
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine($"Gathers remaining today: {herbsLeft}");
+            terminal.WriteLine(Loc.Get("home.herb_gathers_remaining", herbsLeft));
             terminal.WriteLine("");
 
             // Show available herb types based on garden level
             terminal.SetColor("white");
-            terminal.WriteLine("Which herb would you like to gather?");
+            terminal.WriteLine(Loc.Get("home.herb_which"));
             terminal.WriteLine("");
 
             var available = new List<HerbType>();
@@ -939,9 +939,9 @@ public class HomeLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("  [Q] Done gathering");
+            terminal.WriteLine($"  [Q] {Loc.Get("home.herb_done")}");
             terminal.WriteLine("");
-            terminal.Write("Choice: ", "white");
+            terminal.Write(Loc.Get("ui.choice"), "white");
 
             string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
             if (input == "Q" || string.IsNullOrEmpty(input)) break;
@@ -953,7 +953,7 @@ public class HomeLocation : BaseLocation
                 int max = GameConfig.HerbMaxCarry[choice];
                 if (count >= max)
                 {
-                    terminal.WriteLine($"Your pouch is full of {HerbData.GetName(herbType)}! ({count}/{max})", "yellow");
+                    terminal.WriteLine(Loc.Get("home.herb_pouch_full", HerbData.GetName(herbType), count, max), "yellow");
                     await terminal.WaitForKey();
                     continue;
                 }
@@ -963,13 +963,13 @@ public class HomeLocation : BaseLocation
                 herbsLeft--;
 
                 terminal.SetColor(HerbData.GetColor(herbType));
-                terminal.WriteLine($"Gathered a {HerbData.GetName(herbType)}! ({currentPlayer.GetHerbCount(herbType)}/{max})");
+                terminal.WriteLine(Loc.Get("home.herb_gathered", HerbData.GetName(herbType), currentPlayer.GetHerbCount(herbType), max));
                 await Task.Delay(500);
             }
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("You brush the dirt from your hands and head inside.");
+        terminal.WriteLine(Loc.Get("home.herb_done_msg"));
         await terminal.WaitForKey();
     }
 
@@ -980,7 +980,7 @@ public class HomeLocation : BaseLocation
     {
         if (player.TotalHerbCount <= 0)
         {
-            terminal.WriteLine("Your herb pouch is empty. Gather herbs from your garden at home.", "yellow");
+            terminal.WriteLine(Loc.Get("home.herb_pouch_empty"), "yellow");
             await terminal.WaitForKey();
             return;
         }
@@ -988,12 +988,12 @@ public class HomeLocation : BaseLocation
         terminal.ClearScreen();
         if (player.ScreenReaderMode)
         {
-            terminal.WriteLine("HERB POUCH");
+            terminal.WriteLine(Loc.Get("home.herb_pouch_title"));
         }
         else
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("═══ HERB POUCH ═══");
+            terminal.WriteLine($"═══ {Loc.Get("home.herb_pouch_title")} ═══");
         }
         terminal.WriteLine("");
 
@@ -1001,12 +1001,12 @@ public class HomeLocation : BaseLocation
         {
             var buffName = HerbData.GetName((HerbType)player.HerbBuffType);
             terminal.SetColor("cyan");
-            terminal.WriteLine($"Active buff: {buffName} ({player.HerbBuffCombats} combats remaining)");
+            terminal.WriteLine(Loc.Get("home.herb_active_buff", buffName, player.HerbBuffCombats));
             terminal.WriteLine("");
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("Select an herb to use:");
+        terminal.WriteLine(Loc.Get("home.herb_select"));
         terminal.WriteLine("");
 
         var options = new List<HerbType>();
@@ -1029,9 +1029,9 @@ public class HomeLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine(GameConfig.ScreenReaderMode ? "  Q. Cancel" : "  [Q] Cancel");
+        terminal.WriteLine(GameConfig.ScreenReaderMode ? $"  Q. {Loc.Get("home.herb_cancel")}" : $"  [Q] {Loc.Get("home.herb_cancel")}");
         terminal.WriteLine("");
-        terminal.Write("Choice: ", "white");
+        terminal.Write(Loc.Get("ui.choice"), "white");
 
         string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
         if (input == "Q" || string.IsNullOrEmpty(input)) return;
@@ -1067,9 +1067,9 @@ public class HomeLocation : BaseLocation
                 long healAmount = (long)(player.MaxHP * herbHealPct);
                 healAmount = Math.Min(healAmount, player.MaxHP - player.HP);
                 player.HP += healAmount;
-                terminal.WriteLine($"You crush a {herbName} and drink the extract. Restored {healAmount} HP! ({player.HP}/{player.MaxHP})");
+                terminal.WriteLine(Loc.Get("home.herb_healing_use", herbName, healAmount, player.HP, player.MaxHP));
                 if (player.Class == CharacterClass.Alchemist)
-                    terminal.WriteLine("Potion Mastery enhances the effect!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("home.potion_mastery_enhance"), "bright_cyan");
                 break;
 
             case HerbType.IronbarkRoot:
@@ -1078,9 +1078,9 @@ public class HomeLocation : BaseLocation
                     ? (int)(GameConfig.HerbBuffDuration * 1.5) : GameConfig.HerbBuffDuration;
                 player.HerbBuffValue = GameConfig.HerbDefenseBonus;
                 player.HerbExtraAttacks = 0;
-                terminal.WriteLine($"You chew a tough {herbName}. Your skin hardens! (+{(int)(GameConfig.HerbDefenseBonus * 100)}% defense for {player.HerbBuffCombats} combats)");
+                terminal.WriteLine(Loc.Get("home.herb_ironbark_use", herbName, (int)(GameConfig.HerbDefenseBonus * 100), player.HerbBuffCombats));
                 if (player.Class == CharacterClass.Alchemist)
-                    terminal.WriteLine("Potion Mastery extends the duration!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("home.potion_mastery_extend"), "bright_cyan");
                 break;
 
             case HerbType.FirebloomPetal:
@@ -1089,9 +1089,9 @@ public class HomeLocation : BaseLocation
                     ? (int)(GameConfig.HerbBuffDuration * 1.5) : GameConfig.HerbBuffDuration;
                 player.HerbBuffValue = GameConfig.HerbDamageBonus;
                 player.HerbExtraAttacks = 0;
-                terminal.WriteLine($"You inhale the fiery scent of a {herbName}. Your strikes burn with power! (+{(int)(GameConfig.HerbDamageBonus * 100)}% damage for {player.HerbBuffCombats} combats)");
+                terminal.WriteLine(Loc.Get("home.herb_firebloom_use", herbName, (int)(GameConfig.HerbDamageBonus * 100), player.HerbBuffCombats));
                 if (player.Class == CharacterClass.Alchemist)
-                    terminal.WriteLine("Potion Mastery extends the duration!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("home.potion_mastery_extend"), "bright_cyan");
                 break;
 
             case HerbType.Swiftthistle:
@@ -1100,9 +1100,9 @@ public class HomeLocation : BaseLocation
                     ? (int)(GameConfig.HerbSwiftDuration * 1.5) : GameConfig.HerbSwiftDuration;
                 player.HerbBuffValue = 0;
                 player.HerbExtraAttacks = GameConfig.HerbExtraAttackCount;
-                terminal.WriteLine($"The {herbName} sends energy coursing through your limbs! (+{GameConfig.HerbExtraAttackCount} extra attack for {player.HerbBuffCombats} combats)");
+                terminal.WriteLine(Loc.Get("home.herb_swift_use", herbName, GameConfig.HerbExtraAttackCount, player.HerbBuffCombats));
                 if (player.Class == CharacterClass.Alchemist)
-                    terminal.WriteLine("Potion Mastery extends the duration!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("home.potion_mastery_extend"), "bright_cyan");
                 break;
 
             case HerbType.StarbloomEssence:
@@ -1114,9 +1114,9 @@ public class HomeLocation : BaseLocation
                     ? (int)(GameConfig.HerbBuffDuration * 1.5) : GameConfig.HerbBuffDuration;
                 player.HerbBuffValue = GameConfig.HerbSpellBonus;
                 player.HerbExtraAttacks = 0;
-                terminal.WriteLine($"Starbloom essence floods your mind with arcane clarity! Restored {manaRestore} mana. (+{(int)(GameConfig.HerbSpellBonus * 100)}% spell damage for {player.HerbBuffCombats} combats)");
+                terminal.WriteLine(Loc.Get("home.herb_starbloom_use", manaRestore, (int)(GameConfig.HerbSpellBonus * 100), player.HerbBuffCombats));
                 if (player.Class == CharacterClass.Alchemist)
-                    terminal.WriteLine("Potion Mastery extends the duration!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("home.potion_mastery_extend"), "bright_cyan");
                 break;
         }
 
@@ -1127,7 +1127,7 @@ public class HomeLocation : BaseLocation
     {
         if (!currentPlayer.Inventory.Any())
         {
-            terminal.WriteLine("You have no items to store.", "yellow");
+            terminal.WriteLine(Loc.Get("ui.no_items_to_store"), "yellow");
             await terminal.WaitForKey();
             return;
         }
@@ -1135,28 +1135,28 @@ public class HomeLocation : BaseLocation
         if (Chest.Count >= maxCapacity)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Your chest is full! ({Chest.Count}/{maxCapacity} items)");
+            terminal.WriteLine(Loc.Get("home.chest_full", Chest.Count, maxCapacity));
             terminal.SetColor("gray");
-            terminal.WriteLine("Upgrade your chest to store more items.");
+            terminal.WriteLine(Loc.Get("home.chest_upgrade"));
             await terminal.WaitForKey();
             return;
         }
-        terminal.WriteLine($"Select item to deposit ({Chest.Count}/{maxCapacity} stored, or 0 to cancel):", "cyan");
+        terminal.WriteLine(Loc.Get("home.chest_deposit_select", Chest.Count, maxCapacity), "cyan");
         for (int i = 0; i < currentPlayer.Inventory.Count; i++)
         {
             terminal.WriteLine($"  {i + 1}. {currentPlayer.Inventory[i].GetDisplayName()}");
         }
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= currentPlayer.Inventory.Count)
         {
             var item = currentPlayer.Inventory[idx - 1];
             currentPlayer.Inventory.RemoveAt(idx - 1);
             Chest.Add(item);
-            terminal.WriteLine($"Stored {item.GetDisplayName()} in your chest. ({Chest.Count}/{maxCapacity})", "green");
+            terminal.WriteLine(Loc.Get("home.chest_stored", item.GetDisplayName(), Chest.Count, maxCapacity), "green");
         }
         else
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
         }
         await terminal.WaitForKey();
     }
@@ -1165,36 +1165,36 @@ public class HomeLocation : BaseLocation
     {
         if (!Chest.Any())
         {
-            terminal.WriteLine("Your chest is empty.", "yellow");
+            terminal.WriteLine(Loc.Get("home.chest_empty"), "yellow");
             await terminal.WaitForKey();
             return;
         }
-        terminal.WriteLine("Select item number to withdraw (or 0 to cancel):", "cyan");
+        terminal.WriteLine(Loc.Get("home.chest_select_withdraw"), "cyan");
         for (int i = 0; i < Chest.Count; i++)
         {
             terminal.WriteLine($"  {i + 1}. {Chest[i].GetDisplayName()}");
         }
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= Chest.Count)
         {
             var item = Chest[idx - 1];
             Chest.RemoveAt(idx - 1);
             currentPlayer.Inventory.Add(item);
-            terminal.WriteLine($"Retrieved {item.GetDisplayName()} from your chest.", "green");
+            terminal.WriteLine(Loc.Get("home.chest_retrieved", item.GetDisplayName()), "green");
         }
         else
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
         }
         await terminal.WaitForKey();
     }
 
     private void ShowChestContents()
     {
-        terminal.WriteLine("\nItems in your chest:", "bright_cyan");
+        terminal.WriteLine($"\n{Loc.Get("home.chest_items")}", "bright_cyan");
         if (!Chest.Any())
         {
-            terminal.WriteLine("  (empty)", "gray");
+            terminal.WriteLine(Loc.Get("home.chest_empty_label"), "gray");
         }
         else
         {
@@ -1207,7 +1207,7 @@ public class HomeLocation : BaseLocation
 
     private void ShowTrophies()
     {
-        terminal.WriteLine("\nTrophies & Achievements", "bright_cyan");
+        terminal.WriteLine($"\n{Loc.Get("home.trophies_title")}", "bright_cyan");
         terminal.WriteLine();
 
         // Use the proper PlayerAchievements from Character base class
@@ -1218,9 +1218,9 @@ public class HomeLocation : BaseLocation
         {
             // Show summary
             terminal.SetColor("white");
-            terminal.WriteLine($"  Total Unlocked: {achievements.UnlockedCount} / {AchievementSystem.TotalAchievements}");
-            terminal.WriteLine($"  Achievement Points: {achievements.TotalPoints}");
-            terminal.WriteLine($"  Completion: {achievements.CompletionPercentage:F1}%");
+            terminal.WriteLine(Loc.Get("home.trophies_total_unlocked", achievements.UnlockedCount, AchievementSystem.TotalAchievements));
+            terminal.WriteLine(Loc.Get("home.trophies_points", achievements.TotalPoints));
+            terminal.WriteLine(Loc.Get("home.trophies_completion", $"{achievements.CompletionPercentage:F1}"));
             terminal.WriteLine();
 
             // Show unlocked achievements by category
@@ -1252,10 +1252,10 @@ public class HomeLocation : BaseLocation
         }
         else
         {
-            terminal.WriteLine("  No achievements unlocked yet.", "gray");
+            terminal.WriteLine(Loc.Get("home.trophies_none"), "gray");
             terminal.WriteLine();
-            terminal.WriteLine("  Explore the dungeon, defeat monsters, and complete", "gray");
-            terminal.WriteLine("  challenges to earn achievements and rewards!", "gray");
+            terminal.WriteLine(Loc.Get("home.trophies_hint1"), "gray");
+            terminal.WriteLine(Loc.Get("home.trophies_hint2"), "gray");
         }
     }
 
@@ -1263,15 +1263,15 @@ public class HomeLocation : BaseLocation
     {
         if (currentPlayer.HP >= currentPlayer.MaxHP)
         {
-            terminal.WriteLine("You're already at full health!", "bright_green");
+            terminal.WriteLine(Loc.Get("home.potion_full_health"), "bright_green");
             await terminal.WaitForKey();
             return;
         }
 
         if (currentPlayer.Healing <= 0)
         {
-            terminal.WriteLine("You don't have any healing potions!", "red");
-            terminal.WriteLine("Visit the Healer or Magic Shop to buy some.", "gray");
+            terminal.WriteLine(Loc.Get("home.potion_none"), "red");
+            terminal.WriteLine(Loc.Get("home.potion_buy_hint"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1287,10 +1287,10 @@ public class HomeLocation : BaseLocation
         currentPlayer.Statistics.RecordPotionUsed(actualHeal);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"You drink a healing potion...");
-        terminal.WriteLine($"Restored {actualHeal} HP! ({currentPlayer.HP}/{currentPlayer.MaxHP})");
+        terminal.WriteLine(Loc.Get("home.potion_drink"));
+        terminal.WriteLine(Loc.Get("home.potion_restored", actualHeal, currentPlayer.HP, currentPlayer.MaxHP));
         terminal.SetColor("gray");
-        terminal.WriteLine($"Potions remaining: {currentPlayer.Healing}");
+        terminal.WriteLine(Loc.Get("home.potion_remaining", currentPlayer.Healing));
         await terminal.WaitForKey();
     }
 
@@ -1298,12 +1298,12 @@ public class HomeLocation : BaseLocation
     {
         terminal.WriteLine("\n", "white");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("=== YOUR INVENTORY ===");
+        terminal.WriteLine(Loc.Get("home.inventory_title"));
         terminal.WriteLine();
 
         if (!currentPlayer.Inventory.Any())
         {
-            terminal.WriteLine("  Your inventory is empty.", "gray");
+            terminal.WriteLine(Loc.Get("home.inventory_empty"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1318,28 +1318,28 @@ public class HomeLocation : BaseLocation
             terminal.SetColor("gray");
             if (item.Value > 0)
             {
-                terminal.Write($" (Value: {item.Value:N0} gold)");
+                terminal.Write(Loc.Get("home.inventory_value", $"{item.Value:N0}"));
             }
             terminal.WriteLine();
         }
 
         terminal.WriteLine();
         terminal.SetColor("cyan");
-        terminal.Write("Options: ");
+        terminal.Write(Loc.Get("home.inventory_options"));
         terminal.SetColor("bright_yellow");
         terminal.Write("[D]");
         terminal.SetColor("cyan");
-        terminal.Write("eposit to chest, ");
+        terminal.Write(Loc.Get("home.inventory_deposit"));
         terminal.SetColor("bright_yellow");
         terminal.Write("[E]");
         terminal.SetColor("cyan");
-        terminal.Write("quip item, ");
+        terminal.Write(Loc.Get("home.inventory_equip"));
         terminal.SetColor("bright_yellow");
         terminal.Write("[Q]");
         terminal.SetColor("cyan");
-        terminal.WriteLine("uit");
+        terminal.WriteLine(Loc.Get("home.inventory_quit"));
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         var c = input.Trim().ToUpperInvariant();
 
         switch (c)
@@ -1359,12 +1359,12 @@ public class HomeLocation : BaseLocation
     {
         if (!currentPlayer.Inventory.Any())
         {
-            terminal.WriteLine("No items to equip.", "yellow");
+            terminal.WriteLine(Loc.Get("home.no_items_equip"), "yellow");
             await terminal.WaitForKey();
             return;
         }
 
-        terminal.WriteLine("\nSelect item number to use/equip (or 0 to cancel):", "cyan");
+        terminal.WriteLine(Loc.Get("home.equip_select_item"), "cyan");
         for (int i = 0; i < currentPlayer.Inventory.Count; i++)
         {
             var item = currentPlayer.Inventory[i];
@@ -1374,7 +1374,7 @@ public class HomeLocation : BaseLocation
         }
         terminal.SetColor("white");
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= currentPlayer.Inventory.Count)
         {
             var item = currentPlayer.Inventory[idx - 1];
@@ -1390,12 +1390,12 @@ public class HomeLocation : BaseLocation
                 item.ApplyEffects(currentPlayer);
                 currentPlayer.Inventory.RemoveAt(idx - 1);
                 currentPlayer.RecalculateStats();
-                terminal.WriteLine($"Used {item.GetDisplayName()}!", "bright_green");
+                terminal.WriteLine(Loc.Get("home.equip_used", item.GetDisplayName()), "bright_green");
             }
         }
         else
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
         }
         await terminal.WaitForKey();
     }
@@ -1500,6 +1500,25 @@ public class HomeLocation : BaseLocation
             Rarity = EquipmentRarity.Common
         };
 
+        // Transfer CON/INT from LootEffects (these stats are stored as encoded effects)
+        if (item.LootEffects != null)
+        {
+            foreach (var (effectType, value) in item.LootEffects)
+            {
+                var effect = (LootGenerator.SpecialEffect)effectType;
+                switch (effect)
+                {
+                    case LootGenerator.SpecialEffect.Constitution: equipment.ConstitutionBonus += value; break;
+                    case LootGenerator.SpecialEffect.Intelligence: equipment.IntelligenceBonus += value; break;
+                    case LootGenerator.SpecialEffect.AllStats:
+                        equipment.ConstitutionBonus += value;
+                        equipment.IntelligenceBonus += value;
+                        equipment.CharismaBonus += value;
+                        break;
+                }
+            }
+        }
+
         // Register in database to get an ID
         EquipmentDatabase.RegisterDynamic(equipment);
 
@@ -1508,12 +1527,12 @@ public class HomeLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Equip to which finger?");
+            terminal.WriteLine(Loc.Get("home.equip_which_finger"));
             terminal.SetColor("white");
-            terminal.WriteLine("  (L) Left finger");
-            terminal.WriteLine("  (R) Right finger");
-            terminal.WriteLine("  (C) Cancel");
-            terminal.Write("Choice: ");
+            terminal.WriteLine(Loc.Get("home.equip_left_finger"));
+            terminal.WriteLine(Loc.Get("home.equip_right_finger"));
+            terminal.WriteLine(Loc.Get("home.equip_cancel_option"));
+            terminal.Write(Loc.Get("ui.choice"));
             var fingerChoice = await terminal.GetInput("");
             if (fingerChoice.ToUpper() == "R")
             {
@@ -1522,7 +1541,7 @@ public class HomeLocation : BaseLocation
             }
             else if (fingerChoice.ToUpper() != "L")
             {
-                terminal.WriteLine("Cancelled.", "gray");
+                terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
                 return;
             }
         }
@@ -1534,7 +1553,7 @@ public class HomeLocation : BaseLocation
             finalSlot = await PromptForWeaponSlotHome();
             if (finalSlot == null)
             {
-                terminal.WriteLine("Cancelled.", "gray");
+                terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
                 return;
             }
         }
@@ -1547,7 +1566,7 @@ public class HomeLocation : BaseLocation
             currentPlayer.RecalculateStats();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Equipped {item.GetDisplayName()}!");
+            terminal.WriteLine(Loc.Get("home.equip_equipped", item.GetDisplayName()));
             if (!string.IsNullOrEmpty(message))
             {
                 terminal.SetColor("gray");
@@ -1557,7 +1576,7 @@ public class HomeLocation : BaseLocation
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Cannot equip: {message}");
+            terminal.WriteLine(Loc.Get("home.equip_cannot", message));
         }
     }
 
@@ -1568,7 +1587,7 @@ public class HomeLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("This is a one-handed weapon. Where would you like to equip it?");
+        terminal.WriteLine(Loc.Get("home.equip_onehand_where"));
         terminal.WriteLine("");
 
         // Show current equipment in both slots
@@ -1576,7 +1595,7 @@ public class HomeLocation : BaseLocation
         var offHandItem = currentPlayer.GetEquipment(EquipmentSlot.OffHand);
 
         terminal.SetColor("white");
-        terminal.Write("  (M) Main Hand: ");
+        terminal.Write(Loc.Get("home.equip_main_hand_label"));
         if (mainHandItem != null)
         {
             terminal.SetColor("yellow");
@@ -1585,11 +1604,11 @@ public class HomeLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         terminal.SetColor("white");
-        terminal.Write("  (O) Off-Hand:  ");
+        terminal.Write(Loc.Get("home.equip_off_hand_label"));
         if (offHandItem != null)
         {
             terminal.SetColor("yellow");
@@ -1598,14 +1617,14 @@ public class HomeLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("  (C) Cancel");
+        terminal.WriteLine(Loc.Get("home.equip_cancel_label"));
         terminal.WriteLine("");
 
-        terminal.Write("Your choice: ");
+        terminal.Write(Loc.Get("ui.your_choice"));
         var slotChoice = await terminal.GetInput("");
 
         return slotChoice.ToUpper() switch
@@ -1619,7 +1638,7 @@ public class HomeLocation : BaseLocation
     private async Task ShowFamily()
     {
         terminal.WriteLine("\n", "white");
-        WriteBoxHeader("FAMILY & LOVED ONES", "bright_cyan", 38);
+        WriteBoxHeader(Loc.Get("home.family"), "bright_cyan", 38);
         terminal.WriteLine();
 
         var romance = RomanceTracker.Instance;
@@ -1630,7 +1649,7 @@ public class HomeLocation : BaseLocation
         {
             hasFamily = true;
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"  <3 SPOUSE{(romance.Spouses.Count > 1 ? "S" : "")} <3");
+            terminal.WriteLine(Loc.Get("home.family_spouses_label", romance.Spouses.Count > 1 ? "S" : ""));
             terminal.SetColor("white");
 
             foreach (var spouse in romance.Spouses)
@@ -1647,18 +1666,18 @@ public class HomeLocation : BaseLocation
                 terminal.SetColor("bright_white");
                 terminal.Write(name);
                 terminal.SetColor("gray");
-                terminal.WriteLine($" - Married {marriedDays} day{(marriedDays != 1 ? "s" : "")}");
+                terminal.WriteLine(Loc.Get("home.family_married_days", marriedDays, marriedDays != 1 ? "s" : ""));
 
                 if (spouse.Children > 0)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"      Children together: {spouse.Children}");
+                    terminal.WriteLine(Loc.Get("home.family_children_together", spouse.Children));
                 }
 
                 if (spouse.AcceptsPolyamory)
                 {
                     terminal.SetColor("magenta");
-                    terminal.WriteLine("      (Open to polyamory)");
+                    terminal.WriteLine(Loc.Get("home.family_polyamory"));
                 }
             }
             terminal.WriteLine();
@@ -1669,7 +1688,7 @@ public class HomeLocation : BaseLocation
         {
             hasFamily = true;
             terminal.SetColor("magenta");
-            terminal.WriteLine("  LOVERS");
+            terminal.WriteLine(Loc.Get("home.family_lovers_label"));
             terminal.SetColor("white");
 
             foreach (var lover in romance.CurrentLovers)
@@ -1684,12 +1703,12 @@ public class HomeLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write(name);
                 terminal.SetColor("gray");
-                terminal.Write($" - Together {daysTogether} day{(daysTogether != 1 ? "s" : "")}");
+                terminal.Write(Loc.Get("home.family_together_days", daysTogether, daysTogether != 1 ? "s" : ""));
 
                 if (lover.IsExclusive)
                 {
                     terminal.SetColor("bright_cyan");
-                    terminal.Write(" [Exclusive]");
+                    terminal.Write(Loc.Get("home.family_exclusive"));
                 }
                 terminal.WriteLine();
             }
@@ -1701,7 +1720,7 @@ public class HomeLocation : BaseLocation
         {
             hasFamily = true;
             terminal.SetColor("cyan");
-            terminal.WriteLine("  FRIENDS WITH BENEFITS");
+            terminal.WriteLine(Loc.Get("home.family_fwb_label"));
             terminal.SetColor("white");
 
             foreach (var fwbId in romance.FriendsWithBenefits)
@@ -1719,7 +1738,7 @@ public class HomeLocation : BaseLocation
         {
             hasFamily = true;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  CHILDREN: {children.Count}");
+            terminal.WriteLine(Loc.Get("home.family_children_label", children.Count));
             terminal.SetColor("white");
 
             foreach (var child in children)
@@ -1730,7 +1749,7 @@ public class HomeLocation : BaseLocation
                 terminal.SetColor("bright_white");
                 terminal.Write($"{child.Name}");
                 terminal.SetColor("gray");
-                terminal.Write($" - {child.Age} year{(child.Age != 1 ? "s" : "")} old, {(child.Sex == CharacterSex.Male ? "boy" : "girl")}");
+                terminal.Write(Loc.Get("home.family_child_age", child.Age, child.Age != 1 ? "s" : "", child.Sex == CharacterSex.Male ? Loc.Get("home.family_child_boy") : Loc.Get("home.family_child_girl")));
 
                 // Show behavior indicator
                 terminal.SetColor(child.Soul > 100 ? "bright_cyan" : (child.Soul < -100 ? "red" : "white"));
@@ -1740,7 +1759,7 @@ public class HomeLocation : BaseLocation
                 if (child.Health != GameConfig.ChildHealthNormal)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"        Health: {child.GetHealthDescription()}");
+                    terminal.WriteLine(Loc.Get("home.family_child_health", child.GetHealthDescription()));
                 }
             }
 
@@ -1749,7 +1768,7 @@ public class HomeLocation : BaseLocation
             if (teensCount > 0)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"    ({teensCount} will come of age soon and become adult NPCs!)");
+                terminal.WriteLine(Loc.Get("home.family_teens_coming", teensCount));
             }
             terminal.WriteLine();
         }
@@ -1758,7 +1777,7 @@ public class HomeLocation : BaseLocation
         if (romance.ExSpouses.Count > 0)
         {
             terminal.SetColor("dark_red");
-            terminal.WriteLine($"  EX-SPOUSES: {romance.ExSpouses.Count}");
+            terminal.WriteLine(Loc.Get("home.family_ex_spouses", romance.ExSpouses.Count));
             terminal.SetColor("gray");
             foreach (var ex in romance.ExSpouses)
             {
@@ -1768,17 +1787,17 @@ public class HomeLocation : BaseLocation
                 var daysSinceDivorce = ex.DivorceGameDay > 0
                     ? Math.Max(0, DailySystemManager.Instance.CurrentDay - ex.DivorceGameDay)
                     : (DateTime.Now - ex.DivorceDate).Days; // Fallback for old saves
-                var initiator = ex.PlayerInitiated ? "you" : "them";
+                var initiator = ex.PlayerInitiated ? Loc.Get("home.family_ex_by_you") : Loc.Get("home.family_ex_by_them");
 
                 terminal.Write($"    - {ex.NPCName}");
                 terminal.SetColor("dark_gray");
-                terminal.WriteLine($" (married {marriageDuration} days, divorced {daysSinceDivorce} days ago by {initiator})");
+                terminal.WriteLine(Loc.Get("home.family_ex_marriage_info", marriageDuration, daysSinceDivorce, initiator));
                 terminal.SetColor("gray");
 
                 if (ex.ChildrenTogether > 0)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"      ^ {ex.ChildrenTogether} child(ren) together");
+                    terminal.WriteLine(Loc.Get("home.family_ex_children", ex.ChildrenTogether));
                     terminal.SetColor("gray");
                 }
             }
@@ -1790,7 +1809,7 @@ public class HomeLocation : BaseLocation
         if (exLoversOnly.Count > 0)
         {
             terminal.SetColor("dark_gray");
-            terminal.WriteLine($"  PAST RELATIONSHIPS: {exLoversOnly.Count}");
+            terminal.WriteLine(Loc.Get("home.family_past_label", exLoversOnly.Count));
             terminal.SetColor("gray");
             foreach (var exId in exLoversOnly.Take(5)) // Show max 5
             {
@@ -1800,7 +1819,7 @@ public class HomeLocation : BaseLocation
             }
             if (exLoversOnly.Count > 5)
             {
-                terminal.WriteLine($"    ... and {exLoversOnly.Count - 5} more");
+                terminal.WriteLine(Loc.Get("home.family_and_more", exLoversOnly.Count - 5));
             }
             terminal.WriteLine();
         }
@@ -1808,10 +1827,10 @@ public class HomeLocation : BaseLocation
         if (!hasFamily)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You live alone... for now.");
+            terminal.WriteLine(Loc.Get("home.family_alone"));
             terminal.WriteLine();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  Tip: Meet someone special at Main Street or Love Corner!");
+            terminal.WriteLine(Loc.Get("home.family_tip"));
         }
 
         terminal.SetColor("white");
@@ -1824,15 +1843,15 @@ public class HomeLocation : BaseLocation
 
         if (romance.Spouses.Count == 0 && romance.CurrentLovers.Count == 0)
         {
-            terminal.WriteLine("\nYou have no spouse or lover to spend time with.", "yellow");
-            terminal.WriteLine("Perhaps you should get out there and meet someone?", "gray");
+            terminal.WriteLine(Loc.Get("home.partner_no_spouse"), "yellow");
+            terminal.WriteLine(Loc.Get("home.partner_go_meet_msg"), "gray");
             await terminal.WaitForKey();
             return;
         }
 
         terminal.WriteLine("\n", "white");
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("Who would you like to spend time with?");
+        terminal.WriteLine(Loc.Get("home.partner_who_spend"));
         terminal.WriteLine();
 
         var options = new List<(string id, string name, string type)>();
@@ -1864,13 +1883,13 @@ public class HomeLocation : BaseLocation
         terminal.SetColor("bright_yellow");
         terminal.Write("  [0]");
         terminal.SetColor("gray");
-        terminal.WriteLine(" Cancel");
+        terminal.WriteLine(Loc.Get("home.partner_cancel_label"));
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > options.Count)
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1880,7 +1899,7 @@ public class HomeLocation : BaseLocation
 
         if (selectedNpc == null)
         {
-            terminal.WriteLine($"{selected.name} is not available right now.", "yellow");
+            terminal.WriteLine(Loc.Get("home.partner_not_available_msg", selected.name), "yellow");
             await terminal.WaitForKey();
             return;
         }
@@ -1895,46 +1914,46 @@ public class HomeLocation : BaseLocation
         {
         terminal.WriteLine("\n", "white");
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"You spend quality time with {partner.Name}...");
+        terminal.WriteLine(Loc.Get("home.partner_quality_time", partner.Name));
         terminal.WriteLine();
 
         terminal.SetColor("bright_yellow");
         terminal.Write("  [1]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Have a romantic dinner together");
+        terminal.WriteLine(Loc.Get("home.partner_dinner"));
         terminal.SetColor("bright_yellow");
         terminal.Write("  [2]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Take a walk and hold hands");
+        terminal.WriteLine(Loc.Get("home.partner_walk"));
         terminal.SetColor("bright_yellow");
         terminal.Write("  [3]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Cuddle by the fire");
+        terminal.WriteLine(Loc.Get("home.partner_cuddle"));
         terminal.SetColor("bright_yellow");
         terminal.Write("  [4]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Have a deep conversation");
+        terminal.WriteLine(Loc.Get("home.partner_conversation"));
         if (relationType == "spouse")
         {
             terminal.SetColor("bright_yellow");
             terminal.Write("  [5]");
             terminal.SetColor("bright_red");
-            terminal.WriteLine(" Retire to the bedroom...");
+            terminal.WriteLine(Loc.Get("home.partner_bedroom_option"));
             terminal.SetColor("bright_yellow");
             terminal.Write("  [6]");
             terminal.SetColor("yellow");
-            terminal.WriteLine(" Discuss our relationship...");
+            terminal.WriteLine(Loc.Get("home.partner_discuss_option"));
         }
         terminal.SetColor("bright_yellow");
         terminal.Write("  [0]");
         terminal.SetColor("gray");
-        terminal.WriteLine(" Cancel");
+        terminal.WriteLine(Loc.Get("home.partner_cancel_label"));
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (!int.TryParse(input, out int choice) || choice < 1)
         {
-            terminal.WriteLine("You decide to spend time alone.", "gray");
+            terminal.WriteLine(Loc.Get("home.partner_time_alone_msg"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1945,10 +1964,10 @@ public class HomeLocation : BaseLocation
         {
             case 1: // Romantic dinner
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"You prepare a lovely dinner for {partner.Name}.");
+                terminal.WriteLine(Loc.Get("home.partner_dinner_prepare", partner.Name));
                 terminal.SetColor("white");
-                terminal.WriteLine("The candlelight flickers as you share stories and laughter.");
-                terminal.WriteLine($"{partner.Name} gazes at you with affection.");
+                terminal.WriteLine(Loc.Get("home.partner_dinner_candlelight"));
+                terminal.WriteLine(Loc.Get("home.partner_dinner_gaze", partner.Name));
 
                 // XP bonus for married couples
                 if (relationType == "spouse")
@@ -1956,34 +1975,34 @@ public class HomeLocation : BaseLocation
                     long xpBonus = currentPlayer.Level * 50;
                     currentPlayer.Experience += xpBonus;
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"Your bond strengthens! (+{xpBonus} XP)");
+                    terminal.WriteLine(Loc.Get("home.partner_bond_xp", xpBonus));
                 }
                 break;
 
             case 2: // Walk and hold hands
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"You and {partner.Name} walk hand in hand through the garden.");
+                terminal.WriteLine(Loc.Get("home.partner_walk_garden", partner.Name));
                 terminal.SetColor("white");
-                terminal.WriteLine("The evening air is cool and refreshing.");
-                terminal.WriteLine($"{partner.Name} rests their head on your shoulder.");
+                terminal.WriteLine(Loc.Get("home.partner_walk_evening"));
+                terminal.WriteLine(Loc.Get("home.partner_walk_head", partner.Name));
 
                 // Small HP recovery from relaxation
                 currentPlayer.HP = Math.Min(currentPlayer.HP + currentPlayer.MaxHP / 20, currentPlayer.MaxHP);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("The peaceful moment restores you slightly.");
+                terminal.WriteLine(Loc.Get("home.partner_walk_restores"));
                 break;
 
             case 3: // Cuddle by fire
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("You settle by the crackling fire together.");
+                terminal.WriteLine(Loc.Get("home.partner_cuddle_fire"));
                 terminal.SetColor("white");
-                terminal.WriteLine($"{partner.Name} nestles close to you for warmth.");
-                terminal.WriteLine("You feel utterly at peace in this moment.");
+                terminal.WriteLine(Loc.Get("home.partner_cuddle_nestle", partner.Name));
+                terminal.WriteLine(Loc.Get("home.partner_cuddle_peace"));
 
                 // Mana recovery from emotional connection
                 currentPlayer.Mana = Math.Min(currentPlayer.Mana + currentPlayer.MaxMana / 10, currentPlayer.MaxMana);
                 terminal.SetColor("bright_blue");
-                terminal.WriteLine("Your spiritual connection is renewed.");
+                terminal.WriteLine(Loc.Get("home.partner_cuddle_renewed"));
                 break;
 
             case 4: // Deep conversation
@@ -1996,7 +2015,7 @@ public class HomeLocation : BaseLocation
                     await IntimacySystem.Instance.InitiateIntimateScene(currentPlayer, partner, terminal);
                     return;
                 }
-                terminal.WriteLine("Invalid choice.", "gray");
+                terminal.WriteLine(Loc.Get("ui.invalid_choice"), "gray");
                 break;
 
             case 6: // Discuss relationship (spouse only)
@@ -2005,11 +2024,11 @@ public class HomeLocation : BaseLocation
                     await DiscussRelationship(partner);
                     return;
                 }
-                terminal.WriteLine("Invalid choice.", "gray");
+                terminal.WriteLine(Loc.Get("ui.invalid_choice"), "gray");
                 break;
 
             default:
-                terminal.WriteLine("Invalid choice.", "gray");
+                terminal.WriteLine(Loc.Get("ui.invalid_choice"), "gray");
                 break;
         }
 
@@ -2024,11 +2043,11 @@ public class HomeLocation : BaseLocation
         var spouseData = romance.Spouses.FirstOrDefault(s => s.NPCId == spouse.ID);
 
         terminal.WriteLine("\n", "white");
-        WriteSectionHeader("RELATIONSHIP DISCUSSION", "bright_cyan");
+        WriteSectionHeader(Loc.Get("home.relationship_discussion"), "bright_cyan");
         terminal.WriteLine();
 
         terminal.SetColor("white");
-        terminal.WriteLine($"You sit down with {spouse.Name} to discuss your relationship.");
+        terminal.WriteLine(Loc.Get("home.discuss_sit_msg", spouse.Name));
         terminal.WriteLine();
 
         // Show current status
@@ -2038,14 +2057,14 @@ public class HomeLocation : BaseLocation
             var marriageDays = spouseData.MarriedGameDay > 0
                 ? Math.Max(0, DailySystemManager.Instance.CurrentDay - spouseData.MarriedGameDay)
                 : (int)(DateTime.Now - spouseData.MarriedDate).TotalDays; // Fallback for old saves
-            terminal.WriteLine($"  Marriage duration: {marriageDays} days");
-            terminal.WriteLine($"  Children together: {spouseData.Children}");
-            terminal.WriteLine($"  Polyamory status: {(spouseData.AcceptsPolyamory ? "Open" : "Monogamous")}");
+            terminal.WriteLine(Loc.Get("home.discuss_duration_msg", marriageDays));
+            terminal.WriteLine(Loc.Get("home.discuss_children_msg", spouseData.Children));
+            terminal.WriteLine(Loc.Get("home.discuss_polyamory_msg", spouseData.AcceptsPolyamory ? Loc.Get("home.discuss_polyamory_open_msg") : Loc.Get("home.discuss_polyamory_mono_msg")));
             terminal.WriteLine();
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("What would you like to discuss?");
+        terminal.WriteLine(Loc.Get("home.discuss_what_msg"));
         terminal.WriteLine();
         terminal.SetColor("bright_yellow");
         terminal.Write("  [1]");
@@ -2077,10 +2096,10 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine(" Never mind");
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (!int.TryParse(input, out int choice) || choice < 1)
         {
-            terminal.WriteLine("You decide to talk about something else.", "gray");
+            terminal.WriteLine(Loc.Get("home.discuss_talk_else_msg"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -2097,7 +2116,7 @@ public class HomeLocation : BaseLocation
                 await DiscussDivorce(spouse, spouseData);
                 break;
             default:
-                terminal.WriteLine("Invalid choice.", "gray");
+                terminal.WriteLine(Loc.Get("ui.invalid_choice"), "gray");
                 break;
         }
 
@@ -2108,7 +2127,7 @@ public class HomeLocation : BaseLocation
     {
         terminal.WriteLine();
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"You take {spouse.Name}'s hands in yours and look into their eyes.");
+        terminal.WriteLine(Loc.Get("home.love_take_hands", spouse.Name));
         terminal.WriteLine();
 
         await Task.Delay(1000);
@@ -2144,7 +2163,7 @@ public class HomeLocation : BaseLocation
 
         terminal.SetColor("bright_green");
         terminal.WriteLine();
-        terminal.WriteLine("Your bond deepens.");
+        terminal.WriteLine(Loc.Get("home.love_bond_deepens_msg"));
     }
 
     private async Task DiscussPolyamory(NPC spouse, Spouse? spouseData)
@@ -2157,7 +2176,7 @@ public class HomeLocation : BaseLocation
         {
             // Trying to open the marriage
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You broach a difficult subject with {spouse.Name}...");
+            terminal.WriteLine(Loc.Get("home.poly_broach", spouse.Name));
             terminal.WriteLine();
 
             await Task.Delay(1000);
@@ -2201,7 +2220,7 @@ public class HomeLocation : BaseLocation
                 terminal.WriteLine();
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Your marriage is now open to polyamory!");
+                terminal.WriteLine(Loc.Get("home.poly_open_success"));
 
                 spouseData.AcceptsPolyamory = true;
                 spouseData.KnowsAboutOthers = true;
@@ -2218,7 +2237,7 @@ public class HomeLocation : BaseLocation
                     terminal.WriteLine($"\"Am I not enough for you? Is that what you're saying?\"");
                     terminal.WriteLine();
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("The conversation becomes tense...");
+                    terminal.WriteLine(Loc.Get("home.poly_tense"));
 
                     // Damage relationship (higher number = worse in this system)
                     if (spouseData != null)
@@ -2234,7 +2253,7 @@ public class HomeLocation : BaseLocation
                     terminal.WriteLine($"\"I need our relationship to be just us.\"");
                     terminal.WriteLine();
                     terminal.SetColor("gray");
-                    terminal.WriteLine("They're not ready for that conversation yet.");
+                    terminal.WriteLine(Loc.Get("home.poly_not_ready"));
 
                     // Small relationship impact (higher number = worse)
                     if (spouseData != null)
@@ -2248,7 +2267,7 @@ public class HomeLocation : BaseLocation
         {
             // Already poly, discussing returning to monogamy
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You approach {spouse.Name} about your open marriage...");
+            terminal.WriteLine(Loc.Get("home.poly_close_approach", spouse.Name));
             terminal.WriteLine();
 
             await Task.Delay(1000);
@@ -2267,7 +2286,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Your marriage is now monogamous.");
+            terminal.WriteLine(Loc.Get("home.poly_now_mono"));
 
             spouseData.AcceptsPolyamory = false;
 
@@ -2287,11 +2306,11 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        WriteSectionHeader("A DIFFICULT CONVERSATION", "red");
+        WriteSectionHeader(Loc.Get("home.difficult_conversation"), "red");
         terminal.WriteLine();
 
         terminal.SetColor("white");
-        terminal.WriteLine($"You take a deep breath before speaking to {spouse.Name}...");
+        terminal.WriteLine(Loc.Get("home.divorce_breath", spouse.Name));
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -2311,13 +2330,13 @@ public class HomeLocation : BaseLocation
         await Task.Delay(1000);
 
         terminal.SetColor("red");
-        terminal.WriteLine("Are you sure you want to ask for a divorce?");
+        terminal.WriteLine(Loc.Get("ui.confirm_divorce_ask"));
 
         if (spouseData.Children > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Warning: You have {spouseData.Children} child(ren) together.");
-            terminal.WriteLine("You will lose custody of your children!");
+            terminal.WriteLine(Loc.Get("home.divorce_warning_children", spouseData.Children));
+            terminal.WriteLine(Loc.Get("home.divorce_lose_custody"));
         }
 
         terminal.WriteLine();
@@ -2331,12 +2350,12 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine(" No, I changed my mind");
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (input.Trim().ToUpperInvariant() != "Y")
         {
             terminal.WriteLine();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"You reach out and take {spouse.Name}'s hand.");
+            terminal.WriteLine(Loc.Get("home.divorce_reach_hand", spouse.Name));
             terminal.WriteLine("\"I'm sorry. I didn't mean to scare you. I love you.\"");
             terminal.WriteLine();
             terminal.SetColor("white");
@@ -2393,13 +2412,13 @@ public class HomeLocation : BaseLocation
         WriteThickDivider(39, "gray");
         terminal.WriteLine();
         terminal.SetColor("red");
-        terminal.WriteLine("Your marriage has ended.");
+        terminal.WriteLine(Loc.Get("home.divorce_ended_msg"));
         terminal.WriteLine();
 
         if (spouseData.Children > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{spouse.Name} has taken custody of the children.");
+            terminal.WriteLine(Loc.Get("home.divorce_custody", spouse.Name));
         }
 
         terminal.SetColor("gray");
@@ -2418,11 +2437,11 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        WriteSectionHeader("INTIMATE FANTASIES", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.intimate_fantasies"), "bright_magenta");
         terminal.WriteLine();
 
         terminal.SetColor("white");
-        terminal.WriteLine($"You curl up next to {spouse.Name} and speak softly...");
+        terminal.WriteLine(Loc.Get("home.fantasies_curl", spouse.Name));
         terminal.WriteLine("\"I want to talk about fantasies. Things we might explore together.\"");
         terminal.WriteLine();
 
@@ -2447,7 +2466,7 @@ public class HomeLocation : BaseLocation
 
         terminal.WriteLine();
         terminal.SetColor("white");
-        terminal.WriteLine("What do you want to discuss?");
+        terminal.WriteLine(Loc.Get("home.fantasies_what_discuss"));
         terminal.WriteLine();
         terminal.SetColor("bright_yellow");
         terminal.Write("  [1]");
@@ -2467,11 +2486,11 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine(" Never mind");
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (!int.TryParse(input, out int choice) || choice < 1)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You decide not to pursue this conversation right now.");
+            terminal.WriteLine(Loc.Get("home.fantasies_not_pursue"));
             return;
         }
 
@@ -2539,7 +2558,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("The conversation has seriously upset them...");
+            terminal.WriteLine(Loc.Get("home.group_upset"));
 
             // Severe damage and moderate divorce chance for jealous spouse
             await HandleSensitiveTopicRejection(spouse, spouseData, 8, 0.08f, "threesomes");
@@ -2552,7 +2571,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("gray");
-            terminal.WriteLine("They're not interested in group encounters.");
+            terminal.WriteLine(Loc.Get("home.group_not_interested"));
 
             // Mild damage for gentle rejection
             await HandleSensitiveTopicRejection(spouse, spouseData, 3, 0.02f, "group encounters");
@@ -2581,7 +2600,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine("They're open to exploring voyeuristic fantasies!");
+            terminal.WriteLine(Loc.Get("home.voyeur_open"));
         }
         else if (adventurousness > 0.5f)
         {
@@ -2591,7 +2610,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("They're curious but cautious.");
+            terminal.WriteLine(Loc.Get("home.voyeur_curious"));
         }
         else
         {
@@ -2601,7 +2620,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("gray");
-            terminal.WriteLine("They prefer traditional intimacy.");
+            terminal.WriteLine(Loc.Get("home.voyeur_prefer_trad"));
 
             // Light damage for this topic
             await HandleSensitiveTopicRejection(spouse, spouseData, 2, 0.01f, "voyeurism");
@@ -2630,7 +2649,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine("They share your exhibitionist interests!");
+            terminal.WriteLine(Loc.Get("home.exhibit_share"));
         }
         else if (adventurousness > 0.5f)
         {
@@ -2640,7 +2659,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("They're understanding but not personally interested.");
+            terminal.WriteLine(Loc.Get("home.exhibit_understanding"));
         }
         else
         {
@@ -2651,7 +2670,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("gray");
-            terminal.WriteLine("They strongly prefer privacy.");
+            terminal.WriteLine(Loc.Get("home.exhibit_prefer_privacy"));
 
             // Moderate damage - exhibitionism can be uncomfortable for conservative partners
             await HandleSensitiveTopicRejection(spouse, spouseData, 4, 0.03f, "exhibitionism");
@@ -2663,11 +2682,11 @@ public class HomeLocation : BaseLocation
         if (spouseData == null) return;
 
         terminal.WriteLine();
-        WriteSectionHeader("ALTERNATIVE ARRANGEMENTS", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.alternative_arrangements"), "bright_magenta");
         terminal.WriteLine();
 
         terminal.SetColor("white");
-        terminal.WriteLine($"You broach a sensitive subject with {spouse.Name}...");
+        terminal.WriteLine(Loc.Get("home.alt_broach", spouse.Name));
         terminal.WriteLine("\"I want to discuss some... unconventional relationship dynamics.\"");
         terminal.WriteLine();
 
@@ -2690,7 +2709,7 @@ public class HomeLocation : BaseLocation
 
         terminal.WriteLine();
         terminal.SetColor("white");
-        terminal.WriteLine("What arrangement do you want to discuss?");
+        terminal.WriteLine(Loc.Get("home.alt_what_arrangement"));
         terminal.WriteLine();
         terminal.SetColor("bright_yellow");
         terminal.Write("  [1]");
@@ -2710,11 +2729,11 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine(" Never mind");
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Choice: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (!int.TryParse(input, out int choice) || choice < 1)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You decide not to pursue this conversation.");
+            terminal.WriteLine(Loc.Get("home.alt_not_pursue"));
             return;
         }
 
@@ -2762,7 +2781,7 @@ public class HomeLocation : BaseLocation
 
             await Task.Delay(1500);
 
-            terminal.WriteLine("A slow smile crosses their face.");
+            terminal.WriteLine(Loc.Get("home.alt_slow_smile"));
             terminal.WriteLine("\"I never thought I'd hear you say that.\"");
             terminal.WriteLine("\"I... I think I could enjoy that. With the right person.\"");
             terminal.WriteLine();
@@ -2780,7 +2799,7 @@ public class HomeLocation : BaseLocation
             // Offer to try it now
             terminal.WriteLine();
             terminal.SetColor("white");
-            terminal.WriteLine("Do you want them to try it tonight?");
+            terminal.WriteLine(Loc.Get("home.alt_hw_tonight"));
             terminal.WriteLine();
             terminal.SetColor("bright_yellow");
             terminal.Write("  [Y]");
@@ -2792,7 +2811,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine(" No, maybe another time");
             terminal.WriteLine();
 
-            var input = await terminal.GetInput("Choice: ");
+            var input = await terminal.GetInput(Loc.Get("ui.choice"));
             if (input.Trim().ToUpperInvariant() == "Y")
             {
                 await PlayHotwifingScene(spouse, spouseData);
@@ -2806,7 +2825,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("They need time to consider this.");
+            terminal.WriteLine(Loc.Get("home.alt_hw_need_time"));
         }
         else
         {
@@ -2817,7 +2836,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("The suggestion has upset them.");
+            terminal.WriteLine(Loc.Get("home.alt_hw_upset"));
 
             // Significant damage - hotwifing is a major ask
             await HandleSensitiveTopicRejection(spouse, spouseData, 6, 0.06f, "hotwifing");
@@ -2827,7 +2846,7 @@ public class HomeLocation : BaseLocation
     private async Task PlayHotwifingScene(NPC spouse, Spouse spouseData)
     {
         terminal.ClearScreen();
-        WriteSectionHeader("A NIGHT TO REMEMBER", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.night_to_remember"), "bright_magenta");
         terminal.WriteLine();
 
         // Find a suitable third party NPC (exclude dead NPCs)
@@ -2841,8 +2860,8 @@ public class HomeLocation : BaseLocation
         if (potentialDates.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Unfortunately, there's no one suitable available tonight.");
-            terminal.WriteLine($"{spouse.Name} gives you a playful shrug. \"Another time, perhaps.\"");
+            terminal.WriteLine(Loc.Get("home.alt_no_one_tonight"));
+            terminal.WriteLine(Loc.Get("home.alt_hw_find_later"));
             return;
         }
 
@@ -2856,7 +2875,7 @@ public class HomeLocation : BaseLocation
 
         terminal.SetColor("white");
         terminal.WriteLine($"{spouse.Name} gets ready for the evening, choosing {spousePossessive} most alluring outfit.");
-        terminal.WriteLine($"You watch with a mix of excitement and nervousness as {spouseGender} prepares.");
+        terminal.WriteLine(Loc.Get("home.hw_prepares", spouseGender));
         terminal.WriteLine();
 
         await Task.Delay(2000);
@@ -2875,20 +2894,20 @@ public class HomeLocation : BaseLocation
         await Task.Delay(1500);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The hours pass slowly. You imagine what might be happening...");
-        terminal.WriteLine("The anticipation is almost unbearable.");
+        terminal.WriteLine(Loc.Get("home.hw_hours_pass"));
+        terminal.WriteLine(Loc.Get("home.hw_anticipation"));
         terminal.WriteLine();
 
         await Task.Delay(2000);
 
         // The date scene (described, not shown)
-        WriteSectionHeader("LATER THAT NIGHT...", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.later_that_night"), "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
 
         terminal.SetColor("white");
-        terminal.WriteLine($"The door opens. {spouse.Name} returns, flushed and breathless.");
+        terminal.WriteLine(Loc.Get("home.hw_returns", spouse.Name));
         terminal.WriteLine($"{spouseGender.ToUpperInvariant()[0]}{spouseGender.Substring(1)} looks at you with smoldering eyes.");
         terminal.WriteLine();
 
@@ -2904,8 +2923,8 @@ public class HomeLocation : BaseLocation
         // Spouse describes the encounter
         terminal.SetColor("bright_magenta");
         terminal.WriteLine($"{spouseGender.ToUpperInvariant()[0]}{spouseGender.Substring(1)} tells you everything.");
-        terminal.WriteLine($"How {thirdName}'s hands felt. The first kiss. The passion.");
-        terminal.WriteLine($"Every detail, whispered in your ear as {spouseGender} presses against you.");
+        terminal.WriteLine(Loc.Get("home.hw_details", thirdName));
+        terminal.WriteLine(Loc.Get("home.hw_whispered", spouseGender));
         terminal.WriteLine();
 
         await Task.Delay(2500);
@@ -2918,23 +2937,23 @@ public class HomeLocation : BaseLocation
         await Task.Delay(1500);
 
         // The reclamation
-        WriteSectionHeader("RECLAMATION", "bright_red");
+        WriteSectionHeader(Loc.Get("home.reclamation"), "bright_red");
         terminal.WriteLine();
 
         await Task.Delay(1000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The fire between you ignites like never before.");
-        terminal.WriteLine($"Every touch is electric, possessive, passionate.");
-        terminal.WriteLine($"You claim what's yours, and {spouseGender} surrenders completely.");
+        terminal.WriteLine(Loc.Get("home.hw_the_fire"));
+        terminal.WriteLine(Loc.Get("home.hw_electric"));
+        terminal.WriteLine(Loc.Get("home.hw_claim_yours", spouseGender));
         terminal.WriteLine();
 
         await Task.Delay(2000);
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("The night that follows is unlike any other.");
-        terminal.WriteLine($"The stories {spouseGender} tells only fuel the passion.");
-        terminal.WriteLine("By morning, you're both exhausted... and closer than ever.");
+        terminal.WriteLine(Loc.Get("home.hw_night_unlike"));
+        terminal.WriteLine(Loc.Get("home.hw_stories_fuel", spouseGender));
+        terminal.WriteLine(Loc.Get("home.hw_morning_exhausted"));
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -2946,10 +2965,10 @@ public class HomeLocation : BaseLocation
         spouseData.LoveLevel = Math.Max(1, spouseData.LoveLevel - 3);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine("Your bond with each other has deepened through this shared experience.");
+        terminal.WriteLine(Loc.Get("home.hw_bond_deepened"));
         terminal.WriteLine();
 
-        await terminal.GetInput("Press Enter to continue...");
+        await terminal.GetInput(Loc.Get("ui.press_enter"));
     }
 
     private async Task DiscussCuckolding(NPC spouse, Spouse spouseData)
@@ -2981,7 +3000,7 @@ public class HomeLocation : BaseLocation
 
             await Task.Delay(1500);
 
-            terminal.WriteLine("Something shifts in their demeanor.");
+            terminal.WriteLine(Loc.Get("home.cuck_shift"));
             terminal.WriteLine("\"I have to admit... the idea of having that power is intriguing.\"");
             terminal.WriteLine("\"If that's what you truly want...\"");
             terminal.WriteLine();
@@ -2998,7 +3017,7 @@ public class HomeLocation : BaseLocation
             // Offer to try it now
             terminal.WriteLine();
             terminal.SetColor("white");
-            terminal.WriteLine("Do you want to try it tonight?");
+            terminal.WriteLine(Loc.Get("home.cuck_tonight"));
             terminal.WriteLine();
             terminal.SetColor("bright_yellow");
             terminal.Write("  [Y]");
@@ -3010,7 +3029,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine(" No, maybe another time");
             terminal.WriteLine();
 
-            var input = await terminal.GetInput("Choice: ");
+            var input = await terminal.GetInput(Loc.Get("ui.choice"));
             if (input.Trim().ToUpperInvariant() == "Y")
             {
                 await PlayCuckoldingScene(spouse, spouseData);
@@ -3024,7 +3043,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("They don't understand or connect with this dynamic.");
+            terminal.WriteLine(Loc.Get("home.cuck_not_understand"));
 
             // Moderate damage for confusion
             await HandleSensitiveTopicRejection(spouse, spouseData, 4, 0.03f, "cuckolding");
@@ -3038,7 +3057,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("This has seriously upset them.");
+            terminal.WriteLine(Loc.Get("home.cuck_upset"));
 
             // Severe damage - cuckolding request can be very disturbing to some
             await HandleSensitiveTopicRejection(spouse, spouseData, 10, 0.12f, "cuckolding");
@@ -3048,7 +3067,7 @@ public class HomeLocation : BaseLocation
     private async Task PlayCuckoldingScene(NPC spouse, Spouse spouseData)
     {
         terminal.ClearScreen();
-        WriteSectionHeader("THE ARRANGEMENT", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.the_arrangement"), "bright_magenta");
         terminal.WriteLine();
 
         // Find a suitable third party NPC (exclude dead NPCs)
@@ -3062,8 +3081,8 @@ public class HomeLocation : BaseLocation
         if (potentialLovers.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Unfortunately, there's no one suitable available tonight.");
-            terminal.WriteLine($"{spouse.Name} gives you a knowing look. \"We'll find someone.\"");
+            terminal.WriteLine(Loc.Get("home.cuck_no_one"));
+            terminal.WriteLine(Loc.Get("home.alt_hw_find_later"));
             return;
         }
 
@@ -3083,7 +3102,7 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        WriteSectionHeader("An hour later, there's a knock at the door...", "gray");
+        WriteSectionHeader(Loc.Get("home.knock_at_door"), "gray");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3105,53 +3124,53 @@ public class HomeLocation : BaseLocation
 
         await Task.Delay(2000);
 
-        WriteSectionHeader("You take your place...", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.take_your_place"), "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
 
         terminal.SetColor("white");
         terminal.WriteLine($"{spouse.Name} and {thirdName} move toward each other.");
-        terminal.WriteLine($"The first kiss is tentative, then grows more passionate.");
-        terminal.WriteLine($"You watch from your chair, heart racing.");
+        terminal.WriteLine(Loc.Get("home.cuck_first_kiss"));
+        terminal.WriteLine(Loc.Get("home.cuck_watch_chair"));
         terminal.WriteLine();
 
         await Task.Delay(2000);
 
         terminal.SetColor("bright_magenta");
         terminal.WriteLine($"{spouse.Name} glances at you occasionally, making sure you're watching.");
-        terminal.WriteLine($"There's power in {spousePossessive} gaze. Control. Dominance.");
-        terminal.WriteLine($"This is what you asked for, and {spouseGender} owns it completely.");
+        terminal.WriteLine(Loc.Get("home.cuck_power_gaze", spousePossessive));
+        terminal.WriteLine(Loc.Get("home.cuck_owns_it", spouseGender));
         terminal.WriteLine();
 
         await Task.Delay(2500);
 
         // The scene progresses
         terminal.SetColor("cyan");
-        terminal.WriteLine("Clothing falls away. Bodies intertwine.");
+        terminal.WriteLine(Loc.Get("home.cuck_clothing_falls"));
         terminal.WriteLine($"{spouse.Name} is in complete control, directing every moment.");
-        terminal.WriteLine($"Sometimes {spouseGender} looks at you. Sometimes {spouseGender} ignores you entirely.");
-        terminal.WriteLine("Both feel equally intense.");
+        terminal.WriteLine(Loc.Get("home.cuck_looks_at_you", spouseGender, spouseGender));
+        terminal.WriteLine(Loc.Get("home.cuck_both_intense"));
         terminal.WriteLine();
 
         await Task.Delay(2500);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The sounds. The movements. The way they move together.");
-        terminal.WriteLine($"You sit there, exactly where {spouse.Name} told you to.");
-        terminal.WriteLine("Watching everything unfold in your own bedroom.");
+        terminal.WriteLine(Loc.Get("home.cuck_sounds"));
+        terminal.WriteLine(Loc.Get("home.cuck_told_you", spouse.Name));
+        terminal.WriteLine(Loc.Get("home.cuck_watching"));
         terminal.WriteLine();
 
         await Task.Delay(2000);
 
-        WriteSectionHeader("LATER...", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.later"), "bright_magenta");
         terminal.WriteLine();
 
         await Task.Delay(1500);
 
         terminal.SetColor("white");
         terminal.WriteLine($"{thirdName} gathers {thirdPossessive} things and leaves.");
-        terminal.WriteLine($"A knowing nod to you on the way out.");
+        terminal.WriteLine(Loc.Get("home.cuck_nod_out"));
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3165,9 +3184,9 @@ public class HomeLocation : BaseLocation
         await Task.Delay(2000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The dynamic has shifted between you forever.");
+        terminal.WriteLine(Loc.Get("home.cuck_dynamic_shifted"));
         terminal.WriteLine($"{spouse.Name} has discovered something in {spousePossessive}self.");
-        terminal.WriteLine("And you've given them that power willingly.");
+        terminal.WriteLine(Loc.Get("home.cuck_gave_power"));
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3179,10 +3198,10 @@ public class HomeLocation : BaseLocation
         spouseData.LoveLevel = Math.Max(1, spouseData.LoveLevel - 1);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine("A new chapter in your relationship has begun.");
+        terminal.WriteLine(Loc.Get("home.cuck_new_chapter"));
         terminal.WriteLine();
 
-        await terminal.GetInput("Press Enter to continue...");
+        await terminal.GetInput(Loc.Get("ui.press_enter"));
     }
 
     private async Task DiscussStagVixen(NPC spouse, Spouse spouseData)
@@ -3216,7 +3235,7 @@ public class HomeLocation : BaseLocation
 
             await Task.Delay(1500);
 
-            terminal.WriteLine("A mischievous smile forms on their lips.");
+            terminal.WriteLine(Loc.Get("home.stag_mischievous"));
             terminal.WriteLine("\"I like being admired. And the idea of you being proud...\"");
             terminal.WriteLine("\"Yes. I think I'd like to try that.\"");
             terminal.WriteLine();
@@ -3236,7 +3255,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("They're flattered but not ready.");
+            terminal.WriteLine(Loc.Get("home.stag_not_ready"));
 
             // Light damage - they took it well
             await HandleSensitiveTopicRejection(spouse, spouseData, 2, 0.01f, "sharing");
@@ -3249,7 +3268,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
 
             terminal.SetColor("gray");
-            terminal.WriteLine("They prefer monogamy.");
+            terminal.WriteLine(Loc.Get("home.stag_prefer_mono"));
 
             // Mild damage plus slight hurt feelings
             await HandleSensitiveTopicRejection(spouse, spouseData, 4, 0.03f, "sharing me with others");
@@ -3295,7 +3314,7 @@ public class HomeLocation : BaseLocation
             terminal.WriteLine();
             await Task.Delay(2000);
 
-            WriteSectionHeader("A TERRIBLE SILENCE", "red");
+            WriteSectionHeader(Loc.Get("home.terrible_silence"), "red");
             terminal.WriteLine();
 
             await Task.Delay(1500);
@@ -3305,7 +3324,7 @@ public class HomeLocation : BaseLocation
 
             terminal.SetColor("white");
             terminal.WriteLine($"{spouse.Name} is quiet for a very long time.");
-            terminal.WriteLine($"When {spouseGender} finally speaks, {spousePossessive} voice is cold.");
+            terminal.WriteLine(Loc.Get("home.reject_cold_voice", spouseGender, spousePossessive));
             terminal.WriteLine();
 
             await Task.Delay(2000);
@@ -3325,19 +3344,19 @@ public class HomeLocation : BaseLocation
             await Task.Delay(1500);
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your spouse has asked for a divorce.");
+            terminal.WriteLine(Loc.Get("home.reject_divorce_ask"));
             terminal.WriteLine();
             terminal.SetColor("bright_yellow");
             terminal.Write("  [A]");
             terminal.SetColor("yellow");
-            terminal.WriteLine(" Accept the divorce");
+            terminal.WriteLine(Loc.Get("home.reject_accept"));
             terminal.SetColor("bright_yellow");
             terminal.Write("  [P]");
             terminal.SetColor("yellow");
-            terminal.WriteLine(" Plead with them to reconsider");
+            terminal.WriteLine(Loc.Get("home.reject_fight"));
             terminal.WriteLine();
 
-            var input = await terminal.GetInput("Choice: ");
+            var input = await terminal.GetInput(Loc.Get("ui.choice"));
 
             if (input.Trim().ToUpperInvariant() == "P")
             {
@@ -3364,8 +3383,8 @@ public class HomeLocation : BaseLocation
                     terminal.WriteLine();
 
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("Your marriage has been saved... barely.");
-                    terminal.WriteLine("But the damage will take time to heal.");
+                    terminal.WriteLine(Loc.Get("home.reject_saved"));
+                    terminal.WriteLine(Loc.Get("home.reject_damage_heal"));
 
                     // Severe relationship damage but no divorce
                     spouseData.LoveLevel = Math.Min(100, spouseData.LoveLevel + 10);
@@ -3385,7 +3404,7 @@ public class HomeLocation : BaseLocation
                 // Accept divorce
                 terminal.SetColor("gray");
                 terminal.WriteLine();
-                terminal.WriteLine("You accept their decision in silence.");
+                terminal.WriteLine(Loc.Get("home.reject_accept_silence"));
                 terminal.WriteLine();
 
                 await ProcessSpouseDivorce(spouse, spouseData);
@@ -3396,8 +3415,8 @@ public class HomeLocation : BaseLocation
             // Relationship is strained but no divorce... yet
             terminal.WriteLine();
             terminal.SetColor("yellow");
-            terminal.WriteLine("You sense your relationship is becoming strained.");
-            terminal.WriteLine("Perhaps it's best to be more careful with sensitive topics.");
+            terminal.WriteLine(Loc.Get("home.reject_strained"));
+            terminal.WriteLine(Loc.Get("home.reject_careful"));
         }
     }
 
@@ -3406,7 +3425,7 @@ public class HomeLocation : BaseLocation
     /// </summary>
     private async Task ProcessSpouseDivorce(NPC spouse, Spouse spouseData)
     {
-        WriteSectionHeader("YOUR MARRIAGE HAS ENDED", "red");
+        WriteSectionHeader(Loc.Get("home.marriage_ended"), "red");
         terminal.WriteLine();
 
         await Task.Delay(1500);
@@ -3429,13 +3448,13 @@ public class HomeLocation : BaseLocation
         if (spouseData.Children > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{spouse.Name} has taken custody of the children.");
+            terminal.WriteLine(Loc.Get("home.divorce_custody", spouse.Name));
             terminal.WriteLine();
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"{spouse.Name} packs their belongings and leaves.");
-        terminal.WriteLine("The door closes with a terrible finality.");
+        terminal.WriteLine(Loc.Get("home.divorce_packs", spouse.Name));
+        terminal.WriteLine(Loc.Get("home.divorce_finality"));
 
         // Move spouse out of home
         spouse.UpdateLocation("Inn");
@@ -3451,14 +3470,14 @@ public class HomeLocation : BaseLocation
         var romance = RomanceTracker.Instance;
 
         terminal.WriteLine("\n", "white");
-        WriteSectionHeader("THE MASTER BEDROOM", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.master_bedroom"), "bright_magenta");
         terminal.WriteLine();
 
         if (romance.Spouses.Count == 0 && romance.CurrentLovers.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Your bed seems cold and empty...");
-            terminal.WriteLine("Perhaps you should find someone special to share it with.");
+            terminal.WriteLine(Loc.Get("home.bed_cold_empty"));
+            terminal.WriteLine(Loc.Get("home.bed_find_someone"));
             await terminal.WaitForKey();
             return;
         }
@@ -3488,9 +3507,9 @@ public class HomeLocation : BaseLocation
         if (availablePartners.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your partner isn't home right now.");
+            terminal.WriteLine(Loc.Get("home.partner_not_home"));
             terminal.SetColor("gray");
-            terminal.WriteLine("They might be at Main Street or elsewhere in town.");
+            terminal.WriteLine(Loc.Get("home.partner_elsewhere"));
             await terminal.WaitForKey();
             return;
         }
@@ -3499,25 +3518,25 @@ public class HomeLocation : BaseLocation
         {
             var partner = availablePartners[0];
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"{partner.Name} is here, looking inviting...");
+            terminal.WriteLine(Loc.Get("home.bedroom_here_inviting", partner.Name));
             terminal.WriteLine();
             terminal.SetColor("bright_yellow");
             terminal.Write("  [1]");
             terminal.SetColor("white");
-            terminal.WriteLine($" Join {partner.Name} in bed");
+            terminal.WriteLine($" {Loc.Get("home.join_in_bed", partner.Name)}");
             terminal.SetColor("bright_yellow");
             terminal.Write("  [0]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Leave the bedroom");
+            terminal.WriteLine($" {Loc.Get("home.leave_bedroom")}");
 
-            var input = await terminal.GetInput("Choice: ");
+            var input = await terminal.GetInput(Loc.Get("ui.choice"));
             if (input == "1")
             {
                 await IntimacySystem.Instance.InitiateIntimateScene(currentPlayer, partner, terminal);
             }
             else
             {
-                terminal.WriteLine("You quietly leave the bedroom.", "gray");
+                terminal.WriteLine(Loc.Get("home.leave_bedroom_msg"), "gray");
                 await terminal.WaitForKey();
             }
         }
@@ -3525,7 +3544,7 @@ public class HomeLocation : BaseLocation
         {
             // Multiple partners available
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("Multiple partners are here waiting for you...");
+            terminal.WriteLine(Loc.Get("home.multiple_partners"));
             terminal.WriteLine();
 
             for (int i = 0; i < availablePartners.Count; i++)
@@ -3536,16 +3555,16 @@ public class HomeLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("  [0]");
             terminal.SetColor("gray");
-            terminal.WriteLine(" Leave the bedroom");
+            terminal.WriteLine($" {Loc.Get("home.leave_bedroom")}");
 
-            var input = await terminal.GetInput("Choice: ");
+            var input = await terminal.GetInput(Loc.Get("ui.choice"));
             if (int.TryParse(input, out int choice) && choice >= 1 && choice <= availablePartners.Count)
             {
                 await IntimacySystem.Instance.InitiateIntimateScene(currentPlayer, availablePartners[choice - 1], terminal);
             }
             else
             {
-                terminal.WriteLine("You quietly leave the bedroom.", "gray");
+                terminal.WriteLine(Loc.Get("home.leave_bedroom_msg"), "gray");
                 await terminal.WaitForKey();
             }
         }
@@ -3562,16 +3581,16 @@ public class HomeLocation : BaseLocation
     private async Task ShowHomeUpgrades()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("MASTER CRAFTSMAN'S RENOVATIONS", "bright_yellow", 62);
+        WriteBoxHeader(Loc.Get("home.upgrades"), "bright_yellow", 62);
         terminal.WriteLine();
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"  Your gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("home.your_gold", $"{currentPlayer.Gold:N0}"));
         terminal.WriteLine();
 
         // Tiered upgrades
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("--- Room Upgrades ---");
+        terminal.WriteLine(Loc.Get("home.upgrade_room_title"));
         int opt = 1;
 
         // Living Quarters
@@ -3618,7 +3637,7 @@ public class HomeLocation : BaseLocation
 
         terminal.WriteLine();
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("--- Special Purchases ---");
+        terminal.WriteLine(Loc.Get("home.upgrade_special_title"));
 
         // Trophy Room
         long trophyRoomCost = 500_000;
@@ -3642,18 +3661,18 @@ public class HomeLocation : BaseLocation
         terminal.WriteLine();
         if (IsScreenReader)
         {
-            terminal.WriteLine("0. Return");
+            terminal.WriteLine($"0. {Loc.Get("home.upgrade_return")}");
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.Write("[0]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Return");
+            terminal.WriteLine($" {Loc.Get("home.upgrade_return")}");
         }
         terminal.WriteLine();
 
-        var input = await terminal.GetInput("Select upgrade: ");
+        var input = await terminal.GetInput(Loc.Get("home.select_upgrade"));
         if (!int.TryParse(input, out int choice) || choice < 1)
             return;
 
@@ -3665,8 +3684,8 @@ public class HomeLocation : BaseLocation
                         currentPlayer.HomeLevel++;
                         int lvl = Math.Clamp(currentPlayer.HomeLevel, 0, 5);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Upgraded to {LivingQuartersNames[lvl]}!");
-                        terminal.WriteLine($"Rest now recovers {(int)(GameConfig.HomeRecoveryPercent[lvl] * 100)}% HP/Mana, {GameConfig.HomeRestsPerDay[lvl]}x per day.");
+                        terminal.WriteLine(Loc.Get("home.upgraded_to", LivingQuartersNames[lvl]));
+                        terminal.WriteLine(Loc.Get("home.upgrade_rest_stats", (int)(GameConfig.HomeRecoveryPercent[lvl] * 100), GameConfig.HomeRestsPerDay[lvl]));
                     });
                 break;
             case 2:
@@ -3675,9 +3694,9 @@ public class HomeLocation : BaseLocation
                         currentPlayer.BedLevel++;
                         int lvl = Math.Clamp(currentPlayer.BedLevel, 0, 5);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Upgraded to {BedNames[lvl]}!");
+                        terminal.WriteLine(Loc.Get("home.upgraded_to", BedNames[lvl]));
                         float mod = GameConfig.BedFertilityModifier[lvl];
-                        terminal.WriteLine(mod <= 0 ? "Fertility penalty removed!" : $"Fertility bonus: +{(int)(mod * 100)}%");
+                        terminal.WriteLine(mod <= 0 ? Loc.Get("home.fertility_removed") : Loc.Get("home.fertility_bonus", (int)(mod * 100)));
                     });
                 break;
             case 3:
@@ -3686,8 +3705,8 @@ public class HomeLocation : BaseLocation
                         currentPlayer.ChestLevel++;
                         int lvl = Math.Clamp(currentPlayer.ChestLevel, 0, 5);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Upgraded to {ChestNames[lvl]}!");
-                        terminal.WriteLine($"Chest now holds up to {GameConfig.ChestCapacity[lvl]} items.");
+                        terminal.WriteLine(Loc.Get("home.upgraded_to", ChestNames[lvl]));
+                        terminal.WriteLine(Loc.Get("home.upgrade_chest_holds", GameConfig.ChestCapacity[lvl]));
                     });
                 break;
             case 4:
@@ -3696,8 +3715,8 @@ public class HomeLocation : BaseLocation
                         currentPlayer.HearthLevel++;
                         int lvl = Math.Clamp(currentPlayer.HearthLevel, 0, 5);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Upgraded to {HearthNames[lvl]}!");
-                        terminal.WriteLine($"Well-Rested buff: +{(int)(GameConfig.HearthDamageBonus[lvl] * 100)}% damage/defense for {GameConfig.HearthCombatDuration[lvl]} combats after resting.");
+                        terminal.WriteLine(Loc.Get("home.upgraded_to", HearthNames[lvl]));
+                        terminal.WriteLine(Loc.Get("home.upgrade_hearth_buff", (int)(GameConfig.HearthDamageBonus[lvl] * 100), GameConfig.HearthCombatDuration[lvl]));
                     });
                 break;
             case 5:
@@ -3706,13 +3725,13 @@ public class HomeLocation : BaseLocation
                         currentPlayer.GardenLevel++;
                         int lvl = Math.Clamp(currentPlayer.GardenLevel, 0, 5);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Upgraded to {GardenNames[lvl]}!");
-                        terminal.WriteLine($"Gather up to {GameConfig.HerbsPerDay[lvl]} herbs per day.");
+                        terminal.WriteLine(Loc.Get("home.upgraded_to", GardenNames[lvl]));
+                        terminal.WriteLine(Loc.Get("home.upgrade_herbs_day", GameConfig.HerbsPerDay[lvl]));
                         if (lvl >= 1 && lvl <= 5)
                         {
                             var newHerb = (HerbType)lvl;
                             terminal.SetColor(HerbData.GetColor(newHerb));
-                            terminal.WriteLine($"New herb unlocked: {HerbData.GetName(newHerb)} — {HerbData.GetDescription(newHerb)}");
+                            terminal.WriteLine(Loc.Get("home.upgrade_new_herb", HerbData.GetName(newHerb), HerbData.GetDescription(newHerb)));
                         }
                     });
                 break;
@@ -3729,8 +3748,8 @@ public class HomeLocation : BaseLocation
                     !currentPlayer.HasStudy, () => {
                         currentPlayer.HasStudy = true;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("A magnificent study lined with ancient tomes!");
-                        terminal.WriteLine($"+{(int)(GameConfig.StudyXPBonus * 100)}% XP from all combat.");
+                        terminal.WriteLine(Loc.Get("home.study_desc"));
+                        terminal.WriteLine(Loc.Get("home.study_bonus", (int)(GameConfig.StudyXPBonus * 100)));
                     });
                 break;
             case 9:
@@ -3738,8 +3757,8 @@ public class HomeLocation : BaseLocation
                     !currentPlayer.HasServants, () => {
                         currentPlayer.HasServants = true;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("A loyal staff moves into the servants' quarters!");
-                        terminal.WriteLine($"They'll collect {GameConfig.ServantsDailyGoldBase} + (your level * {GameConfig.ServantsDailyGoldPerLevel}) gold daily.");
+                        terminal.WriteLine(Loc.Get("home.servants_desc"));
+                        terminal.WriteLine(Loc.Get("home.upgrade_servants_collect", GameConfig.ServantsDailyGoldBase, GameConfig.ServantsDailyGoldPerLevel));
                     });
                 break;
             case 10:
@@ -3747,8 +3766,8 @@ public class HomeLocation : BaseLocation
                     !currentPlayer.HasReinforcedDoor, () => {
                         currentPlayer.HasReinforcedDoor = true;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("A heavy iron-banded door is installed!");
-                        terminal.WriteLine("You can now sleep safely at home in online mode.");
+                        terminal.WriteLine(Loc.Get("home.reinforced_door_desc"));
+                        terminal.WriteLine(Loc.Get("home.reinforced_door_safe"));
                     });
                 break;
             case 11:
@@ -3772,11 +3791,11 @@ public class HomeLocation : BaseLocation
         if (IsScreenReader)
         {
             if (maxed)
-                terminal.WriteLine($"  {num}. {name} MAXED - {currentTierName} Lv {level}, {currentBonus}");
+                terminal.WriteLine(Loc.Get("home.upgrade_sr_maxed", num, name, currentTierName, level, currentBonus));
             else
             {
                 string tierText = nextTierName != "" ? $": {nextTierName}" : "";
-                terminal.WriteLine($"  {num}. {name} Lv {level + 1}{tierText}, {cost:N0}g, {nextBonus}");
+                terminal.WriteLine(Loc.Get("home.upgrade_sr_next", num, name, level + 1, tierText, $"{cost:N0}", nextBonus));
             }
             return;
         }
@@ -3786,7 +3805,7 @@ public class HomeLocation : BaseLocation
             terminal.SetColor("bright_green");
             terminal.Write($"  [{num}] {name}");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($" MAXED - {currentTierName} (Lv {level}) [{currentBonus}]");
+            terminal.WriteLine(Loc.Get("home.upgrade_maxed_label", currentTierName, level, currentBonus));
         }
         else
         {
@@ -3805,16 +3824,16 @@ public class HomeLocation : BaseLocation
         if (IsScreenReader)
         {
             if (owned)
-                terminal.WriteLine($"  {num}. {name} - OWNED");
+                terminal.WriteLine(Loc.Get("home.upgrade_otp_sr_owned", num, name));
             else
-                terminal.WriteLine($"  {num}. {name}, {cost:N0}g - {desc}");
+                terminal.WriteLine(Loc.Get("home.upgrade_otp_sr_buy", num, name, $"{cost:N0}", desc));
             return;
         }
 
         if (owned)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"  [{num}] {name} - OWNED");
+            terminal.WriteLine(Loc.Get("home.upgrade_otp_owned", num, name));
         }
         else
         {
@@ -3863,7 +3882,7 @@ public class HomeLocation : BaseLocation
         if (!available)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{name} is already at maximum level!");
+            terminal.WriteLine(Loc.Get("home.upgrade_max_level", name));
             await terminal.WaitForKey();
             return;
         }
@@ -3871,14 +3890,14 @@ public class HomeLocation : BaseLocation
         if (currentPlayer.Gold < cost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You need {cost:N0} gold for {name}!");
-            terminal.WriteLine($"You only have {currentPlayer.Gold:N0} gold.");
+            terminal.WriteLine(Loc.Get("home.upgrade_need_gold", $"{cost:N0}", name));
+            terminal.WriteLine(Loc.Get("home.upgrade_only_have", $"{currentPlayer.Gold:N0}"));
             await terminal.WaitForKey();
             return;
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Purchase {name} for {cost:N0} gold?");
+        terminal.WriteLine(Loc.Get("home.upgrade_confirm", name, $"{cost:N0}"));
         var confirm = await terminal.GetInput("(Y/N): ");
 
         if (confirm.Trim().ToUpperInvariant() == "Y")
@@ -3889,14 +3908,14 @@ public class HomeLocation : BaseLocation
             currentPlayer.RecalculateStats();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"\n*** {name.ToUpper()} PURCHASED! ***");
-            terminal.WriteLine("The craftsmen get to work immediately...");
+            terminal.WriteLine($"\n{Loc.Get("home.upgrade_success", name.ToUpper())}");
+            terminal.WriteLine(Loc.Get("home.upgrade_craftsmen"));
             await Task.Delay(1500);
-            terminal.WriteLine("Your home has been upgraded!");
+            terminal.WriteLine(Loc.Get("home.upgrade_home_done"));
         }
         else
         {
-            terminal.WriteLine("Purchase cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("home.upgrade_cancelled"), "gray");
         }
         await terminal.WaitForKey();
     }
@@ -3911,8 +3930,8 @@ public class HomeLocation : BaseLocation
         currentPlayer.BaseCharisma++;
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Training Room upgraded to level {currentPlayer.TrainingRoomLevel}!");
-        terminal.WriteLine("+1 to ALL base stats!");
+        terminal.WriteLine(Loc.Get("home.training_room_upgrade", currentPlayer.TrainingRoomLevel));
+        terminal.WriteLine(Loc.Get("home.training_room_bonus"));
     }
 
     private void ApplyArmoryBonus()
@@ -3920,8 +3939,8 @@ public class HomeLocation : BaseLocation
         currentPlayer.PermanentDamageBonus += 5;
         currentPlayer.PermanentDefenseBonus += 5;
         terminal.SetColor("cyan");
-        terminal.WriteLine("Legendary Armory installed!");
-        terminal.WriteLine("+5% damage and +5% defense permanently!");
+        terminal.WriteLine(Loc.Get("home.armory_installed"));
+        terminal.WriteLine(Loc.Get("home.armory_bonus"));
     }
 
     private void ApplyFountainBonus()
@@ -3929,8 +3948,8 @@ public class HomeLocation : BaseLocation
         long hpBonus = currentPlayer.MaxHP / 10;
         currentPlayer.BonusMaxHP += hpBonus;
         terminal.SetColor("cyan");
-        terminal.WriteLine("Fountain of Vitality constructed!");
-        terminal.WriteLine($"+{hpBonus} max HP permanently!");
+        terminal.WriteLine(Loc.Get("home.fountain_installed"));
+        terminal.WriteLine(Loc.Get("home.fountain_hp_bonus", hpBonus));
     }
 
     /// <summary>
@@ -3944,7 +3963,7 @@ public class HomeLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't have any lovers or partners.");
+            terminal.WriteLine(Loc.Get("home.no_lovers"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -3984,7 +4003,7 @@ public class HomeLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("All your allies members are alive!");
+            terminal.WriteLine(Loc.Get("home.all_alive"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -3992,18 +4011,18 @@ public class HomeLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Dead Team Members:");
+        terminal.WriteLine(Loc.Get("home.dead_team_members"));
         for (int i = 0; i < deadMembers.Count; i++)
         {
             var dead = deadMembers[i];
             long cost = dead.Level * 1000; // Resurrection cost
             terminal.SetColor("white");
-            terminal.WriteLine($"{i + 1}. {dead.DisplayName} (Level {dead.Level}) - Cost: {cost:N0} gold");
+            terminal.WriteLine(Loc.Get("home.resurrect_entry", i + 1, dead.DisplayName, dead.Level, $"{cost:N0}"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Enter number to resurrect (0 to cancel): ");
+        terminal.Write(Loc.Get("home.resurrect_select"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -4015,7 +4034,7 @@ public class HomeLocation : BaseLocation
             if (currentPlayer.Gold < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You need {cost:N0} gold to resurrect {toResurrect.DisplayName}!");
+                terminal.WriteLine(Loc.Get("home.resurrect_need_gold", $"{cost:N0}", toResurrect.DisplayName));
             }
             else
             {
@@ -4024,8 +4043,8 @@ public class HomeLocation : BaseLocation
 toResurrect.IsDead = false;
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{toResurrect.DisplayName} has been resurrected!");
-                terminal.WriteLine($"Cost: {cost:N0} gold");
+                terminal.WriteLine(Loc.Get("home.resurrect_success", toResurrect.DisplayName));
+                terminal.WriteLine(Loc.Get("home.resurrect_cost", $"{cost:N0}"));
 
                 NewsSystem.Instance.Newsy(true, $"{toResurrect.DisplayName} was resurrected by their ally '{currentPlayer.Name}'!");
             }
@@ -4033,7 +4052,7 @@ toResurrect.IsDead = false;
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -4073,19 +4092,19 @@ toResurrect.IsDead = false;
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no spouse or lover to equip.");
-            terminal.WriteLine("Find love first, then gear them up for adventure!");
+            terminal.WriteLine(Loc.Get("home.no_spouse_equip"));
+            terminal.WriteLine(Loc.Get("home.no_spouse_find_love"));
             await Task.Delay(2500);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("EQUIP YOUR PARTNER", "bright_magenta");
+        WriteBoxHeader(Loc.Get("home.equip_partner"), "bright_magenta");
         terminal.WriteLine("");
 
         // List partners
         terminal.SetColor("white");
-        terminal.WriteLine("Your Partners:");
+        terminal.WriteLine(Loc.Get("home.your_partners"));
         terminal.WriteLine("");
 
         for (int i = 0; i < partners.Count; i++)
@@ -4098,19 +4117,19 @@ toResurrect.IsDead = false;
             terminal.SetColor("gray");
             terminal.Write($"({relationship}) ");
             terminal.SetColor("white");
-            terminal.WriteLine($"Lv {npc.Level} {npc.Class}");
+            terminal.WriteLine(Loc.Get("home.equip_npc_level", npc.Level, npc.Class));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select partner to equip (0 to cancel): ");
+        terminal.Write(Loc.Get("home.select_partner"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int partnerIdx) || partnerIdx < 1 || partnerIdx > partners.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -4130,20 +4149,20 @@ toResurrect.IsDead = false;
         while (true)
         {
             terminal.ClearScreen();
-            WriteSectionHeader($"EQUIPMENT: {target.DisplayName.ToUpper()}", "bright_magenta");
+            WriteSectionHeader(Loc.Get("home.equip_header", target.DisplayName.ToUpper()), "bright_magenta");
             terminal.WriteLine("");
 
             // Show target's stats
             terminal.SetColor("white");
-            terminal.WriteLine($"  Level: {target.Level}  Class: {target.Class}  Race: {target.Race}");
-            terminal.WriteLine($"  HP: {target.HP}/{target.MaxHP}  Mana: {target.Mana}/{target.MaxMana}");
-            terminal.WriteLine($"  STR: {target.Strength}  DEX: {target.Dexterity}  AGI: {target.Agility}  CON: {target.Constitution}");
-            terminal.WriteLine($"  INT: {target.Intelligence}  WIS: {target.Wisdom}  CHA: {target.Charisma}  DEF: {target.Defence}");
+            terminal.WriteLine(Loc.Get("home.equip_stats_level", target.Level, target.Class, target.Race));
+            terminal.WriteLine(Loc.Get("home.equip_stats_hp", target.HP, target.MaxHP, target.Mana, target.MaxMana));
+            terminal.WriteLine(Loc.Get("home.equip_stats_str", target.Strength, target.Dexterity, target.Agility, target.Constitution));
+            terminal.WriteLine(Loc.Get("home.equip_stats_int", target.Intelligence, target.Wisdom, target.Charisma, target.Defence));
             terminal.WriteLine("");
 
             // Show current equipment
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Current Equipment:");
+            terminal.WriteLine(Loc.Get("home.current_equipment"));
             terminal.SetColor("white");
 
             DisplayEquipmentSlot(target, EquipmentSlot.MainHand, "Main Hand");
@@ -4162,37 +4181,37 @@ toResurrect.IsDead = false;
 
             // Show options
             terminal.SetColor("cyan");
-            terminal.WriteLine("Options:");
+            terminal.WriteLine(Loc.Get("home.options"));
             if (IsScreenReader)
             {
-                terminal.WriteLine("  E. Equip item from your inventory");
-                terminal.WriteLine("  U. Unequip item from them");
-                terminal.WriteLine("  T. Take all their equipment");
-                terminal.WriteLine("  Q. Done / Return");
+                terminal.WriteLine($"  E. {Loc.Get("home.equip_from_inventory")}");
+                terminal.WriteLine($"  U. {Loc.Get("home.unequip_item")}");
+                terminal.WriteLine($"  T. {Loc.Get("home.take_all_equipment")}");
+                terminal.WriteLine($"  Q. {Loc.Get("home.done_return")}");
             }
             else
             {
                 terminal.SetColor("bright_yellow");
                 terminal.Write("  [E]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Equip item from your inventory");
+                terminal.WriteLine($" {Loc.Get("home.equip_from_inventory")}");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("  [U]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Unequip item from them");
+                terminal.WriteLine($" {Loc.Get("home.unequip_item")}");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("  [T]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Take all their equipment");
+                terminal.WriteLine($" {Loc.Get("home.take_all_equipment")}");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("  [Q]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Done / Return");
+                terminal.WriteLine($" {Loc.Get("home.done_return")}");
             }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Choice: ");
+            terminal.Write(Loc.Get("ui.choice"));
             terminal.SetColor("white");
 
             var choice = (await terminal.ReadLineAsync()).ToUpper().Trim();
@@ -4237,12 +4256,12 @@ toResurrect.IsDead = false;
                 if (mainHand?.Handedness == WeaponHandedness.TwoHanded)
                 {
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine("(using 2H weapon)");
+                    terminal.WriteLine(Loc.Get("home.using_2h"));
                     return;
                 }
             }
             terminal.SetColor("darkgray");
-            terminal.WriteLine("(empty)");
+            terminal.WriteLine(Loc.Get("home.slot_empty"));
         }
     }
 
@@ -4252,7 +4271,7 @@ toResurrect.IsDead = false;
     private async Task EquipItemToCharacter(Character target)
     {
         terminal.ClearScreen();
-        WriteSectionHeader($"EQUIP ITEM TO {target.DisplayName.ToUpper()}", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.equip_to_header", target.DisplayName.ToUpper()), "bright_magenta");
         terminal.WriteLine("");
 
         // Collect equippable items from player's inventory and equipped items
@@ -4280,14 +4299,14 @@ toResurrect.IsDead = false;
         if (equipmentItems.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no equipment to give.");
+            terminal.WriteLine(Loc.Get("ui.no_equipment_to_give"));
             await Task.Delay(2000);
             return;
         }
 
         // Display available items
         terminal.SetColor("white");
-        terminal.WriteLine("Available equipment:");
+        terminal.WriteLine(Loc.Get("home.available_equipment"));
         terminal.WriteLine("");
 
         for (int i = 0; i < equipmentItems.Count; i++)
@@ -4326,14 +4345,14 @@ toResurrect.IsDead = false;
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select item (0 to cancel): ");
+        terminal.Write(Loc.Get("home.select_item_cancel"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int itemIdx) || itemIdx < 1 || itemIdx > equipmentItems.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -4344,7 +4363,7 @@ toResurrect.IsDead = false;
         if (!selectedItem.CanEquip(target, out string equipReason))
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"{target.DisplayName} cannot use this item: {equipReason}");
+            terminal.WriteLine(Loc.Get("home.cannot_use_item", target.DisplayName, equipReason));
             await Task.Delay(2000);
             return;
         }
@@ -4356,15 +4375,15 @@ toResurrect.IsDead = false;
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.Write("Which hand? ");
+            terminal.Write(Loc.Get("home.which_hand"));
             terminal.SetColor("bright_yellow");
             terminal.Write("[M]");
             terminal.SetColor("cyan");
-            terminal.Write("ain hand or ");
+            terminal.Write(Loc.Get("home.main_or_off"));
             terminal.SetColor("bright_yellow");
             terminal.Write("[O]");
             terminal.SetColor("cyan");
-            terminal.WriteLine("ff hand?");
+            terminal.WriteLine(Loc.Get("home.off_hand_q"));
             terminal.Write(": ");
             terminal.SetColor("white");
             var handChoice = (await terminal.ReadLineAsync()).ToUpper().Trim();
@@ -4412,7 +4431,7 @@ toResurrect.IsDead = false;
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{target.DisplayName} equipped {selectedItem.Name}!");
+            terminal.WriteLine(Loc.Get("home.equipped_item", target.DisplayName, selectedItem.Name));
             if (!string.IsNullOrEmpty(message))
             {
                 terminal.SetColor("yellow");
@@ -4425,7 +4444,7 @@ toResurrect.IsDead = false;
             var legacyItem = ConvertEquipmentToItem(selectedItem);
             currentPlayer.Inventory.Add(legacyItem);
             terminal.SetColor("red");
-            terminal.WriteLine($"Failed to equip: {message}");
+            terminal.WriteLine(Loc.Get("home.equip_failed", message));
         }
 
         await Task.Delay(2000);
@@ -4437,7 +4456,7 @@ toResurrect.IsDead = false;
     private async Task UnequipItemFromCharacter(Character target)
     {
         terminal.ClearScreen();
-        WriteSectionHeader($"UNEQUIP FROM {target.DisplayName.ToUpper()}", "bright_magenta");
+        WriteSectionHeader(Loc.Get("home.unequip_header", target.DisplayName.ToUpper()), "bright_magenta");
         terminal.WriteLine("");
 
         // Get all equipped slots
@@ -4455,13 +4474,13 @@ toResurrect.IsDead = false;
         if (equippedSlots.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{target.DisplayName} has no equipment to unequip.");
+            terminal.WriteLine(Loc.Get("home.equip_no_equipment", target.DisplayName));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("Equipped items:");
+        terminal.WriteLine(Loc.Get("home.equipped_items"));
         terminal.WriteLine("");
 
         for (int i = 0; i < equippedSlots.Count; i++)
@@ -4483,14 +4502,14 @@ toResurrect.IsDead = false;
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select slot to unequip (0 to cancel): ");
+        terminal.Write(Loc.Get("home.select_unequip"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int slotIdx) || slotIdx < 1 || slotIdx > equippedSlots.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -4501,7 +4520,7 @@ toResurrect.IsDead = false;
         if (selectedItem.IsCursed)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"The {selectedItem.Name} is cursed and cannot be removed!");
+            terminal.WriteLine(Loc.Get("home.cursed_no_remove", selectedItem.Name));
             await Task.Delay(2000);
             return;
         }
@@ -4516,14 +4535,14 @@ toResurrect.IsDead = false;
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Took {unequipped.Name} from {target.DisplayName}.");
+            terminal.WriteLine(Loc.Get("home.took_item", unequipped.Name, target.DisplayName));
             terminal.SetColor("gray");
-            terminal.WriteLine("Item added to your inventory.");
+            terminal.WriteLine(Loc.Get("home.item_to_inventory"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Failed to unequip item.");
+            terminal.WriteLine(Loc.Get("home.unequip_failed"));
         }
 
         await Task.Delay(2000);
@@ -4536,15 +4555,15 @@ toResurrect.IsDead = false;
     {
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Take ALL equipment from {target.DisplayName}?");
-        terminal.Write("This will leave them with nothing. Confirm (Y/N): ");
+        terminal.WriteLine(Loc.Get("home.take_all_confirm", target.DisplayName));
+        terminal.Write(Loc.Get("home.take_all_warning"));
         terminal.SetColor("white");
 
         var confirm = await terminal.ReadLineAsync();
         if (!confirm.ToUpper().StartsWith("Y"))
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -4580,18 +4599,18 @@ toResurrect.IsDead = false;
         if (itemsTaken > 0)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Took {itemsTaken} item{(itemsTaken != 1 ? "s" : "")} from {target.DisplayName}.");
+            terminal.WriteLine(Loc.Get("home.took_items", itemsTaken, target.DisplayName));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{target.DisplayName} had no equipment to take.");
+            terminal.WriteLine(Loc.Get("home.no_equipment_take", target.DisplayName));
         }
 
         if (cursedItems.Count > 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Could not remove cursed items: {string.Join(", ", cursedItems)}");
+            terminal.WriteLine(Loc.Get("home.cursed_not_removed", string.Join(", ", cursedItems)));
         }
 
         await Task.Delay(2000);
@@ -4602,7 +4621,7 @@ toResurrect.IsDead = false;
     /// </summary>
     private ModelItem ConvertEquipmentToItem(Equipment equipment)
     {
-        return new ModelItem
+        var item = new ModelItem
         {
             Name = equipment.Name,
             Type = SlotToObjType(equipment.Slot),
@@ -4611,6 +4630,8 @@ toResurrect.IsDead = false;
             Armor = equipment.ArmorClass,
             Strength = equipment.StrengthBonus,
             Dexterity = equipment.DexterityBonus,
+            Wisdom = equipment.WisdomBonus,
+            Charisma = equipment.CharismaBonus,
             HP = equipment.MaxHPBonus,
             Mana = equipment.MaxManaBonus,
             Defence = equipment.DefenceBonus,
@@ -4621,6 +4642,14 @@ toResurrect.IsDead = false;
             RequiresEvil = equipment.RequiresEvil,
             ItemID = equipment.Id
         };
+
+        // Preserve CON/INT in LootEffects for re-equip
+        if (equipment.ConstitutionBonus != 0)
+            item.LootEffects.Add(((int)LootGenerator.SpecialEffect.Constitution, equipment.ConstitutionBonus));
+        if (equipment.IntelligenceBonus != 0)
+            item.LootEffects.Add(((int)LootGenerator.SpecialEffect.Intelligence, equipment.IntelligenceBonus));
+
+        return item;
     }
 
     /// <summary>

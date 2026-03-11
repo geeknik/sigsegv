@@ -1,0 +1,2 @@
+temple.menu_inner_sanctum_cost=  ({0}g)
+temple.sanctum_stat_gain=  +1 {0}!

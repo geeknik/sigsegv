@@ -331,7 +331,7 @@ namespace UsurperRemake.Systems
 
             if (story.CollectedSeals.Contains(type))
             {
-                terminal.WriteLine($"You have already found the {seal.Name}.", "yellow");
+                terminal.WriteLine(Loc.Get("seals.already_found", seal.Name), "yellow");
                 return false;
             }
 
@@ -346,14 +346,14 @@ namespace UsurperRemake.Systems
 
             // Award experience
             player.Experience += seal.RewardXP;
-            terminal.WriteLine($"(+{seal.RewardXP} Experience)", "cyan");
+            terminal.WriteLine(Loc.Get("seals.xp_gained", seal.RewardXP), "cyan");
             terminal.WriteLine("");
 
             // Grant wave fragments for Ocean Philosophy integration
             if (seal.GrantsWaveFragment)
             {
                 OceanPhilosophySystem.Instance.CollectFragment(WaveFragment.TheTruth);
-                terminal.WriteLine("A deep understanding settles into your soul...", "bright_cyan");
+                terminal.WriteLine(Loc.Get("seals.deep_understanding"), "bright_cyan");
                 terminal.WriteLine("");
             }
 
@@ -380,7 +380,7 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "* * *  S E A L   D I S C O V E R E D  * * *", seal.IconColor, 66);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("seals.header_discovered"), seal.IconColor, 66);
             terminal.WriteLine("");
 
             await Task.Delay(800);
@@ -391,7 +391,7 @@ namespace UsurperRemake.Systems
             var sealOrder = new[] { SealType.Creation, SealType.FirstWar, SealType.Corruption,
                 SealType.Imprisonment, SealType.Prophecy, SealType.Regret, SealType.Truth };
             terminal.SetColor("gray");
-            terminal.Write("  Seal Progress: ");
+            terminal.Write($"  {Loc.Get("seals.progress")}: ");
             for (int i = 0; i < 7; i++)
             {
                 if (sealOrder[i] == seal.Type)
@@ -454,7 +454,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("  ═══════════════════════════════════════", "dark_cyan");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -464,35 +464,35 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "A L L   S E V E N   S E A L S   F O U N D", "bright_yellow", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("seals.header_all_found"), "bright_yellow", 67);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("  The seals resonate with ancient power.", "bright_cyan");
-            terminal.WriteLine("  You have uncovered the complete history of the gods.", "white");
+            terminal.WriteLine($"  {Loc.Get("seals.resonate_power")}", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("seals.uncovered_history")}", "white");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  This knowledge grants you understanding.", "green");
-            terminal.WriteLine("  When you face Manwe, you will see more than others.", "green");
-            terminal.WriteLine("  You will understand his choices. His regrets.", "green");
+            terminal.WriteLine($"  {Loc.Get("seals.knowledge_understanding")}", "green");
+            terminal.WriteLine($"  {Loc.Get("seals.face_manwe_see_more")}", "green");
+            terminal.WriteLine($"  {Loc.Get("seals.understand_choices")}", "green");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  THE TRUE ENDING IS NOW POSSIBLE", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("seals.true_ending_possible")}", "bright_magenta");
             terminal.WriteLine("");
-            terminal.WriteLine("  If you can meet certain conditions, a fourth path opens.", "white");
-            terminal.WriteLine("  Not destroyer. Not savior. Not defiant.", "white");
-            terminal.WriteLine("  Something... new.", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("seals.fourth_path")}", "white");
+            terminal.WriteLine($"  {Loc.Get("seals.not_destroyer")}", "white");
+            terminal.WriteLine($"  {Loc.Get("seals.something_new")}", "bright_yellow");
             terminal.WriteLine("");
 
             StoryProgressionSystem.Instance.SetStoryFlag("all_seals_collected", true);
             StoryProgressionSystem.Instance.SetStoryFlag("true_ending_possible", true);
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace UsurperRemake.Systems
         public string GetProgressText()
         {
             var collected = StoryProgressionSystem.Instance.CollectedSeals.Count;
-            return $"Seals of Truth: {collected}/7";
+            return Loc.Get("seals.progress_text", collected);
         }
     }
 

@@ -124,41 +124,41 @@ public class MusicShopLocation : BaseLocation
         var state = GetMelodiaState();
 
         // Header box — matches Weapon/Armor/Healer pattern
-        WriteBoxHeader("MELODIA'S MUSIC SHOP", "bright_cyan");
+        WriteBoxHeader(Loc.Get("music_shop.header"), "bright_cyan");
         terminal.WriteLine("");
 
         // Room description — changes based on Melodia's state
         terminal.SetColor("gray");
-        terminal.WriteLine("Instruments of every kind hang from the walls and ceiling — lutes, lyres,");
-        terminal.WriteLine("harps, drums, and things you have no name for. The air itself seems to");
-        terminal.WriteLine("hum faintly, as if the instruments are whispering to one another.");
+        terminal.WriteLine(Loc.Get("music_shop.atmo1"));
+        terminal.WriteLine(Loc.Get("music_shop.atmo2"));
+        terminal.WriteLine(Loc.Get("music_shop.atmo3"));
         terminal.WriteLine("");
 
         switch (state)
         {
             case MelodiaState.InShop:
                 terminal.SetColor("white");
-                terminal.WriteLine("Melodia sits at the back, tuning a lute. Her apprentice Cadence");
-                terminal.WriteLine("stands behind the counter, polishing a silver flute.");
+                terminal.WriteLine(Loc.Get("music_shop.state_inshop1"));
+                terminal.WriteLine(Loc.Get("music_shop.state_inshop2"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("Cadence smiles. \"Welcome! Looking to buy, or just to listen?\"");
+                terminal.WriteLine(Loc.Get("music_shop.state_inshop3"));
                 break;
             case MelodiaState.Adventuring:
                 terminal.SetColor("white");
-                terminal.WriteLine("Cadence stands behind the counter, running the shop with quiet");
-                terminal.WriteLine("confidence. A hand-painted sign reads: \"Melodia is out on an");
-                terminal.WriteLine("adventure. All services still available — she taught me well!\"");
+                terminal.WriteLine(Loc.Get("music_shop.state_adv1"));
+                terminal.WriteLine(Loc.Get("music_shop.state_adv2"));
+                terminal.WriteLine(Loc.Get("music_shop.state_adv3"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"She talks about you, you know,\" Cadence says with a grin.");
+                terminal.WriteLine(Loc.Get("music_shop.state_adv4"));
                 break;
             case MelodiaState.Dead:
                 terminal.SetColor("white");
-                terminal.WriteLine("Cadence stands behind the counter alone. A dried flower rests");
-                terminal.WriteLine("beside a framed sketch of Melodia on the wall.");
+                terminal.WriteLine(Loc.Get("music_shop.state_dead1"));
+                terminal.WriteLine(Loc.Get("music_shop.state_dead2"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("\"She'd want me to keep the music going,\" Cadence says quietly.");
+                terminal.WriteLine(Loc.Get("music_shop.state_dead3"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"So that's what I do. What can I play for you?\"");
+                terminal.WriteLine(Loc.Get("music_shop.state_dead4"));
                 break;
         }
         terminal.WriteLine("");
@@ -167,23 +167,23 @@ public class MusicShopLocation : BaseLocation
 
         // Gold display — matches other shops
         terminal.SetColor("white");
-        terminal.Write("You have ");
+        terminal.Write(Loc.Get("music_shop.you_have"));
         terminal.SetColor("yellow");
         terminal.Write(FormatNumber(currentPlayer.Gold));
         terminal.SetColor("white");
-        terminal.WriteLine(" gold crowns.");
+        terminal.WriteLine(Loc.Get("music_shop.gold_crowns"));
 
         // Bard discount notice
         if (currentPlayer.Class == CharacterClass.Bard)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  As a fellow musician, you receive a 25% discount on performances.");
+            terminal.WriteLine(Loc.Get("music_shop.bard_discount"));
         }
         terminal.WriteLine("");
 
         // Menu options
         terminal.SetColor("cyan");
-        terminal.WriteLine("Services:");
+        terminal.WriteLine(Loc.Get("music_shop.services"));
         terminal.WriteLine("");
 
         // Buy Instruments
@@ -194,7 +194,7 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("white");
-        terminal.WriteLine("Buy Instruments");
+        terminal.WriteLine(Loc.Get("music_shop.buy_instruments"));
 
         // Hire a Performance
         terminal.SetColor("darkgray");
@@ -204,9 +204,9 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("white");
-        terminal.Write("Hire a Performance");
+        terminal.Write(Loc.Get("music_shop.hire_performance"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  — combat buffs for 5 fights");
+        terminal.WriteLine(Loc.Get("music_shop.performance_desc"));
 
         // Talk to Melodia — only visible when she's physically in the shop
         if (state == MelodiaState.InShop)
@@ -220,12 +220,12 @@ public class MusicShopLocation : BaseLocation
             if (currentPlayer.Level >= 20)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Talk to Melodia  (she seems interested in your adventures)");
+                terminal.WriteLine(Loc.Get("music_shop.talk_melodia_interested"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("Talk to Melodia");
+                terminal.WriteLine(Loc.Get("music_shop.talk_melodia"));
             }
         }
 
@@ -237,9 +237,9 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("magenta");
-        terminal.Write("Lore Songs of the Old Gods");
+        terminal.Write(Loc.Get("music_shop.lore_songs"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  — ancient ballads");
+        terminal.WriteLine($"  — {Loc.Get("music_shop.lore_songs_ancient")}");
 
         // Return
         terminal.SetColor("darkgray");
@@ -249,7 +249,7 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("white");
-        terminal.WriteLine("Return to Main Street");
+        terminal.WriteLine(Loc.Get("music_shop.return"));
 
         terminal.WriteLine("");
     }
@@ -263,18 +263,18 @@ public class MusicShopLocation : BaseLocation
         var state = GetMelodiaState();
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("MELODIA'S MUSIC SHOP");
+        terminal.WriteLine(Loc.Get("music_shop.header"));
         terminal.SetColor("gray");
         switch (state)
         {
             case MelodiaState.InShop:
-                terminal.WriteLine("Melodia and her apprentice Cadence are here.");
+                terminal.WriteLine(Loc.Get("music_shop.sr_inshop"));
                 break;
             case MelodiaState.Adventuring:
-                terminal.WriteLine("Cadence runs the shop. Melodia is out adventuring.");
+                terminal.WriteLine(Loc.Get("music_shop.sr_adv"));
                 break;
             case MelodiaState.Dead:
-                terminal.WriteLine("Cadence keeps the music going in Melodia's memory.");
+                terminal.WriteLine(Loc.Get("music_shop.sr_dead"));
                 break;
         }
         terminal.WriteLine("");
@@ -282,61 +282,61 @@ public class MusicShopLocation : BaseLocation
         ShowNPCsInLocation();
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Gold: {FormatNumber(currentPlayer.Gold)}");
+        terminal.WriteLine($"{Loc.Get("ui.gold")}: {FormatNumber(currentPlayer.Gold)}");
         if (currentPlayer.Class == CharacterClass.Bard)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Bard discount: 25% off performances.");
+            terminal.WriteLine(Loc.Get("music_shop.sr_bard_discount"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Services:");
-        WriteSRMenuOption("B", "Buy Instruments");
-        WriteSRMenuOption("P", "Hire a Performance, combat buffs for 5 fights");
+        terminal.WriteLine(Loc.Get("music_shop.services"));
+        WriteSRMenuOption("B", Loc.Get("music_shop.buy_instruments"));
+        WriteSRMenuOption("P", Loc.Get("music_shop.performance"));
         if (state == MelodiaState.InShop)
-            WriteSRMenuOption("T", "Talk to Melodia");
-        WriteSRMenuOption("L", "Lore Songs of the Old Gods");
-        WriteSRMenuOption("R", "Return to Main Street");
+            WriteSRMenuOption("T", Loc.Get("music_shop.talk_melodia"));
+        WriteSRMenuOption("L", Loc.Get("music_shop.lore_songs"));
+        WriteSRMenuOption("R", Loc.Get("music_shop.return"));
         terminal.WriteLine("");
     }
 
     private void DisplayLocationBBS()
     {
         terminal.ClearScreen();
-        ShowBBSHeader("MELODIA'S MUSIC SHOP");
+        ShowBBSHeader(Loc.Get("music_shop.header"));
 
         var state = GetMelodiaState();
         terminal.SetColor("gray");
         switch (state)
         {
             case MelodiaState.InShop:
-                terminal.Write(" Cadence minds the counter. Melodia tunes a lute in back. ");
+                terminal.Write(Loc.Get("music_shop.bbs_inshop"));
                 break;
             case MelodiaState.Adventuring:
-                terminal.Write(" Cadence runs the shop. Melodia is out adventuring. ");
+                terminal.Write(Loc.Get("music_shop.bbs_adv"));
                 break;
             case MelodiaState.Dead:
-                terminal.Write(" Cadence keeps the music going in Melodia's memory. ");
+                terminal.Write(Loc.Get("music_shop.bbs_dead"));
                 break;
         }
         terminal.SetColor("yellow");
         terminal.Write(FormatNumber(currentPlayer.Gold));
         terminal.SetColor("gray");
-        terminal.WriteLine(" gold.");
+        terminal.WriteLine(Loc.Get("music_shop.bbs_gold"));
 
         ShowBBSNPCs();
         terminal.WriteLine("");
 
         ShowBBSMenuRow(
-            ("B", "bright_yellow", "uy Instruments"),
-            ("P", "bright_yellow", "erformance"),
-            ("L", "bright_yellow", "ore Songs"));
+            ("B", "bright_yellow", Loc.Get("music_shop.bbs_buy_instruments")),
+            ("P", "bright_yellow", Loc.Get("music_shop.bbs_performance")),
+            ("L", "bright_yellow", Loc.Get("music_shop.bbs_lore_songs")));
 
         if (state == MelodiaState.InShop)
-            ShowBBSMenuRow(("T", currentPlayer.Level >= 20 ? "bright_green" : "white", "alk to Melodia"), ("R", "bright_red", "eturn"));
+            ShowBBSMenuRow(("T", currentPlayer.Level >= 20 ? "bright_green" : "white", Loc.Get("music_shop.bbs_talk_melodia")), ("R", "bright_red", Loc.Get("music_shop.bbs_return")));
         else
-            ShowBBSMenuRow(("R", "bright_red", "eturn"));
+            ShowBBSMenuRow(("R", "bright_red", Loc.Get("music_shop.bbs_return")));
 
         ShowBBSFooter();
     }
@@ -394,13 +394,13 @@ public class MusicShopLocation : BaseLocation
         {
             terminal.SetColor("gray");
             terminal.WriteLine("");
-            terminal.WriteLine("\"I'm afraid I don't have any instruments suitable for your level right now.\"");
+            terminal.WriteLine(Loc.Get("music_shop.no_instruments"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.WriteLine("");
-        WriteSectionHeader("Instruments", "bright_cyan");
+        WriteSectionHeader(Loc.Get("music_shop.instruments"), "bright_cyan");
         terminal.WriteLine("");
 
         // Show current weapon
@@ -408,11 +408,11 @@ public class MusicShopLocation : BaseLocation
         if (currentWeapon != null)
         {
             terminal.SetColor("cyan");
-            terminal.Write("Current: ");
+            terminal.Write(Loc.Get("music_shop.current"));
             terminal.SetColor("bright_white");
             terminal.Write(currentWeapon.Name);
             terminal.SetColor("gray");
-            terminal.WriteLine($" (Pow:{currentWeapon.WeaponPower}, Value:{FormatNumber(currentWeapon.Value)})");
+            terminal.WriteLine(Loc.Get("music_shop.pow_value", currentWeapon.WeaponPower, FormatNumber(currentWeapon.Value)));
             terminal.WriteLine("");
         }
 
@@ -422,11 +422,11 @@ public class MusicShopLocation : BaseLocation
         int totalPages = (instruments.Count + ItemsPerPage - 1) / ItemsPerPage;
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"Page {currentPage + 1}/{totalPages} - {instruments.Count} instruments available");
+        terminal.WriteLine(Loc.Get("music_shop.page_info", currentPage + 1, totalPages, instruments.Count));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_blue");
-        terminal.WriteLine("  #   Name                        Lvl  Pow  Price       Bonus");
+        terminal.WriteLine(Loc.Get("music_shop.col_header"));
         WriteDivider(64);
 
         int num = 1;
@@ -475,14 +475,14 @@ public class MusicShopLocation : BaseLocation
 
         terminal.SetColor("gray");
         terminal.WriteLine("");
-        terminal.Write("Enter # to buy");
+        terminal.Write(Loc.Get("music_shop.enter_buy"));
         if (totalPages > 1)
         {
-            terminal.Write(", [N]ext/[P]rev page");
+            terminal.Write(Loc.Get("music_shop.next_prev"));
         }
-        terminal.WriteLine(", or [Q]uit:");
+        terminal.WriteLine(Loc.Get("music_shop.or_quit"));
 
-        string input = await terminal.GetInput("Your choice: ");
+        string input = await GetChoice();
         if (string.IsNullOrEmpty(input)) return;
 
         string upper = input.ToUpper();
@@ -525,7 +525,7 @@ public class MusicShopLocation : BaseLocation
         if (currentPlayer.Level < item.MinLevel)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You need to be level {item.MinLevel} to use this instrument.");
+            terminal.WriteLine(Loc.Get("shop.level_requirement", item.MinLevel));
             await terminal.PressAnyKey();
             return;
         }
@@ -536,22 +536,22 @@ public class MusicShopLocation : BaseLocation
         if (currentPlayer.Gold < totalCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You need {FormatNumber(totalCost)} gold but only have {FormatNumber(currentPlayer.Gold)}!");
+            terminal.WriteLine(Loc.Get("shop.insufficient_gold", FormatNumber(totalCost), FormatNumber(currentPlayer.Gold)));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_yellow");
-        terminal.Write($"\nBuy {item.Name} for ");
+        terminal.Write($"\n{Loc.Get("music_shop.buy_confirm", item.Name)}");
         terminal.SetColor("yellow");
         terminal.Write(FormatNumber(totalCost));
         if (kingTax > 0 || cityTax > 0)
         {
             terminal.SetColor("gray");
-            terminal.Write($" (incl. tax)");
+            terminal.Write(Loc.Get("music_shop.incl_tax"));
         }
-        terminal.WriteLine(" gold? [Y/N]");
-        string confirm = await terminal.GetInput("Your choice: ");
+        terminal.WriteLine(Loc.Get("music_shop.gold_yn"));
+        string confirm = await GetChoice();
         if (confirm?.ToUpper() != "Y") return;
 
         currentPlayer.Gold -= totalCost;
@@ -568,7 +568,7 @@ public class MusicShopLocation : BaseLocation
             if (currentPlayer.EquipItem(item, null, out string message))
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\nYou purchased and equipped {item.Name}!");
+                terminal.WriteLine($"\n{Loc.Get("shop.purchased_equipped", item.Name)}");
                 if (!string.IsNullOrEmpty(message))
                 {
                     terminal.SetColor("gray");
@@ -579,7 +579,7 @@ public class MusicShopLocation : BaseLocation
             else
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"\nYou purchased {item.Name}! (Added to inventory)");
+                terminal.WriteLine($"\n{Loc.Get("shop.purchased_inventory_alt", item.Name)}");
             }
         }
         else
@@ -599,14 +599,14 @@ public class MusicShopLocation : BaseLocation
                 MinLevel = item.MinLevel
             });
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\nYou purchased {item.Name}! (Added to inventory)");
+            terminal.WriteLine($"\n{Loc.Get("shop.purchased_inventory_alt", item.Name)}");
             terminal.SetColor("gray");
-            terminal.WriteLine("Only Bards can wield instruments in combat.");
+            terminal.WriteLine(Loc.Get("music_shop.bard_only"));
         }
 
         terminal.SetColor("cyan");
         string seller = GetMelodiaState() == MelodiaState.InShop ? "Melodia" : "Cadence";
-        terminal.WriteLine($"{seller} nods approvingly. \"A fine choice! May it sing true in battle.\"");
+        terminal.WriteLine(Loc.Get("music_shop.seller_approve", seller));
         await terminal.PressAnyKey();
     }
 
@@ -759,27 +759,27 @@ public class MusicShopLocation : BaseLocation
     private async Task HirePerformance()
     {
         terminal.WriteLine("");
-        WriteSectionHeader("Hire a Performance", "bright_cyan");
+        WriteSectionHeader(Loc.Get("music_shop.hire_performance"), "bright_cyan");
         var state = GetMelodiaState();
         string performer = state == MelodiaState.InShop ? "Melodia" : "Cadence";
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"{performer} can play you a song whose power lingers for 5 combats.");
-        terminal.WriteLine("Each performance tells a different tale from the history of the realm.");
+        terminal.WriteLine(Loc.Get("music_shop.perf_intro", performer));
+        terminal.WriteLine(Loc.Get("music_shop.perf_tales"));
         if (currentPlayer.HasActiveSongBuff)
         {
             terminal.SetColor("yellow");
             string currentSong = currentPlayer.SongBuffType switch
             {
-                1 => "War March",
-                2 => "Lullaby of Iron",
-                3 => "Fortune's Tune",
-                4 => "Battle Hymn",
+                1 => Loc.Get("music_shop.song_war_march"),
+                2 => Loc.Get("music_shop.song_iron"),
+                3 => Loc.Get("music_shop.song_fortune"),
+                4 => Loc.Get("music_shop.song_hymn"),
                 _ => "Unknown"
             };
-            terminal.WriteLine($"Active buff: {currentSong} ({currentPlayer.SongBuffCombats} combats remaining)");
+            terminal.WriteLine(Loc.Get("music_shop.active_buff", currentSong, currentPlayer.SongBuffCombats));
             terminal.SetColor("gray");
-            terminal.WriteLine("A new performance will replace the current one.");
+            terminal.WriteLine(Loc.Get("music_shop.replace_buff"));
         }
         terminal.WriteLine("");
 
@@ -795,11 +795,11 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("red");
-        terminal.Write("War March");
+        terminal.Write(Loc.Get("music_shop.song_war_march"));
         terminal.SetColor("gray");
-        terminal.Write(" — +15% attack damage");
+        terminal.Write(Loc.Get("music_shop.song_war_march_desc"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {FormatNumber(warMarchPrice)} gold");
+        terminal.WriteLine(Loc.Get("music_shop.song_price", FormatNumber(warMarchPrice)));
 
         // Song 2: Lullaby of Iron
         long ironPrice = (long)((200 + currentPlayer.Level * 10) * discount);
@@ -810,11 +810,11 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("bright_cyan");
-        terminal.Write("Lullaby of Iron");
+        terminal.Write(Loc.Get("music_shop.song_iron"));
         terminal.SetColor("gray");
-        terminal.Write(" — +15% defense");
+        terminal.Write(Loc.Get("music_shop.song_iron_desc"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {FormatNumber(ironPrice)} gold");
+        terminal.WriteLine(Loc.Get("music_shop.song_price", FormatNumber(ironPrice)));
 
         // Song 3: Fortune's Tune
         long fortunePrice = (long)((300 + currentPlayer.Level * 15) * discount);
@@ -825,11 +825,11 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("bright_green");
-        terminal.Write("Fortune's Tune");
+        terminal.Write(Loc.Get("music_shop.song_fortune"));
         terminal.SetColor("gray");
-        terminal.Write(" — +25% gold from kills");
+        terminal.Write(Loc.Get("music_shop.song_fortune_desc"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {FormatNumber(fortunePrice)} gold");
+        terminal.WriteLine(Loc.Get("music_shop.song_price", FormatNumber(fortunePrice)));
 
         // Song 4: Battle Hymn
         long hymnPrice = (long)((400 + currentPlayer.Level * 20) * discount);
@@ -840,22 +840,22 @@ public class MusicShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("magenta");
-        terminal.Write("Battle Hymn");
+        terminal.Write(Loc.Get("music_shop.song_hymn"));
         terminal.SetColor("gray");
-        terminal.Write(" — +10% attack AND +10% defense");
+        terminal.Write(Loc.Get("music_shop.song_hymn_desc"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {FormatNumber(hymnPrice)} gold");
+        terminal.WriteLine(Loc.Get("music_shop.song_price", FormatNumber(hymnPrice)));
 
         if (isBard)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("\n  * Bard discount: 25% off all performances!");
+            terminal.WriteLine($"\n{Loc.Get("music_shop.bard_discount_perf")}");
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\nEnter song # or [Q]uit:");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.song_prompt")}");
 
-        string input = await terminal.GetInput("Your choice: ");
+        string input = await GetChoice();
         if (string.IsNullOrEmpty(input) || input.ToUpper() == "Q") return;
 
         int songType = 0;
@@ -869,20 +869,20 @@ public class MusicShopLocation : BaseLocation
         {
             case "1":
                 songType = 1; price = warMarchPrice; value1 = GameConfig.SongWarMarchBonus;
-                songName = "War March"; songPool = WarMarchSongs;
+                songName = Loc.Get("music_shop.song_war_march"); songPool = WarMarchSongs;
                 break;
             case "2":
                 songType = 2; price = ironPrice; value1 = GameConfig.SongIronLullabyBonus;
-                songName = "Lullaby of Iron"; songPool = IronLullabySongs;
+                songName = Loc.Get("music_shop.song_iron"); songPool = IronLullabySongs;
                 break;
             case "3":
                 songType = 3; price = fortunePrice; value1 = GameConfig.SongFortuneBonus;
-                songName = "Fortune's Tune"; songPool = FortuneSongs;
+                songName = Loc.Get("music_shop.song_fortune"); songPool = FortuneSongs;
                 break;
             case "4":
                 songType = 4; price = hymnPrice;
                 value1 = GameConfig.SongBattleHymnBonus; value2 = GameConfig.SongBattleHymnBonus;
-                songName = "Battle Hymn"; songPool = BattleHymnSongs;
+                songName = Loc.Get("music_shop.song_hymn"); songPool = BattleHymnSongs;
                 break;
             default:
                 return;
@@ -891,7 +891,7 @@ public class MusicShopLocation : BaseLocation
         if (currentPlayer.Gold < price)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You don't have enough gold for this performance.");
+            terminal.WriteLine(Loc.Get("ui.not_enough_gold_performance"));
             await terminal.PressAnyKey();
             return;
         }
@@ -912,10 +912,10 @@ public class MusicShopLocation : BaseLocation
         if (introText == "{MELODIA_OWN_INTRO}")
         {
             introText = state == MelodiaState.InShop
-                ? "Melodia hesitates, then plays something she hasn't played in a long time."
+                ? Loc.Get("music_shop.melodia_own_inshop")
                 : state == MelodiaState.Adventuring
-                    ? "Cadence picks up the lute carefully. \"Melodia wrote this one. She taught it to me before she left.\""
-                    : "Cadence's hands tremble slightly. \"This was hers. The last song she taught me.\"";
+                    ? Loc.Get("music_shop.melodia_own_adv")
+                    : Loc.Get("music_shop.melodia_own_dead");
         }
 
         // Play the performance scene
@@ -947,10 +947,10 @@ public class MusicShopLocation : BaseLocation
         await Task.Delay(400);
         terminal.SetColor("gray");
         terminal.WriteLine("");
-        terminal.WriteLine("The last notes fade. The room is quiet for a moment.");
+        terminal.WriteLine(Loc.Get("music_shop.notes_fade"));
         await Task.Delay(300);
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"The {songName} stirs something in you. (+{(int)(value1 * 100)}% for {GameConfig.SongBuffDuration} combats)");
+        terminal.WriteLine(Loc.Get("music_shop.buff_gained", songName, (int)(value1 * 100), GameConfig.SongBuffDuration));
         await terminal.PressAnyKey();
     }
 
@@ -965,9 +965,9 @@ public class MusicShopLocation : BaseLocation
         if (state == MelodiaState.Adventuring)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\nMelodia is already traveling with you!");
+            terminal.WriteLine($"\n{Loc.Get("music_shop.already_traveling")}");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Cadence waves from behind the counter. \"I've got things handled here!\"");
+            terminal.WriteLine(Loc.Get("music_shop.cadence_handled"));
             await terminal.PressAnyKey();
             return;
         }
@@ -975,7 +975,7 @@ public class MusicShopLocation : BaseLocation
         if (state == MelodiaState.Dead)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\nCadence glances at the portrait on the wall and looks away.");
+            terminal.WriteLine($"\n{Loc.Get("music_shop.cadence_portrait")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -984,42 +984,42 @@ public class MusicShopLocation : BaseLocation
         {
             terminal.SetColor("white");
             terminal.WriteLine("");
-            terminal.WriteLine("Melodia looks up from her lute and gives you a curious smile.");
+            terminal.WriteLine(Loc.Get("music_shop.recruit_curious_smile"));
             await Task.Delay(300);
             terminal.SetColor("cyan");
             if (currentPlayer.Level < 5)
             {
-                terminal.WriteLine("\"You're new around here, aren't you? The dungeon hasn't had");
-                terminal.WriteLine("a chance to leave its mark on you yet.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_new1"));
+                terminal.WriteLine(Loc.Get("music_shop.recruit_new2"));
                 await Task.Delay(300);
                 terminal.SetColor("gray");
-                terminal.WriteLine("She plucks a gentle chord.");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_new3"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"Come back when you've seen a bit more of the world.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_new4"));
             }
             else if (currentPlayer.Level < 10)
             {
-                terminal.WriteLine("\"You're starting to carry yourself like someone who's been");
-                terminal.WriteLine("down there. I can see it in the way you walk — a little more");
-                terminal.WriteLine("careful, a little less certain.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid1"));
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid2"));
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid3"));
                 await Task.Delay(300);
                 terminal.SetColor("gray");
-                terminal.WriteLine("She tilts her head, studying you.");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid4"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"Keep at it. You've got the look of someone with a story");
-                terminal.WriteLine("worth writing.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid5"));
+                terminal.WriteLine(Loc.Get("music_shop.recruit_mid6"));
             }
             else
             {
-                terminal.WriteLine("\"You've been busy. I hear things, you know — the walls have");
-                terminal.WriteLine("ears, and so do the instruments.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_high1"));
+                terminal.WriteLine(Loc.Get("music_shop.recruit_high2"));
                 await Task.Delay(300);
                 terminal.SetColor("gray");
-                terminal.WriteLine("Her fingers find a melancholy tune on the lute strings.");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_high3"));
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"I used to do what you do. Part of me misses it terribly.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_high4"));
                 await Task.Delay(300);
-                terminal.WriteLine("She shakes her head. \"Not yet. But soon, I think.\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_high5"));
             }
             await terminal.PressAnyKey();
             return;
@@ -1027,39 +1027,39 @@ public class MusicShopLocation : BaseLocation
 
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("");
-        terminal.WriteLine("Melodia sets down her lute and looks at you intently.");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready1"));
         await Task.Delay(500);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("\n\"I've heard whispers of your adventures through the dungeon.");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_ready2")}");
         await Task.Delay(300);
-        terminal.WriteLine("The monsters you've faced, the gods you've encountered...\"");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready3"));
         await Task.Delay(500);
-        terminal.WriteLine("\nShe leans forward, her eyes bright with curiosity.");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_ready4")}");
         await Task.Delay(300);
-        terminal.WriteLine("\"I used to travel with adventurers, you know. Before they fell.");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready5"));
         await Task.Delay(300);
-        terminal.WriteLine("I chronicled their deeds in song. Every victory, every loss.\"");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready6"));
         await Task.Delay(500);
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("\n\"Tell me — would you let a bard tag along? I promise I'm more");
-        terminal.WriteLine("useful than I look. My songs can heal, inspire, and... well,");
-        terminal.WriteLine("the right discordant note can shatter a monster's focus.\"");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_ready7")}");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready8"));
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready9"));
         await Task.Delay(300);
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\nShe glances at Cadence, who nods eagerly.");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_ready10")}");
         terminal.SetColor("cyan");
-        terminal.WriteLine("\"Don't worry about the shop. Cadence has been ready to run");
-        terminal.WriteLine("this place on her own for a while now. Haven't you, dear?\"");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready11"));
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready12"));
         terminal.SetColor("gray");
-        terminal.WriteLine("Cadence grins. \"Go! I'll keep the instruments in tune.\"");
+        terminal.WriteLine(Loc.Get("music_shop.recruit_ready13"));
         await Task.Delay(300);
 
         terminal.SetColor("white");
-        terminal.WriteLine("\nWould you like Melodia to join your party? [Y/N]");
-        string input = await terminal.GetInput("Your choice: ");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_join_prompt")}");
+        string input = await GetChoice();
 
         if (input?.ToUpper() == "Y")
         {
@@ -1067,24 +1067,24 @@ public class MusicShopLocation : BaseLocation
             if (success)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("\nMelodia beams and grabs her instrument.");
+                terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_success1")}");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"This is going to make the best song yet! Let's go!\"");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_success2"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("Cadence waves from behind the counter as you leave together.");
+                terminal.WriteLine(Loc.Get("music_shop.recruit_success3"));
             }
             else
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\nYour party is currently full. Visit the Inn to manage companions.");
+                terminal.WriteLine($"\n{Loc.Get("music_shop.party_full")}");
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\nMelodia nods understandingly.");
+            terminal.WriteLine($"\n{Loc.Get("music_shop.recruit_decline")}");
             terminal.SetColor("cyan");
-            terminal.WriteLine("\"The offer stands whenever you're ready. I'll be here.\"");
+            terminal.WriteLine(Loc.Get("music_shop.offer_stands"));
         }
         await terminal.PressAnyKey();
     }
@@ -1098,15 +1098,15 @@ public class MusicShopLocation : BaseLocation
         var state = GetMelodiaState();
 
         terminal.WriteLine("");
-        WriteSectionHeader("Lore Songs of the Old Gods", "magenta");
+        WriteSectionHeader(Loc.Get("music_shop.lore_songs"), "magenta");
         terminal.SetColor("gray");
         if (state == MelodiaState.Dead)
-            terminal.WriteLine("Ancient ballads Melodia passed down to Cadence before she fell.");
+            terminal.WriteLine(Loc.Get("music_shop.lore_dead"));
         else if (state == MelodiaState.Adventuring)
-            terminal.WriteLine("Ancient ballads Melodia taught Cadence before leaving on her adventure.");
+            terminal.WriteLine(Loc.Get("music_shop.lore_adv"));
         else
-            terminal.WriteLine("Ancient ballads about the seven gods who shaped this world.");
-        terminal.WriteLine("Songs unlock as you encounter their subjects in the dungeon.");
+            terminal.WriteLine(Loc.Get("music_shop.lore_inshop"));
+        terminal.WriteLine(Loc.Get("music_shop.lore_unlock"));
         terminal.WriteLine("");
 
         var story = StoryProgressionSystem.Instance;
@@ -1128,7 +1128,7 @@ public class MusicShopLocation : BaseLocation
                 if (!heard)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.Write(" (NEW)");
+                    terminal.Write(Loc.Get("music_shop.lore_new"));
                 }
                 terminal.WriteLine("");
                 availableCount++;
@@ -1136,21 +1136,21 @@ public class MusicShopLocation : BaseLocation
             else
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("??? — You haven't encountered this being yet.");
+                terminal.WriteLine(Loc.Get("music_shop.lore_locked"));
             }
         }
 
         if (availableCount == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\nNo songs available yet. Venture deeper into the dungeon...");
+            terminal.WriteLine($"\n{Loc.Get("music_shop.lore_none")}");
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\nEnter song # to listen, or [Q]uit:");
-        string input = await terminal.GetInput("Your choice: ");
+        terminal.WriteLine($"\n{Loc.Get("music_shop.lore_prompt")}");
+        string input = await GetChoice();
         if (string.IsNullOrEmpty(input) || input.ToUpper() == "Q") return;
 
         if (int.TryParse(input, out int selection) && selection >= 1 && selection <= LoreSongs.Length)
@@ -1163,7 +1163,7 @@ public class MusicShopLocation : BaseLocation
             else
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("\nThis song has not yet been unlocked.");
+                terminal.WriteLine($"\n{Loc.Get("music_shop.lore_not_unlocked")}");
                 await terminal.PressAnyKey();
             }
         }
@@ -1200,7 +1200,7 @@ public class MusicShopLocation : BaseLocation
         {
             currentPlayer.HeardLoreSongs.Add((int)god);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Something stirs within you... a deeper understanding of the gods.");
+            terminal.WriteLine(Loc.Get("music_shop.lore_stirs"));
 
             try
             {

@@ -1,5 +1,6 @@
 using System.Linq;
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 
@@ -201,17 +202,17 @@ public class Item
         // Add stat information
         var stats = new List<string>();
         
-        if (Attack != 0) stats.Add($"Attack: {Attack:+#;-#;0}");
-        if (Armor != 0) stats.Add($"Armor: {Armor:+#;-#;0}");
-        if (Strength != 0) stats.Add($"Strength: {Strength:+#;-#;0}");
-        if (Defence != 0) stats.Add($"Defence: {Defence:+#;-#;0}");
-        if (HP != 0) stats.Add($"HP: {HP:+#;-#;0}");
-        if (Mana != 0) stats.Add($"Mana: {Mana:+#;-#;0}");
-        if (Stamina != 0) stats.Add($"Stamina: {Stamina:+#;-#;0}");
-        if (Agility != 0) stats.Add($"Agility: {Agility:+#;-#;0}");
-        if (Dexterity != 0) stats.Add($"Dexterity: {Dexterity:+#;-#;0}");
-        if (Charisma != 0) stats.Add($"Charisma: {Charisma:+#;-#;0}");
-        if (Wisdom != 0) stats.Add($"Wisdom: {Wisdom:+#;-#;0}");
+        if (Attack != 0) stats.Add($"{Loc.Get("ui.stat_attack")}: {Attack:+#;-#;0}");
+        if (Armor != 0) stats.Add($"{Loc.Get("ui.stat_ac")}: {Armor:+#;-#;0}");
+        if (Strength != 0) stats.Add($"{Loc.Get("ui.stat_strength")}: {Strength:+#;-#;0}");
+        if (Defence != 0) stats.Add($"{Loc.Get("ui.stat_defense")}: {Defence:+#;-#;0}");
+        if (HP != 0) stats.Add($"{Loc.Get("ui.stat_hp")}: {HP:+#;-#;0}");
+        if (Mana != 0) stats.Add($"{Loc.Get("ui.stat_mana")}: {Mana:+#;-#;0}");
+        if (Stamina != 0) stats.Add($"{Loc.Get("ui.stat_stamina")}: {Stamina:+#;-#;0}");
+        if (Agility != 0) stats.Add($"{Loc.Get("ui.stat_agility")}: {Agility:+#;-#;0}");
+        if (Dexterity != 0) stats.Add($"{Loc.Get("ui.stat_dexterity")}: {Dexterity:+#;-#;0}");
+        if (Charisma != 0) stats.Add($"{Loc.Get("ui.stat_charisma")}: {Charisma:+#;-#;0}");
+        if (Wisdom != 0) stats.Add($"{Loc.Get("ui.stat_wisdom")}: {Wisdom:+#;-#;0}");
         
         if (stats.Count > 0)
         {
@@ -220,13 +221,13 @@ public class Item
         
         // Add requirements
         var requirements = new List<string>();
-        if (StrengthNeeded > 0) requirements.Add($"Str: {StrengthNeeded}");
-        if (RequiresGood) requirements.Add("Good alignment");
-        if (RequiresEvil) requirements.Add("Evil alignment");
-        
+        if (StrengthNeeded > 0) requirements.Add($"{Loc.Get("ui.stat_str")}: {StrengthNeeded}");
+        if (RequiresGood) requirements.Add(Loc.Get("ui.requires_good"));
+        if (RequiresEvil) requirements.Add(Loc.Get("ui.requires_evil"));
+
         if (requirements.Count > 0)
         {
-            desc += "Requires: " + string.Join(", ", requirements) + "\n";
+            desc += Loc.Get("ui.requires_label") + " " + string.Join(", ", requirements) + "\n";
         }
         
         // Add special properties
@@ -949,25 +950,25 @@ public class Equipment
 
         if (character.Level < MinLevel)
         {
-            reason = $"Requires level {MinLevel}";
+            reason = Loc.Get("ui.requires_level", MinLevel);
             return false;
         }
 
         if (character.Strength < StrengthRequired)
         {
-            reason = $"Requires {StrengthRequired} Strength";
+            reason = Loc.Get("ui.requires_strength", StrengthRequired);
             return false;
         }
 
         if (RequiresGood && character.Chivalry <= character.Darkness)
         {
-            reason = "Requires good alignment";
+            reason = Loc.Get("ui.requires_good");
             return false;
         }
 
         if (RequiresEvil && character.Darkness <= character.Chivalry)
         {
-            reason = "Requires evil alignment";
+            reason = Loc.Get("ui.requires_evil");
             return false;
         }
 
@@ -975,7 +976,7 @@ public class Equipment
         bool isPrestige = character.Class >= CharacterClass.Tidesworn;
         if (!isPrestige && ClassRestrictions.Count > 0 && !ClassRestrictions.Contains(character.Class))
         {
-            reason = $"Cannot be used by {character.Class}";
+            reason = Loc.Get("ui.cannot_use_class", character.Class);
             return false;
         }
 
@@ -985,12 +986,12 @@ public class Equipment
             var maxWeight = GameConfig.GetMaxArmorWeight(character.Class);
             if ((int)WeightClass > (int)maxWeight)
             {
-                reason = $"Your class cannot wear {WeightClass} armor";
+                reason = Loc.Get("ui.cannot_wear_weight", WeightClass);
                 return false;
             }
             if (WeightClass == ArmorWeightClass.Heavy && GameConfig.IsSmallRace(character.Race))
             {
-                reason = "Your race is too small for Heavy armor";
+                reason = Loc.Get("ui.race_too_small_heavy");
                 return false;
             }
             // Heavy armor STR requirement (auto-calculated if not explicitly set)
@@ -999,7 +1000,7 @@ public class Equipment
                 int autoStrReq = 15 + MinLevel / 5;
                 if (character.Strength < autoStrReq)
                 {
-                    reason = $"Requires {autoStrReq} Strength for Heavy armor";
+                    reason = Loc.Get("ui.requires_str_heavy", autoStrReq);
                     return false;
                 }
             }
@@ -1015,17 +1016,17 @@ public class Equipment
     {
         var stats = new List<string>();
 
-        if (WeaponPower > 0) stats.Add($"Pow: {WeaponPower}");
-        if (ArmorClass > 0) stats.Add($"AC: {ArmorClass}");
-        if (ShieldBonus > 0) stats.Add($"Block: +{ShieldBonus}");
+        if (WeaponPower > 0) stats.Add($"{Loc.Get("ui.stat_pow")}: {WeaponPower}");
+        if (ArmorClass > 0) stats.Add($"{Loc.Get("ui.stat_ac")}: {ArmorClass}");
+        if (ShieldBonus > 0) stats.Add($"{Loc.Get("ui.stat_block")}: +{ShieldBonus}");
 
-        if (StrengthBonus != 0) stats.Add($"Str: {StrengthBonus:+#;-#;0}");
-        if (DexterityBonus != 0) stats.Add($"Dex: {DexterityBonus:+#;-#;0}");
-        if (WisdomBonus != 0) stats.Add($"Wis: {WisdomBonus:+#;-#;0}");
-        if (MaxHPBonus != 0) stats.Add($"HP: {MaxHPBonus:+#;-#;0}");
-        if (MaxManaBonus != 0) stats.Add($"Mana: {MaxManaBonus:+#;-#;0}");
+        if (StrengthBonus != 0) stats.Add($"{Loc.Get("ui.stat_str")}: {StrengthBonus:+#;-#;0}");
+        if (DexterityBonus != 0) stats.Add($"{Loc.Get("ui.stat_dex")}: {DexterityBonus:+#;-#;0}");
+        if (WisdomBonus != 0) stats.Add($"{Loc.Get("ui.stat_wis")}: {WisdomBonus:+#;-#;0}");
+        if (MaxHPBonus != 0) stats.Add($"{Loc.Get("ui.stat_hp")}: {MaxHPBonus:+#;-#;0}");
+        if (MaxManaBonus != 0) stats.Add($"{Loc.Get("ui.stat_mana")}: {MaxManaBonus:+#;-#;0}");
 
-        return stats.Count > 0 ? string.Join(", ", stats) : "No bonuses";
+        return stats.Count > 0 ? string.Join(", ", stats) : Loc.Get("ui.no_bonuses");
     }
 
     /// <summary>

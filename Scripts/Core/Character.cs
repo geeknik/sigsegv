@@ -120,6 +120,7 @@ public class Character
     public bool SkipIntimateScenes { get; set; }    // skip detailed intimate scenes (fade to black)
     public bool ScreenReaderMode { get; set; }      // simplified text output for screen readers (accessibility)
     public bool CompactMode { get; set; }             // compact menus for mobile/small screen SSH
+    public string Language { get; set; } = "en";       // player language preference for localization
     public ColorThemeType ColorTheme { get; set; } = ColorThemeType.Default;  // player-selected color theme
     public bool AutoLevelUp { get; set; } = true;  // auto-level when XP threshold met (on by default)
     public bool AutoEquipDisabled { get; set; }      // when true, shop purchases go straight to inventory
@@ -870,6 +871,7 @@ public class Character
             Strength = equipment.StrengthBonus,
             Dexterity = equipment.DexterityBonus,
             Wisdom = equipment.WisdomBonus,
+            Charisma = equipment.CharismaBonus,
             HP = equipment.MaxHPBonus,
             Mana = equipment.MaxManaBonus,
             Defence = equipment.DefenceBonus,
@@ -1087,24 +1089,24 @@ public class Character
         void AddSlot(string label, EquipmentSlot slot)
         {
             var item = GetEquipment(slot);
-            lines.Add($"{label}: {item?.Name ?? "None"}");
+            lines.Add($"{label}: {item?.Name ?? Loc.Get("ui.none")}");
         }
 
-        AddSlot("Main Hand", EquipmentSlot.MainHand);
-        AddSlot("Off Hand", EquipmentSlot.OffHand);
-        AddSlot("Head", EquipmentSlot.Head);
-        AddSlot("Body", EquipmentSlot.Body);
-        AddSlot("Arms", EquipmentSlot.Arms);
-        AddSlot("Hands", EquipmentSlot.Hands);
-        AddSlot("Legs", EquipmentSlot.Legs);
-        AddSlot("Feet", EquipmentSlot.Feet);
-        AddSlot("Waist", EquipmentSlot.Waist);
-        AddSlot("Cloak", EquipmentSlot.Cloak);
-        AddSlot("Neck", EquipmentSlot.Neck);
-        AddSlot("Neck 2", EquipmentSlot.Neck2);
-        AddSlot("Face", EquipmentSlot.Face);
-        AddSlot("Left Ring", EquipmentSlot.LFinger);
-        AddSlot("Right Ring", EquipmentSlot.RFinger);
+        AddSlot(Loc.Get("ui.main_hand"), EquipmentSlot.MainHand);
+        AddSlot(Loc.Get("ui.off_hand"), EquipmentSlot.OffHand);
+        AddSlot(Loc.Get("ui.head"), EquipmentSlot.Head);
+        AddSlot(Loc.Get("ui.body"), EquipmentSlot.Body);
+        AddSlot(Loc.Get("ui.arms"), EquipmentSlot.Arms);
+        AddSlot(Loc.Get("ui.hands"), EquipmentSlot.Hands);
+        AddSlot(Loc.Get("ui.legs"), EquipmentSlot.Legs);
+        AddSlot(Loc.Get("ui.feet"), EquipmentSlot.Feet);
+        AddSlot(Loc.Get("ui.waist"), EquipmentSlot.Waist);
+        AddSlot(Loc.Get("ui.cloak"), EquipmentSlot.Cloak);
+        AddSlot(Loc.Get("ui.neck"), EquipmentSlot.Neck);
+        AddSlot(Loc.Get("ui.neck_2"), EquipmentSlot.Neck2);
+        AddSlot(Loc.Get("ui.face"), EquipmentSlot.Face);
+        AddSlot(Loc.Get("ui.left_ring"), EquipmentSlot.LFinger);
+        AddSlot(Loc.Get("ui.right_ring"), EquipmentSlot.RFinger);
 
         return string.Join("\n", lines);
     }
@@ -1685,7 +1687,7 @@ public class Character
     
     private string GetEquippedItemName(int itemId)
     {
-        if (itemId == 0) return "None";
+        if (itemId == 0) return Loc.Get("ui.none");
         // Look up equipment from game data
         var equipment = EquipmentDatabase.GetById(itemId);
         return equipment?.Name ?? $"Unknown Item #{itemId}";

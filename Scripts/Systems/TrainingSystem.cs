@@ -37,16 +37,16 @@ public static class TrainingSystem
     {
         return level switch
         {
-            ProficiencyLevel.Untrained => "Untrained",
-            ProficiencyLevel.Poor => "Poor",
-            ProficiencyLevel.Average => "Average",
-            ProficiencyLevel.Good => "Good",
-            ProficiencyLevel.Skilled => "Skilled",
-            ProficiencyLevel.Expert => "Expert",
-            ProficiencyLevel.Superb => "Superb",
-            ProficiencyLevel.Master => "Master",
-            ProficiencyLevel.Legendary => "Legendary",
-            _ => "Unknown"
+            ProficiencyLevel.Untrained => Loc.Get("training.prof_untrained"),
+            ProficiencyLevel.Poor => Loc.Get("training.prof_poor"),
+            ProficiencyLevel.Average => Loc.Get("training.prof_average"),
+            ProficiencyLevel.Good => Loc.Get("training.prof_good"),
+            ProficiencyLevel.Skilled => Loc.Get("training.prof_skilled"),
+            ProficiencyLevel.Expert => Loc.Get("training.prof_expert"),
+            ProficiencyLevel.Superb => Loc.Get("training.prof_superb"),
+            ProficiencyLevel.Master => Loc.Get("training.prof_master"),
+            ProficiencyLevel.Legendary => Loc.Get("training.prof_legendary"),
+            _ => Loc.Get("training.prof_unknown")
         };
     }
 
@@ -659,7 +659,7 @@ public static class TrainingSystem
         while (true)
         {
             terminal.ClearScreen();
-            UIHelper.WriteSectionHeader(terminal, "RESET TRAINING", "bright_yellow");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("training.reset_header"), "bright_yellow");
             terminal.WriteLine("");
             terminal.WriteLine("The Level Master leans forward, studying you carefully.", "white");
             terminal.WriteLine("");
@@ -670,12 +670,12 @@ public static class TrainingSystem
             terminal.WriteLine("");
             terminal.WriteLine("\"The Draught of Forgetting does not come cheap.\"", "bright_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine($"Service fee: {goldCost:N0} gold", "yellow");
-            terminal.WriteLine($"Your gold: {player.Gold:N0}", player.Gold >= goldCost ? "bright_green" : "red");
+            terminal.WriteLine(Loc.Get("training.service_fee", $"{goldCost:N0}"), "yellow");
+            terminal.WriteLine(Loc.Get("training.your_gold", $"{player.Gold:N0}"), player.Gold >= goldCost ? "bright_green" : "red");
             terminal.WriteLine("");
-            terminal.WriteLine("[1] Reset a single skill", "white");
-            terminal.WriteLine("[2] Reset ALL skill proficiencies", "white");
-            terminal.WriteLine("[X] Cancel", "yellow");
+            terminal.WriteLine(Loc.Get("training.reset_single"), "white");
+            terminal.WriteLine(Loc.Get("training.reset_all"), "white");
+            terminal.WriteLine(Loc.Get("training.cancel"), "yellow");
             terminal.WriteLine("");
 
             var input = await terminal.GetInput("> ");
@@ -715,16 +715,16 @@ public static class TrainingSystem
 
         if (trainedSkills.Count == 0)
         {
-            terminal.WriteLine("You have no trained skills to reset!", "yellow");
+            terminal.WriteLine(Loc.Get("ui.no_trained_skills"), "yellow");
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
-        UIHelper.WriteSectionHeader(terminal, "RESET SINGLE SKILL", "bright_yellow");
-        terminal.WriteLine($"Service fee: {goldCost:N0} gold", "yellow");
+        UIHelper.WriteSectionHeader(terminal, Loc.Get("training.reset_single_header"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("training.service_fee", $"{goldCost:N0}"), "yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("Num  Skill                    Level         Points Invested", "cyan");
+        terminal.WriteLine(Loc.Get("training.reset_col_header"), "cyan");
         UIHelper.WriteDivider(terminal, 61, "cyan");
 
         int index = 1;
@@ -738,7 +738,7 @@ public static class TrainingSystem
         }
 
         terminal.WriteLine("");
-        terminal.WriteLine("Enter skill number to reset, or X to cancel.", "yellow");
+        terminal.WriteLine(Loc.Get("training.reset_skill_prompt"), "yellow");
 
         var input = await terminal.GetInput("> ");
         if (string.IsNullOrWhiteSpace(input) || input.Trim().ToUpper() == "X")
@@ -750,7 +750,7 @@ public static class TrainingSystem
 
             if (player.Gold < goldCost)
             {
-                terminal.WriteLine($"You need {goldCost:N0} gold but only have {player.Gold:N0}!", "red");
+                terminal.WriteLine(Loc.Get("training.need_gold", $"{goldCost:N0}", $"{player.Gold:N0}"), "red");
                 await Task.Delay(1500);
                 return;
             }
@@ -761,11 +761,11 @@ public static class TrainingSystem
                 : ProficiencyLevel.Untrained;
 
             terminal.WriteLine("");
-            terminal.WriteLine($"Reset {skillName} to {GetProficiencyName(defaultLevel)}?", "bright_yellow");
-            terminal.WriteLine($"  Cost: {goldCost:N0} gold", "yellow");
-            terminal.WriteLine($"  Refund: {pointsInvested} training points", "bright_green");
+            terminal.WriteLine(Loc.Get("training.reset_skill_confirm", skillName, GetProficiencyName(defaultLevel)), "bright_yellow");
+            terminal.WriteLine(Loc.Get("training.reset_cost", $"{goldCost:N0}"), "yellow");
+            terminal.WriteLine(Loc.Get("training.reset_refund", pointsInvested), "bright_green");
             terminal.WriteLine("");
-            var confirm = await terminal.GetInput("Confirm? (Y/N) > ");
+            var confirm = await terminal.GetInput(Loc.Get("training.confirm_prompt"));
             if (confirm?.Trim().ToUpper() != "Y")
                 return;
 
@@ -796,11 +796,11 @@ public static class TrainingSystem
             terminal.WriteLine("But the potential remains, waiting to be reshaped.", "white");
             await Task.Delay(2000);
             terminal.WriteLine("");
-            UIHelper.WriteSectionHeader(terminal, "SKILL RESET", "bright_yellow");
-            terminal.WriteLine($"{skillName} has been reset to {GetProficiencyName(defaultLevel)}.", "white");
-            terminal.WriteLine($"  -{goldCost:N0} gold", "red");
-            terminal.WriteLine($"  +{refunded} training points refunded", "bright_green");
-            terminal.WriteLine($"  Total training points: {player.TrainingPoints}", "bright_cyan");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("training.skill_reset_header"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("training.skill_reset_result", skillName, GetProficiencyName(defaultLevel)), "white");
+            terminal.WriteLine(Loc.Get("training.gold_spent", $"{goldCost:N0}"), "red");
+            terminal.WriteLine(Loc.Get("training.points_refunded", refunded), "bright_green");
+            terminal.WriteLine(Loc.Get("training.total_points", player.TrainingPoints), "bright_cyan");
 
             await SaveSystem.Instance.AutoSave(player);
             await terminal.PressAnyKey();
@@ -831,29 +831,29 @@ public static class TrainingSystem
 
         if (totalRefund == 0)
         {
-            terminal.WriteLine("You have no trained skills to reset!", "yellow");
+            terminal.WriteLine(Loc.Get("ui.no_trained_skills"), "yellow");
             await Task.Delay(1500);
             return;
         }
 
         if (player.Gold < goldCost)
         {
-            terminal.WriteLine($"You need {goldCost:N0} gold but only have {player.Gold:N0}!", "red");
+            terminal.WriteLine(Loc.Get("training.need_gold", $"{goldCost:N0}", $"{player.Gold:N0}"), "red");
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
-        UIHelper.WriteSectionHeader(terminal, "RESET ALL TRAINING", "bright_yellow");
+        UIHelper.WriteSectionHeader(terminal, Loc.Get("training.reset_all_header"), "bright_yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("This will reset ALL skill proficiencies to their defaults.", "white");
+        terminal.WriteLine(Loc.Get("training.reset_all_desc"), "white");
         terminal.WriteLine("");
-        terminal.WriteLine($"  Cost: {goldCost:N0} gold", "yellow");
-        terminal.WriteLine($"  Refund: {totalRefund} training points", "bright_green");
+        terminal.WriteLine(Loc.Get("training.reset_cost", $"{goldCost:N0}"), "yellow");
+        terminal.WriteLine(Loc.Get("training.reset_refund", totalRefund), "bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("Are you sure? This cannot be undone!", "red");
+        terminal.WriteLine(Loc.Get("ui.confirm_cannot_undo"), "red");
 
-        var confirm = await terminal.GetInput("Confirm? (Y/N) > ");
+        var confirm = await terminal.GetInput(Loc.Get("training.confirm_prompt"));
         if (confirm?.Trim().ToUpper() != "Y")
             return;
 
@@ -889,11 +889,11 @@ public static class TrainingSystem
         terminal.WriteLine("\"Easy now. You are a blank slate once more.\"", "bright_cyan");
         await Task.Delay(1500);
         terminal.WriteLine("");
-        UIHelper.WriteSectionHeader(terminal, "ALL TRAINING RESET", "bright_yellow");
-        terminal.WriteLine($"All skill proficiencies have been reset.", "white");
-        terminal.WriteLine($"  -{goldCost:N0} gold", "red");
-        terminal.WriteLine($"  +{refunded} training points refunded", "bright_green");
-        terminal.WriteLine($"  Total training points: {player.TrainingPoints}", "bright_cyan");
+        UIHelper.WriteSectionHeader(terminal, Loc.Get("training.reset_all_header"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("training.reset_all_result"), "white");
+        terminal.WriteLine(Loc.Get("training.gold_spent", $"{goldCost:N0}"), "red");
+        terminal.WriteLine(Loc.Get("training.points_refunded", refunded), "bright_green");
+        terminal.WriteLine(Loc.Get("training.total_points", player.TrainingPoints), "bright_cyan");
 
         await SaveSystem.Instance.AutoSave(player);
         await terminal.PressAnyKey();
@@ -907,14 +907,14 @@ public static class TrainingSystem
         while (true)
         {
             terminal.ClearScreen();
-            UIHelper.WriteSectionHeader(terminal, "TRAINING CENTER", "bright_yellow");
-            terminal.WriteLine($"Available Training Points: {player.TrainingPoints}", "bright_cyan");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("training.center_header"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("training.available_points", player.TrainingPoints), "bright_cyan");
             terminal.WriteLine("");
 
             // Get all trainable skills for this class
             var trainableSkills = GetTrainableSkills(player);
 
-            terminal.WriteLine("Num  Skill                    Level        Progress  Cost/Pt", "cyan");
+            terminal.WriteLine(Loc.Get("training.col_header"), "cyan");
             UIHelper.WriteDivider(terminal, 61, "cyan");
 
             int index = 1;
@@ -925,7 +925,7 @@ public static class TrainingSystem
                 var needed = GetPointsForNextLevel(proficiency);
                 var costPerPoint = GetTrainingCostPerPoint(proficiency);
                 string progressStr = proficiency >= ProficiencyLevel.Legendary
-                    ? "MAX"
+                    ? Loc.Get("training.max")
                     : $"{progress}/{needed}";
                 string costStr = proficiency >= ProficiencyLevel.Legendary
                     ? "-"
@@ -939,7 +939,7 @@ public static class TrainingSystem
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("Enter skill number to train, [R] Reset training, or X to exit.", "yellow");
+            terminal.WriteLine(Loc.Get("training.menu_prompt"), "yellow");
 
             var input = await terminal.GetInput("> ");
             if (string.IsNullOrWhiteSpace(input) || input.Trim().ToUpper() == "X")
@@ -968,7 +968,7 @@ public static class TrainingSystem
 
         if (proficiency >= ProficiencyLevel.Legendary)
         {
-            terminal.WriteLine($"{skillName} is already at Legendary level!", "yellow");
+            terminal.WriteLine(Loc.Get("training.already_legendary", skillName), "yellow");
             await Task.Delay(1500);
             return;
         }
@@ -978,8 +978,8 @@ public static class TrainingSystem
 
         if (player.TrainingPoints < costPerPoint)
         {
-            terminal.WriteLine($"You need at least {costPerPoint} training points to train this skill!", "red");
-            terminal.WriteLine($"You only have {player.TrainingPoints} training points.", "yellow");
+            terminal.WriteLine(Loc.Get("training.need_points", costPerPoint), "red");
+            terminal.WriteLine(Loc.Get("training.only_have_points", player.TrainingPoints), "yellow");
             await Task.Delay(1500);
             return;
         }
@@ -1002,13 +1002,13 @@ public static class TrainingSystem
         string nextLevelColor = GetProficiencyColor(nextLevel);
 
         terminal.WriteLine("");
-        terminal.WriteLine($"Training {skillName} (Current: {GetProficiencyName(proficiency)})", "cyan");
-        terminal.WriteLine($"Progress: {currentProgress}/{progressNeeded} toward [{nextLevelColor}]{nextLevelName}[/]", "white");
-        terminal.WriteLine($"Cost per progress point: {costPerPoint} training points", "gray");
+        terminal.WriteLine(Loc.Get("training.training_skill", skillName, GetProficiencyName(proficiency)), "cyan");
+        terminal.WriteLine($"{Loc.Get("training.progress_toward", currentProgress, progressNeeded, $"[{nextLevelColor}]{nextLevelName}[/]")}", "white");
+        terminal.WriteLine(Loc.Get("training.cost_per_point", costPerPoint), "gray");
         terminal.WriteLine("");
 
         // Always show option to train 1 point
-        terminal.WriteLine($"[1] Spend {costPerPoint} training point{(costPerPoint > 1 ? "s" : "")} (+1 progress)", "white");
+        terminal.WriteLine(Loc.Get("training.spend_points", costPerPoint), "white");
 
         bool canAffordNextLevel = player.TrainingPoints >= totalCostToNextLevel;
 
@@ -1017,17 +1017,17 @@ public static class TrainingSystem
             if (canAffordNextLevel)
             {
                 // Player can afford to reach next level
-                terminal.WriteLine($"[M] Spend {totalCostToNextLevel} points to reach {nextLevelName} (+{progressToNextLevel} progress)", "bright_green");
+                terminal.WriteLine(Loc.Get("training.spend_to_reach", totalCostToNextLevel, nextLevelName, progressToNextLevel), "bright_green");
             }
             else if (maxProgressAffordable > 1)
             {
                 // Player can afford multiple progress but not full level
                 int maxCost = maxProgressAffordable * costPerPoint;
-                terminal.WriteLine($"[M] Spend {maxCost} points for +{maxProgressAffordable} progress (need {totalCostToNextLevel} total for {nextLevelName})", "yellow");
+                terminal.WriteLine(Loc.Get("training.spend_partial", maxCost, maxProgressAffordable, totalCostToNextLevel, nextLevelName), "yellow");
             }
         }
 
-        terminal.WriteLine("[X] Cancel", "yellow");
+        terminal.WriteLine(Loc.Get("training.cancel"), "yellow");
         terminal.WriteLine("");
 
         var choice = await terminal.GetInput("> ");
@@ -1064,19 +1064,19 @@ public static class TrainingSystem
             var newLevel = GetSkillProficiency(player, skillId);
             string color = GetProficiencyColor(newLevel);
             terminal.WriteLine("");
-            UIHelper.WriteSectionHeader(terminal, "SKILL IMPROVED!", "bright_yellow");
-            terminal.WriteLine($"{skillName} is now [{color}]{GetProficiencyName(newLevel)}[/]!", "bright_green");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("training.skill_improved"), "bright_yellow");
+            terminal.WriteLine($"{Loc.Get("training.now_level", skillName, $"[{color}]{GetProficiencyName(newLevel)}[/]")}", "bright_green");
 
             // Show new bonuses
-            terminal.WriteLine($"  Roll Modifier: {GetRollModifier(newLevel):+#;-#;+0}", "cyan");
-            terminal.WriteLine($"  Effect Power: {GetEffectMultiplier(newLevel) * 100:F0}%", "cyan");
-            terminal.WriteLine($"  (Spent {trainingPointsToSpend} training points)", "gray");
+            terminal.WriteLine(Loc.Get("training.roll_modifier", $"{GetRollModifier(newLevel):+#;-#;+0}"), "cyan");
+            terminal.WriteLine(Loc.Get("training.effect_power", $"{GetEffectMultiplier(newLevel) * 100:F0}"), "cyan");
+            terminal.WriteLine(Loc.Get("training.spent_points", trainingPointsToSpend), "gray");
         }
         else
         {
             var progress = GetTrainingProgress(player, skillId);
             var needed = GetPointsForNextLevel(proficiency);
-            terminal.WriteLine($"Training {skillName}... Progress: {progress}/{needed} (spent {trainingPointsToSpend} point{(trainingPointsToSpend > 1 ? "s" : "")})", "green");
+            terminal.WriteLine(Loc.Get("training.progress_update", skillName, progress, needed, trainingPointsToSpend), "green");
         }
 
         // Auto-save after training

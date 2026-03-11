@@ -1,0 +1,3 @@
+love_street.label_romance=Romance
+love_street.rel_neutral=Neutral
+love_street.sr_social=Social:

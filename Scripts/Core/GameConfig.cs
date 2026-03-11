@@ -9,8 +9,8 @@ using System.Collections.Generic;
 public static partial class GameConfig
 {
     // Version information
-    public const string Version = "0.50.7";
-    public const string VersionName = "Open Doors";
+    public const string Version = "0.60.0";
+    public const string VersionName = "Babel";
     public const string DiscordInvite = "discord.gg/EZhwgDT6Ta";
 
     // From Pascal global_maxXX constants
@@ -57,7 +57,15 @@ public static partial class GameConfig
     
     // Lock and timing constants
     public const int LockDelay = 50;                 // Lock delay in milliseconds
-    
+
+    // World Sim Catch-Up (single-player only)
+    public const int CatchUpMinAbsenceMinutes = 10;  // Don't catch up if away less than this
+    public const int CatchUpMaxTicks = 20160;        // Max ticks to simulate (7 days at 30s/tick)
+    public const int CatchUpTicksPerDay = 2880;      // Ticks per simulated day (24h / 30s)
+    public const int CatchUpProgressInterval = 200;  // Ticks between progress bar updates
+    public const int CatchUpMaxEventsPerCategory = 5; // Max events to show per category in summary
+    public const int CatchUpMaxDays = 7;             // Max real-time days to catch up
+
     // Daily reset constants
     public const int DefaultGymSessions = 3;         // Daily gym sessions
     public const int DefaultDrinksAtOrbs = 5;        // Daily drinks at orbs
@@ -148,21 +156,52 @@ public static partial class GameConfig
 
     /// <summary>
     /// Compact mode for mobile/small screen SSH sessions.
-    /// Uses AsyncLocal so each MUD session has its own value.
-    /// When true, activates compact BBS-style menus across all locations.
+    /// In MUD mode, stored on the SessionContext reference object so changes inside
+    /// awaited methods propagate back to callers (AsyncLocal value types have copy-on-write
+    /// semantics that prevent this). In single-player/BBS mode, uses a simple static field.
     /// </summary>
-    private static readonly System.Threading.AsyncLocal<bool?> _compactModeAsync = new();
     private static bool _compactModeGlobal = false;
 
     public static bool CompactMode
     {
-        get => _compactModeAsync.Value ?? _compactModeGlobal;
+        get
+        {
+            var ctx = UsurperRemake.Server.SessionContext.Current;
+            return ctx != null ? ctx.CompactMode : _compactModeGlobal;
+        }
         set
         {
-            if (UsurperRemake.Server.SessionContext.IsActive)
-                _compactModeAsync.Value = value;
+            var ctx = UsurperRemake.Server.SessionContext.Current;
+            if (ctx != null)
+                ctx.CompactMode = value;
             else
                 _compactModeGlobal = value;
+        }
+    }
+
+    /// <summary>
+    /// Player language preference for localization.
+    /// In MUD mode, stored on the SessionContext reference object so changes inside
+    /// awaited methods propagate back to callers (AsyncLocal&lt;string?&gt; has copy-on-write
+    /// semantics that prevent this — the root cause of the "language doesn't change in
+    /// online mode" bug). In single-player/BBS mode, uses a simple static field.
+    /// </summary>
+    private static string _languageGlobal = "en";
+
+    public static string Language
+    {
+        get
+        {
+            var ctx = UsurperRemake.Server.SessionContext.Current;
+            return ctx != null ? ctx.Language : _languageGlobal;
+        }
+        set
+        {
+            var ctx = UsurperRemake.Server.SessionContext.Current;
+            if (ctx != null)
+                ctx.Language = value;
+            else
+                _languageGlobal = value;
         }
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UsurperRemake.UI;
 using UsurperRemake.Utils;
+using static UsurperRemake.Systems.Loc;
 
 namespace UsurperRemake.Systems
 {
@@ -184,23 +185,23 @@ namespace UsurperRemake.Systems
                 {
                     case 3:
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  A perfect connection. You and {primaryPartner.Name2} are in complete harmony.");
+                        terminal.WriteLine($"  {Get("intimacy.connection_perfect", primaryPartner.Name2)}");
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("  You feel empowered by your bond. (Lover's Bliss: +10% damage/defense for 5 combats)");
+                        terminal.WriteLine($"  {Get("intimacy.lovers_bliss")}");
                         player!.LoversBlissCombats = 5;
                         player.LoversBlissBonus = 0.10f;
                         break;
                     case 2:
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  A strong connection. You and {primaryPartner.Name2} understand each other well.");
+                        terminal.WriteLine($"  {Get("intimacy.connection_strong", primaryPartner.Name2)}");
                         break;
                     case 1:
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"  A pleasant encounter. You're still learning what {primaryPartner.Name2} likes.");
+                        terminal.WriteLine($"  {Get("intimacy.connection_pleasant", primaryPartner.Name2)}");
                         break;
                     default:
                         terminal.SetColor("gray");
-                        terminal.WriteLine($"  An awkward encounter. You and {primaryPartner.Name2} aren't quite in sync yet.");
+                        terminal.WriteLine($"  {Get("intimacy.connection_awkward", primaryPartner.Name2)}");
                         break;
                 }
                 if (!GameConfig.ScreenReaderMode)
@@ -209,7 +210,7 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine("  ════════════════════════════════════════════════════════════════");
                 }
                 terminal.WriteLine("");
-                await terminal.GetInput("  Press Enter to continue...");
+                await terminal.GetInput($"  {Get("ui.press_enter")}");
             }
 
             foreach (var partner in partners)
@@ -236,7 +237,7 @@ namespace UsurperRemake.Systems
             terminal!.SetColor("dark_magenta");
             terminal.WriteLine("====================================================================");
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("                         INTIMATE MOMENT                            ");
+            terminal.WriteLine($"                         {Get("intimacy.header_moment")}                            ");
             terminal.SetColor("dark_magenta");
             terminal.WriteLine("====================================================================");
             terminal.WriteLine("");
@@ -244,13 +245,13 @@ namespace UsurperRemake.Systems
             terminal.SetColor("gray");
             if (isFirstTime)
             {
-                terminal.WriteLine($"  You and {partner.Name2} share an intimate moment together");
-                terminal.WriteLine($"  for the first time. {their.Substring(0, 1).ToUpper() + their.Substring(1)} eyes meet yours with nervous excitement.");
+                terminal.WriteLine($"  {Get("intimacy.fade_first_time", partner.Name2)}");
+                terminal.WriteLine($"  {Get("intimacy.fade_first_time2", their.Substring(0, 1).ToUpper() + their.Substring(1))}");
             }
             else
             {
-                terminal.WriteLine($"  You and {partner.Name2} share a tender, intimate moment together.");
-                terminal.WriteLine($"  The familiarity between you makes it all the sweeter.");
+                terminal.WriteLine($"  {Get("intimacy.fade_familiar", partner.Name2)}");
+                terminal.WriteLine($"  {Get("intimacy.fade_familiar2")}");
             }
             terminal.WriteLine("");
 
@@ -263,15 +264,15 @@ namespace UsurperRemake.Systems
             await Task.Delay(1000);
 
             terminal.SetColor("white");
-            terminal.WriteLine($"  Later, you lie together in comfortable silence.");
-            terminal.WriteLine($"  {partner.Name2} rests {their} head against you, content.");
+            terminal.WriteLine($"  {Get("intimacy.fade_later")}");
+            terminal.WriteLine($"  {Get("intimacy.fade_later2", partner.Name2, their)}");
             terminal.WriteLine("");
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  Your bond with each other has grown stronger.");
+            terminal.WriteLine($"  {Get("intimacy.fade_bond_stronger")}");
             terminal.WriteLine("");
 
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -312,7 +313,7 @@ namespace UsurperRemake.Systems
         {
             terminal!.ClearScreen();
 
-            UIHelper.WriteBoxHeader(terminal, "BLESSED NEWS!", "bright_yellow");
+            UIHelper.WriteBoxHeader(terminal, Get("intimacy.blessed_news"), "bright_yellow");
             terminal.WriteLine("");
 
             await Task.Delay(500);
@@ -322,33 +323,33 @@ namespace UsurperRemake.Systems
             bool partnerIsPregnant = partner.Sex == CharacterSex.Female;
 
             terminal.SetColor("white");
-            terminal.WriteLine("  Several weeks later...");
+            terminal.WriteLine($"  {Get("intimacy.weeks_later")}");
             terminal.WriteLine("");
             await Task.Delay(1000);
 
             if (partnerIsPregnant)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"  {partner.Name2} takes your hands, a mysterious smile on {their} face.");
-                terminal.WriteLine($"  \"{player!.Name}... I have something to tell you.\"");
+                terminal.WriteLine($"  {Get("intimacy.pregnancy_partner_tells", partner.Name2, their)}");
+                terminal.WriteLine($"  \"{Get("intimacy.pregnancy_partner_tells2", player!.Name)}\"");
                 terminal.WriteLine("");
                 await Task.Delay(1000);
                 terminal.SetColor("white");
-                terminal.WriteLine($"  She places your hand on {their} belly.");
+                terminal.WriteLine($"  {Get("intimacy.pregnancy_partner_belly", their)}");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  \"We're going to have a baby.\"");
+                terminal.WriteLine($"  \"{Get("intimacy.pregnancy_announcement")}\"");
             }
             else
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"  You've been feeling strange lately. Different.");
-                terminal.WriteLine($"  When {partner.Name2} notices your morning sickness, {gender} goes pale.");
+                terminal.WriteLine($"  {Get("intimacy.pregnancy_player_feeling")}");
+                terminal.WriteLine($"  {Get("intimacy.pregnancy_player_sickness", partner.Name2, gender)}");
                 terminal.WriteLine("");
                 await Task.Delay(1000);
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  \"Are you... are we...?\"");
+                terminal.WriteLine($"  \"{Get("intimacy.pregnancy_partner_asks")}\"");
                 terminal.SetColor("white");
-                terminal.WriteLine($"  You nod, tears in your eyes. \"We're going to have a baby.\"");
+                terminal.WriteLine($"  {Get("intimacy.pregnancy_player_nods")}");
             }
 
             terminal.WriteLine("");
@@ -376,9 +377,11 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("  ════════════════════════════════════════════════════════════════");
             }
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"  After nine months, a healthy {(child.Sex == CharacterSex.Male ? "baby boy" : "baby girl")} is born!");
+            string babyGender = child.Sex == CharacterSex.Male ? Get("intimacy.baby_boy") : Get("intimacy.baby_girl");
+            terminal.WriteLine($"  {Get("intimacy.baby_born", babyGender)}");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  You name {(child.Sex == CharacterSex.Male ? "him" : "her")}: {child.Name}");
+            string babyPronoun = child.Sex == CharacterSex.Male ? Get("intimacy.pronoun_him") : Get("intimacy.pronoun_her");
+            terminal.WriteLine($"  {Get("intimacy.baby_named", babyPronoun, child.Name)}");
             if (!GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_cyan");
@@ -391,10 +394,10 @@ namespace UsurperRemake.Systems
             NewsSystem.Instance?.WriteBirthNews(mother.Name, father.Name, child.Name, motherIsNPC);
 
             terminal.SetColor("white");
-            terminal.WriteLine("  Your family has grown. Visit Love Corner to see your children.");
+            terminal.WriteLine($"  {Get("intimacy.family_grown")}");
             terminal.WriteLine("");
 
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -464,12 +467,12 @@ namespace UsurperRemake.Systems
             if (matched)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  * {partner.Name2}'s eyes light up. This is exactly what {their} wanted.");
+                terminal.WriteLine($"  * {Get("intimacy.reaction_matched", partner.Name2, their)}");
             }
             else
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  * {partner.Name2} smiles, going along with your lead.");
+                terminal.WriteLine($"  * {Get("intimacy.reaction_unmatched", partner.Name2)}");
             }
 
             terminal.SetColor("white");
@@ -480,20 +483,20 @@ namespace UsurperRemake.Systems
         /// </summary>
         private async Task ShowSceneHeader(NPC partner, IntimacyMood mood)
         {
-            UIHelper.WriteBoxHeader(terminal!, "INTIMATE ENCOUNTER", "dark_red");
+            UIHelper.WriteBoxHeader(terminal!, Get("intimacy.header_encounter"), "dark_red");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
             string moodDesc = mood switch
             {
-                IntimacyMood.Tender => "A tender, loving atmosphere fills the air...",
-                IntimacyMood.Passionate => "Passion crackles between you like lightning...",
-                IntimacyMood.Rough => "Raw desire drives you both with urgent need...",
-                IntimacyMood.Playful => "Laughter and teasing give way to something more...",
-                IntimacyMood.Kinky => "Anticipation of forbidden pleasures hangs heavy...",
-                IntimacyMood.Romantic => "Candlelight and whispered promises set the scene...",
-                IntimacyMood.Quick => "There's no time for pretense - only need...",
-                _ => "The moment has arrived..."
+                IntimacyMood.Tender => Get("intimacy.mood_tender"),
+                IntimacyMood.Passionate => Get("intimacy.mood_passionate"),
+                IntimacyMood.Rough => Get("intimacy.mood_rough"),
+                IntimacyMood.Playful => Get("intimacy.mood_playful"),
+                IntimacyMood.Kinky => Get("intimacy.mood_kinky"),
+                IntimacyMood.Romantic => Get("intimacy.mood_romantic"),
+                IntimacyMood.Quick => Get("intimacy.mood_quick"),
+                _ => Get("intimacy.mood_default")
             };
             terminal.WriteLine($"  {moodDesc}");
             terminal.WriteLine("");
@@ -507,7 +510,7 @@ namespace UsurperRemake.Systems
         private async Task PlayAnticipationPhase(NPC partner, PersonalityProfile? profile, IntimacyMood mood)
         {
             terminal!.SetColor("bright_cyan");
-            terminal.WriteLine("  --- ANTICIPATION ---");
+            terminal.WriteLine($"  --- {Get("intimacy.phase_anticipation")} ---");
             terminal.WriteLine("");
 
             string gender = partner.Sex == CharacterSex.Female ? "she" : "he";
@@ -517,15 +520,15 @@ namespace UsurperRemake.Systems
 
             // Setting description
             terminal.SetColor("white");
-            terminal.WriteLine($"  The door closes behind you, and suddenly you're alone with {partner.Name2}.");
-            terminal.WriteLine($"  {genderCap} turns to face you, eyes dark with desire.");
+            terminal.WriteLine($"  {Get("intimacy.anticipation_alone", partner.Name2)}");
+            terminal.WriteLine($"  {Get("intimacy.anticipation_turns", genderCap)}");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
             // Player choice for pacing
             terminal.SetColor("cyan");
-            terminal.WriteLine("  How do you begin?");
+            terminal.WriteLine($"  {Get("intimacy.how_begin")}");
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -534,7 +537,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Take it slow - savor the moment");
+            terminal.WriteLine(Get("intimacy.choice_slow"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -543,7 +546,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Pull them close immediately");
+            terminal.WriteLine(Get("intimacy.choice_pull_close"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -552,10 +555,10 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Let them take the lead");
+            terminal.WriteLine(Get("intimacy.choice_let_lead"));
             terminal.WriteLine("");
 
-            string choice = await terminal.GetInput("  Your choice: ");
+            string choice = await terminal.GetInput($"  {Get("ui.your_choice")}");
 
             bool phase1Match = EvaluateChoice(partner, 1, choice);
             ShowChoiceReaction(partner, phase1Match);
@@ -599,7 +602,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -611,7 +614,7 @@ namespace UsurperRemake.Systems
             await ShowSceneHeader(partner, mood);
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  --- EXPLORATION ---");
+            terminal.WriteLine($"  --- {Get("intimacy.phase_exploration")} ---");
             terminal.WriteLine("");
 
             string gender = partner.Sex == CharacterSex.Female ? "she" : "he";
@@ -672,7 +675,7 @@ namespace UsurperRemake.Systems
             terminal.WriteLine(physicalDesc);
             terminal.WriteLine("");
 
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -684,7 +687,7 @@ namespace UsurperRemake.Systems
             await ShowSceneHeader(partner, mood);
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  --- ESCALATION ---");
+            terminal.WriteLine($"  --- {Get("intimacy.phase_escalation")} ---");
             terminal.WriteLine("");
 
             string gender = partner.Sex == CharacterSex.Female ? "she" : "he";
@@ -723,7 +726,7 @@ namespace UsurperRemake.Systems
 
             // Verbal intimacy
             terminal.SetColor("cyan");
-            terminal.WriteLine("  What do you whisper to them?");
+            terminal.WriteLine($"  {Get("intimacy.what_whisper")}");
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -732,7 +735,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"You're so beautiful...\"");
+            terminal.WriteLine(Get("intimacy.whisper_beautiful"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -741,7 +744,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"I need you. Now.\"");
+            terminal.WriteLine(Get("intimacy.whisper_need_you"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -750,10 +753,10 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"Tell me what you want...\"");
+            terminal.WriteLine(Get("intimacy.whisper_tell_me"));
             terminal.WriteLine("");
 
-            string choice = await terminal.GetInput("  Your choice: ");
+            string choice = await terminal.GetInput($"  {Get("ui.your_choice")}");
 
             bool phase3Match = EvaluateChoice(partner, 3, choice);
             ShowChoiceReaction(partner, phase3Match);
@@ -787,7 +790,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -799,7 +802,7 @@ namespace UsurperRemake.Systems
             await ShowSceneHeader(partner, mood);
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  --- CLIMAX ---");
+            terminal.WriteLine($"  --- {Get("intimacy.phase_climax")} ---");
             terminal.WriteLine("");
 
             string gender = partner.Sex == CharacterSex.Female ? "she" : "he";
@@ -845,7 +848,7 @@ namespace UsurperRemake.Systems
             terminal.WriteLine($"  suspended in shared ecstasy.");
             terminal.WriteLine("");
 
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -857,7 +860,7 @@ namespace UsurperRemake.Systems
             await ShowSceneHeader(partner, mood);
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  --- AFTERGLOW ---");
+            terminal.WriteLine($"  --- {Get("intimacy.phase_afterglow")} ---");
             terminal.WriteLine("");
 
             string gender = partner.Sex == CharacterSex.Female ? "she" : "he";
@@ -897,7 +900,7 @@ namespace UsurperRemake.Systems
 
             // Pillow talk options
             terminal.SetColor("cyan");
-            terminal.WriteLine("  What do you say?");
+            terminal.WriteLine($"  {Get("intimacy.what_say")}");
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -906,7 +909,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"Stay with me tonight.\"");
+            terminal.WriteLine(Get("intimacy.say_stay"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -915,7 +918,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"That was amazing.\"");
+            terminal.WriteLine(Get("intimacy.say_amazing"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -924,10 +927,10 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("*Say nothing, just hold them close*");
+            terminal.WriteLine(Get("intimacy.say_hold_close"));
             terminal.WriteLine("");
 
-            string choice = await terminal.GetInput("  Your choice: ");
+            string choice = await terminal.GetInput($"  {Get("ui.your_choice")}");
 
             bool phase5Match = EvaluateChoice(partner, 5, choice);
             ShowChoiceReaction(partner, phase5Match);
@@ -963,10 +966,10 @@ namespace UsurperRemake.Systems
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Time passes in comfortable silence...");
+            terminal.WriteLine($"  {Get("intimacy.time_passes")}");
             terminal.WriteLine("");
 
-            await terminal.GetInput("  Press Enter to return...");
+            await terminal.GetInput($"  {Get("ui.press_enter")}");
         }
     }
 }

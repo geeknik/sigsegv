@@ -467,7 +467,7 @@ namespace UsurperRemake.Systems
             var options = BuildConversationOptions(npc, relationLevel, romanceType);
 
             terminal!.SetColor("cyan");
-            terminal.WriteLine("  What do you want to say?");
+            terminal.WriteLine($"  {Loc.Get("dialogue.what_to_say")}");
             terminal.WriteLine("");
 
             for (int i = 0; i < options.Count; i++)
@@ -485,10 +485,10 @@ namespace UsurperRemake.Systems
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  [0] End conversation");
+            terminal.WriteLine($"  [0] {Loc.Get("dialogue.end_conversation")}");
             terminal.WriteLine("");
 
-            string choice = await terminal.GetInput("Your choice: ");
+            string choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice == "0")
             {
@@ -503,7 +503,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine("  They didn't quite understand what you meant...");
+            terminal.WriteLine($"  {Loc.Get("dialogue.not_understood")}");
             await Task.Delay(1000);
             return true;
         }
@@ -939,8 +939,8 @@ namespace UsurperRemake.Systems
             if (option.Disabled)
             {
                 terminal!.SetColor("gray");
-                terminal.WriteLine("  You decide not to push it.");
-                await terminal.GetInput("  Press Enter to continue...");
+                terminal.WriteLine($"  {Loc.Get("dialogue.decide_not_push")}");
+                await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
                 return;
             }
 
@@ -1028,7 +1028,7 @@ namespace UsurperRemake.Systems
             state.LastConversationDate = DateTime.Now;
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -1215,7 +1215,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private string GeneratePersonalStory(NPC npc, bool intimate)
@@ -1637,7 +1637,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleComplimentOption(NPC npc, int relationLevel)
@@ -1657,7 +1657,7 @@ namespace UsurperRemake.Systems
             RelationshipSystem.UpdateRelationship(player!, npc, 1);
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleConfessionOption(NPC npc, int relationLevel)
@@ -1702,7 +1702,7 @@ namespace UsurperRemake.Systems
                 RomanceTracker.Instance.AddLover(npc.ID, 30);
 
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  A new romantic relationship has begun!");
+                terminal.WriteLine($"  {Loc.Get("dialogue.new_romance")}");
             }
             else if (roll < successChance + 0.3f)
             {
@@ -1724,7 +1724,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleIntimateOption(NPC npc, int relationLevel)
@@ -1774,7 +1774,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandlePropositionOption(NPC npc, int relationLevel)
@@ -1800,7 +1800,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("");
 
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine("  [This will lead to an intimate scene. Continue? Y/N]");
+                terminal.WriteLine($"  [{Loc.Get("dialogue.intimate_warning")}]");
                 terminal.WriteLine("");
 
                 string confirm = await terminal.GetInput("  ");
@@ -1839,7 +1839,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleProvocationOption(NPC npc, int relationLevel)
@@ -1873,7 +1873,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleAskToLeaveOption(NPC npc, int relationLevel)
@@ -1894,7 +1894,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("gray");
                 terminal.WriteLine($"  {npc.Name2} stares at you blankly.");
-                await terminal.GetInput("  Press Enter to continue...");
+                await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
                 return;
             }
 
@@ -2009,22 +2009,22 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task HandleMarriageProposal(NPC npc, int relationLevel)
         {
             terminal!.ClearScreen();
 
-            UIHelper.WriteBoxHeader(terminal, "MARRIAGE PROPOSAL", "bright_red");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("dialogue.marriage_proposal"), "bright_red");
             terminal.WriteLine("");
 
             // Check player age
             if (player!.Age < GameConfig.MinimumAgeToMarry)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  You must be at least {GameConfig.MinimumAgeToMarry} years old to marry!");
-                await terminal.GetInput("  Press Enter to continue...");
+                terminal.WriteLine($"  {Loc.Get("dialogue.age_requirement", $"{GameConfig.MinimumAgeToMarry}")}");
+                await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
                 return;
             }
 
@@ -2035,8 +2035,8 @@ namespace UsurperRemake.Systems
                 if (existingSpouse != null && !existingSpouse.AcceptsPolyamory)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  You are already married! Divorce first or discuss polyamory with your spouse.");
-                    await terminal.GetInput("  Press Enter to continue...");
+                    terminal.WriteLine($"  {Loc.Get("dialogue.already_married")}");
+                    await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
                     return;
                 }
             }
@@ -2046,8 +2046,8 @@ namespace UsurperRemake.Systems
             if (player.Gold < weddingCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  A wedding ceremony costs {weddingCost} gold. You only have {player.Gold}.");
-                await terminal.GetInput("  Press Enter to continue...");
+                terminal.WriteLine($"  {Loc.Get("dialogue.wedding_cost", $"{weddingCost}", $"{player.Gold}")}");
+                await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
                 return;
             }
 
@@ -2133,14 +2133,14 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue...");
+            await terminal.GetInput($"  {Loc.Get("ui.press_enter")}");
         }
 
         private async Task PerformWeddingCeremony(NPC npc)
         {
             terminal!.ClearScreen();
 
-            UIHelper.WriteBoxHeader(terminal, "<3<3<3 WEDDING CEREMONY <3<3<3", "bright_yellow");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("dialogue.wedding_ceremony"), "bright_yellow");
             terminal.WriteLine("");
 
             await Task.Delay(500);
@@ -2210,35 +2210,35 @@ namespace UsurperRemake.Systems
             terminal.SetColor("bright_green");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("══════════════════════════════════════════════════════════════════════════════");
-            terminal.WriteLine($"  YOU ARE NOW MARRIED TO {npc.Name2.ToUpper()}!");
+            terminal.WriteLine($"  {Loc.Get("dialogue.now_married", npc.Name2.ToUpper())}");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("══════════════════════════════════════════════════════════════════════════════");
             terminal.WriteLine("");
 
             // Benefits announcement
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  Marriage Benefits:");
+            terminal.WriteLine($"  {Loc.Get("dialogue.marriage_benefits")}");
             terminal.SetColor("white");
-            terminal.WriteLine("  - +10% XP bonus from combat when your spouse is alive");
-            terminal.WriteLine("  - Your spouse may join you in combat as an ally");
-            terminal.WriteLine("  - Share a home and have children together");
-            terminal.WriteLine("  - Enjoy special intimate moments at home");
+            terminal.WriteLine($"  - {Loc.Get("dialogue.benefit_xp")}");
+            terminal.WriteLine($"  - {Loc.Get("dialogue.benefit_combat_ally")}");
+            terminal.WriteLine($"  - {Loc.Get("dialogue.benefit_home_children")}");
+            terminal.WriteLine($"  - {Loc.Get("dialogue.benefit_intimate")}");
             terminal.WriteLine("");
 
             // Same-sex marriage note
             if (player.Sex == npc.Sex)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  (You may adopt children at the Royal Orphanage!)");
+                terminal.WriteLine($"  ({Loc.Get("dialogue.adopt_children")})");
             }
             else
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  (Go home and try for children!)");
+                terminal.WriteLine($"  ({Loc.Get("dialogue.try_for_children")})");
             }
 
             terminal.WriteLine("");
-            await terminal.GetInput("  Press Enter to continue your new life...");
+            await terminal.GetInput($"  {Loc.Get("dialogue.press_enter_new_life")}");
         }
 
         /// <summary>

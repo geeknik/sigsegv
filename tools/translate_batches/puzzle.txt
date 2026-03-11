@@ -1,0 +1,3 @@
+puzzle.diff_simple=Simple
+puzzle.lever_empty=[------]
+puzzle.panel_label=    Panel {0}: {1}

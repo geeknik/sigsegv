@@ -141,25 +141,25 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
             {
                 terminal.WriteLine("╔═══════════════════════════════════════════════════════╗");
-                terminal.WriteLine("║            * THE WAYWARD WANDERER *                   ║");
-                terminal.WriteLine("║              A Hidden Tavern                          ║");
+                terminal.WriteLine("║            * " + Loc.Get("encounter.tavern.title") + " *                   ║");
+                terminal.WriteLine("║              " + Loc.Get("encounter.tavern.subtitle") + "                          ║");
                 terminal.WriteLine("╚═══════════════════════════════════════════════════════╝");
             }
             else
             {
-                terminal.WriteLine("THE WAYWARD WANDERER - A Hidden Tavern");
+                terminal.WriteLine(Loc.Get("encounter.tavern.title") + " - " + Loc.Get("encounter.tavern.subtitle"));
             }
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("You push aside a hidden stone door and discover...");
-            terminal.WriteLine("an underground tavern! Torches flicker warmly and");
-            terminal.WriteLine("the smell of ale fills the air.");
+            terminal.WriteLine(Loc.Get("encounter.tavern.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.tavern.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.tavern.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("A grizzled bartender nods at you.");
-            terminal.WriteLine("\"Welcome, traveler. What'll it be?\"");
+            terminal.WriteLine(Loc.Get("encounter.tavern.bartender_greet"));
+            terminal.WriteLine(Loc.Get("encounter.tavern.bartender_ask"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -169,7 +169,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Drink Ale (50 gold - recover HP)");
+            terminal.WriteLine(Loc.Get("encounter.tavern.option_drink"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -177,7 +177,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Gamble with patrons (risk gold)");
+            terminal.WriteLine(Loc.Get("encounter.tavern.option_gamble"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -185,7 +185,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Talk to mysterious stranger");
+            terminal.WriteLine(Loc.Get("encounter.tavern.option_talk"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -193,7 +193,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Rest in back room (full heal, 200 gold)");
+            terminal.WriteLine(Loc.Get("encounter.tavern.option_rest"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -201,13 +201,13 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
 
             bool inTavern = true;
             while (inTavern)
             {
-                var choice = await terminal.GetInput("Your choice: ");
+                var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
                 switch (choice.ToUpper())
                 {
                     case "D":
@@ -217,12 +217,12 @@ namespace UsurperRemake.Systems
                             long heal = player.MaxHP / 3;
                             player.HP = Math.Min(player.MaxHP, player.HP + heal);
                             terminal.SetColor("green");
-                            terminal.WriteLine($"The ale warms your soul. +{heal} HP!");
-                            terminal.WriteLine($"HP: {player.HP}/{player.MaxHP}");
+                            terminal.WriteLine(Loc.Get("encounter.tavern.ale_heal", heal));
+                            terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {player.HP}/{player.MaxHP}");
                         }
                         else
                         {
-                            terminal.WriteLine("\"No coin, no drink.\" the bartender grunts.", "red");
+                            terminal.WriteLine(Loc.Get("encounter.tavern.no_coin"), "red");
                         }
                         break;
 
@@ -241,26 +241,26 @@ namespace UsurperRemake.Systems
                             player.HP = player.MaxHP;
                             if (player.Poison > 0) { player.Poison = 0; player.PoisonTurns = 0; }
                             terminal.SetColor("bright_green");
-                            terminal.WriteLine("You sleep deeply in the back room.");
-                            terminal.WriteLine("You awake fully refreshed!");
-                            terminal.WriteLine($"HP: {player.HP}/{player.MaxHP}");
+                            terminal.WriteLine(Loc.Get("encounter.tavern.rest_sleep"));
+                            terminal.WriteLine(Loc.Get("encounter.tavern.rest_refreshed"));
+                            terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {player.HP}/{player.MaxHP}");
                         }
                         else
                         {
-                            terminal.WriteLine("\"200 gold for a room.\" You don't have enough.", "red");
+                            terminal.WriteLine(Loc.Get("encounter.tavern.rest_no_gold"), "red");
                         }
                         break;
 
                     case "L":
                         inTavern = false;
-                        terminal.WriteLine("You slip back into the dungeon.", "gray");
+                        terminal.WriteLine(Loc.Get("encounter.tavern.leave_msg"), "gray");
                         break;
                 }
 
                 if (inTavern)
                 {
                     terminal.WriteLine("");
-                    terminal.WriteLine("[D]rink [G]amble [T]alk [R]est [L]eave", "bright_yellow");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.shortcut_menu"), "bright_yellow");
                 }
             }
 
@@ -271,18 +271,18 @@ namespace UsurperRemake.Systems
         {
             terminal.SetColor("yellow");
             terminal.WriteLine("");
-            terminal.WriteLine("A hooded figure shuffles cards.");
-            terminal.WriteLine("\"Simple game. High card wins. Double or nothing.\"");
+            terminal.WriteLine(Loc.Get("encounter.tavern.gamble_intro_1"));
+            terminal.WriteLine(Loc.Get("encounter.tavern.gamble_intro_2"));
             terminal.WriteLine("");
 
             long bet = Math.Min(player.Gold / 4, 500);
             if (bet < 10)
             {
-                terminal.WriteLine("\"You've got nothing worth betting.\"", "gray");
+                terminal.WriteLine(Loc.Get("encounter.tavern.gamble_nothing"), "gray");
                 return;
             }
 
-            terminal.Write($"Bet {bet} gold? (Y/N): ", "white");
+            terminal.Write(Loc.Get("encounter.tavern.gamble_bet_prompt", bet), "white");
             var choice = await terminal.GetInput("");
 
             if (choice.ToUpper() == "Y")
@@ -293,27 +293,27 @@ namespace UsurperRemake.Systems
                 int playerCard = random.Next(1, 14);
                 int dealerCard = random.Next(1, 14);
 
-                string[] cardNames = { "", "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King" };
+                string[] cardNames = { "", Loc.Get("encounter.tavern.card_ace"), "2", "3", "4", "5", "6", "7", "8", "9", "10", Loc.Get("encounter.tavern.card_jack"), Loc.Get("encounter.tavern.card_queen"), Loc.Get("encounter.tavern.card_king") };
 
-                terminal.WriteLine($"You draw: {cardNames[playerCard]}", "cyan");
-                terminal.WriteLine($"Dealer draws: {cardNames[dealerCard]}", "red");
+                terminal.WriteLine(Loc.Get("encounter.tavern.gamble_you_draw", cardNames[playerCard]), "cyan");
+                terminal.WriteLine(Loc.Get("encounter.tavern.gamble_dealer_draw", cardNames[dealerCard]), "red");
 
                 if (playerCard > dealerCard)
                 {
                     player.Gold += bet * 2;
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"You win {bet * 2} gold!");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.gamble_win", bet * 2));
                 }
                 else if (playerCard < dealerCard)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("You lose! The dealer grins.");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.gamble_lose"));
                 }
                 else
                 {
                     player.Gold += bet;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("Tie! You get your bet back.");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.gamble_tie"));
                 }
             }
         }
@@ -322,8 +322,8 @@ namespace UsurperRemake.Systems
         {
             terminal.SetColor("magenta");
             terminal.WriteLine("");
-            terminal.WriteLine("A cloaked stranger sits in the corner.");
-            terminal.WriteLine("As you approach, they look up...");
+            terminal.WriteLine(Loc.Get("encounter.tavern.stranger_intro_1"));
+            terminal.WriteLine(Loc.Get("encounter.tavern.stranger_intro_2"));
             terminal.WriteLine("");
 
             var strangerType = random.Next(5);
@@ -331,55 +331,55 @@ namespace UsurperRemake.Systems
             {
                 case 0:
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("\"I was once like you. Seeking glory in these depths.\"");
-                    terminal.WriteLine("\"Take this. It saved my life once.\"");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_potion_1"));
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_potion_2"));
                     player.Healing = Math.Min(player.MaxPotions, player.Healing + 3);
                     terminal.SetColor("green");
-                    terminal.WriteLine("Received 3 healing potions!");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_potion_reward"));
                     break;
 
                 case 1:
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("\"I've mapped these halls. Here, take my notes.\"");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_map"));
                     long expGain = level * 100;
                     player.Experience += expGain;
                     terminal.SetColor("green");
-                    terminal.WriteLine($"+{expGain} experience from studying the map!");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_map_reward", expGain));
                     break;
 
                 case 2:
                     terminal.SetColor("red");
-                    terminal.WriteLine("\"The boss ahead... it fears fire. Remember that.\"");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_tip"));
                     terminal.SetColor("gray");
-                    terminal.WriteLine("You nod, storing this information away.");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_tip_nod"));
                     break;
 
                 case 3:
                     terminal.SetColor("bright_white");
-                    terminal.WriteLine("The stranger pulls back their hood...");
-                    terminal.WriteLine("It's a beautiful face, but their eyes are empty.");
-                    terminal.WriteLine("\"Would you trade a year of life for power?\"");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_1"));
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_2"));
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_3"));
                     terminal.WriteLine("");
-                    terminal.Write("Accept? (Y/N): ", "white");
+                    terminal.Write(Loc.Get("encounter.tavern.stranger_deal_prompt"), "white");
                     var accept = await terminal.GetInput("");
                     if (accept.ToUpper() == "Y")
                     {
                         player.Strength += 5;
                         player.Defence += 5;
                         terminal.SetColor("magenta");
-                        terminal.WriteLine("Your soul aches, but power flows through you!");
-                        terminal.WriteLine("+5 Strength, +5 Defence!");
+                        terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_accept"));
+                        terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_stats"));
                     }
                     else
                     {
-                        terminal.WriteLine("\"Wise... or foolish. Time will tell.\"", "gray");
+                        terminal.WriteLine(Loc.Get("encounter.tavern.stranger_deal_refuse"), "gray");
                     }
                     break;
 
                 case 4:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("The stranger is just a drunk adventurer.");
-                    terminal.WriteLine("They ramble about treasure and then pass out.");
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_drunk_1"));
+                    terminal.WriteLine(Loc.Get("encounter.tavern.stranger_drunk_2"));
                     break;
             }
         }
@@ -391,12 +391,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "A WANDERING MINSTREL" : "♪♫ A WANDERING MINSTREL ♫♪");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.minstrel.title") : "♪♫ " + Loc.Get("encounter.minstrel.title") + " ♫♪");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A bard sits on a rock, tuning a lute.");
-            terminal.WriteLine("\"Ah, a fellow traveler! Care for a song?\"");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.minstrel.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -406,7 +406,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Song of Valor (+Strength for next combat)");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.song_valor"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -414,7 +414,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Song of Warding (+Defence for next combat)");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.song_warding"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -422,7 +422,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Song of Healing (Restore HP)");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.song_healing"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -430,7 +430,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Request a ballad about yourself (costs 100 gold)");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.song_ballad"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -438,34 +438,34 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Just listen and leave");
+            terminal.WriteLine(Loc.Get("encounter.minstrel.song_listen"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice)
             {
                 case "1":
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("The bard plays a rousing battle hymn!");
-                    terminal.WriteLine("Your blood pumps faster, your grip tightens!");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.valor_play"));
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.valor_effect"));
                     // TODO: Add temporary buff system
                     player.Strength += 3; // Permanent for now
-                    terminal.WriteLine("+3 Strength!", "green");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.plus_strength"), "green");
                     break;
 
                 case "2":
                     terminal.SetColor("blue");
-                    terminal.WriteLine("A soothing melody wraps around you like armor.");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.warding_play"));
                     player.Defence += 3;
-                    terminal.WriteLine("+3 Defence!", "green");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.plus_defence"), "green");
                     break;
 
                 case "3":
                     terminal.SetColor("green");
-                    terminal.WriteLine("The healing song washes over you...");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.healing_play"));
                     player.HP = Math.Min(player.MaxHP, player.HP + player.MaxHP / 2);
-                    terminal.WriteLine($"HP restored to {player.HP}/{player.MaxHP}!");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.hp_restored", player.HP, player.MaxHP));
                     break;
 
                 case "4":
@@ -474,19 +474,19 @@ namespace UsurperRemake.Systems
                         player.Gold -= 100;
                         player.Chivalry += 50;
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine($"\"The Ballad of {player.DisplayName}!\"");
-                        terminal.WriteLine("The bard composes an epic tale of your adventures.");
-                        terminal.WriteLine("Your fame spreads! +50 Chivalry!");
+                        terminal.WriteLine(Loc.Get("encounter.minstrel.ballad_title", player.DisplayName));
+                        terminal.WriteLine(Loc.Get("encounter.minstrel.ballad_compose"));
+                        terminal.WriteLine(Loc.Get("encounter.minstrel.ballad_fame"));
                     }
                     else
                     {
-                        terminal.WriteLine("\"No gold, no ballad, friend.\"", "gray");
+                        terminal.WriteLine(Loc.Get("encounter.minstrel.ballad_no_gold"), "gray");
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("You listen to a pleasant tune, then continue on.");
+                    terminal.WriteLine(Loc.Get("encounter.minstrel.listen_leave"));
                     player.Experience += level * 10;
                     break;
             }
@@ -501,16 +501,16 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("✧ FAIRY CIRCLE ✧");
+            terminal.WriteLine("✧ " + Loc.Get("encounter.fairy.title") + " ✧");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("You stumble upon a ring of glowing mushrooms.");
-            terminal.WriteLine("Tiny winged figures dance within, trailing sparkles.");
+            terminal.WriteLine(Loc.Get("encounter.fairy.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.fairy.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("The fairies notice you and flutter closer...");
+            terminal.WriteLine(Loc.Get("encounter.fairy.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -520,7 +520,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Ask for a blessing (risky)");
+            terminal.WriteLine(Loc.Get("encounter.fairy.option_blessing"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -528,7 +528,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Try to steal fairy dust (very risky)");
+            terminal.WriteLine(Loc.Get("encounter.fairy.option_steal"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -536,7 +536,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Dance with them (???)");
+            terminal.WriteLine(Loc.Get("encounter.fairy.option_dance"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -544,10 +544,10 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave them alone");
+            terminal.WriteLine(Loc.Get("encounter.fairy.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice.ToUpper())
             {
@@ -555,35 +555,35 @@ namespace UsurperRemake.Systems
                     if (random.NextDouble() < 0.7) // 70% good outcome
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine("The fairies giggle and shower you with sparkles!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.blessing_good"));
                         var blessing = random.Next(4);
                         switch (blessing)
                         {
                             case 0:
                                 player.HP = player.MaxHP;
-                                terminal.WriteLine("Full health restored!");
+                                terminal.WriteLine(Loc.Get("encounter.fairy.blessing_hp"));
                                 break;
                             case 1:
                                 player.Mana = player.MaxMana;
-                                terminal.WriteLine("Full mana restored!");
+                                terminal.WriteLine(Loc.Get("encounter.fairy.blessing_mana"));
                                 break;
                             case 2:
                                 player.Healing = player.MaxPotions;
-                                terminal.WriteLine("Potions refilled!");
+                                terminal.WriteLine(Loc.Get("encounter.fairy.blessing_potions"));
                                 break;
                             case 3:
                                 player.Experience += level * 200;
-                                terminal.WriteLine($"+{level * 200} experience!");
+                                terminal.WriteLine(Loc.Get("encounter.fairy.blessing_exp", level * 200));
                                 break;
                         }
                     }
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("The fairies are offended by your tone!");
-                        terminal.WriteLine("They curse you with bad luck...");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.blessing_bad_1"));
+                        terminal.WriteLine(Loc.Get("encounter.fairy.blessing_bad_2"));
                         player.Gold = player.Gold * 9 / 10;
-                        terminal.WriteLine("10% of your gold vanishes!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.blessing_bad_gold"));
                     }
                     break;
 
@@ -591,39 +591,39 @@ namespace UsurperRemake.Systems
                     if (random.NextDouble() < 0.3) // Only 30% success
                     {
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("You snatch a handful of fairy dust!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.steal_success"));
                         long dustValue = level * 500;
                         player.Gold += dustValue;
-                        terminal.WriteLine($"Worth {dustValue} gold!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.steal_value", dustValue));
 
                         player.Darkness += 20;
                         terminal.SetColor("magenta");
-                        terminal.WriteLine("Your darkness increases from the theft...");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.steal_darkness"));
                     }
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("The fairies swarm you in rage!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.steal_fail"));
                         int damage = (int)(player.MaxHP / 4);
                         player.HP -= damage;
-                        terminal.WriteLine($"You take {damage} damage fleeing!");
+                        terminal.WriteLine(Loc.Get("encounter.fairy.steal_damage", damage));
 
                         // Random curse
                         if (random.NextDouble() < 0.5)
                         {
                             player.Strength = Math.Max(1, player.Strength - 2);
-                            terminal.WriteLine("Cursed! -2 Strength!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.steal_curse"));
                         }
                     }
                     break;
 
                 case "D":
                     terminal.SetColor("bright_magenta");
-                    terminal.WriteLine("You join the fairy dance!");
+                    terminal.WriteLine(Loc.Get("encounter.fairy.dance_join"));
                     await Task.Delay(1000);
-                    terminal.WriteLine("Round and round you spin...");
+                    terminal.WriteLine(Loc.Get("encounter.fairy.dance_spin"));
                     await Task.Delay(1000);
-                    terminal.WriteLine("Time seems to blur...");
+                    terminal.WriteLine(Loc.Get("encounter.fairy.dance_blur"));
                     await Task.Delay(1000);
 
                     // Weird effects
@@ -632,40 +632,40 @@ namespace UsurperRemake.Systems
                     {
                         case 0:
                             terminal.SetColor("green");
-                            terminal.WriteLine("You emerge feeling decades younger!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_younger"));
                             player.HP = player.MaxHP;
                             player.Mana = player.MaxMana;
                             player.Experience += level * 300;
                             break;
                         case 1:
                             terminal.SetColor("yellow");
-                            terminal.WriteLine("Gold coins fall from your pockets as you dance!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_gold"));
                             player.Gold += level * 900;  // Increased from 300 for economic balance  // Increased from 100 for economic balance
                             break;
                         case 2:
                             terminal.SetColor("cyan");
-                            terminal.WriteLine("The fairy queen kisses your forehead!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_queen_kiss"));
                             player.Charisma += 5;
-                            terminal.WriteLine("+5 Charisma!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_plus_cha"));
                             break;
                         case 3:
                             terminal.SetColor("gray");
-                            terminal.WriteLine("Hours pass... or was it days?");
-                            terminal.WriteLine("You're not sure what happened.");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_time_1"));
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_time_2"));
                             break;
                         case 4:
                             terminal.SetColor("bright_white");
-                            terminal.WriteLine("You learn the secret fairy language!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_language"));
                             player.Intelligence += 3;
-                            terminal.WriteLine("+3 Intelligence!");
+                            terminal.WriteLine(Loc.Get("encounter.fairy.dance_plus_int"));
                             break;
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("You back away slowly.");
-                    terminal.WriteLine("The fairies wave goodbye and return to their dance.");
+                    terminal.WriteLine(Loc.Get("encounter.fairy.leave_1"));
+                    terminal.WriteLine(Loc.Get("encounter.fairy.leave_2"));
                     break;
             }
 
@@ -679,7 +679,7 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("magenta");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "DAMSEL IN DISTRESS" : "♀ DAMSEL IN DISTRESS ♀");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.damsel.title") : "♀ " + Loc.Get("encounter.damsel.title") + " ♀");
             terminal.WriteLine("");
 
             // Randomize the scenario
@@ -689,8 +689,8 @@ namespace UsurperRemake.Systems
             {
                 case 0: // Classic rescue
                     terminal.SetColor("white");
-                    terminal.WriteLine("A young woman is cornered by goblins!");
-                    terminal.WriteLine("She cries out for help as they close in.");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.rescue_desc_1"));
+                    terminal.WriteLine(Loc.Get("encounter.damsel.rescue_desc_2"));
                     terminal.WriteLine("");
 
                     terminal.SetColor("darkgray");
@@ -700,7 +700,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Rush to her rescue!");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.option_rescue"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -708,7 +708,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Watch and wait");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.option_watch"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -716,70 +716,70 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Ignore and continue");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.option_ignore"));
                     terminal.WriteLine("");
 
-                    var choice = await terminal.GetInput("Your choice: ");
+                    var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
                     if (choice.ToUpper() == "R")
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You charge at the goblins!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.rescue_charge"));
                         await Task.Delay(1000);
 
                         // Auto-win the fight for dramatic effect
                         terminal.SetColor("green");
-                        terminal.WriteLine("The goblins scatter before your fury!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.rescue_scatter"));
                         terminal.WriteLine("");
 
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("The woman throws her arms around you.");
-                        terminal.WriteLine("\"My hero! Please, take this family heirloom!\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.rescue_thanks_1"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.rescue_thanks_2"));
 
                         long goldReward = level * 200;
                         player.Gold += goldReward;
                         player.Chivalry += 75;
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine($"+{goldReward} gold!");
-                        terminal.WriteLine("+75 Chivalry!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_gold", goldReward));
+                        terminal.WriteLine(Loc.Get("encounter.reward_chivalry", 75));
 
                         if (random.NextDouble() < 0.3)
                         {
                             terminal.SetColor("magenta");
                             terminal.WriteLine("");
-                            terminal.WriteLine("She blushes. \"Perhaps we'll meet again...\"");
+                            terminal.WriteLine(Loc.Get("encounter.damsel.rescue_blush"));
                             // TODO: Add romance subplot tracking
                         }
                     }
                     else if (choice.ToUpper() == "W")
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You hide in the shadows and watch...");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.watch_hide"));
                         await Task.Delay(1500);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("Suddenly she kicks the lead goblin and draws a hidden blade!");
-                        terminal.WriteLine("She dispatches them with deadly efficiency.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.watch_kick"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.watch_dispatch"));
                         terminal.WriteLine("");
-                        terminal.WriteLine("She notices you watching and winks.");
-                        terminal.WriteLine("\"Thanks for not interfering. Here's for the show.\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.watch_wink"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.watch_thanks"));
                         player.Gold += level * 150;  // Increased from 50 for economic balance
                         player.Experience += level * 100;
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"+{level * 150} gold, +{level * 100} exp!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_gold_exp", level * 150, level * 100));
                     }
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("You walk away. Her screams fade behind you.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.ignore_walk"));
                         player.Darkness += 30;
-                        terminal.WriteLine("+30 Darkness");
+                        terminal.WriteLine(Loc.Get("encounter.reward_darkness", 30));
                     }
                     break;
 
                 case 1: // It's a trap!
                     terminal.SetColor("white");
-                    terminal.WriteLine("A beautiful woman lies injured on the ground.");
-                    terminal.WriteLine("\"Please... help me... I'm hurt...\"");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.trap_desc_1"));
+                    terminal.WriteLine(Loc.Get("encounter.damsel.trap_desc_2"));
                     terminal.WriteLine("");
 
                     terminal.SetColor("darkgray");
@@ -789,7 +789,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Help her up");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.trap_option_help"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -797,7 +797,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Cautiously approach");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.trap_option_caution"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -805,17 +805,17 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Leave");
+                    terminal.WriteLine(Loc.Get("encounter.option_leave"));
                     terminal.WriteLine("");
 
-                    choice = await terminal.GetInput("Your choice: ");
+                    choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
                     if (choice.ToUpper() == "H")
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("As you reach down, she grabs your arm!");
-                        terminal.WriteLine("Her face twists into a demonic grin!");
-                        terminal.WriteLine("\"FOOLISH MORTAL!\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_grab"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_grin"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_fool"));
                         await Task.Delay(1000);
 
                         int damage = (int)(player.MaxHP / 3);
@@ -823,30 +823,30 @@ namespace UsurperRemake.Systems
                         long goldStolen = player.Gold / 5;
                         player.Gold -= goldStolen;
 
-                        terminal.WriteLine($"A succubus! You take {damage} damage!");
-                        terminal.WriteLine($"She steals {goldStolen} gold before vanishing!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_succubus_damage", damage));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_succubus_steal", goldStolen));
                     }
                     else if (choice.ToUpper() == "C")
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You approach carefully, hand on weapon...");
-                        terminal.WriteLine("Her eyes flash red - she hisses and vanishes!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_caution_1"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_caution_2"));
                         terminal.SetColor("green");
-                        terminal.WriteLine("Your caution saved you from a succubus trap!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_caution_saved"));
                         player.Experience += level * 75;
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("Something feels wrong. You leave.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.trap_leave"));
                     }
                     break;
 
                 case 2: // Princess!
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("A woman in tattered royal garments hides behind a pillar.");
-                    terminal.WriteLine("\"You! Adventurer! I am Princess Althea!\"");
-                    terminal.WriteLine("\"I was kidnapped! Please, escort me to safety!\"");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_desc_1"));
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_desc_2"));
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_desc_3"));
                     terminal.WriteLine("");
 
                     terminal.SetColor("darkgray");
@@ -856,7 +856,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Escort her to safety");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_option_escort"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -864,7 +864,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Ransom her yourself");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_option_ransom"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -872,35 +872,35 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("\"Sorry, too dangerous\"");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.princess_option_leave"));
                     terminal.WriteLine("");
 
-                    choice = await terminal.GetInput("Your choice: ");
+                    choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
                     if (choice.ToUpper() == "E")
                     {
                         terminal.SetColor("green");
-                        terminal.WriteLine("You guide the princess through the dungeon.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_escort_1"));
                         await Task.Delay(1000);
-                        terminal.WriteLine("After a harrowing journey, you reach the exit.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_escort_2"));
                         terminal.WriteLine("");
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("\"The kingdom will reward you handsomely!\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_escort_reward"));
 
                         long royalReward = level * 1000;
                         player.Gold += royalReward;
                         player.Chivalry += 200;
                         player.Experience += level * 500;
 
-                        terminal.WriteLine($"+{royalReward} gold!");
-                        terminal.WriteLine("+200 Chivalry!");
-                        terminal.WriteLine($"+{level * 500} experience!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_gold", royalReward));
+                        terminal.WriteLine(Loc.Get("encounter.reward_chivalry", 200));
+                        terminal.WriteLine(Loc.Get("encounter.reward_exp", level * 500));
                     }
                     else if (choice.ToUpper() == "R")
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("You see opportunity in her captivity...");
-                        terminal.WriteLine("\"Actually, princess, I think I'LL ransom you.\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_ransom_1"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_ransom_2"));
                         terminal.WriteLine("");
 
                         player.Gold += level * 5000;  // Increased from 2000 for economic balance (major jackpot)
@@ -908,23 +908,23 @@ namespace UsurperRemake.Systems
                         player.Chivalry = Math.Max(0, player.Chivalry - 100);
 
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"+{level * 5000} gold from ransom!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_ransom_gold", level * 5000));
                         terminal.SetColor("magenta");
-                        terminal.WriteLine("+100 Darkness, -100 Chivalry");
-                        terminal.WriteLine("Your reputation suffers...");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_ransom_penalty"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_ransom_rep"));
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("\"I wish you luck, princess.\"");
-                        terminal.WriteLine("She looks at you with despair as you leave.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_leave_1"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.princess_leave_2"));
                     }
                     break;
 
                 case 3: // Warrior woman
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("A female warrior battles a horde of undead!");
-                    terminal.WriteLine("She's holding her own but clearly outnumbered.");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.warrior_desc_1"));
+                    terminal.WriteLine(Loc.Get("encounter.damsel.warrior_desc_2"));
                     terminal.WriteLine("");
 
                     terminal.SetColor("darkgray");
@@ -934,7 +934,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("Join the fight!");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.warrior_option_join"));
                     terminal.SetColor("darkgray");
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
@@ -942,45 +942,45 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("Watch (she's doing fine)");
+                    terminal.WriteLine(Loc.Get("encounter.damsel.warrior_option_watch"));
                     terminal.WriteLine("");
 
-                    choice = await terminal.GetInput("Your choice: ");
+                    choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
                     if (choice.ToUpper() == "J")
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You leap into battle beside her!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_join_1"));
                         await Task.Delay(1000);
-                        terminal.WriteLine("Together you destroy the undead horde!");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_join_2"));
                         terminal.WriteLine("");
 
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("She wipes her blade clean.");
-                        terminal.WriteLine("\"Well fought! I am Valeria, knight-errant.\"");
-                        terminal.WriteLine("\"Share the spoils?\"");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_join_3"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_join_4"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_join_5"));
 
                         long loot = level * 150;
                         player.Gold += loot;
                         player.Experience += level * 100;
 
                         terminal.SetColor("green");
-                        terminal.WriteLine($"+{loot} gold, +{level * 100} exp!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_gold_exp", loot, level * 100));
 
                         if (random.NextDouble() < 0.2)
                         {
                             terminal.SetColor("bright_cyan");
                             terminal.WriteLine("");
-                            terminal.WriteLine("\"You fight well. Perhaps we should team up sometime.\"");
+                            terminal.WriteLine(Loc.Get("encounter.damsel.warrior_team_hint"));
                             // TODO: Add companion system
                         }
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You watch as she finishes off the last skeleton.");
-                        terminal.WriteLine("She notices you and glares.");
-                        terminal.WriteLine("\"Coward.\" She spits at your feet and leaves.");
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_watch_1"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_watch_2"));
+                        terminal.WriteLine(Loc.Get("encounter.damsel.warrior_watch_3"));
                         player.Chivalry = Math.Max(0, player.Chivalry - 20);
                     }
                     break;
@@ -995,21 +995,21 @@ namespace UsurperRemake.Systems
         private static async Task UsurperGhostEncounter(TerminalEmulator terminal, Character player, int level)
         {
             terminal.ClearScreen();
-            UIHelper.WriteBoxHeader(terminal, "* GHOSTLY APPARITION *", "bright_white", 55);
+            UIHelper.WriteBoxHeader(terminal, "* " + Loc.Get("encounter.ghost.title") + " *", "bright_white", 55);
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("A translucent figure materializes before you...");
-            terminal.WriteLine("It wears ancient armor and carries a spectral sword.");
+            terminal.WriteLine(Loc.Get("encounter.ghost.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.ghost.desc_2"));
             terminal.WriteLine("");
 
             await Task.Delay(1500);
 
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("\"Greetings, adventurer...\"");
-            terminal.WriteLine("\"I am the ghost of an Usurper past.\"");
-            terminal.WriteLine("\"In my time, we sought the throne of Dovania.\"");
-            terminal.WriteLine("\"I see you walk the same path...\"");
+            terminal.WriteLine(Loc.Get("encounter.ghost.greet_1"));
+            terminal.WriteLine(Loc.Get("encounter.ghost.greet_2"));
+            terminal.WriteLine(Loc.Get("encounter.ghost.greet_3"));
+            terminal.WriteLine(Loc.Get("encounter.ghost.greet_4"));
             terminal.WriteLine("");
 
             await Task.Delay(2000);
@@ -1021,7 +1021,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"Tell me of the old days\"");
+            terminal.WriteLine(Loc.Get("encounter.ghost.option_lore"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1029,7 +1029,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"Any advice for a fellow Usurper?\"");
+            terminal.WriteLine(Loc.Get("encounter.ghost.option_advice"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1037,52 +1037,52 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("\"Are you friend or foe?\"");
+            terminal.WriteLine(Loc.Get("encounter.ghost.option_friend"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice.ToUpper())
             {
                 case "L":
                     terminal.SetColor("cyan");
                     terminal.WriteLine("");
-                    terminal.WriteLine("The ghost's eyes grow distant...");
-                    terminal.WriteLine("\"Ah, the old BBS days... connecting at 2400 baud...\"");
-                    terminal.WriteLine("\"Players from across the realm, competing for glory...\"");
-                    terminal.WriteLine("\"The witch doctors were truly fearsome then...\"");
-                    terminal.WriteLine("\"Many tried to claim the throne. Few succeeded.\"");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_1"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_2"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_3"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_4"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_5"));
                     terminal.WriteLine("");
                     terminal.SetColor("gray");
-                    terminal.WriteLine("The ghost seems lost in nostalgia.");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_nostalgia"));
 
                     player.Experience += level * 200;
                     terminal.SetColor("green");
-                    terminal.WriteLine($"+{level * 200} experience from ancient wisdom!");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.lore_reward", level * 200));
                     break;
 
                 case "A":
                     terminal.SetColor("bright_yellow");
                     terminal.WriteLine("");
-                    terminal.WriteLine("The ghost nods sagely...");
-                    terminal.WriteLine("\"Always visit the Abbey for healing.\"");
-                    terminal.WriteLine("\"The dungeons hold treasure, but also death.\"");
-                    terminal.WriteLine("\"Make allies before you make enemies.\"");
-                    terminal.WriteLine("\"And never, NEVER trust a witch doctor.\"");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_1"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_2"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_3"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_4"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_5"));
                     terminal.WriteLine("");
 
                     player.Intelligence += 2;
                     player.Wisdom += 2;
                     terminal.SetColor("green");
-                    terminal.WriteLine("+2 Intelligence, +2 Wisdom!");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.advice_reward"));
                     break;
 
                 case "F":
                     terminal.SetColor("white");
                     terminal.WriteLine("");
-                    terminal.WriteLine("The ghost chuckles, a hollow sound.");
-                    terminal.WriteLine("\"Neither. I am simply... a memory.\"");
-                    terminal.WriteLine("\"But here, take this. It served me well.\"");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.friend_1"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.friend_2"));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.friend_3"));
                     terminal.WriteLine("");
 
                     // Give a nice reward
@@ -1091,20 +1091,20 @@ namespace UsurperRemake.Systems
                     player.Strength += 3;
 
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"The ghost gives you {goldGift} spectral gold!");
-                    terminal.WriteLine("+3 Strength from ancestral blessing!");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.friend_gold", goldGift));
+                    terminal.WriteLine(Loc.Get("encounter.ghost.friend_str"));
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("The ghost begins to fade...");
+                    terminal.WriteLine(Loc.Get("encounter.ghost.fade"));
                     break;
             }
 
             terminal.SetColor("cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("\"Remember... the throne awaits...\"");
-            terminal.WriteLine("The ghost fades into nothingness.");
+            terminal.WriteLine(Loc.Get("encounter.ghost.farewell_1"));
+            terminal.WriteLine(Loc.Get("encounter.ghost.farewell_2"));
 
             await terminal.PressAnyKey();
         }
@@ -1116,17 +1116,17 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("🎲 INFERNAL GAME OF CHANCE 🎲");
+            terminal.WriteLine("🎲 " + Loc.Get("encounter.demons.title") + " 🎲");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Three demons sit around a table of bones.");
-            terminal.WriteLine("They're playing some sort of game with human skulls.");
+            terminal.WriteLine(Loc.Get("encounter.demons.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.demons.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("red");
-            terminal.WriteLine("\"A mortal! How delightful!\"");
-            terminal.WriteLine("\"Care to play? The stakes are... interesting.\"");
+            terminal.WriteLine(Loc.Get("encounter.demons.greet_1"));
+            terminal.WriteLine(Loc.Get("encounter.demons.greet_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -1136,7 +1136,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Play their game");
+            terminal.WriteLine(Loc.Get("encounter.demons.option_play"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1144,17 +1144,17 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave quickly");
+            terminal.WriteLine(Loc.Get("encounter.demons.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "P")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"Excellent! The game is simple.\"");
-                terminal.WriteLine("\"We each roll three skulls. Highest total wins.\"");
-                terminal.WriteLine("\"But what shall we wager...?\"");
+                terminal.WriteLine(Loc.Get("encounter.demons.play_1"));
+                terminal.WriteLine(Loc.Get("encounter.demons.play_2"));
+                terminal.WriteLine(Loc.Get("encounter.demons.play_3"));
                 terminal.WriteLine("");
 
                 terminal.SetColor("darkgray");
@@ -1164,7 +1164,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("red");
-                terminal.WriteLine("Wager gold (1000)");
+                terminal.WriteLine(Loc.Get("encounter.demons.wager_gold"));
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
@@ -1172,7 +1172,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("red");
-                terminal.WriteLine("Wager your soul (permanent stat changes)");
+                terminal.WriteLine(Loc.Get("encounter.demons.wager_soul"));
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
@@ -1180,18 +1180,18 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("red");
-                terminal.WriteLine("Wager years of life (experience)");
+                terminal.WriteLine(Loc.Get("encounter.demons.wager_years"));
                 terminal.WriteLine("");
 
-                var wager = await terminal.GetInput("Your wager: ");
+                var wager = await terminal.GetInput(Loc.Get("encounter.demons.wager_prompt"));
 
                 int demonRoll = random.Next(1, 7) + random.Next(1, 7) + random.Next(1, 7);
                 int playerRoll = random.Next(1, 7) + random.Next(1, 7) + random.Next(1, 7);
 
                 await Task.Delay(1000);
                 terminal.WriteLine("");
-                terminal.WriteLine($"The demons roll: {demonRoll}", "red");
-                terminal.WriteLine($"You roll: {playerRoll}", "cyan");
+                terminal.WriteLine(Loc.Get("encounter.demons.roll_demons", demonRoll), "red");
+                terminal.WriteLine(Loc.Get("encounter.demons.roll_player", playerRoll), "cyan");
                 terminal.WriteLine("");
 
                 bool won = playerRoll > demonRoll;
@@ -1203,15 +1203,15 @@ namespace UsurperRemake.Systems
                         {
                             player.Gold += 1000;
                             terminal.SetColor("green");
-                            terminal.WriteLine("The demons hiss in frustration!");
-                            terminal.WriteLine("+1000 gold!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.gold_win"));
+                            terminal.WriteLine(Loc.Get("encounter.demons.gold_win_amount"));
                         }
                         else
                         {
                             player.Gold = Math.Max(0, player.Gold - 1000);
                             terminal.SetColor("red");
-                            terminal.WriteLine("The demons cackle with glee!");
-                            terminal.WriteLine("-1000 gold!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.gold_lose"));
+                            terminal.WriteLine(Loc.Get("encounter.demons.gold_lose_amount"));
                         }
                         break;
 
@@ -1221,8 +1221,8 @@ namespace UsurperRemake.Systems
                             player.Strength += 10;
                             player.Intelligence += 10;
                             terminal.SetColor("bright_green");
-                            terminal.WriteLine("Demonic power flows into you!");
-                            terminal.WriteLine("+10 Strength, +10 Intelligence!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.soul_win"));
+                            terminal.WriteLine(Loc.Get("encounter.demons.soul_win_stats"));
                         }
                         else
                         {
@@ -1230,8 +1230,8 @@ namespace UsurperRemake.Systems
                             player.Charisma = Math.Max(1, player.Charisma - 5);
                             player.Darkness += 50;
                             terminal.SetColor("red");
-                            terminal.WriteLine("Part of your soul is ripped away!");
-                            terminal.WriteLine("-5 Strength, -5 Charisma, +50 Darkness!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.soul_lose"));
+                            terminal.WriteLine(Loc.Get("encounter.demons.soul_lose_stats"));
                         }
                         break;
 
@@ -1240,15 +1240,15 @@ namespace UsurperRemake.Systems
                         {
                             player.Experience += level * 1000;
                             terminal.SetColor("bright_yellow");
-                            terminal.WriteLine("The demons grant you centuries of knowledge!");
-                            terminal.WriteLine($"+{level * 1000} experience!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.years_win"));
+                            terminal.WriteLine(Loc.Get("encounter.reward_exp", level * 1000));
                         }
                         else
                         {
                             player.Experience = Math.Max(0, player.Experience - level * 500);
                             terminal.SetColor("red");
-                            terminal.WriteLine("Years of your life drain away!");
-                            terminal.WriteLine($"-{level * 500} experience!");
+                            terminal.WriteLine(Loc.Get("encounter.demons.years_lose"));
+                            terminal.WriteLine(Loc.Get("encounter.demons.years_lose_amount", level * 500));
                         }
                         break;
                 }
@@ -1256,8 +1256,8 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You back away slowly.");
-                terminal.WriteLine("\"Coward!\" the demons shout. \"Come back anytime!\"");
+                terminal.WriteLine(Loc.Get("encounter.demons.leave_1"));
+                terminal.WriteLine(Loc.Get("encounter.demons.leave_2"));
             }
 
             await terminal.PressAnyKey();
@@ -1270,13 +1270,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("=== AN OLD HERMIT ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.hermit.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("An ancient man sits by a small fire.");
-            terminal.WriteLine("His eyes are clouded, but he seems to sense you.");
-            terminal.WriteLine("\"Sit, child. Rest your weary bones.\"");
+            terminal.WriteLine(Loc.Get("encounter.hermit.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.hermit.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.hermit.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -1286,7 +1286,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Sit and listen to his wisdom");
+            terminal.WriteLine(Loc.Get("encounter.hermit.option_sit"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1294,7 +1294,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Ask about the dungeon ahead");
+            terminal.WriteLine(Loc.Get("encounter.hermit.option_ask"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1302,7 +1302,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Give him food/gold");
+            terminal.WriteLine(Loc.Get("encounter.hermit.option_give"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1310,36 +1310,36 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice.ToUpper())
             {
                 case "S":
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("You sit by the fire...");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.sit_1"));
                     await Task.Delay(1500);
-                    terminal.WriteLine("The hermit speaks of the old world...");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.sit_2"));
                     await Task.Delay(1500);
-                    terminal.WriteLine("Of heroes who came before...");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.sit_3"));
                     await Task.Delay(1500);
                     terminal.SetColor("green");
-                    terminal.WriteLine("His words fill you with peace.");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.sit_peace"));
                     player.HP = player.MaxHP;
                     player.Mana = player.MaxMana;
-                    terminal.WriteLine("HP and Mana fully restored!");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.sit_restore"));
                     break;
 
                 case "A":
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("\"The path ahead is treacherous...\"");
-                    terminal.WriteLine("\"Beware the third room from here.\"");
-                    terminal.WriteLine("\"And the boss... it fears silver.\"");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.ask_1"));
+                    terminal.WriteLine(Loc.Get("encounter.hermit.ask_2"));
+                    terminal.WriteLine(Loc.Get("encounter.hermit.ask_3"));
                     player.Intelligence += 1;
                     terminal.SetColor("green");
-                    terminal.WriteLine("+1 Intelligence from his wisdom!");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.ask_reward"));
                     break;
 
                 case "G":
@@ -1347,9 +1347,9 @@ namespace UsurperRemake.Systems
                     {
                         player.Gold -= 50;
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("The hermit's blind eyes seem to sparkle.");
-                        terminal.WriteLine("\"Kindness... so rare in these depths.\"");
-                        terminal.WriteLine("He presses something into your hand.");
+                        terminal.WriteLine(Loc.Get("encounter.hermit.give_1"));
+                        terminal.WriteLine(Loc.Get("encounter.hermit.give_2"));
+                        terminal.WriteLine(Loc.Get("encounter.hermit.give_3"));
                         terminal.WriteLine("");
 
                         // Random reward
@@ -1358,31 +1358,31 @@ namespace UsurperRemake.Systems
                         {
                             case 0:
                                 player.Strength += 5;
-                                terminal.WriteLine("An ancient amulet! +5 Strength!");
+                                terminal.WriteLine(Loc.Get("encounter.hermit.give_amulet"));
                                 break;
                             case 1:
                                 player.Healing = player.MaxPotions;
-                                terminal.WriteLine("Your potions are magically refilled!");
+                                terminal.WriteLine(Loc.Get("encounter.hermit.give_potions"));
                                 break;
                             case 2:
                                 player.Experience += level * 300;
-                                terminal.WriteLine($"+{level * 300} experience!");
+                                terminal.WriteLine(Loc.Get("encounter.reward_exp", level * 300));
                                 break;
                         }
 
                         player.Chivalry += 25;
-                        terminal.WriteLine("+25 Chivalry!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_chivalry", 25));
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You have nothing to give.");
+                        terminal.WriteLine(Loc.Get("encounter.hermit.give_nothing"));
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("\"Go then. May fortune favor you.\"");
+                    terminal.WriteLine(Loc.Get("encounter.hermit.leave_msg"));
                     break;
             }
 
@@ -1396,13 +1396,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("magenta");
-            terminal.WriteLine("=== MYSTERIOUS MERCHANT ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.merchant.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A cloaked figure stands before a floating carpet");
-            terminal.WriteLine("covered with strange and wondrous items.");
-            terminal.WriteLine("\"Ah, a customer! I have rare wares for you...\"");
+            terminal.WriteLine(Loc.Get("encounter.merchant.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.merchant.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.merchant.desc_3"));
             terminal.WriteLine("");
 
             int potionPrice = level * 50;
@@ -1416,7 +1416,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Mega Healing Potion ({potionPrice}g) - Full heal");
+            terminal.WriteLine(Loc.Get("encounter.merchant.item_potion", potionPrice));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1424,7 +1424,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Elixir of Power ({buffPrice}g) - +5 random stat");
+            terminal.WriteLine(Loc.Get("encounter.merchant.item_elixir", buffPrice));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1432,7 +1432,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Mystery Box ({secretPrice}g) - ???");
+            terminal.WriteLine(Loc.Get("encounter.merchant.item_mystery", secretPrice));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1440,7 +1440,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Information (100g)");
+            terminal.WriteLine(Loc.Get("encounter.merchant.item_info"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1448,12 +1448,12 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
-            terminal.WriteLine($"Your gold: {player.Gold}", "cyan");
+            terminal.WriteLine(Loc.Get("encounter.merchant.your_gold", player.Gold), "cyan");
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice)
             {
@@ -1463,11 +1463,11 @@ namespace UsurperRemake.Systems
                         player.Gold -= potionPrice;
                         player.HP = player.MaxHP;
                         terminal.SetColor("green");
-                        terminal.WriteLine("You drink the mega potion. Full health restored!");
+                        terminal.WriteLine(Loc.Get("encounter.merchant.potion_drink"));
                     }
                     else
                     {
-                        terminal.WriteLine("\"Not enough gold, friend.\"", "red");
+                        terminal.WriteLine(Loc.Get("ui.not_enough_gold_friend"), "red");
                     }
                     break;
 
@@ -1480,33 +1480,33 @@ namespace UsurperRemake.Systems
                         {
                             case 0:
                                 player.Strength += 5;
-                                terminal.WriteLine("+5 Strength!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_str"), "green");
                                 break;
                             case 1:
                                 player.Intelligence += 5;
-                                terminal.WriteLine("+5 Intelligence!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_int"), "green");
                                 break;
                             case 2:
                                 player.Wisdom += 5;
-                                terminal.WriteLine("+5 Wisdom!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_wis"), "green");
                                 break;
                             case 3:
                                 player.Dexterity += 5;
-                                terminal.WriteLine("+5 Dexterity!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_dex"), "green");
                                 break;
                             case 4:
                                 player.Constitution += 5;
-                                terminal.WriteLine("+5 Constitution!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_con"), "green");
                                 break;
                             case 5:
                                 player.Charisma += 5;
-                                terminal.WriteLine("+5 Charisma!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.elixir_cha"), "green");
                                 break;
                         }
                     }
                     else
                     {
-                        terminal.WriteLine("\"Not enough gold, friend.\"", "red");
+                        terminal.WriteLine(Loc.Get("ui.not_enough_gold_friend"), "red");
                     }
                     break;
 
@@ -1515,7 +1515,7 @@ namespace UsurperRemake.Systems
                     {
                         player.Gold -= secretPrice;
                         terminal.SetColor("bright_magenta");
-                        terminal.WriteLine("You open the mystery box...");
+                        terminal.WriteLine(Loc.Get("encounter.merchant.mystery_open"));
                         await Task.Delay(1500);
 
                         var mystery = random.Next(5);
@@ -1523,30 +1523,30 @@ namespace UsurperRemake.Systems
                         {
                             case 0:
                                 player.Gold += secretPrice * 3;
-                                terminal.WriteLine($"JACKPOT! {secretPrice * 3} gold inside!", "bright_yellow");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.mystery_jackpot", secretPrice * 3), "bright_yellow");
                                 break;
                             case 1:
                                 player.Strength += 10;
                                 player.Defence += 10;
-                                terminal.WriteLine("Ancient power! +10 Strength, +10 Defence!", "bright_green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.mystery_power"), "bright_green");
                                 break;
                             case 2:
-                                terminal.WriteLine("Empty! The merchant cackles and vanishes!", "red");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.mystery_empty"), "red");
                                 break;
                             case 3:
                                 player.Experience += level * 500;
-                                terminal.WriteLine($"A tome of knowledge! +{level * 500} exp!", "cyan");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.mystery_tome", level * 500), "cyan");
                                 break;
                             case 4:
                                 player.Healing = player.MaxPotions;
                                 player.Mana = player.MaxMana;
-                                terminal.WriteLine("Rare elixirs! Full potions and mana!", "green");
+                                terminal.WriteLine(Loc.Get("encounter.merchant.mystery_elixirs"), "green");
                                 break;
                         }
                     }
                     else
                     {
-                        terminal.WriteLine("\"Not enough gold, friend.\"", "red");
+                        terminal.WriteLine(Loc.Get("ui.not_enough_gold_friend"), "red");
                     }
                     break;
 
@@ -1555,19 +1555,19 @@ namespace UsurperRemake.Systems
                     {
                         player.Gold -= 100;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("\"The treasure room is guarded by mimics.\"");
-                        terminal.WriteLine("\"The boss is weak to holy magic.\"");
-                        terminal.WriteLine("\"There's a secret passage in the third hall.\"");
+                        terminal.WriteLine(Loc.Get("encounter.merchant.info_1"));
+                        terminal.WriteLine(Loc.Get("encounter.merchant.info_2"));
+                        terminal.WriteLine(Loc.Get("encounter.merchant.info_3"));
                     }
                     else
                     {
-                        terminal.WriteLine("\"No gold, no info.\"", "red");
+                        terminal.WriteLine(Loc.Get("encounter.merchant.no_gold_info"), "red");
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("\"Come back when you have gold!\"");
+                    terminal.WriteLine(Loc.Get("encounter.merchant.leave_msg"));
                     break;
             }
 
@@ -1581,12 +1581,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("⌛ TIME WARP ⌛");
+            terminal.WriteLine("⌛ " + Loc.Get("encounter.timewarp.title") + " ⌛");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("The air shimmers and distorts...");
-            terminal.WriteLine("You feel yourself pulled through time!");
+            terminal.WriteLine(Loc.Get("encounter.timewarp.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.timewarp.desc_2"));
             terminal.WriteLine("");
 
             await Task.Delay(2000);
@@ -1596,53 +1596,53 @@ namespace UsurperRemake.Systems
             {
                 case 0:
                     terminal.SetColor("green");
-                    terminal.WriteLine("You glimpse your future self!");
-                    terminal.WriteLine("They hand you a bag of gold and wink.");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.future_1"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.future_2"));
                     player.Gold += level * 1500;  // Increased from 500 for economic balance
-                    terminal.WriteLine($"+{level * 1500} gold from your future self!");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.future_reward", level * 1500));
                     break;
 
                 case 1:
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("You witness a great battle of the past...");
-                    terminal.WriteLine("The strategies you observe are enlightening.");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.battle_1"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.battle_2"));
                     player.Experience += level * 300;
                     player.Strength += 2;
-                    terminal.WriteLine($"+{level * 300} exp, +2 Strength!");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.battle_reward", level * 300));
                     break;
 
                 case 2:
                     terminal.SetColor("red");
-                    terminal.WriteLine("You age rapidly for a moment...");
-                    terminal.WriteLine("Then return to normal, but weakened.");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.age_1"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.age_2"));
                     player.HP = player.HP / 2;
                     player.Experience = Math.Max(0, player.Experience - level * 100);
-                    terminal.WriteLine("HP halved, some experience lost!");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.age_penalty"));
                     break;
 
                 case 3:
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("You become younger for an instant!");
-                    terminal.WriteLine("The vitality lingers...");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.young_1"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.young_2"));
                     player.HP = player.MaxHP;
                     player.Mana = player.MaxMana;
                     player.Constitution += 3;
-                    terminal.WriteLine("Full restore, +3 Constitution!");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.young_reward"));
                     break;
 
                 case 4:
                     terminal.SetColor("magenta");
-                    terminal.WriteLine("You see yourself dying in a possible future...");
-                    terminal.WriteLine("A warning? The vision fades...");
-                    terminal.WriteLine("You feel more cautious.");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.death_1"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.death_2"));
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.death_3"));
                     player.Defence += 5;
-                    terminal.WriteLine("+5 Defence!");
+                    terminal.WriteLine(Loc.Get("encounter.timewarp.death_reward"));
                     break;
             }
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("Time returns to normal...");
+            terminal.WriteLine(Loc.Get("encounter.timewarp.end"));
 
             await terminal.PressAnyKey();
         }
@@ -1654,13 +1654,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("cyan");
-            terminal.WriteLine("📚 ANCIENT LIBRARY 📚");
+            terminal.WriteLine("📚 " + Loc.Get("encounter.library.title") + " 📚");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Towering bookshelves stretch into darkness.");
-            terminal.WriteLine("Dust motes dance in beams of ethereal light.");
-            terminal.WriteLine("Knowledge from ages past awaits...");
+            terminal.WriteLine(Loc.Get("encounter.library.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.library.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.library.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -1670,7 +1670,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Study combat techniques (+Strength)");
+            terminal.WriteLine(Loc.Get("encounter.library.option_combat"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1678,7 +1678,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Read arcane texts (+Intelligence/Mana)");
+            terminal.WriteLine(Loc.Get("encounter.library.option_arcane"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1686,7 +1686,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Learn ancient history (+Experience)");
+            terminal.WriteLine(Loc.Get("encounter.library.option_history"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1694,7 +1694,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Search for treasure maps (+Gold)");
+            terminal.WriteLine(Loc.Get("encounter.library.option_maps"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1702,57 +1702,57 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice)
             {
                 case "1":
                     terminal.SetColor("green");
-                    terminal.WriteLine("You study ancient fighting styles...");
+                    terminal.WriteLine(Loc.Get("encounter.library.combat_study"));
                     player.Strength += 3;
                     player.Dexterity += 2;
-                    terminal.WriteLine("+3 Strength, +2 Dexterity!");
+                    terminal.WriteLine(Loc.Get("encounter.library.combat_reward"));
                     break;
 
                 case "2":
                     terminal.SetColor("bright_magenta");
-                    terminal.WriteLine("The arcane texts glow as you read them...");
+                    terminal.WriteLine(Loc.Get("encounter.library.arcane_study"));
                     player.Intelligence += 3;
                     player.MaxMana += 10;
                     player.Mana = player.MaxMana;
-                    terminal.WriteLine("+3 Intelligence, +10 Max Mana!");
+                    terminal.WriteLine(Loc.Get("encounter.library.arcane_reward"));
                     break;
 
                 case "3":
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("Hours pass as you absorb ancient wisdom...");
+                    terminal.WriteLine(Loc.Get("encounter.library.history_study"));
                     player.Experience += level * 400;
                     player.Wisdom += 2;
-                    terminal.WriteLine($"+{level * 400} experience, +2 Wisdom!");
+                    terminal.WriteLine(Loc.Get("encounter.library.history_reward", level * 400));
                     break;
 
                 case "4":
                     if (random.NextDouble() < 0.6)
                     {
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("You find a map with a treasure marked!");
+                        terminal.WriteLine(Loc.Get("encounter.library.map_found"));
                         long treasure = level * 600;
                         player.Gold += treasure;
-                        terminal.WriteLine($"+{treasure} gold from following the map!");
+                        terminal.WriteLine(Loc.Get("encounter.library.map_reward", treasure));
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You find nothing but moth-eaten pages.");
+                        terminal.WriteLine(Loc.Get("encounter.library.map_nothing"));
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("You leave the library undisturbed.");
+                    terminal.WriteLine(Loc.Get("encounter.library.leave_msg"));
                     break;
             }
 
@@ -1766,13 +1766,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("=== WISHING WELL ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.well.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A crystal-clear well glimmers with magic.");
-            terminal.WriteLine("Ancient coins glitter at the bottom.");
-            terminal.WriteLine("\"Make a wish,\" whispers the wind...");
+            terminal.WriteLine(Loc.Get("encounter.well.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.well.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.well.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -1782,7 +1782,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Throw in 100 gold and make a wish");
+            terminal.WriteLine(Loc.Get("encounter.well.option_throw"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1790,7 +1790,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Dive in for the coins (risky!)");
+            terminal.WriteLine(Loc.Get("encounter.well.option_dive"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1798,10 +1798,10 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice.ToUpper())
             {
@@ -1810,7 +1810,7 @@ namespace UsurperRemake.Systems
                     {
                         player.Gold -= 100;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("You throw a coin and close your eyes...");
+                        terminal.WriteLine(Loc.Get("encounter.well.throw_coin"));
                         await Task.Delay(1500);
 
                         var wish = random.Next(6);
@@ -1818,50 +1818,50 @@ namespace UsurperRemake.Systems
                         {
                             case 0:
                                 terminal.SetColor("bright_green");
-                                terminal.WriteLine("Your wish is granted!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_granted"));
                                 player.HP = player.MaxHP;
                                 player.Mana = player.MaxMana;
-                                terminal.WriteLine("Full health and mana restored!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_restore"));
                                 break;
                             case 1:
                                 terminal.SetColor("bright_yellow");
-                                terminal.WriteLine("Gold rains from the well!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_gold"));
                                 player.Gold += 500;
-                                terminal.WriteLine("+500 gold!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_gold_amount"));
                                 break;
                             case 2:
                                 terminal.SetColor("green");
-                                terminal.WriteLine("You feel stronger!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_strength"));
                                 player.Strength += 3;
-                                terminal.WriteLine("+3 Strength!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_str_amount"));
                                 break;
                             case 3:
                                 terminal.SetColor("gray");
-                                terminal.WriteLine("...nothing happens.");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_nothing"));
                                 break;
                             case 4:
                                 terminal.SetColor("bright_magenta");
-                                terminal.WriteLine("Ancient wisdom fills your mind!");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_wisdom"));
                                 player.Experience += level * 250;
-                                terminal.WriteLine($"+{level * 250} experience!");
+                                terminal.WriteLine(Loc.Get("encounter.reward_exp", level * 250));
                                 break;
                             case 5:
                                 terminal.SetColor("red");
-                                terminal.WriteLine("The well rejects your wish!");
-                                terminal.WriteLine("Your coin is returned with interest?");
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_reject"));
+                                terminal.WriteLine(Loc.Get("encounter.well.wish_returned"));
                                 player.Gold += 150;
                                 break;
                         }
                     }
                     else
                     {
-                        terminal.WriteLine("You don't have enough gold.", "gray");
+                        terminal.WriteLine(Loc.Get("ui.not_enough_gold_plain"), "gray");
                     }
                     break;
 
                 case "D":
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("You dive into the well!");
+                    terminal.WriteLine(Loc.Get("encounter.well.dive"));
                     await Task.Delay(1000);
 
                     if (random.NextDouble() < 0.4)
@@ -1869,23 +1869,23 @@ namespace UsurperRemake.Systems
                         long coins = level * 200 + random.Next(500);
                         player.Gold += coins;
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine($"You gather {coins} gold from the bottom!");
-                        terminal.WriteLine("You climb out, dripping but rich!");
+                        terminal.WriteLine(Loc.Get("encounter.well.dive_success", coins));
+                        terminal.WriteLine(Loc.Get("encounter.well.dive_rich"));
                     }
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("The well spirits are ANGRY!");
+                        terminal.WriteLine(Loc.Get("encounter.well.dive_angry"));
                         int damage = (int)(player.MaxHP / 3);
                         player.HP -= damage;
-                        terminal.WriteLine($"They attack you! -{damage} HP!");
-                        terminal.WriteLine("You barely escape with your life!");
+                        terminal.WriteLine(Loc.Get("encounter.well.dive_damage", damage));
+                        terminal.WriteLine(Loc.Get("encounter.well.dive_escape"));
                     }
                     break;
 
                 default:
                     terminal.SetColor("gray");
-                    terminal.WriteLine("You walk away from the well.");
+                    terminal.WriteLine(Loc.Get("encounter.well.leave_msg"));
                     break;
             }
 
@@ -1899,13 +1899,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("=== ARENA PORTAL ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.arena.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A swirling portal crackles with energy.");
-            terminal.WriteLine("Through it, you see a gladiatorial arena!");
-            terminal.WriteLine("A voice booms: \"ENTER AND PROVE YOUR WORTH!\"");
+            terminal.WriteLine(Loc.Get("encounter.arena.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.arena.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.arena.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -1915,7 +1915,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Enter the arena");
+            terminal.WriteLine(Loc.Get("encounter.arena.option_enter"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -1923,17 +1923,17 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "E")
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You step through the portal!");
+                terminal.WriteLine(Loc.Get("encounter.arena.enter_portal"));
                 await Task.Delay(1000);
-                terminal.WriteLine("The crowd roars as you enter the arena!");
+                terminal.WriteLine(Loc.Get("encounter.arena.crowd_roars"));
                 terminal.WriteLine("");
 
                 // Generate an arena champion from the dungeon level's monster pool
@@ -1946,7 +1946,7 @@ namespace UsurperRemake.Systems
                     // Mini-boss bonuses applied by Monster class
 
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"Your opponent: {champion.Name}!");
+                    terminal.WriteLine(Loc.Get("encounter.arena.opponent", champion.Name));
                     terminal.WriteLine("");
                     await Task.Delay(500);
 
@@ -1958,16 +1958,16 @@ namespace UsurperRemake.Systems
                     {
                         terminal.WriteLine("");
                         terminal.SetColor("bright_yellow");
-                        terminal.WriteLine("The arena master approaches...");
-                        terminal.WriteLine("\"Magnificent! A true gladiator!\"");
+                        terminal.WriteLine(Loc.Get("encounter.arena.victory_1"));
+                        terminal.WriteLine(Loc.Get("encounter.arena.victory_2"));
                         player.Chivalry += 25;
                         terminal.SetColor("green");
-                        terminal.WriteLine("+25 Chivalry!");
+                        terminal.WriteLine(Loc.Get("encounter.reward_chivalry", 25));
                     }
                     else if (result.Outcome == CombatOutcome.PlayerDied)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You are dragged from the arena...");
+                        terminal.WriteLine(Loc.Get("encounter.arena.defeat"));
                         // Prevent permadeath from arena — leave at 1 HP
                         if (player.HP <= 0)
                             player.HP = 1;
@@ -1975,20 +1975,20 @@ namespace UsurperRemake.Systems
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("You retreat from the arena. The crowd boos.");
+                        terminal.WriteLine(Loc.Get("encounter.arena.fled"));
                     }
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("The arena is empty today. No challenger appears.");
+                    terminal.WriteLine(Loc.Get("encounter.arena.empty"));
                 }
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You step away from the portal.");
-                terminal.WriteLine("The voice sighs: \"Coward...\"");
+                terminal.WriteLine(Loc.Get("encounter.arena.leave_1"));
+                terminal.WriteLine(Loc.Get("encounter.arena.leave_2"));
             }
 
             await terminal.PressAnyKey();
@@ -2003,12 +2003,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("=== THE BONE ORACLE ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.bone_oracle.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A skeleton sits cross-legged, bones arranged in patterns.");
-            terminal.WriteLine("Its jaw clacks: \"Ask... and I shall answer...\"");
+            terminal.WriteLine(Loc.Get("encounter.bone_oracle.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.bone_oracle.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2018,7 +2018,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Ask about your future");
+            terminal.WriteLine(Loc.Get("encounter.bone_oracle.option_future"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2026,7 +2026,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Ask about the dungeon");
+            terminal.WriteLine(Loc.Get("encounter.bone_oracle.option_dungeon"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2034,9 +2034,9 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "A")
             {
@@ -2045,19 +2045,19 @@ namespace UsurperRemake.Systems
                 switch (prophecy)
                 {
                     case 0:
-                        terminal.WriteLine("\"Great treasure awaits... but at great cost.\"");
+                        terminal.WriteLine(Loc.Get("encounter.bone_oracle.prophecy_0"));
                         player.Experience += level * 100;
                         break;
                     case 1:
-                        terminal.WriteLine("\"Death walks beside you... but not for you. Not yet.\"");
+                        terminal.WriteLine(Loc.Get("encounter.bone_oracle.prophecy_1"));
                         player.Defence += 2;
                         break;
                     case 2:
-                        terminal.WriteLine("\"The throne... I see you upon it... or beneath it.\"");
+                        terminal.WriteLine(Loc.Get("encounter.bone_oracle.prophecy_2"));
                         player.Chivalry += 25;
                         break;
                     case 3:
-                        terminal.WriteLine("\"Beware the one who smiles. They are not your friend.\"");
+                        terminal.WriteLine(Loc.Get("encounter.bone_oracle.prophecy_3"));
                         player.Wisdom += 2;
                         break;
                 }
@@ -2065,9 +2065,9 @@ namespace UsurperRemake.Systems
             else if (choice.ToUpper() == "D")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"The boss room lies at the dungeon's heart.\"");
-                terminal.WriteLine("\"It fears the light. Bring flames.\"");
-                terminal.WriteLine("\"Treasure hides behind the third skull on the left.\"");
+                terminal.WriteLine(Loc.Get("encounter.bone_oracle.dungeon_1"));
+                terminal.WriteLine(Loc.Get("encounter.bone_oracle.dungeon_2"));
+                terminal.WriteLine(Loc.Get("encounter.bone_oracle.dungeon_3"));
                 player.Intelligence += 1;
             }
 
@@ -2078,12 +2078,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_white");
-            terminal.WriteLine("=== RESTLESS SPIRITS ===");
+            terminal.WriteLine("=== " + Loc.Get("encounter.spirits.title") + " ===");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Translucent figures drift through the walls.");
-            terminal.WriteLine("They seem lost, confused, reaching out...");
+            terminal.WriteLine(Loc.Get("encounter.spirits.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.spirits.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2093,7 +2093,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Help them find peace");
+            terminal.WriteLine(Loc.Get("encounter.spirits.option_help"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2101,7 +2101,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Attack the spirits");
+            terminal.WriteLine(Loc.Get("encounter.spirits.option_attack"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2109,32 +2109,32 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Ignore them");
+            terminal.WriteLine(Loc.Get("encounter.spirits.option_ignore"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "H")
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine("You speak words of comfort...");
-                terminal.WriteLine("The spirits smile and fade into light.");
-                terminal.WriteLine("\"Thank you...\" they whisper.");
+                terminal.WriteLine(Loc.Get("encounter.spirits.help_1"));
+                terminal.WriteLine(Loc.Get("encounter.spirits.help_2"));
+                terminal.WriteLine(Loc.Get("encounter.spirits.help_3"));
 
                 player.Chivalry += 50;
                 player.Experience += level * 150;
                 terminal.SetColor("green");
-                terminal.WriteLine("+50 Chivalry, +" + (level * 150) + " experience!");
+                terminal.WriteLine(Loc.Get("encounter.spirits.help_reward", level * 150));
             }
             else if (choice.ToUpper() == "A")
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Your weapons pass through them!");
-                terminal.WriteLine("They turn angry, clawing at you!");
+                terminal.WriteLine(Loc.Get("encounter.spirits.attack_1"));
+                terminal.WriteLine(Loc.Get("encounter.spirits.attack_2"));
 
                 int damage = (int)(player.MaxHP / 4);
                 player.HP -= damage;
                 player.Darkness += 20;
-                terminal.WriteLine($"-{damage} HP, +20 Darkness!");
+                terminal.WriteLine(Loc.Get("encounter.spirits.attack_penalty", damage));
             }
 
             await terminal.PressAnyKey();
@@ -2144,12 +2144,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("🔑 THE CRYPT KEEPER 🔑");
+            terminal.WriteLine(Loc.Get("encounter.crypt.title_icon"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A hooded figure tends to the tombs.");
-            terminal.WriteLine("\"Visitors are rare. What brings you?\"");
+            terminal.WriteLine(Loc.Get("encounter.crypt.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.crypt.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2159,7 +2159,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Trade (buy potions)");
+            terminal.WriteLine(Loc.Get("encounter.crypt.option_trade"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2167,7 +2167,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Information about the catacombs");
+            terminal.WriteLine(Loc.Get("encounter.crypt.option_info"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2175,24 +2175,24 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "T")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"I have... special potions.\"");
+                terminal.WriteLine(Loc.Get("encounter.crypt.trade_1"));
                 if (player.Gold >= 150)
                 {
                     player.Gold -= 150;
                     player.Healing = Math.Min(player.MaxPotions, player.Healing + 2);
                     terminal.SetColor("green");
-                    terminal.WriteLine("Purchased 2 healing potions!");
+                    terminal.WriteLine(Loc.Get("encounter.crypt.trade_success"));
                 }
                 else
                 {
-                    terminal.WriteLine("\"Not enough gold.\"");
+                    terminal.WriteLine(Loc.Get("ui.not_enough_gold_friend"));
                 }
             }
             else if (choice.ToUpper() == "I")
@@ -2218,35 +2218,35 @@ namespace UsurperRemake.Systems
 
                 if (nearestSeal > 0 && nearestSeal - level <= 15)
                 {
-                    hints.Add(($"\"I've felt ancient power sealed nearby... around floor {nearestSeal}.\"",
-                               "\"Something waits to be claimed there.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_seal_1", nearestSeal),
+                               Loc.Get("encounter.crypt.hint_seal_2")));
                 }
                 if (nearestGodIdx >= 0 && godFloors[nearestGodIdx] - level <= 20)
                 {
-                    hints.Add(($"\"A presence stirs below — {godNames[nearestGodIdx]} dwells near floor {godFloors[nearestGodIdx]}.\"",
-                               "\"Tread carefully. The old ones do not forgive trespassers.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_god_1", godNames[nearestGodIdx], godFloors[nearestGodIdx]),
+                               Loc.Get("encounter.crypt.hint_god_2")));
                 }
                 if (level >= 10 && level <= 30)
                 {
-                    hints.Add(("\"The deeper you go, the richer the dead become.\"",
-                               "\"But so do the things that guard them.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_low_1"),
+                               Loc.Get("encounter.crypt.hint_low_2")));
                 }
                 if (level >= 40 && level <= 60)
                 {
-                    hints.Add(("\"These middle depths are treacherous. The monsters here have learned to hunt.\"",
-                               $"\"A warrior of your caliber should be cautious below floor {level + 10}.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_mid_1"),
+                               Loc.Get("encounter.crypt.hint_mid_2", level + 10)));
                 }
                 if (level >= 70)
                 {
-                    hints.Add(("\"Few return from where you tread. The catacombs remember every soul they take.\"",
-                               "\"The deepest floors hold secrets that predate the kingdom itself.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_deep_1"),
+                               Loc.Get("encounter.crypt.hint_deep_2")));
                 }
 
                 // Always have at least one generic hint
                 if (hints.Count == 0)
                 {
-                    hints.Add(("\"The dead whisper of treasure deeper below.\"",
-                               "\"Explore carefully — not every room reveals its secrets at first glance.\""));
+                    hints.Add((Loc.Get("encounter.crypt.hint_generic_1"),
+                               Loc.Get("encounter.crypt.hint_generic_2")));
                 }
 
                 var hint = hints[rng.Next(hints.Count)];
@@ -2262,13 +2262,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("⚰ ANCIENT TOMB ⚰");
+            terminal.WriteLine(Loc.Get("encounter.tomb.title_icon"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("An ornate sarcophagus dominates the room.");
-            terminal.WriteLine("Gold and jewels are scattered around it.");
-            terminal.WriteLine("Warnings in ancient text cover the walls...");
+            terminal.WriteLine(Loc.Get("encounter.tomb.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.tomb.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.tomb.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2278,7 +2278,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Open the sarcophagus");
+            terminal.WriteLine(Loc.Get("encounter.tomb.option_open"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2286,7 +2286,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Take only the loose treasure");
+            terminal.WriteLine(Loc.Get("encounter.tomb.option_take"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2294,43 +2294,43 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave it all");
+            terminal.WriteLine(Loc.Get("encounter.tomb.option_leave"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "O")
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You push open the heavy lid...");
+                terminal.WriteLine(Loc.Get("encounter.tomb.open_push"));
                 await Task.Delay(1500);
 
                 if (random.NextDouble() < 0.5)
                 {
-                    terminal.WriteLine("A mummy BURSTS OUT!");
+                    terminal.WriteLine(Loc.Get("encounter.tomb.open_mummy"));
                     int damage = (int)(player.MaxHP / 3);
                     player.HP -= damage;
                     terminal.WriteLine($"-{damage} HP!");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("But you find ancient treasures within!");
+                    terminal.WriteLine(Loc.Get("encounter.tomb.open_mummy_treasure"));
                     player.Gold += level * 1500;  // Increased from 500 for economic balance
-                    terminal.WriteLine($"+{level * 1500} gold!");
+                    terminal.WriteLine(Loc.Get("encounter.reward_gold", level * 1500));
                 }
                 else
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("The occupant has long since turned to dust.");
-                    terminal.WriteLine("But their treasures remain!");
+                    terminal.WriteLine(Loc.Get("encounter.tomb.open_dust_1"));
+                    terminal.WriteLine(Loc.Get("encounter.tomb.open_dust_2"));
                     player.Gold += level * 2400;  // Increased from 800 for economic balance
                     player.Strength += 2;
-                    terminal.WriteLine($"+{level * 2400} gold, +2 Strength!");
+                    terminal.WriteLine(Loc.Get("encounter.tomb.open_dust_reward", level * 2400));
                 }
             }
             else if (choice.ToUpper() == "T")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You carefully gather the loose coins and gems.");
+                terminal.WriteLine(Loc.Get("encounter.tomb.take_careful"));
                 player.Gold += level * 600;  // Increased from 200 for economic balance
-                terminal.WriteLine($"+{level * 600} gold!");
+                terminal.WriteLine(Loc.Get("encounter.reward_gold", level * 600));
             }
 
             await terminal.PressAnyKey();
@@ -2341,13 +2341,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("🐀 THE RAT KING 🐀");
+            terminal.WriteLine(Loc.Get("encounter.ratking.title_icon"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Thousands of rats form a writhing mass...");
-            terminal.WriteLine("At the center, one massive rat wears a tiny crown.");
-            terminal.WriteLine("It speaks with a thousand voices: \"TRIBUTE!\"");
+            terminal.WriteLine(Loc.Get("encounter.ratking.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.ratking.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.ratking.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2357,7 +2357,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Pay tribute (500 gold)");
+            terminal.WriteLine(Loc.Get("encounter.ratking.option_pay"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2365,7 +2365,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Fight the swarm");
+            terminal.WriteLine(Loc.Get("encounter.ratking.option_fight"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2373,33 +2373,33 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Run!");
+            terminal.WriteLine(Loc.Get("encounter.ratking.option_run"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "P" && player.Gold >= 500)
             {
                 player.Gold -= 500;
                 terminal.SetColor("yellow");
-                terminal.WriteLine("The rats accept your offering.");
-                terminal.WriteLine("\"YOU MAY PASS, SURFACE DWELLER.\"");
-                terminal.WriteLine("They part, revealing a hidden treasure cache!");
+                terminal.WriteLine(Loc.Get("encounter.ratking.pay_accept"));
+                terminal.WriteLine(Loc.Get("encounter.ratking.pay_pass"));
+                terminal.WriteLine(Loc.Get("encounter.ratking.pay_cache"));
                 player.Gold += level * 900;  // Increased from 300 for economic balance
                 terminal.SetColor("green");
-                terminal.WriteLine($"+{level * 900} gold found!");
+                terminal.WriteLine(Loc.Get("encounter.reward_gold", level * 900));
             }
             else if (choice.ToUpper() == "F")
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You fight through the endless swarm!");
+                terminal.WriteLine(Loc.Get("encounter.ratking.fight_swarm"));
                 int damage = level * 5;
                 player.HP -= damage;
-                terminal.WriteLine($"-{damage} HP from countless bites!");
+                terminal.WriteLine(Loc.Get("encounter.ratking.fight_damage", damage));
 
                 if (random.NextDouble() < 0.5)
                 {
                     terminal.SetColor("green");
-                    terminal.WriteLine("You slay the Rat King!");
+                    terminal.WriteLine(Loc.Get("encounter.ratking.fight_slay"));
                     player.Gold += level * 1200;  // Increased from 400 for economic balance
                     player.Experience += level * 200;
                 }
@@ -2407,7 +2407,7 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You flee the chittering horde!");
+                terminal.WriteLine(Loc.Get("encounter.ratking.run_flee"));
             }
 
             await terminal.PressAnyKey();
@@ -2417,12 +2417,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("cyan");
-            terminal.WriteLine("👦 LOST CHILD 👦");
+            terminal.WriteLine(Loc.Get("encounter.child.title_icon"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("A small child huddles in the corner, crying.");
-            terminal.WriteLine("\"I... I got lost... please help me...\"");
+            terminal.WriteLine(Loc.Get("encounter.child.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.child.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2432,7 +2432,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Help the child find the exit");
+            terminal.WriteLine(Loc.Get("encounter.child.option_help"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2440,7 +2440,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Ignore them");
+            terminal.WriteLine(Loc.Get("encounter.spirits.option_ignore"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2448,27 +2448,27 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Check if it's a trap");
+            terminal.WriteLine(Loc.Get("encounter.child.option_check"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "H")
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("You take the child's hand and guide them to safety.");
-                terminal.WriteLine("\"Thank you! My family will reward you!\"");
+                terminal.WriteLine(Loc.Get("encounter.child.help_guide"));
+                terminal.WriteLine(Loc.Get("encounter.child.help_thanks"));
 
                 player.Gold += level * 600;  // Increased from 200 for economic balance
                 player.Chivalry += 100;
-                terminal.WriteLine($"+{level * 600} gold, +100 Chivalry!");
+                terminal.WriteLine(Loc.Get("encounter.child.help_reward", level * 600));
             }
             else if (choice.ToUpper() == "C")
             {
                 if (random.NextDouble() < 0.3)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("The 'child' grins with too many teeth!");
-                    terminal.WriteLine("It's a changeling! It attacks!");
+                    terminal.WriteLine(Loc.Get("encounter.child.check_trap_1"));
+                    terminal.WriteLine(Loc.Get("encounter.child.check_trap_2"));
                     int damage = (int)(player.MaxHP / 5);
                     player.HP -= damage;
                     terminal.WriteLine($"-{damage} HP!");
@@ -2476,14 +2476,14 @@ namespace UsurperRemake.Systems
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Just a scared kid. You help them anyway.");
+                    terminal.WriteLine(Loc.Get("encounter.child.check_safe"));
                     player.Chivalry += 50;
                 }
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You walk past the crying child.");
+                terminal.WriteLine(Loc.Get("encounter.child.ignore_walk"));
                 player.Darkness += 10;
             }
 
@@ -2494,12 +2494,12 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_green");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "ABANDONED ALCHEMY LAB" : "⚗ ABANDONED ALCHEMY LAB ⚗");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.alchemy.title") : Loc.Get("encounter.alchemy.title_icon"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Bubbling vials and dusty tomes fill this space.");
-            terminal.WriteLine("Whoever worked here left in a hurry...");
+            terminal.WriteLine(Loc.Get("encounter.alchemy.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.alchemy.desc_2"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2509,7 +2509,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Drink a random potion");
+            terminal.WriteLine(Loc.Get("encounter.alchemy.option_drink"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2517,7 +2517,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Read the notes");
+            terminal.WriteLine(Loc.Get("encounter.alchemy.option_read"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2525,7 +2525,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Steal valuable supplies");
+            terminal.WriteLine(Loc.Get("encounter.alchemy.option_steal"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2533,14 +2533,14 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("encounter.option_leave"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "D")
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("You drink a bubbling green liquid...");
+                terminal.WriteLine(Loc.Get("encounter.alchemy.drink_gulp"));
                 await Task.Delay(1500);
 
                 var effect = random.Next(5);
@@ -2549,27 +2549,27 @@ namespace UsurperRemake.Systems
                     case 0:
                         player.Strength += 5;
                         terminal.SetColor("green");
-                        terminal.WriteLine("POWER! +5 Strength!");
+                        terminal.WriteLine(Loc.Get("encounter.alchemy.drink_power"));
                         break;
                     case 1:
                         player.HP = player.MaxHP;
                         terminal.SetColor("green");
-                        terminal.WriteLine("Full health restored!");
+                        terminal.WriteLine(Loc.Get("encounter.alchemy.drink_health"));
                         break;
                     case 2:
                         terminal.SetColor("red");
-                        terminal.WriteLine("POISON! You feel terrible!");
+                        terminal.WriteLine(Loc.Get("encounter.alchemy.drink_poison"));
                         player.Poison += 3;
                         player.PoisonTurns = Math.Max(player.PoisonTurns, 10 + player.Level / 5);
                         break;
                     case 3:
                         player.Intelligence += 5;
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("Enlightenment! +5 Intelligence!");
+                        terminal.WriteLine(Loc.Get("encounter.alchemy.drink_enlighten"));
                         break;
                     case 4:
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You turn briefly invisible. Neat!");
+                        terminal.WriteLine(Loc.Get("encounter.alchemy.drink_invisible"));
                         player.Dexterity += 3;
                         break;
                 }
@@ -2577,18 +2577,18 @@ namespace UsurperRemake.Systems
             else if (choice.ToUpper() == "R")
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine("The notes describe potion recipes...");
+                terminal.WriteLine(Loc.Get("encounter.alchemy.read_notes"));
                 player.Intelligence += 2;
                 player.Experience += level * 100;
-                terminal.WriteLine("+2 Intelligence, +" + (level * 100) + " exp!");
+                terminal.WriteLine(Loc.Get("encounter.alchemy.read_reward", level * 100));
             }
             else if (choice.ToUpper() == "S")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You grab valuable alchemical supplies!");
+                terminal.WriteLine(Loc.Get("encounter.alchemy.steal_grab"));
                 player.Gold += level * 900;  // Increased from 300 for economic balance
                 player.Healing = Math.Min(player.MaxPotions, player.Healing + 2);
-                terminal.WriteLine($"+{level * 900} gold, +2 potions!");
+                terminal.WriteLine(Loc.Get("encounter.alchemy.steal_reward", level * 900));
             }
 
             await terminal.PressAnyKey();
@@ -2598,13 +2598,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("=== TREASURE HOARD ===");
+            terminal.WriteLine(Loc.Get("encounter.hoard.title"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Coins and gems are piled high!");
-            terminal.WriteLine("This must be a thieves' guild cache...");
-            terminal.WriteLine("But is anyone guarding it?");
+            terminal.WriteLine(Loc.Get("encounter.hoard.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.hoard.desc_2"));
+            terminal.WriteLine(Loc.Get("encounter.hoard.desc_3"));
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -2614,7 +2614,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Take it all!");
+            terminal.WriteLine(Loc.Get("encounter.hoard.option_take_all"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2622,7 +2622,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Take some carefully");
+            terminal.WriteLine(Loc.Get("encounter.hoard.option_take_some"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2630,42 +2630,42 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave (it's a trap)");
+            terminal.WriteLine(Loc.Get("encounter.hoard.option_leave"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             if (choice.ToUpper() == "T")
             {
                 if (random.NextDouble() < 0.4)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("TRAP! Thieves emerge from the shadows!");
+                    terminal.WriteLine(Loc.Get("encounter.hoard.trap_thieves"));
                     int damage = (int)(player.MaxHP / 4);
                     player.HP -= damage;
                     terminal.WriteLine($"-{damage} HP!");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("But you grab what you can!");
+                    terminal.WriteLine(Loc.Get("encounter.hoard.trap_grab"));
                     player.Gold += level * 900;  // Increased from 300 for economic balance
                 }
                 else
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("Jackpot! You take everything!");
+                    terminal.WriteLine(Loc.Get("encounter.hoard.jackpot"));
                     player.Gold += level * 2100;  // Increased from 700 for economic balance
-                    terminal.WriteLine($"+{level * 2100} gold!");
+                    terminal.WriteLine(Loc.Get("encounter.reward_gold", level * 2100));
                 }
             }
             else if (choice.ToUpper() == "S")
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You carefully pocket some valuables.");
+                terminal.WriteLine(Loc.Get("encounter.hoard.some_pocket"));
                 player.Gold += level * 600;  // Increased from 200 for economic balance
-                terminal.WriteLine($"+{level * 600} gold!");
+                terminal.WriteLine(Loc.Get("encounter.reward_gold", level * 600));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("Your caution was wise. Or paranoid.");
+                terminal.WriteLine(Loc.Get("encounter.hoard.leave_caution"));
             }
 
             await terminal.PressAnyKey();
@@ -2678,25 +2678,25 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("=== CRYSTAL CAVE ===");
+            terminal.WriteLine(Loc.Get("encounter.crystal.title"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("Massive crystals hum with power.");
-            terminal.WriteLine("Touching one might grant power... or pain.");
+            terminal.WriteLine(Loc.Get("encounter.crystal.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.crystal.desc_2"));
 
             if (random.NextDouble() < 0.6)
             {
                 player.Mana = player.MaxMana;
                 player.Intelligence += 3;
                 terminal.SetColor("green");
-                terminal.WriteLine("The crystal's energy flows into you!");
-                terminal.WriteLine("Full mana restored, +3 Intelligence!");
+                terminal.WriteLine(Loc.Get("encounter.crystal.good_1"));
+                terminal.WriteLine(Loc.Get("encounter.crystal.good_2"));
             }
             else
             {
                 player.HP -= player.MaxHP / 5;
                 terminal.SetColor("red");
-                terminal.WriteLine("The crystal shocks you!");
+                terminal.WriteLine(Loc.Get("encounter.crystal.bad"));
             }
             await terminal.PressAnyKey();
         }
@@ -2705,16 +2705,16 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("=== DRAGON'S HOARD ===");
+            terminal.WriteLine(Loc.Get("encounter.dragon_hoard.title"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("Gold piled higher than you've ever seen!");
-            terminal.WriteLine("The dragon seems to be away...");
+            terminal.WriteLine(Loc.Get("encounter.dragon_hoard.desc_1"));
+            terminal.WriteLine(Loc.Get("encounter.dragon_hoard.desc_2"));
 
             long hoardGold = level * 3000;
             player.Gold += hoardGold;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"You grab {hoardGold:N0} gold and RUN!");
+            terminal.WriteLine(Loc.Get("encounter.dragon_hoard.grab", hoardGold.ToString("N0")));
             await terminal.PressAnyKey();
         }
 
@@ -2722,15 +2722,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("yellow");
-            terminal.WriteLine("⛏ DWARVEN OUTPOST ⛏");
+            terminal.WriteLine(Loc.Get("encounter.dwarven.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A small dwarven trading post still operates here.", "white");
-            terminal.WriteLine("\"Welcome, surfacer! Need anything?\"");
+            terminal.WriteLine(Loc.Get("encounter.dwarven.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.dwarven.desc_2"));
 
             player.Healing = Math.Min(player.MaxPotions, player.Healing + 3);
             terminal.SetColor("green");
-            terminal.WriteLine("The dwarves share their healing supplies!");
-            terminal.WriteLine("+3 healing potions!");
+            terminal.WriteLine(Loc.Get("encounter.dwarven.reward_1"));
+            terminal.WriteLine(Loc.Get("encounter.dwarven.reward_2"));
             await terminal.PressAnyKey();
         }
 
@@ -2738,15 +2738,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("blue");
-            terminal.WriteLine("🌊 UNDERGROUND LAKE 🌊");
+            terminal.WriteLine(Loc.Get("encounter.lake.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A serene lake glows with bioluminescence.", "white");
-            terminal.WriteLine("The water looks... magical.");
+            terminal.WriteLine(Loc.Get("encounter.lake.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.lake.desc_2"));
 
             player.HP = player.MaxHP;
             player.Mana = player.MaxMana;
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("You drink from the lake. Full restoration!");
+            terminal.WriteLine(Loc.Get("encounter.lake.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -2754,24 +2754,24 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("🗿 ANCIENT GOLEM 🗿");
+            terminal.WriteLine(Loc.Get("encounter.golem.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A stone guardian blocks your path.", "white");
-            terminal.WriteLine("\"Answer the riddle or face destruction.\"");
+            terminal.WriteLine(Loc.Get("encounter.golem.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.golem.desc_2"));
             terminal.WriteLine("");
-            terminal.WriteLine("\"What has keys but no locks?\"");
+            terminal.WriteLine(Loc.Get("encounter.golem.riddle"));
 
-            var answer = await terminal.GetInput("Your answer: ");
+            var answer = await terminal.GetInput(Loc.Get("encounter.golem.prompt"));
             if (answer.ToLower().Contains("piano") || answer.ToLower().Contains("keyboard"))
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("\"Correct. You may pass.\"");
+                terminal.WriteLine(Loc.Get("encounter.golem.correct"));
                 player.Experience += level * 200;
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\"Wrong.\" The golem attacks!");
+                terminal.WriteLine(Loc.Get("encounter.golem.wrong"));
                 player.HP -= player.MaxHP / 4;
             }
             await terminal.PressAnyKey();
@@ -2781,15 +2781,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("cyan");
-            terminal.WriteLine("📦 TIME CAPSULE 📦");
+            terminal.WriteLine(Loc.Get("encounter.capsule.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A sealed container from an ancient civilization.", "white");
-            terminal.WriteLine("Inside: treasures from another age!");
+            terminal.WriteLine(Loc.Get("encounter.capsule.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.capsule.desc_2"));
 
             player.Gold += level * 1200;  // Increased from 400 for economic balance
             player.Experience += level * 150;
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"+{level * 400} gold, +{level * 150} exp!");
+            terminal.WriteLine(Loc.Get("encounter.reward_gold_exp", level * 400, level * 150));
             await terminal.PressAnyKey();
         }
 
@@ -2797,16 +2797,16 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("⛲ MAGIC FOUNTAIN ⛲");
+            terminal.WriteLine(Loc.Get("encounter.fountain.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("Pure magical water flows from ancient stone.", "white");
+            terminal.WriteLine(Loc.Get("encounter.fountain.desc"), "white");
 
             player.HP = player.MaxHP;
             player.Mana = player.MaxMana;
             player.Poison = 0;
             player.PoisonTurns = 0;
             terminal.SetColor("green");
-            terminal.WriteLine("You drink deeply. All ailments cured!");
+            terminal.WriteLine(Loc.Get("encounter.fountain.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -2814,15 +2814,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("yellow");
-            terminal.WriteLine("🏛 LOST CIVILIZATION 🏛");
+            terminal.WriteLine(Loc.Get("encounter.civilization.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("Remnants of a great society surround you.", "white");
-            terminal.WriteLine("Their technology was far beyond our own...");
+            terminal.WriteLine(Loc.Get("encounter.civilization.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.civilization.desc_2"));
 
             player.Intelligence += 5;
             player.Experience += level * 300;
             terminal.SetColor("cyan");
-            terminal.WriteLine("You study their writings. +5 Int, +" + (level * 300) + " exp!");
+            terminal.WriteLine(Loc.Get("encounter.civilization.reward", level * 300));
             await terminal.PressAnyKey();
         }
 
@@ -2831,10 +2831,10 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("👿 DEMON BARGAIN 👿");
+            terminal.WriteLine(Loc.Get("encounter.demon_bargain.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A demon offers you power... for a price.", "white");
-            terminal.WriteLine("\"Your soul is valuable. Let's make a deal.\"");
+            terminal.WriteLine(Loc.Get("encounter.demon_bargain.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.demon_bargain.desc_2"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -2843,7 +2843,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Accept (power but +Darkness)");
+            terminal.WriteLine(Loc.Get("encounter.demon_bargain.option_accept"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2851,20 +2851,20 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Refuse");
+            terminal.WriteLine(Loc.Get("encounter.demon_bargain.option_refuse"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
             if (choice.ToUpper() == "A")
             {
                 player.Strength += 10;
                 player.Darkness += 100;
                 terminal.SetColor("red");
-                terminal.WriteLine("+10 Strength, but +100 Darkness!");
+                terminal.WriteLine(Loc.Get("encounter.demon_bargain.accept_result"));
             }
             else
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("The demon hisses and vanishes.");
+                terminal.WriteLine(Loc.Get("encounter.demon_bargain.refuse_result"));
             }
             await terminal.PressAnyKey();
         }
@@ -2873,13 +2873,13 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("😱 TORTURED SOULS 😱");
+            terminal.WriteLine(Loc.Get("encounter.tortured.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("Souls in chains beg for release.", "white");
+            terminal.WriteLine(Loc.Get("encounter.tortured.desc"), "white");
 
             player.Chivalry += 30;
             player.Experience += level * 100;
-            terminal.WriteLine("You free them. +30 Chivalry!", "green");
+            terminal.WriteLine(Loc.Get("encounter.tortured.reward"), "green");
             await terminal.PressAnyKey();
         }
 
@@ -2887,18 +2887,18 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_red");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "INFERNAL FORGE" : "🔥 INFERNAL FORGE 🔥");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.forge.title") : Loc.Get("encounter.forge.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("You stumble upon the smoldering remains of a", "white");
-            terminal.WriteLine("demonic forge, its hellfire still burning bright.", "white");
-            terminal.WriteLine("An anvil pulses with infernal energy. You hold", "white");
-            terminal.WriteLine("your weapon to the flames and feel it grow stronger.", "white");
+            terminal.WriteLine(Loc.Get("encounter.forge.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.forge.desc_2"), "white");
+            terminal.WriteLine(Loc.Get("encounter.forge.desc_3"), "white");
+            terminal.WriteLine(Loc.Get("encounter.forge.desc_4"), "white");
             terminal.WriteLine("");
 
             player.BonusWeapPow += 5;
             player.RecalculateStats();
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your weapon has been permanently tempered! +5 Weapon Power!");
+            terminal.WriteLine(Loc.Get("encounter.forge.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -2906,10 +2906,10 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("magenta");
-            terminal.WriteLine("💋 SUCCUBUS 💋");
+            terminal.WriteLine(Loc.Get("encounter.succubus.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A beautiful demon appears...", "white");
-            terminal.WriteLine("\"Hello, handsome. Lonely in these depths?\"");
+            terminal.WriteLine(Loc.Get("encounter.succubus.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.succubus.desc_2"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -2918,7 +2918,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Resist her charms");
+            terminal.WriteLine(Loc.Get("encounter.succubus.option_resist"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -2926,21 +2926,21 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Succumb...");
+            terminal.WriteLine(Loc.Get("encounter.succubus.option_succumb"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
             if (choice.ToUpper() == "R")
             {
                 player.Wisdom += 5;
                 terminal.SetColor("green");
-                terminal.WriteLine("Your willpower impresses her. +5 Wisdom!");
+                terminal.WriteLine(Loc.Get("encounter.succubus.resist_result"));
             }
             else
             {
                 player.HP -= player.MaxHP / 3;
                 player.Gold = player.Gold * 8 / 10;
                 terminal.SetColor("red");
-                terminal.WriteLine("She drains your life and steals your gold!");
+                terminal.WriteLine(Loc.Get("encounter.succubus.succumb_result"));
             }
             await terminal.PressAnyKey();
         }
@@ -2950,15 +2950,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("🧊 FROZEN ADVENTURER 🧊");
+            terminal.WriteLine(Loc.Get("encounter.frozen.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("An adventurer is frozen solid in ice.", "white");
-            terminal.WriteLine("Their equipment looks valuable...");
+            terminal.WriteLine(Loc.Get("encounter.frozen.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.frozen.desc_2"));
 
             player.Gold += level * 900;  // Increased from 300 for economic balance
             player.Healing = Math.Min(player.MaxPotions, player.Healing + 2);
             terminal.SetColor("yellow");
-            terminal.WriteLine("You take their supplies. They won't need them.");
+            terminal.WriteLine(Loc.Get("encounter.frozen.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -2966,15 +2966,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_white");
-            terminal.WriteLine("*** THE ICE QUEEN ***");
+            terminal.WriteLine(Loc.Get("encounter.ice_queen.title"));
             terminal.WriteLine("");
-            terminal.WriteLine("A beautiful but cold figure sits on a throne of ice.", "white");
-            terminal.WriteLine("\"Bow before me, mortal.\"");
+            terminal.WriteLine(Loc.Get("encounter.ice_queen.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.ice_queen.desc_2"));
 
             player.Charisma += 3;
             player.Mana = player.MaxMana;
             terminal.SetColor("cyan");
-            terminal.WriteLine("She grants you her blessing. +3 Charisma, full mana!");
+            terminal.WriteLine(Loc.Get("encounter.ice_queen.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -2982,22 +2982,22 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("white");
-            terminal.WriteLine("🐻 YETI DEN 🐻");
+            terminal.WriteLine(Loc.Get("encounter.yeti.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A family of yetis! The babies are cute.", "white");
-            terminal.WriteLine("The parents are NOT happy to see you.");
+            terminal.WriteLine(Loc.Get("encounter.yeti.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.yeti.desc_2"));
 
             if (random.NextDouble() < 0.5)
             {
                 player.HP -= player.MaxHP / 4;
                 terminal.SetColor("red");
-                terminal.WriteLine("You're mauled! But escape with treasure.");
+                terminal.WriteLine(Loc.Get("encounter.yeti.mauled"));
                 player.Gold += level * 1500;  // Increased from 500 for economic balance
             }
             else
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("You back away slowly. They let you go.");
+                terminal.WriteLine(Loc.Get("encounter.yeti.back_away"));
             }
             await terminal.PressAnyKey();
         }
@@ -3006,16 +3006,16 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("=== AURORA VISION ===");
+            terminal.WriteLine(Loc.Get("encounter.aurora.title"));
             terminal.WriteLine("");
-            terminal.WriteLine("The northern lights dance even underground here.", "white");
-            terminal.WriteLine("You feel at peace...");
+            terminal.WriteLine(Loc.Get("encounter.aurora.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.aurora.desc_2"));
 
             player.HP = player.MaxHP;
             player.Mana = player.MaxMana;
             player.Wisdom += 3;
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Full restoration, +3 Wisdom!");
+            terminal.WriteLine(Loc.Get("encounter.aurora.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3024,15 +3024,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_red");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "FIRE ELEMENTAL" : "🔥 FIRE ELEMENTAL 🔥");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.fire_elemental.title") : Loc.Get("encounter.fire_elemental.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A being of pure flame blocks your path.", "white");
-            terminal.WriteLine("It offers you a gift of fire magic.");
+            terminal.WriteLine(Loc.Get("encounter.fire_elemental.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.fire_elemental.desc_2"));
 
             player.Intelligence += 3;
             player.MaxMana += 20;
             terminal.SetColor("yellow");
-            terminal.WriteLine("+3 Intelligence, +20 Max Mana!");
+            terminal.WriteLine(Loc.Get("encounter.fire_elemental.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3040,21 +3040,21 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("🚣 LAVA BOAT 🚣");
+            terminal.WriteLine(Loc.Get("encounter.lava_boat.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A fireproof boat sits by a river of lava.", "white");
-            terminal.WriteLine("\"500 gold to cross,\" says the boatman.");
+            terminal.WriteLine(Loc.Get("encounter.lava_boat.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.lava_boat.desc_2"));
 
             if (player.Gold >= 500)
             {
                 player.Gold -= 500;
                 player.Experience += level * 300;
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You cross to find treasure! +" + (level * 300) + " exp!");
+                terminal.WriteLine(Loc.Get("encounter.lava_boat.cross", level * 300));
             }
             else
             {
-                terminal.WriteLine("You can't afford the crossing.", "gray");
+                terminal.WriteLine(Loc.Get("encounter.lava_boat.no_gold"), "gray");
             }
             await terminal.PressAnyKey();
         }
@@ -3063,15 +3063,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("🦅 PHOENIX NEST 🦅");
+            terminal.WriteLine(Loc.Get("encounter.phoenix.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A phoenix feather lies in an empty nest.", "white");
-            terminal.WriteLine("Such a feather has great power...");
+            terminal.WriteLine(Loc.Get("encounter.phoenix.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.phoenix.desc_2"));
 
             player.HP = player.MaxHP;
             player.Constitution += 5;
             terminal.SetColor("bright_red");
-            terminal.WriteLine("The feather restores you! Full HP, +5 Constitution!");
+            terminal.WriteLine(Loc.Get("encounter.phoenix.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3079,16 +3079,16 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("🪞 OBSIDIAN MIRROR 🪞");
+            terminal.WriteLine(Loc.Get("encounter.mirror.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A mirror of volcanic glass shows your reflection.", "white");
-            terminal.WriteLine("But something is different about it...");
+            terminal.WriteLine(Loc.Get("encounter.mirror.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.mirror.desc_2"));
 
             player.Strength += 2;
             player.Intelligence += 2;
             player.Dexterity += 2;
             terminal.SetColor("cyan");
-            terminal.WriteLine("You learn from your shadow self. +2 to Str/Int/Dex!");
+            terminal.WriteLine(Loc.Get("encounter.mirror.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3097,15 +3097,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("magenta");
-            terminal.WriteLine("🌀 VOID WHISPERS 🌀");
+            terminal.WriteLine(Loc.Get("encounter.void.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("Voices from beyond space whisper secrets...", "white");
+            terminal.WriteLine(Loc.Get("encounter.void.desc"), "white");
 
             player.Intelligence += 5;
             player.Wisdom += 5;
             player.Darkness += 30;
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("Forbidden knowledge! +5 Int, +5 Wis, +30 Darkness!");
+            terminal.WriteLine(Loc.Get("encounter.void.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3113,22 +3113,22 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_white");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "REALITY TEAR" : "⚡ REALITY TEAR ⚡");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("encounter.reality.title") : Loc.Get("encounter.reality.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A crack in reality shows another world.", "white");
-            terminal.WriteLine("Reaching through might be dangerous...");
+            terminal.WriteLine(Loc.Get("encounter.reality.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.reality.desc_2"));
 
             if (random.NextDouble() < 0.5)
             {
                 player.Gold += level * 3000;  // Increased from 1000 for economic balance
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("You grab treasure from another dimension!");
+                terminal.WriteLine(Loc.Get("encounter.reality.good"));
             }
             else
             {
                 player.HP -= player.MaxHP / 3;
                 terminal.SetColor("red");
-                terminal.WriteLine("Something grabs you back!");
+                terminal.WriteLine(Loc.Get("encounter.reality.bad"));
             }
             await terminal.PressAnyKey();
         }
@@ -3137,15 +3137,15 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("👁 COSMIC ENTITY 👁");
+            terminal.WriteLine(Loc.Get("encounter.cosmic.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("Something vast and incomprehensible notices you.", "white");
-            terminal.WriteLine("Its attention is... uncomfortable.");
+            terminal.WriteLine(Loc.Get("encounter.cosmic.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.cosmic.desc_2"));
 
             player.Experience += level * 500;
             player.Wisdom += 10;
             terminal.SetColor("cyan");
-            terminal.WriteLine("You survive the experience with new wisdom!");
+            terminal.WriteLine(Loc.Get("encounter.cosmic.reward"));
             await terminal.PressAnyKey();
         }
 
@@ -3153,10 +3153,10 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
             terminal.SetColor("red");
-            terminal.WriteLine("🌊 POOL OF MADNESS 🌊");
+            terminal.WriteLine(Loc.Get("encounter.madness.title_icon"));
             terminal.WriteLine("");
-            terminal.WriteLine("A pool of swirling, impossible colors.", "white");
-            terminal.WriteLine("Looking into it is... tempting.");
+            terminal.WriteLine(Loc.Get("encounter.madness.desc_1"), "white");
+            terminal.WriteLine(Loc.Get("encounter.madness.desc_2"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -3165,7 +3165,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Look into the pool");
+            terminal.WriteLine(Loc.Get("encounter.madness.option_look"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -3173,9 +3173,9 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Avoid it");
+            terminal.WriteLine(Loc.Get("encounter.madness.option_avoid"));
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
             if (choice.ToUpper() == "L")
             {
                 if (random.NextDouble() < 0.5)
@@ -3183,19 +3183,19 @@ namespace UsurperRemake.Systems
                     player.Intelligence += 10;
                     player.Darkness += 50;
                     terminal.SetColor("magenta");
-                    terminal.WriteLine("ENLIGHTENMENT! +10 Int, +50 Darkness!");
+                    terminal.WriteLine(Loc.Get("encounter.madness.look_good"));
                 }
                 else
                 {
                     player.Intelligence = Math.Max(1, player.Intelligence - 5);
                     terminal.SetColor("red");
-                    terminal.WriteLine("MADNESS! -5 Intelligence!");
+                    terminal.WriteLine(Loc.Get("encounter.madness.look_bad"));
                 }
             }
             else
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("Wise choice. Some things are best left unseen.");
+                terminal.WriteLine(Loc.Get("encounter.madness.avoid"));
             }
             await terminal.PressAnyKey();
         }

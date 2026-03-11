@@ -1,5 +1,6 @@
 using UsurperRemake.Utils;
 using UsurperRemake.BBS;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1112,7 +1113,7 @@ public partial class TerminalEmulator
             {
                 string name = engine.CurrentPlayer.Name2 ?? engine.CurrentPlayer.Name1;
                 await UsurperRemake.Systems.SaveSystem.Instance.SaveGame(name, engine.CurrentPlayer);
-                WriteLine("Game saved.", "bright_green");
+                WriteLine(Loc.Get("ui.game_saved"), "bright_green");
             }
             catch (Exception ex)
             {
@@ -1288,14 +1289,14 @@ public partial class TerminalEmulator
         
         while (true)
         {
-            var input = await GetInput("Your choice: ");
+            var input = await GetInput(UsurperRemake.Systems.Loc.Get("ui.your_choice"));
             if (int.TryParse(input, out int choice))
             {
                 if (choice == 0) return -1;
                 if (choice > 0 && choice <= options.Count)
                     return choice - 1;
             }
-            
+
             WriteLine("Invalid choice!", "red");
         }
     }
@@ -1392,8 +1393,9 @@ public partial class TerminalEmulator
         WriteLine($"[Status] {statusText}", "bright_cyan");
     }
     
-    public async Task PressAnyKey(string message = "Press Enter to continue...")
+    public async Task PressAnyKey(string? message = null)
     {
+        message ??= UsurperRemake.Systems.Loc.Get("ui.press_any_key");
         await GetInput(message);
     }
     
@@ -1622,8 +1624,9 @@ public partial class TerminalEmulator
     public async Task<char> GetKeyCharAsync() => await GetCharAsync();
     
     // Missing methods that are being called throughout the codebase
-    public async Task<bool> ConfirmAsync(string message = "Are you sure? (Y/N): ")
+    public async Task<bool> ConfirmAsync(string? message = null)
     {
+        message ??= Loc.Get("ui.confirm");
         while (true)
         {
             WriteLine(message, "yellow");

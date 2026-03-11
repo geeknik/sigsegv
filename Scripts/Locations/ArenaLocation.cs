@@ -74,10 +74,10 @@ public class ArenaLocation : BaseLocation
 
     private void ShowArenaBanner()
     {
-        WriteBoxHeader("-= THE ARENA =-", "bright_red");
+        WriteBoxHeader(Loc.Get("arena.header"), "bright_red");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Torches flicker along the walls of the combat pit. The crowd roars");
-        terminal.WriteLine("  as another challenger steps onto the blood-stained sand.");
+        terminal.WriteLine($"  {Loc.Get("arena.desc1")}");
+        terminal.WriteLine($"  {Loc.Get("arena.desc2")}");
         terminal.WriteLine("");
     }
 
@@ -90,7 +90,7 @@ public class ArenaLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("ttack Player   ");
+        terminal.Write(Loc.Get("arena.attack_player"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -99,7 +99,7 @@ public class ArenaLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("eaderboard");
+        terminal.WriteLine(Loc.Get("arena.leaderboard_menu"));
 
         terminal.SetColor("darkgray");
         terminal.Write("  [");
@@ -108,7 +108,7 @@ public class ArenaLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("istory         ");
+        terminal.Write(Loc.Get("arena.history_menu"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -117,7 +117,7 @@ public class ArenaLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("tats   ");
+        terminal.Write(Loc.Get("arena.stats_menu"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -126,7 +126,7 @@ public class ArenaLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("eturn");
+        terminal.WriteLine(Loc.Get("arena.return_menu"));
         terminal.WriteLine("");
     }
 
@@ -139,7 +139,7 @@ public class ArenaLocation : BaseLocation
         if (!DoorMode.IsOnlineMode)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  The Arena is only available in online mode.");
+            terminal.WriteLine($"  {Loc.Get("arena.online_only")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -147,9 +147,9 @@ public class ArenaLocation : BaseLocation
         if (currentPlayer.Level < GameConfig.MinPvPLevel)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  You must be at least level {GameConfig.MinPvPLevel} to enter the pit.");
+            terminal.WriteLine($"  {Loc.Get("arena.min_level", GameConfig.MinPvPLevel)}");
             terminal.SetColor("gray");
-            terminal.WriteLine("  The arena master waves you away.");
+            terminal.WriteLine($"  {Loc.Get("arena.master_waves")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -164,9 +164,9 @@ public class ArenaLocation : BaseLocation
         if (attacksToday >= GameConfig.MaxPvPAttacksPerDay)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  You have already fought {GameConfig.MaxPvPAttacksPerDay} times today.");
+            terminal.WriteLine($"  {Loc.Get("arena.max_fights", GameConfig.MaxPvPAttacksPerDay)}");
             terminal.SetColor("gray");
-            terminal.WriteLine("  The arena master says: \"Come back tomorrow, fighter.\"");
+            terminal.WriteLine($"  {Loc.Get("arena.come_back")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -174,12 +174,12 @@ public class ArenaLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
         if (IsScreenReader)
-            terminal.WriteLine("  CHOOSE YOUR OPPONENT");
+            terminal.WriteLine($"  {Loc.Get("arena.choose_opponent")}");
         else
-            terminal.WriteLine("  ═══ CHOOSE YOUR OPPONENT ═══");
+            terminal.WriteLine($"  {Loc.Get("arena.choose_opponent_box")}");
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  Attacks remaining today: {GameConfig.MaxPvPAttacksPerDay - attacksToday}");
+        terminal.WriteLine($"  {Loc.Get("arena.attacks_remaining", GameConfig.MaxPvPAttacksPerDay - attacksToday)}");
         terminal.WriteLine("");
 
         // Get eligible opponents
@@ -199,16 +199,16 @@ public class ArenaLocation : BaseLocation
         if (eligible.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  There are no eligible opponents right now.");
+            terminal.WriteLine($"  {Loc.Get("arena.no_opponents")}");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("  (Must be within " + GameConfig.PvPLevelRangeLimit + " levels, not already fought today)");
+            terminal.WriteLine($"  {Loc.Get("arena.level_range_note", GameConfig.PvPLevelRangeLimit)}");
             await terminal.PressAnyKey();
             return;
         }
 
         // Display opponent list
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {"#",-4} {"Name",-20} {"Level",-8} {"Class",-12} {"Status"}");
+        terminal.WriteLine($"  {Loc.Get("arena.col_num"),-4} {Loc.Get("arena.col_name"),-20} {Loc.Get("arena.col_level"),-8} {Loc.Get("arena.col_class"),-12} {Loc.Get("arena.col_status")}");
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
@@ -224,20 +224,20 @@ public class ArenaLocation : BaseLocation
             terminal.SetColor("white");
             terminal.Write($"{p.DisplayName,-20}");
             terminal.SetColor("cyan");
-            terminal.Write($"Lv {p.Level,-5}");
+            terminal.Write($"{Loc.Get("arena.lv_prefix")}{p.Level,-5}");
             terminal.SetColor("gray");
             terminal.Write($"{className,-12}");
             if (p.IsOnline)
             {
                 terminal.SetColor("bright_green");
-                terminal.Write("[ONLINE]");
+                terminal.Write(Loc.Get("arena.online_badge"));
             }
             terminal.WriteLine("");
         }
 
         terminal.WriteLine("");
         terminal.SetColor("white");
-        var input = await terminal.GetInput("  Choose opponent (number, or Q to cancel): ");
+        var input = await terminal.GetInput($"  {Loc.Get("arena.choose_prompt")}");
 
         if (string.IsNullOrWhiteSpace(input) || input.Trim().ToUpper() == "Q")
             return;
@@ -245,7 +245,7 @@ public class ArenaLocation : BaseLocation
         if (!int.TryParse(input.Trim(), out int selection) || selection < 1 || selection > eligible.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Invalid selection.");
+            terminal.WriteLine($"  {Loc.Get("arena.invalid_selection")}");
             await Task.Delay(1000);
             return;
         }
@@ -255,17 +255,17 @@ public class ArenaLocation : BaseLocation
         // Confirm attack
         terminal.WriteLine("");
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"  You are about to attack {target.DisplayName} (Level {target.Level} {GetClassName(target.ClassId)})!");
+        terminal.WriteLine($"  {Loc.Get("arena.confirm_attack", target.DisplayName, target.Level, GetClassName(target.ClassId))}");
         terminal.SetColor("yellow");
-        terminal.WriteLine("  WARNING: Any damage YOU take will persist after the fight.");
-        terminal.WriteLine($"  Winner steals {GameConfig.PvPGoldStealPercent * 100:0}% of the loser's gold on hand.");
+        terminal.WriteLine($"  {Loc.Get("arena.warning_damage")}");
+        terminal.WriteLine($"  {Loc.Get("arena.gold_steal_rule", GameConfig.PvPGoldStealPercent * 100)}");
         terminal.WriteLine("");
-        var confirm = await terminal.GetInput("  Are you sure? (Y/N): ");
+        var confirm = await terminal.GetInput($"  {Loc.Get("arena.confirm_prompt")}");
 
         if (confirm?.Trim().ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You step back from the pit.");
+            terminal.WriteLine($"  {Loc.Get("arena.step_back")}");
             await Task.Delay(1000);
             return;
         }
@@ -275,7 +275,7 @@ public class ArenaLocation : BaseLocation
         if (opponentSave?.Player == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Could not load opponent's data. They may have deleted their character.");
+            terminal.WriteLine($"  {Loc.Get("arena.load_failed")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -284,9 +284,9 @@ public class ArenaLocation : BaseLocation
         if (opponentSave.Player.SafeHouseResting)
         {
             terminal.SetColor("dark_magenta");
-            terminal.WriteLine($"  {target.DisplayName} is hiding in the Dark Alley Safe House.");
+            terminal.WriteLine($"  {Loc.Get("arena.safe_house_hiding", target.DisplayName)}");
             terminal.SetColor("gray");
-            terminal.WriteLine("  The Shadows protect their own. You cannot find them.");
+            terminal.WriteLine($"  {Loc.Get("arena.shadows_protect")}");
             await terminal.PressAnyKey();
             return;
         }
@@ -302,7 +302,7 @@ public class ArenaLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
         terminal.WriteLine("");
-        terminal.WriteLine($"  {myName} challenges {target.DisplayName} in the Arena!");
+        terminal.WriteLine($"  {Loc.Get("arena.challenges", myName, target.DisplayName)}");
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -360,19 +360,19 @@ public class ArenaLocation : BaseLocation
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
             if (IsScreenReader)
-                terminal.WriteLine("  VICTORY!");
+                terminal.WriteLine($"  {Loc.Get("arena.victory")}");
             else
-                terminal.WriteLine("  ═══ VICTORY! ═══");
+                terminal.WriteLine($"  {Loc.Get("arena.victory_box")}");
             if (goldStolen > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  Gold stolen from {target.DisplayName}: {goldStolen:N0}");
+                terminal.WriteLine($"  {Loc.Get("arena.gold_stolen_from", target.DisplayName, $"{goldStolen:N0}")}");
             }
             if (bountyReward > 0)
             {
                 currentPlayer.Gold += bountyReward;
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"  BOUNTY COLLECTED: {bountyReward:N0} gold!");
+                terminal.WriteLine($"  {Loc.Get("arena.bounty_collected", $"{bountyReward:N0}")}");
             }
         }
         else if (result.Outcome == CombatOutcome.PlayerDied)
@@ -404,27 +404,27 @@ public class ArenaLocation : BaseLocation
             terminal.WriteLine("");
             terminal.SetColor("bright_red");
             if (IsScreenReader)
-                terminal.WriteLine("  DEFEAT!");
+                terminal.WriteLine($"  {Loc.Get("arena.defeat")}");
             else
-                terminal.WriteLine("  ═══ DEFEAT! ═══");
+                terminal.WriteLine($"  {Loc.Get("arena.defeat_box")}");
             terminal.SetColor("gray");
-            terminal.WriteLine($"  You were defeated by {target.DisplayName}'s shadow in the Arena.");
+            terminal.WriteLine($"  {Loc.Get("arena.defeated_by", target.DisplayName)}");
             terminal.WriteLine("");
             terminal.SetColor("yellow");
             if (goldStolen > 0)
-                terminal.WriteLine($"  {target.DisplayName} stole {goldStolen:N0} of your gold!");
+                terminal.WriteLine($"  {Loc.Get("arena.they_stole", target.DisplayName, $"{goldStolen:N0}")}");
             if (expLoss > 0)
-                terminal.WriteLine($"  Lost {expLoss:N0} experience points");
+                terminal.WriteLine($"  {Loc.Get("arena.lost_xp", $"{expLoss:N0}")}");
             if (goldLoss > 0)
-                terminal.WriteLine($"  Lost {goldLoss:N0} gold (death penalty)");
+                terminal.WriteLine($"  {Loc.Get("arena.lost_gold", $"{goldLoss:N0}")}");
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  Healed to {currentPlayer.HP}/{currentPlayer.MaxHP} HP at the Inn.");
+            terminal.WriteLine($"  {Loc.Get("arena.healed_at_inn", currentPlayer.HP, currentPlayer.MaxHP)}");
         }
         else if (attackerFled)
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("  You fled from the Arena. No rewards, no penalties.");
+            terminal.WriteLine($"  {Loc.Get("arena.fled")}");
         }
 
         // Log to pvp_log table (skip if fled)
@@ -458,8 +458,8 @@ public class ArenaLocation : BaseLocation
         if (!attackerFled)
         {
             string notifyMsg = attackerWon
-                ? $"[Arena] {myName} attacked you in the Arena and won! They stole {goldStolen:N0} of your gold."
-                : $"[Arena] {myName} attacked you in the Arena but your shadow defeated them! You gained {goldStolen:N0} gold.";
+                ? Loc.Get("arena.notify_attack_won", myName, $"{goldStolen:N0}")
+                : Loc.Get("arena.notify_attack_lost", myName, $"{goldStolen:N0}");
             await backend.SendMessage(myUsername, defenderUsername, "pvp", notifyMsg);
             UsurperRemake.Server.MudServer.Instance?.SendToPlayer(defenderUsername,
                 $"\u001b[91m  {notifyMsg}\u001b[0m");
@@ -489,20 +489,20 @@ public class ArenaLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_yellow");
         if (IsScreenReader)
-            terminal.WriteLine("  ARENA LEADERBOARD");
+            terminal.WriteLine($"  {Loc.Get("arena.leaderboard_header")}");
         else
-            terminal.WriteLine("  ═══ ARENA LEADERBOARD ═══");
+            terminal.WriteLine($"  {Loc.Get("arena.leaderboard_header_box")}");
         terminal.WriteLine("");
 
         if (leaderboard.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No PvP combat has occurred yet. Be the first to fight!");
+            terminal.WriteLine($"  {Loc.Get("arena.no_fights_yet")}");
         }
         else
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine($"  {"#",-4} {"Name",-20} {"W/L",-10} {"Level",-8} {"Gold Stolen"}");
+            terminal.WriteLine($"  {Loc.Get("arena.lb_col_num"),-4} {Loc.Get("arena.lb_col_name"),-20} {Loc.Get("arena.lb_col_wl"),-10} {Loc.Get("arena.lb_col_level"),-8} {Loc.Get("arena.lb_col_gold")}");
             if (!IsScreenReader)
             {
                 terminal.SetColor("darkgray");
@@ -521,7 +521,7 @@ public class ArenaLocation : BaseLocation
                 terminal.SetColor(rankColor);
                 terminal.WriteLine(
                     $"  {entry.Rank,-4} {entry.DisplayName,-20} " +
-                    $"{entry.Wins}W/{entry.Losses}L    Lv{entry.Level,-5} {entry.TotalGoldStolen:N0}g");
+                    $"{Loc.Get("arena.lb_wl_format", entry.Wins, entry.Losses)}    {Loc.Get("arena.lv_prefix")}{entry.Level,-5} {entry.TotalGoldStolen:N0}g");
             }
         }
 
@@ -543,15 +543,15 @@ public class ArenaLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
         if (IsScreenReader)
-            terminal.WriteLine("  RECENT ARENA FIGHTS");
+            terminal.WriteLine($"  {Loc.Get("arena.recent_header")}");
         else
-            terminal.WriteLine("  ═══ RECENT ARENA FIGHTS ═══");
+            terminal.WriteLine($"  {Loc.Get("arena.recent_header_box")}");
         terminal.WriteLine("");
 
         if (fights.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  The arena sand is undisturbed. No fights yet.");
+            terminal.WriteLine($"  {Loc.Get("arena.sand_undisturbed")}");
         }
         else
         {
@@ -563,11 +563,11 @@ public class ArenaLocation : BaseLocation
                 terminal.SetColor(attackerWon ? "bright_green" : "red");
                 terminal.Write($"{fight.AttackerName}");
                 terminal.SetColor("white");
-                terminal.Write($" (Lv{fight.AttackerLevel}) vs ");
+                terminal.Write($" ({Loc.Get("arena.lv_prefix")}{fight.AttackerLevel}) {Loc.Get("arena.vs")} ");
                 terminal.SetColor(!attackerWon ? "bright_green" : "red");
                 terminal.Write($"{fight.DefenderName}");
                 terminal.SetColor("white");
-                terminal.Write($" (Lv{fight.DefenderLevel})");
+                terminal.Write($" ({Loc.Get("arena.lv_prefix")}{fight.DefenderLevel})");
                 if (fight.GoldStolen > 0)
                 {
                     terminal.SetColor("yellow");
@@ -590,22 +590,22 @@ public class ArenaLocation : BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("  YOUR PVP RECORD");
+            terminal.WriteLine($"  {Loc.Get("arena.pvp_record")}");
         else
-            terminal.WriteLine("  ═══ YOUR PVP RECORD ═══");
+            terminal.WriteLine($"  {Loc.Get("arena.pvp_record_box")}");
         terminal.WriteLine("");
 
         var stats = currentPlayer.Statistics;
         if (stats == null)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No statistics available.");
+            terminal.WriteLine($"  {Loc.Get("arena.no_stats")}");
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"  PvP Kills:  {stats.TotalPlayerKills}");
-            terminal.WriteLine($"  PvP Deaths: {stats.TotalPlayerDeaths}");
+            terminal.WriteLine($"  {Loc.Get("arena.pvp_kills", stats.TotalPlayerKills)}");
+            terminal.WriteLine($"  {Loc.Get("arena.pvp_deaths", stats.TotalPlayerDeaths)}");
 
             double totalFights = stats.TotalPlayerKills + stats.TotalPlayerDeaths;
             double winRate = totalFights > 0
@@ -613,8 +613,8 @@ public class ArenaLocation : BaseLocation
                 : 0;
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Win Rate:   {winRate:F1}%");
-            terminal.WriteLine($"  Total Fights: {totalFights:N0}");
+            terminal.WriteLine($"  {Loc.Get("arena.win_rate", $"{winRate:F1}")}");
+            terminal.WriteLine($"  {Loc.Get("arena.total_fights", $"{totalFights:N0}")}");
         }
 
         terminal.WriteLine("");

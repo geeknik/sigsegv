@@ -189,7 +189,7 @@ public partial class QuestSystem
             {
                 factionSystem.FactionStanding[questFaction.Value] += 50;
                 factionSystem.CompletedFactionQuests.Add(quest.Id);
-                terminal.WriteLine($"  Your standing with {quest.Initiator} has improved!", "bright_cyan");
+                terminal.WriteLine(Loc.Get("quest.standing_improved", quest.Initiator), "bright_cyan");
             }
         }
 
@@ -670,14 +670,14 @@ public partial class QuestSystem
         {
             case QuestRewardType.Experience:
                 player.Experience += rewardAmount;
-                terminal.WriteLine($"  Reward: {rewardAmount} experience points!", "bright_green");
+                terminal.WriteLine(Loc.Get("quest.reward_xp", rewardAmount), "bright_green");
                 break;
 
             case QuestRewardType.Money:
                 player.Gold += rewardAmount;
                 player.Statistics?.RecordQuestGoldReward(rewardAmount);
                 DebugLogger.Instance.LogInfo("GOLD", $"QUEST REWARD: {player.DisplayName} +{rewardAmount:N0}g from quest '{quest.Title}' (gold now {player.Gold:N0})");
-                terminal.WriteLine($"  Reward: {rewardAmount} gold!", "bright_yellow");
+                terminal.WriteLine(Loc.Get("quest.reward_gold", rewardAmount), "bright_yellow");
                 break;
 
             case QuestRewardType.Potions:
@@ -685,26 +685,26 @@ public partial class QuestSystem
                 int potionsAwarded = (int)Math.Min(rewardAmount, potionRoom);
                 player.Healing += potionsAwarded;
                 if (potionsAwarded < rewardAmount)
-                    terminal.WriteLine($"  Reward: {potionsAwarded} healing potions! (capped at {GameConfig.MaxHealingPotions})", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("quest.reward_potions_capped", potionsAwarded, GameConfig.MaxHealingPotions), "bright_cyan");
                 else
-                    terminal.WriteLine($"  Reward: {potionsAwarded} healing potions!", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("quest.reward_potions", potionsAwarded), "bright_cyan");
                 break;
 
             case QuestRewardType.Darkness:
                 player.Darkness += (int)rewardAmount;
-                terminal.WriteLine($"  Reward: {rewardAmount} darkness points!", "red");
+                terminal.WriteLine(Loc.Get("quest.reward_darkness", rewardAmount), "red");
                 break;
 
             case QuestRewardType.Chivalry:
                 player.Chivalry += (int)rewardAmount;
-                terminal.WriteLine($"  Reward: {rewardAmount} chivalry points!", "bright_white");
+                terminal.WriteLine(Loc.Get("quest.reward_chivalry", rewardAmount), "bright_white");
                 break;
 
             default:
                 long fallbackGold = player.Level * 100;
                 player.Gold += fallbackGold;
                 player.Statistics?.RecordQuestGoldReward(fallbackGold);
-                terminal.WriteLine($"  Reward: {fallbackGold} gold!", "bright_yellow");
+                terminal.WriteLine(Loc.Get("quest.reward_gold", fallbackGold), "bright_yellow");
                 break;
         }
     }
@@ -729,7 +729,7 @@ public partial class QuestSystem
         if (inventoryItem != null)
         {
             player.Inventory.Remove(inventoryItem);
-            terminal.WriteLine($"  You hand over your {targetName} to the Merchant Guild.", "gray");
+            terminal.WriteLine(Loc.Get("quest.hand_over_item", targetName), "gray");
             return;
         }
 
@@ -740,7 +740,7 @@ public partial class QuestSystem
             if (equipped != null && equipped.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase))
             {
                 player.UnequipSlot(slot);
-                terminal.WriteLine($"  You hand over your {targetName} to the Merchant Guild.", "gray");
+                terminal.WriteLine(Loc.Get("quest.hand_over_item", targetName), "gray");
                 return;
             }
         }
@@ -1105,20 +1105,33 @@ public partial class QuestSystem
     /// Update quest progress when a monster is killed
     /// Call this from CombatEngine after monster defeat
     /// </summary>
-    public static void OnMonsterKilled(Character player, string monsterName, bool isBoss = false)
+    public static void OnMonsterKilled(Character player, string monsterName, bool isBoss = false, string tierName = "")
     {
         var playerQuests = GetPlayerQuests(player.Name2);
+        string nameId = monsterName.ToLower().Replace(" ", "_");
+        // TierName is the base monster type (e.g. "Zombie") even for champion variants ("Zombie Champion")
+        string tierId = !string.IsNullOrEmpty(tierName) ? tierName.ToLower().Replace(" ", "_") : "";
 
         foreach (var quest in playerQuests)
         {
             // Update kill monster objectives
             quest.UpdateObjectiveProgress(QuestObjectiveType.KillMonsters, 1);
-            quest.UpdateObjectiveProgress(QuestObjectiveType.KillSpecificMonster, 1, monsterName.ToLower().Replace(" ", "_"));
+            quest.UpdateObjectiveProgress(QuestObjectiveType.KillSpecificMonster, 1, nameId);
+
+            // Also try matching by base tier name (champion/boss variants should count)
+            if (!string.IsNullOrEmpty(tierId) && tierId != nameId)
+            {
+                quest.UpdateObjectiveProgress(QuestObjectiveType.KillSpecificMonster, 1, tierId);
+            }
 
             // Update boss kill objectives
             if (isBoss)
             {
-                quest.UpdateObjectiveProgress(QuestObjectiveType.KillBoss, 1, monsterName.ToLower().Replace(" ", "_"));
+                quest.UpdateObjectiveProgress(QuestObjectiveType.KillBoss, 1, nameId);
+                if (!string.IsNullOrEmpty(tierId) && tierId != nameId)
+                {
+                    quest.UpdateObjectiveProgress(QuestObjectiveType.KillBoss, 1, tierId);
+                }
             }
         }
     }

@@ -554,7 +554,7 @@ namespace UsurperRemake.Data
             terminal.WriteLine($"  \"{boss.Title}\"", "red");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task DisplayDialogue(string[] dialogue, string name, TerminalEmulator terminal)
@@ -577,7 +577,7 @@ namespace UsurperRemake.Data
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task<bool> HandleBossChoice(SecretBossData boss, TerminalEmulator terminal)
@@ -592,7 +592,7 @@ namespace UsurperRemake.Data
             }
 
             terminal.WriteLine("");
-            string input = await terminal.GetInputAsync("Your choice: ");
+            string input = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
             if (int.TryParse(input, out int choice) && choice >= 1 && choice <= boss.ChoiceOptions.Length)
             {

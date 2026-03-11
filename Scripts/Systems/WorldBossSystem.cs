@@ -122,7 +122,7 @@ namespace UsurperRemake.Systems
             if (backend == null)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("\n  World Boss is only available in online mode.");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.online_only")}");
                 await Task.Delay(1500);
                 return;
             }
@@ -130,7 +130,7 @@ namespace UsurperRemake.Systems
             if (player.Level < GameConfig.WorldBossMinLevel)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"\n  You must be at least level {GameConfig.WorldBossMinLevel} to challenge a World Boss.");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.min_level", GameConfig.WorldBossMinLevel)}");
                 await Task.Delay(1500);
                 return;
             }
@@ -162,9 +162,9 @@ namespace UsurperRemake.Systems
 
                 // Menu
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  [A] Attack Boss    [Q] Back");
+                terminal.WriteLine($"  [A] {Loc.Get("world_boss.attack_boss")}    [Q] {Loc.Get("ui.back")}");
                 terminal.SetColor("white");
-                terminal.Write("\n  Choice: ");
+                terminal.Write($"\n  {Loc.Get("ui.your_choice")}");
                 string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
                 if (input == "Q" || input == "") break;
@@ -178,15 +178,15 @@ namespace UsurperRemake.Systems
 
         private void DrawNoBossScreen(TerminalEmulator terminal)
         {
-            UIHelper.WriteBoxHeader(terminal, "WORLD BOSS", "bright_magenta");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("world_boss.header"), "bright_magenta");
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  No World Boss is active right now.");
-            terminal.WriteLine("  A boss will appear when enough adventurers are online.");
+            terminal.WriteLine($"  {Loc.Get("world_boss.no_active")}");
+            terminal.WriteLine($"  {Loc.Get("world_boss.appear_when_enough")}");
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("  World Bosses spawn automatically when 2+ players are online.");
-            terminal.WriteLine("  They last for 1 hour and require teamwork to defeat.");
+            terminal.WriteLine($"  {Loc.Get("world_boss.spawn_info")}");
+            terminal.WriteLine($"  {Loc.Get("world_boss.duration_info")}");
         }
 
         private void DrawBossStatusScreen(TerminalEmulator terminal, WorldBossInfo boss,
@@ -196,16 +196,16 @@ namespace UsurperRemake.Systems
             string bossTitle = bossDef != null ? $"{bossDef.Name}, {bossDef.Title}" : boss.BossName;
             int phase = bossData?.CurrentPhase ?? 1;
 
-            UIHelper.WriteBoxHeader(terminal, "WORLD BOSS", "bright_magenta");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("world_boss.header"), "bright_magenta");
             terminal.WriteLine("");
 
             // Boss name and phase
             terminal.SetColor(themeColor);
-            terminal.WriteLine($"  {bossTitle}  (Level {boss.BossLevel})");
+            terminal.WriteLine($"  {bossTitle}  ({Loc.Get("ui.level")} {boss.BossLevel})");
             if (phase > 1)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  Phase {phase}/3 — {GetPhaseDescription(phase)}");
+                terminal.WriteLine($"  {Loc.Get("world_boss.phase_label", phase, 3)} — {GetPhaseDescription(phase)}");
             }
 
             // HP bar
@@ -229,19 +229,19 @@ namespace UsurperRemake.Systems
             if (timeLeft.TotalSeconds > 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Time remaining: {(int)timeLeft.TotalMinutes}m {timeLeft.Seconds}s");
+                terminal.WriteLine($"  {Loc.Get("world_boss.time_remaining", (int)timeLeft.TotalMinutes, timeLeft.Seconds)}");
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  TIME EXPIRED — Boss is despawning!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.time_expired")}");
             }
 
             // Boss element/theme
             if (bossDef != null)
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine($"  Element: {bossDef.Element}  |  Attacks/round: {bossDef.AttacksPerRound}");
+                terminal.WriteLine($"  {Loc.Get("world_boss.element")}: {bossDef.Element}  |  {Loc.Get("world_boss.attacks_per_round")}: {bossDef.AttacksPerRound}");
             }
             terminal.WriteLine("");
         }
@@ -253,7 +253,7 @@ namespace UsurperRemake.Systems
             long totalDamage = leaderboard.Sum(e => e.DamageDealt);
 
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  Damage Leaderboard" : "  ═══ Damage Leaderboard ═══");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? $"  {Loc.Get("world_boss.damage_leaderboard")}" : $"  ═══ {Loc.Get("world_boss.damage_leaderboard")} ═══");
             for (int i = 0; i < leaderboard.Count; i++)
             {
                 var entry = leaderboard[i];
@@ -287,7 +287,7 @@ namespace UsurperRemake.Systems
             {
                 int secsLeft = (int)(cooldownEnd - DateTime.UtcNow).TotalSeconds;
                 terminal.SetColor("red");
-                terminal.WriteLine($"\n  You were recently defeated! Wait {secsLeft}s before re-entering combat.");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.death_cooldown", secsLeft)}");
                 await Task.Delay(2000);
                 return;
             }
@@ -295,7 +295,7 @@ namespace UsurperRemake.Systems
             if (player.HP <= 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\n  You're too injured to fight! Visit the Healer first.");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.too_injured")}");
                 await Task.Delay(1500);
                 return;
             }
@@ -306,7 +306,7 @@ namespace UsurperRemake.Systems
             if (bossDef == null || bossData == null)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\n  Error: Could not load boss data.");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.error_load")}");
                 await Task.Delay(1500);
                 return;
             }
@@ -317,9 +317,9 @@ namespace UsurperRemake.Systems
 
             terminal.ClearScreen();
             terminal.SetColor(bossDef.ThemeColor);
-            terminal.WriteLine($"\n  You engage {bossDef.Name}, {bossDef.Title}!");
+            terminal.WriteLine($"\n  {Loc.Get("world_boss.engage", bossDef.Name, bossDef.Title)}");
             terminal.SetColor("gray");
-            terminal.WriteLine($"  Phase {bossData.CurrentPhase}/3 — Prepare yourself!\n");
+            terminal.WriteLine($"  {Loc.Get("world_boss.phase_label", bossData.CurrentPhase, 3)} — {Loc.Get("world_boss.prepare_yourself")}\n");
             await Task.Delay(1000);
 
             while (state.Round < GameConfig.WorldBossMaxRoundsPerSession && player.HP > 0 && !state.Retreated)
@@ -331,9 +331,9 @@ namespace UsurperRemake.Systems
                 if (currentBoss == null || currentBoss.Status != "active" || currentBoss.CurrentHP <= 0)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"\n  *** {bossDef.Name} HAS BEEN DEFEATED! ***");
+                    terminal.WriteLine($"\n  *** {Loc.Get("world_boss.has_been_defeated", bossDef.Name)} ***");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  The realm celebrates! Rewards will be distributed.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.realm_celebrates")}");
                     break;
                 }
 
@@ -391,7 +391,7 @@ namespace UsurperRemake.Systems
                 {
                     var preventingStatus = player.ActiveStatuses.Keys.FirstOrDefault(s => s.PreventsAction());
                     terminal.SetColor("red");
-                    terminal.WriteLine($"  You are {preventingStatus}! You cannot act this round.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.cannot_act", preventingStatus)}");
                 }
                 else
                 {
@@ -412,17 +412,17 @@ namespace UsurperRemake.Systems
                         state.SessionDamage += roundDamage;
 
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  >> Total damage this round: {roundDamage:N0}");
+                        terminal.WriteLine($"  >> {Loc.Get("world_boss.total_round_damage", $"{roundDamage:N0}")}");
                         terminal.SetColor("gray");
-                        terminal.WriteLine($"  >> Boss HP remaining: {Math.Max(0, remainingHp):N0}");
+                        terminal.WriteLine($"  >> {Loc.Get("world_boss.boss_hp_remaining", $"{Math.Max(0, remainingHp):N0}")}");
 
                         if (remainingHp <= 0)
                         {
                             ActiveBossName = null;
                             terminal.SetColor("bright_green");
-                            terminal.WriteLine($"\n  *** {bossDef.Name} HAS BEEN DEFEATED! ***");
+                            terminal.WriteLine($"\n  *** {Loc.Get("world_boss.has_been_defeated", bossDef.Name)} ***");
                             terminal.SetColor("yellow");
-                            terminal.WriteLine("  You dealt the killing blow!");
+                            terminal.WriteLine($"  {Loc.Get("world_boss.killing_blow")}");
 
                             // Broadcast
                             string killMsg = $"\n  *** {bossDef.Name} has been defeated! {player.DisplayName} struck the final blow! ***";
@@ -467,7 +467,7 @@ namespace UsurperRemake.Systems
                     player.HP = Math.Max(0, player.HP - auraDamage);
 
                     terminal.SetColor("magenta");
-                    terminal.WriteLine($"  {bossDef.Name}'s overwhelming presence deals {auraDamage:N0} damage!");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.aura_damage", bossDef.Name, $"{auraDamage:N0}")}");
                     terminal.SetColor("cyan");
                     terminal.WriteLine($"  Your HP: {player.HP}/{player.MaxHP}");
                 }
@@ -488,18 +488,18 @@ namespace UsurperRemake.Systems
                 {
                     state.Died = true;
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"\n  {bossDef.Name} has struck you down!");
+                    terminal.WriteLine($"\n  {Loc.Get("world_boss.struck_you_down", bossDef.Name)}");
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  You dealt {state.SessionDamage:N0} total damage before falling.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.total_damage_before_fall", $"{state.SessionDamage:N0}")}");
 
                     // Revive with 25% HP, apply cooldown
                     player.HP = Math.Max(1, player.MaxHP / 4);
                     _deathCooldowns[playerKey] = DateTime.UtcNow.AddSeconds(GameConfig.WorldBossDeathCooldownSeconds);
 
                     terminal.SetColor("cyan");
-                    terminal.WriteLine($"  Healers drag you to safety. HP restored to {player.HP}/{player.MaxHP}.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.healers_safety", player.HP, player.MaxHP)}");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  You must wait {GameConfig.WorldBossDeathCooldownSeconds}s before re-entering combat.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.must_wait", GameConfig.WorldBossDeathCooldownSeconds)}");
                     break;
                 }
 
@@ -510,17 +510,17 @@ namespace UsurperRemake.Systems
             if (state.Round >= GameConfig.WorldBossMaxRoundsPerSession && !state.Died && !state.Retreated && player.HP > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"\n  You've reached the maximum of {GameConfig.WorldBossMaxRoundsPerSession} rounds.");
-                terminal.WriteLine("  You step back to recover. Re-enter when ready!");
+                terminal.WriteLine($"\n  {Loc.Get("world_boss.max_rounds", GameConfig.WorldBossMaxRoundsPerSession)}");
+                terminal.WriteLine($"  {Loc.Get("world_boss.step_back")}");
             }
 
             // Session summary
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  Combat Session Summary" : "  ═══ Combat Session Summary ═══");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? $"  {Loc.Get("world_boss.combat_summary")}" : $"  ═══ {Loc.Get("world_boss.combat_summary")} ═══");
             terminal.SetColor("white");
-            terminal.WriteLine($"  Rounds fought: {state.Round}");
-            terminal.WriteLine($"  Damage dealt:  {state.SessionDamage:N0}");
+            terminal.WriteLine($"  {Loc.Get("world_boss.rounds_fought", state.Round)}");
+            terminal.WriteLine($"  {Loc.Get("world_boss.damage_dealt", $"{state.SessionDamage:N0}")}");
             terminal.WriteLine("");
 
             // Autosave
@@ -538,15 +538,15 @@ namespace UsurperRemake.Systems
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_white");
-                terminal.WriteLine("  CHOOSE YOUR ACTION");
+                terminal.WriteLine($"  {Loc.Get("world_boss.choose_action")}");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  [A] Attack  [C] Cast Spell  [D] Defend");
-                terminal.WriteLine("  [I] Item  [P] Power Attack  [E] Precise");
+                terminal.WriteLine($"  [A] {Loc.Get("world_boss.action_attack")}  [C] {Loc.Get("world_boss.action_cast")}  [D] {Loc.Get("world_boss.action_defend")}");
+                terminal.WriteLine($"  [I] {Loc.Get("world_boss.action_item")}  [P] {Loc.Get("world_boss.action_power")}  [E] {Loc.Get("world_boss.action_precise")}");
                 var abilities = ClassAbilitySystem.GetAvailableAbilities(player);
                 if (abilities.Count > 0)
-                    terminal.WriteLine("  [L] Ability  [R] Retreat");
+                    terminal.WriteLine($"  [L] {Loc.Get("world_boss.action_ability")}  [R] {Loc.Get("world_boss.action_retreat")}");
                 else
-                    terminal.WriteLine("  [R] Retreat");
+                    terminal.WriteLine($"  [R] {Loc.Get("world_boss.action_retreat")}");
             }
             else
             {
@@ -554,7 +554,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("╔═══════════════════════════════════════╗");
                 terminal.Write("║");
                 terminal.SetColor("bright_white");
-                terminal.Write("           CHOOSE YOUR ACTION          ");
+                terminal.Write($"           {Loc.Get("world_boss.choose_action")}          ");
                 terminal.SetColor("green");
                 terminal.WriteLine("║");
                 terminal.WriteLine("╠═══════════════════════════════════════╣");
@@ -602,7 +602,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.SetColor("white");
-            terminal.Write("  Action: ");
+            terminal.Write($"  {Loc.Get("world_boss.action_prompt")}");
         }
 
         private async Task<long> ProcessPlayerAction(string input, Character player, TerminalEmulator terminal,
@@ -616,7 +616,7 @@ namespace UsurperRemake.Systems
                 case "A": // Standard attack
                     damage = CalculatePlayerDamage(player, bossDef, bossData, rng, state.TempAttackBonus);
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  You strike {bossDef.Name} for {damage:N0} damage!");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.you_strike", bossDef.Name, $"{damage:N0}")}");
                     break;
 
                 case "C": // Cast spell
@@ -626,7 +626,7 @@ namespace UsurperRemake.Systems
                 case "D": // Defend
                     state.DefendingRounds = 2;
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine("  You raise your guard! Damage reduced for 2 rounds.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.raise_guard")}");
                     break;
 
                 case "I": // Use item (potion)
@@ -648,13 +648,13 @@ namespace UsurperRemake.Systems
                 case "R": // Retreat
                     state.Retreated = true;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  You retreat from combat to recover.");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.retreat")}");
                     break;
 
                 default:
                     damage = CalculatePlayerDamage(player, bossDef, bossData, rng, state.TempAttackBonus);
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  You strike {bossDef.Name} for {damage:N0} damage!");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.you_strike", bossDef.Name, $"{damage:N0}")}");
                     break;
             }
 
@@ -694,13 +694,13 @@ namespace UsurperRemake.Systems
             if (rng.NextDouble() > 0.75)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Your power attack misses!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.power_attack_miss")}");
                 return 0;
             }
 
             long damage = (long)(CalculatePlayerDamage(player, bossDef, bossData, rng, tempAtkBonus) * 1.5);
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"  POWER ATTACK! You crush {bossDef.Name} for {damage:N0} damage!");
+            terminal.WriteLine($"  {Loc.Get("world_boss.power_attack_hit", bossDef.Name, $"{damage:N0}")}");
             return damage;
         }
 
@@ -716,12 +716,12 @@ namespace UsurperRemake.Systems
             {
                 baseDamage = (long)(baseDamage * 1.8);
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  CRITICAL! Precise strike hits {bossDef.Name} for {baseDamage:N0} damage!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.precise_crit", bossDef.Name, $"{baseDamage:N0}")}");
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  Precise strike hits {bossDef.Name} for {baseDamage:N0} damage!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.precise_hit", bossDef.Name, $"{baseDamage:N0}")}");
             }
             return baseDamage;
         }
@@ -733,7 +733,7 @@ namespace UsurperRemake.Systems
             if (!player.CanCastSpells())
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  You cannot cast spells right now!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.cannot_cast")}");
                 return 0;
             }
 
@@ -742,7 +742,7 @@ namespace UsurperRemake.Systems
             {
                 var required = SpellSystem.GetSpellWeaponRequirement(player.Class);
                 terminal.SetColor("red");
-                terminal.WriteLine($"  You need a {required} equipped to cast spells!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.need_weapon_spell", required)}");
                 return 0;
             }
 
@@ -750,12 +750,12 @@ namespace UsurperRemake.Systems
             if (availableSpells.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  You don't know any spells.");
+                terminal.WriteLine($"  {Loc.Get("world_boss.no_spells")}");
                 return 0;
             }
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  Available Spells" : "  ─── Available Spells ───");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? $"  {Loc.Get("world_boss.available_spells")}" : $"  ─── {Loc.Get("world_boss.available_spells")} ───");
             var castableSpells = new List<SpellSystem.SpellInfo>();
             foreach (var spell in availableSpells)
             {
@@ -770,12 +770,12 @@ namespace UsurperRemake.Systems
             if (castableSpells.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Not enough mana for any spell.");
+                terminal.WriteLine($"  {Loc.Get("world_boss.not_enough_mana")}");
                 return 0;
             }
 
             terminal.SetColor("white");
-            terminal.Write("  Cast which spell (# or Q): ");
+            terminal.Write($"  {Loc.Get("world_boss.cast_which_spell")}");
             string spellInput = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
             if (spellInput == "Q" || spellInput == "") return 0;
@@ -797,7 +797,7 @@ namespace UsurperRemake.Systems
                     {
                         player.HP = Math.Min(player.MaxHP, player.HP + result.Healing);
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  Healed for {result.Healing} HP! ({player.HP}/{player.MaxHP})");
+                        terminal.WriteLine($"  {Loc.Get("world_boss.healed_for", result.Healing, player.HP, player.MaxHP)}");
                     }
 
                     // Protection/attack buffs
@@ -805,13 +805,13 @@ namespace UsurperRemake.Systems
                     {
                         player.ApplyStatus(StatusEffect.Shielded, result.Duration > 0 ? result.Duration : 3);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"  Protection increased by {result.ProtectionBonus}!");
+                        terminal.WriteLine($"  {Loc.Get("world_boss.protection_increased", result.ProtectionBonus)}");
                     }
                     if (result.AttackBonus > 0)
                     {
                         player.ApplyStatus(StatusEffect.Empowered, result.Duration > 0 ? result.Duration : 3);
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"  Attack power increased by {result.AttackBonus}!");
+                        terminal.WriteLine($"  {Loc.Get("world_boss.attack_increased", result.AttackBonus)}");
                     }
 
                     return Math.Max(0, spellDamage);
@@ -837,14 +837,14 @@ namespace UsurperRemake.Systems
                 player.Healing--;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  You drink a healing potion! +{healAmount} HP ({player.HP}/{player.MaxHP})");
+                terminal.WriteLine($"  {Loc.Get("world_boss.drink_potion", healAmount, player.HP, player.MaxHP)}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Potions remaining: {player.Healing}");
+                terminal.WriteLine($"  {Loc.Get("world_boss.potions_remaining", player.Healing)}");
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  You have no healing potions.");
+                terminal.WriteLine($"  {Loc.Get("ui.no_healing_potions")}");
             }
         }
 
@@ -856,12 +856,12 @@ namespace UsurperRemake.Systems
             if (abilities.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  No abilities available.");
+                terminal.WriteLine($"  {Loc.Get("world_boss.no_abilities")}");
                 return 0;
             }
 
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  Class Abilities" : "  ─── Class Abilities ───");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? $"  {Loc.Get("world_boss.class_abilities")}" : $"  ─── {Loc.Get("world_boss.class_abilities")} ───");
             var usable = new List<(int idx, ClassAbilitySystem.ClassAbility ability)>();
             for (int i = 0; i < abilities.Count; i++)
             {
@@ -878,12 +878,12 @@ namespace UsurperRemake.Systems
             if (usable.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  All abilities on cooldown.");
+                terminal.WriteLine($"  {Loc.Get("world_boss.all_on_cooldown")}");
                 return 0;
             }
 
             terminal.SetColor("white");
-            terminal.Write("  Use which ability (# or Q): ");
+            terminal.Write($"  {Loc.Get("world_boss.use_which_ability")}");
             string abilityInput = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
             if (abilityInput == "Q" || abilityInput == "") return 0;
@@ -907,7 +907,7 @@ namespace UsurperRemake.Systems
                         {
                             player.HP = Math.Min(player.MaxHP, player.HP + result.Healing);
                             terminal.SetColor("bright_green");
-                            terminal.WriteLine($"  Healed for {result.Healing}! ({player.HP}/{player.MaxHP})");
+                            terminal.WriteLine($"  {Loc.Get("world_boss.healed_for", result.Healing, player.HP, player.MaxHP)}");
                         }
 
                         return Math.Max(0, result.Damage);
@@ -960,7 +960,7 @@ namespace UsurperRemake.Systems
                     player.HP = Math.Max(0, player.HP - bossDmg);
 
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"  {bossDef.Name} strikes you for {bossDmg:N0} damage! (HP: {player.HP}/{player.MaxHP})");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.boss_strikes", bossDef.Name, $"{bossDmg:N0}", player.HP, player.MaxHP)}");
                 }
             }
         }
@@ -970,7 +970,7 @@ namespace UsurperRemake.Systems
             int defendingRounds, int playerDefBonus)
         {
             terminal.SetColor(bossDef.ThemeColor);
-            terminal.WriteLine($"  {bossDef.Name} uses {ability.Name}!");
+            terminal.WriteLine($"  {Loc.Get("world_boss.boss_uses_ability", bossDef.Name, ability.Name)}");
 
             // Calculate ability damage
             long baseDmg = CalculateBossBasicDamage(bossData, player, rng, defendingRounds, playerDefBonus);
@@ -999,12 +999,12 @@ namespace UsurperRemake.Systems
                 {
                     player.ApplyStatus(ability.AppliedStatus.Value, ability.StatusDuration);
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  You are afflicted with {ability.AppliedStatus.Value}! ({ability.StatusDuration} rounds)");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.afflicted_with", ability.AppliedStatus.Value, ability.StatusDuration)}");
                 }
                 else
                 {
                     terminal.SetColor("cyan");
-                    terminal.WriteLine($"  You resist the {ability.AppliedStatus.Value} effect!");
+                    terminal.WriteLine($"  {Loc.Get("world_boss.resist_effect", ability.AppliedStatus.Value)}");
                 }
             }
 
@@ -1012,7 +1012,7 @@ namespace UsurperRemake.Systems
             if (ability.SelfHealPercent > 0)
             {
                 terminal.SetColor("magenta");
-                terminal.WriteLine($"  {bossDef.Name} regenerates from the attack!");
+                terminal.WriteLine($"  {Loc.Get("world_boss.boss_regenerates", bossDef.Name)}");
             }
 
             terminal.SetColor("cyan");
@@ -1081,7 +1081,7 @@ namespace UsurperRemake.Systems
                 // Display phase transition
                 terminal.SetColor("bright_yellow");
                 terminal.WriteLine("");
-                terminal.WriteLine($"  *** PHASE {newPhase} — {GetPhaseDescription(newPhase)} ***");
+                terminal.WriteLine($"  *** {Loc.Get("world_boss.phase_label", newPhase, 3)} — {GetPhaseDescription(newPhase)} ***");
 
                 string[]? dialogue = newPhase == 2 ? bossDef.Phase2Dialogue : bossDef.Phase3Dialogue;
                 if (dialogue != null)
@@ -1103,9 +1103,9 @@ namespace UsurperRemake.Systems
 
         private string GetPhaseDescription(int phase) => phase switch
         {
-            2 => "The boss grows desperate!",
-            3 => "ENRAGED — Full power unleashed!",
-            _ => "The battle begins."
+            2 => Loc.Get("world_boss.phase_2_desc"),
+            3 => Loc.Get("world_boss.phase_3_desc"),
+            _ => Loc.Get("world_boss.phase_1_desc")
         };
 
         // ═══════════════════════════════════════════════════════════════════════════
@@ -1196,7 +1196,7 @@ namespace UsurperRemake.Systems
                             bossLevel, minRarity, bossDef.Element, killingPlayer.Class);
 
                         killingTerminal.SetColor("bright_yellow");
-                        killingTerminal.WriteLine($"\n  ═══ World Boss Rewards ({tierName}) ═══");
+                        killingTerminal.WriteLine($"\n  ═══ {Loc.Get("world_boss.rewards_header", tierName)} ═══");
                         killingTerminal.SetColor("white");
                         killingTerminal.WriteLine($"  XP:   +{xpReward:N0}");
                         killingTerminal.WriteLine($"  Gold: +{goldReward:N0}");

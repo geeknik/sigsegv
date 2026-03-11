@@ -344,6 +344,7 @@ namespace UsurperRemake.Systems
         public bool SkipIntimateScenes { get; set; }  // Skip detailed intimate scenes (fade to black)
         public bool ScreenReaderMode { get; set; }  // Simplified text for screen readers (accessibility)
         public bool CompactMode { get; set; }  // Compact menus for mobile/small screen SSH
+        public string Language { get; set; } = "en";  // Player language preference
         public ColorThemeType ColorTheme { get; set; } = ColorThemeType.Default;  // Player-selected color theme
         public bool AutoLevelUp { get; set; } = true;  // Auto-level on XP threshold (default on)
         public bool AutoEquipDisabled { get; set; }  // Shop purchases go to inventory
@@ -762,6 +763,16 @@ namespace UsurperRemake.Systems
         public bool Shop { get; set; }
         public bool Dungeon { get; set; }
         public List<string> Description { get; set; } = new();
+        public List<LootEffectData>? LootEffects { get; set; }
+    }
+
+    /// <summary>
+    /// Serializable loot effect (CON/INT/AllStats stored on inventory items)
+    /// </summary>
+    public class LootEffectData
+    {
+        public int EffectType { get; set; }
+        public int Value { get; set; }
     }
 
     /// <summary>

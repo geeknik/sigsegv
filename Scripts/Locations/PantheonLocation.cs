@@ -44,7 +44,7 @@ public class PantheonLocation : BaseLocation
         while (!exitLoop)
         {
             ShowPantheonMenu();
-            string input = await terminal.GetInputAsync("\n  Your divine will: ");
+            string input = await terminal.GetInputAsync(Loc.Get("pantheon.prompt_divine_will"));
             string choice = input.Trim().ToUpper();
 
             // Handle chat commands
@@ -96,7 +96,7 @@ public class PantheonLocation : BaseLocation
                 case "Q":
                     throw new LocationExitException(GameLocation.NoWhere);
                 default:
-                    terminal.WriteLine("  The cosmos does not understand.", "gray");
+                    terminal.WriteLine(Loc.Get("pantheon.invalid_choice"), "gray");
                     break;
             }
         }
@@ -110,32 +110,32 @@ public class PantheonLocation : BaseLocation
         int believers = CountBelievers(currentPlayer.DivineName);
         int deedsMax = GetDeedsPerDay(currentPlayer.GodLevel);
 
-        WriteBoxHeader("THE DIVINE REALM", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.divine_realm"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.Write($"  Welcome, ");
+        terminal.Write(Loc.Get("pantheon.welcome"));
         terminal.SetColor("white");
         terminal.Write($"{currentPlayer.DivineName}");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($" the {godTitle}");
+        terminal.WriteLine(Loc.Get("pantheon.the_title", godTitle));
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"  Alignment: {currentPlayer.GodAlignment}  |  Believers: {believers}  |  Deeds: {currentPlayer.DeedsLeft}/{deedsMax}");
+        terminal.WriteLine(Loc.Get("pantheon.status_line", currentPlayer.GodAlignment, believers, currentPlayer.DeedsLeft, deedsMax));
         terminal.WriteLine("");
 
         // Menu
-        WriteMenuOption("S", "Status", "View your divine stats");
-        WriteMenuOption("B", "Believers", "View and manage your flock");
-        WriteMenuOption("D", "Divine Deeds", $"Perform interventions ({currentPlayer.DeedsLeft} left)");
-        WriteMenuOption("F", "Favors", "Configure boons for your followers");
-        WriteMenuOption("I", "Immortals", "View other gods and rankings");
-        WriteMenuOption("N", "News", "Read mortal and divine news");
-        WriteMenuOption("C", "Comment", "Send a proclamation to your believers");
-        WriteMenuOption("V", "Visit Manwe", "The Supreme Creator's throne");
+        WriteMenuOption("S", Loc.Get("pantheon.menu_status"), Loc.Get("pantheon.menu_status_desc"));
+        WriteMenuOption("B", Loc.Get("pantheon.menu_believers"), Loc.Get("pantheon.menu_believers_desc"));
+        WriteMenuOption("D", Loc.Get("pantheon.menu_deeds"), Loc.Get("pantheon.menu_deeds_desc", currentPlayer.DeedsLeft));
+        WriteMenuOption("F", Loc.Get("pantheon.menu_favors"), Loc.Get("pantheon.menu_favors_desc"));
+        WriteMenuOption("I", Loc.Get("pantheon.menu_immortals"), Loc.Get("pantheon.menu_immortals_desc"));
+        WriteMenuOption("N", Loc.Get("pantheon.menu_news"), Loc.Get("pantheon.menu_news_desc"));
+        WriteMenuOption("C", Loc.Get("pantheon.menu_comment"), Loc.Get("pantheon.menu_comment_desc"));
+        WriteMenuOption("V", Loc.Get("pantheon.menu_visit_manwe"), Loc.Get("pantheon.menu_visit_manwe_desc"));
         terminal.WriteLine("");
-        WriteMenuOption("R", "Renounce", "Give up immortality and reroll");
-        WriteMenuOption("Q", "Quit", "Leave the game");
+        WriteMenuOption("R", Loc.Get("pantheon.menu_renounce"), Loc.Get("pantheon.menu_renounce_desc"));
+        WriteMenuOption("Q", Loc.Get("pantheon.menu_quit"), Loc.Get("pantheon.menu_quit_desc"));
     }
 
     private void WriteMenuOption(string key, string label, string desc)
@@ -163,55 +163,55 @@ public class PantheonLocation : BaseLocation
         long nextLevelExp = GetNextLevelExp(currentPlayer.GodLevel);
         int deedsMax = GetDeedsPerDay(currentPlayer.GodLevel);
 
-        WriteBoxHeader("DIVINE STATUS", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.divine_status"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  {currentPlayer.DivineName} the {godTitle}");
+        terminal.WriteLine($"  {currentPlayer.DivineName}{Loc.Get("pantheon.the_title", godTitle)}");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Mortal Name:    ");
+        terminal.Write(Loc.Get("pantheon.mortal_name_label"));
         terminal.SetColor("white");
         terminal.WriteLine($"{currentPlayer.Name2}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Alignment:      ");
+        terminal.Write(Loc.Get("pantheon.alignment_label"));
         terminal.SetColor("white");
         terminal.WriteLine($"{currentPlayer.GodAlignment}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  God Rank:       ");
+        terminal.Write(Loc.Get("pantheon.god_rank_label"));
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"Level {currentPlayer.GodLevel} — {godTitle}");
+        terminal.WriteLine(Loc.Get("pantheon.god_rank_value", currentPlayer.GodLevel, godTitle));
 
         terminal.SetColor("cyan");
-        terminal.Write("  Experience:     ");
+        terminal.Write(Loc.Get("pantheon.experience_label"));
         terminal.SetColor("white");
         if (currentPlayer.GodLevel < GameConfig.GodMaxLevel)
             terminal.WriteLine($"{currentPlayer.GodExperience:N0} / {nextLevelExp:N0}");
         else
-            terminal.WriteLine($"{currentPlayer.GodExperience:N0} (MAX LEVEL)");
+            terminal.WriteLine($"{currentPlayer.GodExperience:N0}{Loc.Get("pantheon.max_level")}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Believers:      ");
+        terminal.Write(Loc.Get("pantheon.believers_label"));
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{believers}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Deeds Today:    ");
+        terminal.Write(Loc.Get("pantheon.deeds_today_label"));
         terminal.SetColor("white");
         terminal.WriteLine($"{currentPlayer.DeedsLeft} / {deedsMax}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Ascension Date: ");
+        terminal.Write(Loc.Get("pantheon.ascension_date_label"));
         terminal.SetColor("gray");
         terminal.WriteLine($"{currentPlayer.AscensionDate:yyyy-MM-dd}");
 
         terminal.SetColor("cyan");
-        terminal.Write("  Daily Exp:      ");
+        terminal.Write(Loc.Get("pantheon.daily_exp_label"));
         terminal.SetColor("white");
-        terminal.WriteLine($"+{believers * currentPlayer.GodLevel * GameConfig.GodBelieverExpPerLevel} from believers");
+        terminal.WriteLine(Loc.Get("pantheon.daily_exp_value", believers * currentPlayer.GodLevel * GameConfig.GodBelieverExpPerLevel));
 
         // Show configured boons
         var boonLines = DivineBoonRegistry.GetEffectSummaryLines(currentPlayer.DivineBoonConfig);
@@ -219,7 +219,7 @@ public class PantheonLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  Configured Boons:");
+            terminal.WriteLine(Loc.Get("pantheon.configured_boons"));
             foreach (var line in boonLines)
             {
                 terminal.SetColor("white");
@@ -230,11 +230,11 @@ public class PantheonLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  No boons configured. Use [F] Favors to set boons for your followers.");
+            terminal.WriteLine(Loc.Get("pantheon.no_boons"));
         }
 
         terminal.WriteLine("");
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -245,7 +245,7 @@ public class PantheonLocation : BaseLocation
     {
         terminal.ClearScreen();
 
-        WriteBoxHeader("YOUR FAITHFUL FLOCK", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.faithful_flock"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         var believers = await GetBelieverListAsync(currentPlayer.DivineName);
@@ -253,12 +253,12 @@ public class PantheonLocation : BaseLocation
         if (believers.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You have no believers yet. Use Divine Deeds to recruit followers.");
+            terminal.WriteLine(Loc.Get("pantheon.no_believers"));
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  Total Believers: {believers.Count}");
+            terminal.WriteLine(Loc.Get("pantheon.total_believers", believers.Count));
             terminal.WriteLine("");
 
             int idx = 1;
@@ -267,23 +267,23 @@ public class PantheonLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write($"  {idx,2}. ");
                 terminal.SetColor(believer.IsPlayer ? "bright_cyan" : "bright_green");
-                string tag = believer.IsPlayer ? "[PLAYER] " : "";
+                string tag = believer.IsPlayer ? Loc.Get("pantheon.believer_player_tag") : "";
                 terminal.Write($"{tag}{believer.Name,-20}");
                 terminal.SetColor("gray");
-                string onTag = believer.IsPlayer && believer.IsOnline ? " [ONLINE]" : "";
-                terminal.WriteLine($" Lvl {believer.Level,3}  {believer.Class}{onTag}");
+                string onTag = believer.IsPlayer && believer.IsOnline ? Loc.Get("pantheon.believer_online_tag") : "";
+                terminal.WriteLine($" {Loc.Get("pantheon.rankings_col_lvl")} {believer.Level,3}  {believer.Class}{onTag}");
                 idx++;
             }
 
             if (believers.Count > 20)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  ... and {believers.Count - 20} more.");
+                terminal.WriteLine(Loc.Get("pantheon.and_more", believers.Count - 20));
             }
         }
 
         terminal.WriteLine("");
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -300,7 +300,7 @@ public class PantheonLocation : BaseLocation
         {
             terminal.ClearScreen();
 
-            WriteBoxHeader("CONFIGURE DIVINE FAVORS", "bright_yellow", 77);
+            WriteBoxHeader(Loc.Get("pantheon.configure_favors"), "bright_yellow", 77);
             terminal.WriteLine("");
 
             // Budget display
@@ -309,13 +309,13 @@ public class PantheonLocation : BaseLocation
             int concentration = Math.Max(0, GameConfig.GodBoonConcentrationMax - believers * GameConfig.GodBoonConcentrationPerBeliever);
 
             terminal.SetColor("cyan");
-            terminal.Write("  Budget: ");
+            terminal.Write(Loc.Get("pantheon.budget_label"));
             terminal.SetColor("white");
-            terminal.Write($"{spent}/{totalBudget} pts");
+            terminal.Write(Loc.Get("pantheon.budget_value", spent, totalBudget));
             terminal.SetColor("gray");
-            terminal.WriteLine($"  (Base: {baseBudget} from Level {currentPlayer.GodLevel}  +  Focus: {concentration} from {believers} believers)");
+            terminal.WriteLine(Loc.Get("pantheon.budget_breakdown", baseBudget, currentPlayer.GodLevel, concentration, believers));
             terminal.SetColor("cyan");
-            terminal.Write("  Alignment: ");
+            terminal.Write(Loc.Get("pantheon.alignment_label"));
             terminal.SetColor("white");
             terminal.WriteLine($"{currentPlayer.GodAlignment}");
             terminal.WriteLine("");
@@ -325,7 +325,7 @@ public class PantheonLocation : BaseLocation
             if (activeBoons.Count > 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  ACTIVE BOONS:");
+                terminal.WriteLine(Loc.Get("pantheon.active_boons_header"));
                 int idx = 1;
                 foreach (var (boonId, tier) in activeBoons)
                 {
@@ -350,7 +350,7 @@ public class PantheonLocation : BaseLocation
 
             // Show available boons (including ones that can be upgraded)
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("  AVAILABLE BOONS:");
+            terminal.WriteLine(Loc.Get("pantheon.available_boons_header"));
 
             var allBoons = DivineBoonRegistry.AllBoons;
             var activeDict = activeBoons.ToDictionary(b => b.boonId, b => b.tier);
@@ -374,7 +374,7 @@ public class PantheonLocation : BaseLocation
                 if (!alignmentMatch)
                 {
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine($"  {optNum,2}. {label,-25} — {boon.Description,-28} {alignTag,-12} (locked)");
+                    terminal.WriteLine($"  {optNum,2}. {label,-25} — {boon.Description,-28} {alignTag,-12} {Loc.Get("pantheon.boon_locked")}");
                 }
                 else if (!canAfford)
                 {
@@ -400,12 +400,12 @@ public class PantheonLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  * = insufficient budget   locked = wrong alignment");
+            terminal.WriteLine(Loc.Get("pantheon.boon_legend"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("  [#] Add/upgrade boon   [R#] Remove boon   [0] Done");
+            terminal.WriteLine(Loc.Get("pantheon.boon_menu_help"));
 
-            string input = await terminal.GetInputAsync("\n  Choice: ");
+            string input = await terminal.GetInputAsync(Loc.Get("pantheon.boon_choice_prompt"));
             string trimmed = input.Trim().ToUpper();
 
             if (trimmed == "0" || trimmed == "") break;
@@ -419,7 +419,7 @@ public class PantheonLocation : BaseLocation
                 spent = DivineBoonRegistry.CalculateSpent(currentPlayer.DivineBoonConfig);
 
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("  Boon removed.");
+                terminal.WriteLine(Loc.Get("pantheon.boon_removed"));
                 await Task.Delay(500);
                 continue;
             }
@@ -447,7 +447,7 @@ public class PantheonLocation : BaseLocation
 
                 var boon = DivineBoonRegistry.GetBoon(boonId);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  {boon?.Name ?? boonId} configured!");
+                terminal.WriteLine(Loc.Get("pantheon.boon_configured", boon?.Name ?? boonId));
                 await Task.Delay(500);
             }
         }
@@ -478,7 +478,7 @@ public class PantheonLocation : BaseLocation
         try { await SaveSystem.Instance.AutoSave(currentPlayer); } catch { }
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  Divine favors updated. Your followers will feel the change.");
+        terminal.WriteLine(Loc.Get("pantheon.favors_updated"));
         await Task.Delay(1000);
     }
 
@@ -510,31 +510,31 @@ public class PantheonLocation : BaseLocation
         if (currentPlayer.DeedsLeft <= 0)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("  Your divine power is spent for today. Rest until the morrow.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.no_deeds_left"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
         terminal.ClearScreen();
 
         string godTitle = GetGodTitle(currentPlayer.GodLevel);
-        WriteBoxHeader("DIVINE DEEDS", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.divine_deeds"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"  Deeds remaining: {currentPlayer.DeedsLeft}");
+        terminal.WriteLine(Loc.Get("pantheon.deeds_remaining", currentPlayer.DeedsLeft));
         terminal.WriteLine("");
 
-        WriteMenuOption("1", "Recruit Believer", "Convert a pagan or steal from a rival");
-        WriteMenuOption("2", "Bless Follower", "Grant a combat buff to a believer");
-        WriteMenuOption("3", "Smite Mortal", "Strike down a non-believer");
-        WriteMenuOption("4", "Poison Relations", "Worsen relations between two mortals");
-        WriteMenuOption("5", "Free Prisoner", "Release an imprisoned character");
-        WriteMenuOption("6", "Proclamation", "Send a divine message to all");
+        WriteMenuOption("1", Loc.Get("pantheon.menu_recruit"), Loc.Get("pantheon.menu_recruit_desc"));
+        WriteMenuOption("2", Loc.Get("pantheon.menu_bless"), Loc.Get("pantheon.menu_bless_desc"));
+        WriteMenuOption("3", Loc.Get("pantheon.menu_smite"), Loc.Get("pantheon.menu_smite_desc"));
+        WriteMenuOption("4", Loc.Get("pantheon.menu_poison"), Loc.Get("pantheon.menu_poison_desc"));
+        WriteMenuOption("5", Loc.Get("pantheon.menu_free"), Loc.Get("pantheon.menu_free_desc"));
+        WriteMenuOption("6", Loc.Get("pantheon.menu_proclamation"), Loc.Get("pantheon.menu_proclamation_desc"));
         terminal.WriteLine("");
-        WriteMenuOption("0", "Back", "Return to the Divine Realm");
+        WriteMenuOption("0", Loc.Get("pantheon.menu_back"), Loc.Get("pantheon.menu_back_desc"));
 
-        string input = await terminal.GetInputAsync("\n  Choose a deed: ");
+        string input = await terminal.GetInputAsync(Loc.Get("pantheon.prompt_choose_deed"));
         string choice = input.Trim();
 
         switch (choice)
@@ -561,7 +561,7 @@ public class PantheonLocation : BaseLocation
 
         foreach (var npc in npcs)
         {
-            string status = string.IsNullOrEmpty(npc.WorshippedGod) ? "Pagan" : $"Follows {npc.WorshippedGod}";
+            string status = string.IsNullOrEmpty(npc.WorshippedGod) ? Loc.Get("pantheon.pagan") : Loc.Get("pantheon.follows", npc.WorshippedGod);
             targets.Add(new DeedTarget { Name = npc.DisplayName, Level = npc.Level, Status = status, NpcRef = npc });
         }
 
@@ -575,7 +575,7 @@ public class PantheonLocation : BaseLocation
                 foreach (var m in mortals)
                 {
                     if (m.WorshippedGod == currentPlayer.DivineName) continue;
-                    string status = string.IsNullOrEmpty(m.WorshippedGod) ? "Pagan" : $"Follows {m.WorshippedGod}";
+                    string status = string.IsNullOrEmpty(m.WorshippedGod) ? Loc.Get("pantheon.pagan") : Loc.Get("pantheon.follows", m.WorshippedGod);
                     string onTag = m.IsOnline ? " [ONLINE]" : "";
                     targets.Add(new DeedTarget
                     {
@@ -589,8 +589,8 @@ public class PantheonLocation : BaseLocation
 
         if (targets.Count == 0)
         {
-            terminal.WriteLine("  There are no mortals available to recruit.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.no_mortals_to_recruit"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
@@ -619,9 +619,9 @@ public class PantheonLocation : BaseLocation
                 currentPlayer.GodExperience += expGain;
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  {target.Name} falls to their knees in worship!");
+                terminal.WriteLine(Loc.Get("pantheon.recruit_success", target.Name));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  +{expGain} divine experience.");
+                terminal.WriteLine(Loc.Get("pantheon.exp_gain", expGain));
                 RecalculateGodLevel();
 
                 if (target.IsPlayer)
@@ -631,7 +631,7 @@ public class PantheonLocation : BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {target.Name} resists your divine call. Perhaps next time.");
+                terminal.WriteLine(Loc.Get("pantheon.recruit_failure", target.Name));
             }
         }
         else
@@ -654,9 +654,9 @@ public class PantheonLocation : BaseLocation
 
                 currentPlayer.GodExperience += expGain;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  {target.Name} abandons {oldGod} and turns to you!");
+                terminal.WriteLine(Loc.Get("pantheon.steal_success", target.Name, oldGod));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  +{expGain} divine experience.");
+                terminal.WriteLine(Loc.Get("pantheon.exp_gain", expGain));
                 RecalculateGodLevel();
 
                 if (target.IsPlayer)
@@ -665,11 +665,11 @@ public class PantheonLocation : BaseLocation
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {target.Name}'s faith holds firm. You cannot turn them.");
+                terminal.WriteLine(Loc.Get("pantheon.steal_failure", target.Name));
             }
         }
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     private async Task DeedBlessFollower()
@@ -678,8 +678,8 @@ public class PantheonLocation : BaseLocation
 
         if (believers.Count == 0)
         {
-            terminal.WriteLine("  You have no believers to bless.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.no_believers_to_bless"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
@@ -719,14 +719,14 @@ public class PantheonLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  Your divine light flows into {target.Name}!");
+        terminal.WriteLine(Loc.Get("pantheon.bless_success", target.Name));
         terminal.SetColor("white");
-        terminal.WriteLine($"  They receive +{(int)(GameConfig.GodBlessBonusPercent * 100)}% damage/defense for {GameConfig.GodBlessCombatDuration} combats.");
+        terminal.WriteLine(Loc.Get("pantheon.bless_effect", (int)(GameConfig.GodBlessBonusPercent * 100), GameConfig.GodBlessCombatDuration));
         terminal.SetColor("gray");
-        terminal.WriteLine($"  +{expGain} divine experience.");
+        terminal.WriteLine(Loc.Get("pantheon.exp_gain", expGain));
         RecalculateGodLevel();
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     private async Task DeedSmiteMortal()
@@ -744,7 +744,7 @@ public class PantheonLocation : BaseLocation
             targets.Add(new DeedTarget
             {
                 Name = npc.DisplayName, Level = npc.Level,
-                Status = $"HP: {npc.HP}/{npc.MaxHP}", NpcRef = npc
+                Status = $"{Loc.Get("combat.bar_hp")}: {npc.HP}/{npc.MaxHP}", NpcRef = npc
             });
         }
 
@@ -769,7 +769,7 @@ public class PantheonLocation : BaseLocation
                     targets.Add(new DeedTarget
                     {
                         Name = m.DisplayName, Level = m.Level,
-                        Status = $"HP: {m.HP}/{m.MaxHP}{onTag}",
+                        Status = $"{Loc.Get("combat.bar_hp")}: {m.HP}/{m.MaxHP}{onTag}",
                         IsPlayer = true, Username = m.Username, IsOnline = m.IsOnline,
                         HP = m.HP, MaxHP = m.MaxHP
                     });
@@ -780,8 +780,8 @@ public class PantheonLocation : BaseLocation
 
         if (targets.Count == 0)
         {
-            terminal.WriteLine("  There are no non-believers to smite.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.no_mortals_to_smite"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
@@ -805,9 +805,9 @@ public class PantheonLocation : BaseLocation
             long estimatedDamage = Math.Max(1, (long)(target.MaxHP * smitePercent));
             terminal.WriteLine("");
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"  Divine lightning strikes {target.Name}!");
+            terminal.WriteLine(Loc.Get("pantheon.smite_strike", target.Name));
             terminal.SetColor("white");
-            terminal.WriteLine($"  They take ~{estimatedDamage} damage!");
+            terminal.WriteLine(Loc.Get("pantheon.smite_player_damage", estimatedDamage));
             NewsSystem.Instance?.Newsy(true, $"[DIVINE] {currentPlayer.DivineName} struck {target.Name} with divine lightning!");
         }
         else if (target.NpcRef != null)
@@ -817,16 +817,16 @@ public class PantheonLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"  Divine lightning strikes {target.Name}!");
+            terminal.WriteLine(Loc.Get("pantheon.smite_strike", target.Name));
             terminal.SetColor("white");
-            terminal.WriteLine($"  They take {damage} damage! (HP: {target.NpcRef.HP}/{target.NpcRef.MaxHP})");
+            terminal.WriteLine(Loc.Get("pantheon.smite_npc_damage", damage, target.NpcRef.HP, target.NpcRef.MaxHP));
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"  +{expGain} divine experience.");
+        terminal.WriteLine(Loc.Get("pantheon.exp_gain", expGain));
         RecalculateGodLevel();
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     private async Task DeedPoisonRelationship()
@@ -838,8 +838,8 @@ public class PantheonLocation : BaseLocation
 
         if (npcs.Count < 2)
         {
-            terminal.WriteLine("  Not enough mortals to manipulate.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.not_enough_mortals"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
@@ -860,11 +860,11 @@ public class PantheonLocation : BaseLocation
             currentPlayer.GodExperience += GameConfig.GodPoisonRelationshipExp;
             terminal.WriteLine("");
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"  Dark whispers flow between {npcs[idx1 - 1].DisplayName} and {npcs[idx2 - 1].DisplayName}.");
+            terminal.WriteLine(Loc.Get("pantheon.poison_success", npcs[idx1 - 1].DisplayName, npcs[idx2 - 1].DisplayName));
             terminal.SetColor("white");
-            terminal.WriteLine("  Their bond weakens.");
+            terminal.WriteLine(Loc.Get("pantheon.poison_weakens"));
             terminal.SetColor("gray");
-            terminal.WriteLine($"  +{GameConfig.GodPoisonRelationshipExp} divine experience.");
+            terminal.WriteLine(Loc.Get("pantheon.exp_gain", GameConfig.GodPoisonRelationshipExp));
 
             // Actually worsen the relationship
             RelationshipSystem.UpdateRelationship(npcs[idx1 - 1], npcs[idx2 - 1], -1, 2);
@@ -874,10 +874,10 @@ public class PantheonLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Your influence fails to take hold. Their bond is too strong.");
+            terminal.WriteLine(Loc.Get("pantheon.poison_failure"));
         }
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     private async Task DeedFreePrisoner()
@@ -888,13 +888,13 @@ public class PantheonLocation : BaseLocation
 
         if (prisoners.Count == 0)
         {
-            terminal.WriteLine("  There are no prisoners to free.", "gray");
-            await terminal.GetInputAsync("  Press Enter to return...");
+            terminal.WriteLine(Loc.Get("pantheon.no_prisoners"), "gray");
+            await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
             return;
         }
 
         int pickedIdx = await PickNPC(prisoners, "FREE PRISONER", "bright_cyan", "Free #",
-            npc => $"{npc.DaysInPrison} days remaining");
+            npc => $"{npc.DaysInPrison}{Loc.Get("pantheon.prison_days")}");
         if (pickedIdx < 0) return;
 
         var target = prisoners[pickedIdx];
@@ -904,24 +904,24 @@ public class PantheonLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  The prison walls shimmer and {target.DisplayName} walks free!");
+        terminal.WriteLine(Loc.Get("pantheon.free_success", target.DisplayName));
         terminal.SetColor("gray");
-        terminal.WriteLine($"  +{GameConfig.GodFreePrisonerExp} divine experience.");
+        terminal.WriteLine(Loc.Get("pantheon.exp_gain", GameConfig.GodFreePrisonerExp));
         RecalculateGodLevel();
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     private async Task DeedProclamation()
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  DIVINE PROCLAMATION");
+        terminal.WriteLine(Loc.Get("pantheon.proclamation_header"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  Your words will echo across the realm.");
+        terminal.WriteLine(Loc.Get("pantheon.proclamation_intro"));
         terminal.WriteLine("");
 
-        string message = await terminal.GetInputAsync("  Your proclamation (max 120 chars): ");
+        string message = await terminal.GetInputAsync(Loc.Get("pantheon.proclamation_prompt"));
         if (string.IsNullOrWhiteSpace(message)) return;
 
         if (message.Length > 120) message = message.Substring(0, 120);
@@ -943,12 +943,12 @@ public class PantheonLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  Your words thunder across the mortal realm!");
+        terminal.WriteLine(Loc.Get("pantheon.proclamation_success"));
         terminal.SetColor("gray");
-        terminal.WriteLine($"  +{GameConfig.GodProclamationExp} divine experience.");
+        terminal.WriteLine(Loc.Get("pantheon.exp_gain", GameConfig.GodProclamationExp));
         RecalculateGodLevel();
 
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_continue"));
     }
 
     #endregion
@@ -959,7 +959,7 @@ public class PantheonLocation : BaseLocation
     {
         terminal.ClearScreen();
 
-        WriteBoxHeader("THE PANTHEON \u2014 IMMORTAL RANKINGS", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.immortal_rankings"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         var gods = await GetAllImmortalsAsync();
@@ -967,14 +967,14 @@ public class PantheonLocation : BaseLocation
         if (gods.Count <= 1)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You are the only god in the realm.");
+            terminal.WriteLine(Loc.Get("pantheon.only_god"));
             terminal.WriteLine("");
         }
 
         if (gods.Count > 0)
         {
             terminal.SetColor("cyan");
-            terminal.Write($"  {"#",-4}{"Divine Name",-22}{"Title",-14}{"Lvl",4}{"Exp",12}{"Blvrs",7}{"Status",9}");
+            terminal.Write($"  {Loc.Get("pantheon.rankings_col_num"),-4}{Loc.Get("pantheon.rankings_col_name"),-22}{Loc.Get("pantheon.rankings_col_title"),-14}{Loc.Get("pantheon.rankings_col_lvl"),4}{Loc.Get("pantheon.rankings_col_exp"),12}{Loc.Get("pantheon.rankings_col_believers"),7}{Loc.Get("pantheon.rankings_col_status"),9}");
             terminal.WriteLine("");
             if (!IsScreenReader)
             {
@@ -988,7 +988,7 @@ public class PantheonLocation : BaseLocation
                 bool isYou = god.DivineName == currentPlayer.DivineName;
                 string title = GetGodTitle(god.GodLevel);
                 int believers = CountBelievers(god.DivineName);
-                string status = isYou ? "YOU" : (god.IsOnline ? "ONLINE" : "OFFLINE");
+                string status = isYou ? Loc.Get("pantheon.ranking_you") : (god.IsOnline ? Loc.Get("pantheon.ranking_online") : Loc.Get("pantheon.ranking_offline"));
 
                 terminal.SetColor(isYou ? "bright_yellow" : "white");
                 terminal.Write($"  {rank,-4}");
@@ -1008,7 +1008,7 @@ public class PantheonLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -1018,7 +1018,7 @@ public class PantheonLocation : BaseLocation
     private async Task ShowNews()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("DIVINE & MORTAL NEWS", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("pantheon.divine_mortal_news"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         var allNews = NewsSystem.Instance?.GetTodaysNews() ?? new List<string>();
@@ -1026,7 +1026,7 @@ public class PantheonLocation : BaseLocation
         if (news.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No news at this time.");
+            terminal.WriteLine(Loc.Get("pantheon.no_news"));
         }
         else
         {
@@ -1039,7 +1039,7 @@ public class PantheonLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -1050,12 +1050,12 @@ public class PantheonLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  SEND A COMMENT TO YOUR BELIEVERS");
+        terminal.WriteLine(Loc.Get("pantheon.comment_header"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  This message will appear as news (no deed cost).");
+        terminal.WriteLine(Loc.Get("pantheon.comment_intro"));
         terminal.WriteLine("");
 
-        string message = await terminal.GetInputAsync("  Your message (max 120 chars): ");
+        string message = await terminal.GetInputAsync(Loc.Get("pantheon.comment_prompt"));
         if (string.IsNullOrWhiteSpace(message)) return;
 
         if (message.Length > 120) message = message.Substring(0, 120);
@@ -1067,9 +1067,9 @@ public class PantheonLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("  Your words have been recorded in the annals.");
+        terminal.WriteLine(Loc.Get("pantheon.comment_success"));
 
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -1081,7 +1081,7 @@ public class PantheonLocation : BaseLocation
         terminal.ClearScreen();
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("  You approach the throne of Manwe, the Supreme Creator.");
+        terminal.WriteLine(Loc.Get("pantheon.manwe_approach"));
         terminal.WriteLine("");
 
         await Task.Delay(500);
@@ -1089,11 +1089,11 @@ public class PantheonLocation : BaseLocation
         if (currentPlayer.GodLevel >= GameConfig.GodMaxLevel)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  \"You have reached the pinnacle of divine power.\"");
+            terminal.WriteLine(Loc.Get("pantheon.manwe_max_1"));
             terminal.SetColor("white");
-            terminal.WriteLine("  \"There is nothing more I can teach you.\"");
+            terminal.WriteLine(Loc.Get("pantheon.manwe_max_2"));
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  \"Go forth and shape the world as you see fit.\"");
+            terminal.WriteLine(Loc.Get("pantheon.manwe_max_3"));
         }
         else
         {
@@ -1106,19 +1106,19 @@ public class PantheonLocation : BaseLocation
                 int newDeeds = GetDeedsPerDay(currentPlayer.GodLevel);
 
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  Manwe's eyes glow with approval.");
+                terminal.WriteLine(Loc.Get("pantheon.manwe_approval"));
                 terminal.WriteLine("");
                 await Task.Delay(500);
 
                 terminal.SetColor("white");
-                terminal.WriteLine($"  \"Your power grows, {currentPlayer.DivineName}.\"");
+                terminal.WriteLine(Loc.Get("pantheon.manwe_power_grows", currentPlayer.DivineName));
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  \"You are now a {newTitle}.\"");
+                terminal.WriteLine(Loc.Get("pantheon.manwe_now_title", newTitle));
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  GOD RANK UP! Level {currentPlayer.GodLevel} — {newTitle}");
+                terminal.WriteLine(Loc.Get("pantheon.god_rankup", currentPlayer.GodLevel, newTitle));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  Daily deeds increased to {newDeeds}.");
+                terminal.WriteLine(Loc.Get("pantheon.deeds_increased", newDeeds));
 
                 // Reset deeds on level up
                 currentPlayer.DeedsLeft = newDeeds;
@@ -1130,16 +1130,16 @@ public class PantheonLocation : BaseLocation
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"  \"You are not yet ready, {currentPlayer.DivineName}.\"");
+                terminal.WriteLine(Loc.Get("pantheon.manwe_not_ready", currentPlayer.DivineName));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Experience: {currentPlayer.GodExperience:N0} / {nextExp:N0}");
+                terminal.WriteLine(Loc.Get("pantheon.experience_progress", currentPlayer.GodExperience.ToString("N0"), nextExp.ToString("N0")));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  \"Gather more believers. Perform more deeds.\"");
+                terminal.WriteLine(Loc.Get("pantheon.manwe_gather_more"));
             }
         }
 
         terminal.WriteLine("");
-        await terminal.GetInputAsync("  Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.press_enter_return"));
     }
 
     #endregion
@@ -1150,23 +1150,23 @@ public class PantheonLocation : BaseLocation
     {
         terminal.ClearScreen();
 
-        WriteBoxHeader("RENOUNCE IMMORTALITY", "bright_red", 77);
+        WriteBoxHeader(Loc.Get("pantheon.renounce_immortality"), "bright_red", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("  WARNING: This is permanent and cannot be undone!");
+        terminal.WriteLine(Loc.Get("pantheon.renounce_warning"));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  - Your divine record will be erased");
-        terminal.WriteLine("  - All believers will lose their faith");
-        terminal.WriteLine("  - Your character data will be wiped");
-        terminal.WriteLine("  - You will start fresh (cycle bonuses preserved)");
+        terminal.WriteLine(Loc.Get("pantheon.renounce_1"));
+        terminal.WriteLine(Loc.Get("pantheon.renounce_2"));
+        terminal.WriteLine(Loc.Get("pantheon.renounce_3"));
+        terminal.WriteLine(Loc.Get("pantheon.renounce_4"));
         terminal.WriteLine("");
 
-        string confirm1 = await terminal.GetInputAsync("  Are you sure? (Type YES to confirm): ");
+        string confirm1 = await terminal.GetInputAsync(Loc.Get("pantheon.renounce_confirm_yes"));
         if (confirm1.Trim().ToUpper() != "YES") return false;
 
-        string confirm2 = await terminal.GetInputAsync("  This is truly permanent. Type your divine name to confirm: ");
+        string confirm2 = await terminal.GetInputAsync(Loc.Get("pantheon.renounce_confirm_name"));
         if (confirm2.Trim() != currentPlayer.DivineName) return false;
 
         // Auto-abdicate if player is the king
@@ -1174,7 +1174,7 @@ public class PantheonLocation : BaseLocation
         {
             CastleLocation.AbdicatePlayerThrone(currentPlayer, "abdicated the throne to start anew");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  The throne has been abdicated as you renounce your divine power.");
+            terminal.WriteLine(Loc.Get("pantheon.renounce_abdicate"));
             terminal.WriteLine("");
             await Task.Delay(1500);
         }
@@ -1223,9 +1223,9 @@ public class PantheonLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_red");
-        terminal.WriteLine("  The divine light fades from your eyes...");
+        terminal.WriteLine(Loc.Get("pantheon.renounce_fade"));
         terminal.SetColor("white");
-        terminal.WriteLine("  You are mortal once more.");
+        terminal.WriteLine(Loc.Get("pantheon.renounce_mortal"));
         terminal.WriteLine("");
 
         await Task.Delay(1500);
@@ -1234,10 +1234,10 @@ public class PantheonLocation : BaseLocation
         GameEngine.Instance.PendingNewGamePlus = true;
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("  The wheel turns. A new life awaits.");
+        terminal.WriteLine(Loc.Get("pantheon.renounce_new_life"));
         terminal.WriteLine("");
 
-        await terminal.GetInputAsync("  Press Enter to begin anew...");
+        await terminal.GetInputAsync(Loc.Get("pantheon.renounce_begin_anew"));
         return true;
     }
 
@@ -1428,17 +1428,17 @@ public class PantheonLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write($"  {i + 1,3}. ");
                 terminal.SetColor(t.IsPlayer ? "bright_cyan" : "bright_green");
-                string tag = t.IsPlayer ? "[PLAYER] " : "";
+                string tag = t.IsPlayer ? Loc.Get("pantheon.believer_player_tag") : "";
                 terminal.Write($"{tag}{t.Name,-20}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" Lvl {t.Level,3}  {t.Status}");
+                terminal.WriteLine($" {Loc.Get("pantheon.rankings_col_lvl")} {t.Level,3}  {t.Status}");
             }
 
             terminal.WriteLine("");
             if (totalPages > 1)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Page {page + 1}/{totalPages}  |  [N]ext  [P]rev  |  {targets.Count} total");
+                terminal.WriteLine(Loc.Get("pantheon.page_format", page + 1, totalPages, targets.Count));
                 terminal.WriteLine("");
             }
 
@@ -1492,7 +1492,7 @@ public class PantheonLocation : BaseLocation
             if (totalPages > 1)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Page {page + 1}/{totalPages}  |  [N]ext  [P]rev  |  {npcs.Count} total");
+                terminal.WriteLine(Loc.Get("pantheon.page_format", page + 1, totalPages, npcs.Count));
                 terminal.WriteLine("");
             }
 

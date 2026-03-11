@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UsurperRemake.Systems;
 
 /// <summary>
 /// Epic Loot Generation System
@@ -1748,8 +1749,8 @@ public static class LootGenerator
             string color = GetRarityColor(rarity);
 
             string stats = item.Type == ObjType.Weapon
-                ? $"Atk: {item.Attack}"
-                : $"Def: {item.Armor}";
+                ? $"{Loc.Get("combat.bar_atk")}: {item.Attack}"
+                : $"{Loc.Get("combat.bar_def")}: {item.Armor}";
 
             string curse = item.Cursed || item.IsCursed ? " [CURSED]" : "";
 

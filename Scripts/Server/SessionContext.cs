@@ -89,6 +89,17 @@ public class SessionContext : IDisposable
     public bool WizardGodMode { get; set; } = false;
     public bool WizardInvisible { get; set; } = false;
 
+    // --- Per-Session Preferences ---
+    /// <summary>
+    /// Per-session language preference. Stored on the SessionContext object (not a separate
+    /// AsyncLocal) so that changes inside awaited methods propagate back to callers.
+    /// AsyncLocal has copy-on-write semantics for value types/strings — modifications in
+    /// child async scopes don't flow back to the parent. But property changes on a shared
+    /// reference object DO flow back, which is what we need for in-session preference changes.
+    /// </summary>
+    public string Language { get; set; } = "en";
+    public bool CompactMode { get; set; } = false;
+
     // --- Per-Session Notifications ---
     public Queue<string> PendingNotifications { get; } = new();
     public bool IsIntentionalExit { get; set; } = false;

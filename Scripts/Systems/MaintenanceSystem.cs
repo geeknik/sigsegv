@@ -40,7 +40,7 @@ public class MaintenanceSystem
         if (maintenanceRunning)
         {
             if (!silent)
-                terminal.WriteLine("Maintenance is already running!", "red");
+                terminal.WriteLine(Loc.Get("maint.already_running"), "red");
             return false;
         }
 
@@ -64,7 +64,7 @@ public class MaintenanceSystem
         if (maintenanceRunning)
         {
             if (!silent)
-                terminal.WriteLine("Maintenance is already in progress!", "red");
+                terminal.WriteLine(Loc.Get("maint.already_in_progress"), "red");
             return;
         }
 
@@ -146,11 +146,11 @@ public class MaintenanceSystem
         var maintenanceType = forced ? "FORCED" : "SCHEDULED";
         var dateString = DateTime.Now.ToString("MM-dd-yyyy HH:mm:ss");
         
-        terminal.WriteLine($"Maintenance Type: {maintenanceType}", "yellow");
-        terminal.WriteLine($"Date/Time: {dateString}", "white");
-        terminal.WriteLine($"Last Maintenance: {lastMaintenanceDate:MM-dd-yyyy}", "gray");
+        terminal.WriteLine(Loc.Get("maint.type", maintenanceType), "yellow");
+        terminal.WriteLine(Loc.Get("maint.datetime", dateString), "white");
+        terminal.WriteLine(Loc.Get("maint.last_maint", lastMaintenanceDate.ToString("MM-dd-yyyy")), "gray");
         terminal.WriteLine("", "white");
-        terminal.WriteLine("Injections of Evil...", "red");
+        terminal.WriteLine(Loc.Get("maint.injections"), "red");
         terminal.WriteLine("", "white");
         
         await Task.Delay(1000);
@@ -184,7 +184,7 @@ public class MaintenanceSystem
     private async Task ProcessAllPlayers(MaintenanceConfig config, bool silent = true)
     {
         if (!silent)
-            terminal.WriteLine("Processing player records...", "white");
+            terminal.WriteLine(Loc.Get("maint.processing_players"), "white");
 
         // In a real implementation, this would iterate through all player files
         // For now, process the current player if available
@@ -196,7 +196,7 @@ public class MaintenanceSystem
 
         if (!silent)
         {
-            terminal.WriteLine("Player processing complete.", "green");
+            terminal.WriteLine(Loc.Get("maint.player_complete"), "green");
             await Task.Delay(500);
         }
     }
@@ -648,12 +648,12 @@ public class MaintenanceSystem
         terminal.WriteLine("", "white");
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("═══════════════════════════════════════", "bright_green");
-        terminal.WriteLine("    ALL DEEDS ARE DONE!", "bright_green");
+        terminal.WriteLine("    " + Loc.Get("maint.all_done"), "bright_green");
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("═══════════════════════════════════════", "bright_green");
         terminal.WriteLine("", "white");
-        terminal.WriteLine("Maintenance completed successfully.", "green");
-        terminal.WriteLine($"Next maintenance: {DateTime.Now.AddDays(1):MM-dd-yyyy}", "gray");
+        terminal.WriteLine(Loc.Get("maint.completed"), "green");
+        terminal.WriteLine(Loc.Get("maint.next_maint", DateTime.Now.AddDays(1).ToString("MM-dd-yyyy")), "gray");
         terminal.WriteLine("", "white");
         
         await Task.Delay(2000);

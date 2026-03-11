@@ -116,6 +116,12 @@ public class WorldSimulator
     private static readonly Dictionary<string, int> _lastCascadeTick = new();
     private static int _currentTick = 0;
 
+    /// <summary>
+    /// When true, the simulator is running in catch-up mode (fast-forward).
+    /// Skips player reputation spread and reduces logging.
+    /// </summary>
+    public bool IsCatchUpMode { get; set; }
+
     // === Online mode rate-limiting (persistent server needs realistic pacing) ===
     // Per-NPC combat count per "sim day" (resets every TICKS_PER_SIM_DAY ticks)
     private readonly Dictionary<string, int> _npcDailyCombats = new();
@@ -280,9 +286,13 @@ public class WorldSimulator
     {
         if (!isRunning || npcs == null) return;
 
-        var aliveCount = npcs.Count(n => n.IsAlive && !n.IsDead);
-        var deadCount = npcs.Count(n => !n.IsAlive || n.IsDead);
-        UsurperRemake.Systems.DebugLogger.Instance.LogDebug("WORLD", $"SimulateStep: {aliveCount} alive, {deadCount} dead, {deadNPCRespawnTimers.Count} in respawn queue");
+        // Suppress per-tick debug logging during catch-up (would generate 20k+ log lines)
+        if (!IsCatchUpMode)
+        {
+            var aliveCount = npcs.Count(n => n.IsAlive && !n.IsDead);
+            var deadCount = npcs.Count(n => !n.IsAlive || n.IsDead);
+            UsurperRemake.Systems.DebugLogger.Instance.LogDebug("WORLD", $"SimulateStep: {aliveCount} alive, {deadCount} dead, {deadNPCRespawnTimers.Count} in respawn queue");
+        }
 
         // Handle NPC respawns
         ProcessNPCRespawns();
@@ -296,14 +306,24 @@ public class WorldSimulator
         // Process orphan aging in the Royal Orphanage
         ProcessOrphanAging();
 
-        // Process NPC immigration (replenish extinct/critical races)
-        ProcessNPCImmigration();
+        // During catch-up, probability-based systems (pregnancies, divorces, NPC AI combat,
+        // relationships) are tuned for 30-second intervals. Running them every tick in a tight
+        // loop would cause 100% divorce rates, population explosions, etc.
+        // Only run these every 60 ticks during catch-up (~30 min of sim time per invocation).
+        bool runVolatileSystems = !IsCatchUpMode || (_currentTick % 60 == 0);
 
-        // Process NPC pregnancies and births (including affairs)
-        ProcessNPCPregnancies();
+        if (runVolatileSystems)
+        {
+            // Process NPC immigration (replenish extinct/critical races)
+            // Gated during catch-up to prevent population explosion
+            ProcessNPCImmigration();
 
-        // Process NPC divorces
-        ProcessNPCDivorces();
+            // Process NPC pregnancies and births (including affairs)
+            ProcessNPCPregnancies();
+
+            // Process NPC divorces
+            ProcessNPCDivorces();
+        }
 
         // Process NPC sleep cycle (some NPCs go to sleep, others wake up)
         if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
@@ -315,32 +335,39 @@ public class WorldSimulator
         // if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
         //     ProcessNPCAttacksOnSleepers();
 
-        var worldState = new WorldState(npcs);
-
-        // Process each NPC's AI
-        foreach (var npc in npcs.Where(n => n.IsAlive && n.Brain != null))
+        // NPC AI decisions, activities, and relationships are all probability-based
+        // per-tick systems. Gate the entire block during catch-up.
+        if (runVolatileSystems)
         {
-            try
-            {
-                var action = npc.Brain.DecideNextAction(worldState);
-                ExecuteNPCAction(npc, action, worldState);
+            var worldState = new WorldState(npcs);
 
-                // NPCs have a chance to do additional activities each tick
-                ProcessNPCActivities(npc, worldState);
-
-                // Process NPC relationships (marriages, friendships, enemies)
-                EnhancedNPCBehaviors.ProcessNPCRelationships(npc, npcs);
-            }
-            catch (Exception ex)
+            foreach (var npc in npcs.Where(n => n.IsAlive && n.Brain != null))
             {
-                UsurperRemake.Systems.DebugLogger.Instance.LogError("WORLD", $"Error processing NPC {npc.Name}: {ex.Message}");
+                try
+                {
+                    var action = npc.Brain.DecideNextAction(worldState);
+                    ExecuteNPCAction(npc, action, worldState);
+
+                    // NPCs have a chance to do additional activities each tick
+                    ProcessNPCActivities(npc, worldState);
+
+                    // Process NPC relationships (marriages, friendships, enemies)
+                    EnhancedNPCBehaviors.ProcessNPCRelationships(npc, npcs);
+                }
+                catch (Exception ex)
+                {
+                    UsurperRemake.Systems.DebugLogger.Instance.LogError("WORLD", $"Error processing NPC {npc.Name}: {ex.Message}");
+                }
             }
         }
 
-        // Spread player reputation through NPC network
-        var currentPlayer = GameEngine.Instance?.CurrentPlayer;
-        if (currentPlayer != null)
-            SocialInfluenceSystem.Instance?.ProcessPlayerReputationSpread(npcs, currentPlayer.Name, _currentTick);
+        // Spread player reputation through NPC network (skip during catch-up — player wasn't present)
+        if (!IsCatchUpMode)
+        {
+            var currentPlayer = GameEngine.Instance?.CurrentPlayer;
+            if (currentPlayer != null)
+                SocialInfluenceSystem.Instance?.ProcessPlayerReputationSpread(npcs, currentPlayer.Name, _currentTick);
+        }
 
         // Track dead NPCs for respawn (check both HP <= 0 and IsDead flag)
         // Skip age-dead and perma-dead NPCs - they don't come back
@@ -349,19 +376,12 @@ public class WorldSimulator
             if (!deadNPCRespawnTimers.ContainsKey(npc.Name))
             {
                 deadNPCRespawnTimers[npc.Name] = NPC_RESPAWN_TICKS;
-                UsurperRemake.Systems.DebugLogger.Instance.LogDebug("NPC", $"{npc.Name} added to respawn queue ({NPC_RESPAWN_TICKS} ticks)");
+                if (!IsCatchUpMode)
+                    UsurperRemake.Systems.DebugLogger.Instance.LogDebug("NPC", $"{npc.Name} added to respawn queue ({NPC_RESPAWN_TICKS} ticks)");
             }
         }
 
-        // Update emotional states from recent memories (generates emotions from events)
-        foreach (var npc in npcs.Where(n => n.IsAlive && !n.IsDead && n.EmotionalState != null))
-        {
-            var recentMems = npc.Brain?.Memory?.AllMemories?.Where(m => m.IsRecent(2)).ToList()
-                ?? new List<MemoryEvent>();
-            npc.EmotionalState.Update(recentMems);
-        }
-
-        // Process emotional cascades - strong emotions spread to nearby NPCs
+        // Tick counter (always incremented, even during catch-up, for rate-limiters)
         _currentTick++;
         // Periodically prune cascade rate-limiter to free memory from dead/removed NPCs
         if (_currentTick % 100 == 0)
@@ -372,30 +392,47 @@ public class WorldSimulator
             _lastDailyResetTick = _currentTick;
             ResetDailyCounters();
         }
-        foreach (var npc in npcs.Where(n => n.IsAlive && !n.IsDead && n.EmotionalState != null))
+
+        if (runVolatileSystems)
         {
-            ProcessEmotionalCascades(npc);
+            // Update emotional states from recent memories
+            foreach (var npc in npcs.Where(n => n.IsAlive && !n.IsDead && n.EmotionalState != null))
+            {
+                var recentMems = npc.Brain?.Memory?.AllMemories?.Where(m => m.IsRecent(2)).ToList()
+                    ?? new List<MemoryEvent>();
+                npc.EmotionalState.Update(recentMems);
+            }
+
+            // Process emotional cascades - strong emotions spread to nearby NPCs
+            foreach (var npc in npcs.Where(n => n.IsAlive && !n.IsDead && n.EmotionalState != null))
+            {
+                ProcessEmotionalCascades(npc);
+            }
+
+            // Process gossip spreading
+            ProcessGossip();
+
+            // Process social emergence systems (v0.42.0)
+            SocialInfluenceSystem.Instance?.ProcessOpinionPropagation(npcs, _currentTick);
+            SocialInfluenceSystem.Instance?.ProcessFactionRecruitment(npcs, _currentTick);
+            SocialInfluenceSystem.Instance?.ProcessRoleAdaptation(npcs, _currentTick);
+            CulturalMemeSystem.Instance?.GenerateNewMemes(npcs, _currentTick);
+            CulturalMemeSystem.Instance?.ProcessMemeSpreading(npcs, _currentTick);
+            CulturalMemeSystem.Instance?.DecayMemes();
         }
 
-        // Process gossip spreading
-        ProcessGossip();
-
-        // Process social emergence systems (v0.42.0)
-        SocialInfluenceSystem.Instance?.ProcessOpinionPropagation(npcs, _currentTick);
-        SocialInfluenceSystem.Instance?.ProcessFactionRecruitment(npcs, _currentTick);
-        SocialInfluenceSystem.Instance?.ProcessRoleAdaptation(npcs, _currentTick);
-        CulturalMemeSystem.Instance?.GenerateNewMemes(npcs, _currentTick);
-        CulturalMemeSystem.Instance?.ProcessMemeSpreading(npcs, _currentTick);
-        CulturalMemeSystem.Instance?.DecayMemes();
-
-        // Process world events
-        ProcessWorldEvents();
+        // Process world events (gated during catch-up to avoid ~1000 flavor text entries)
+        if (runVolatileSystems)
+            ProcessWorldEvents();
 
         // Update relationships and social dynamics
-        UpdateSocialDynamics();
+        if (runVolatileSystems)
+            UpdateSocialDynamics();
 
         // Process NPC settlement (autonomous town-building)
-        SettlementSystem.Instance?.ProcessTick(npcs.Where(n => n.IsAlive && !n.IsDead).ToList());
+        // Gated during catch-up — gold contributions and construction run per-tick
+        if (runVolatileSystems)
+            SettlementSystem.Instance?.ProcessTick(npcs.Where(n => n.IsAlive && !n.IsDead).ToList());
     }
 
     /// <summary>

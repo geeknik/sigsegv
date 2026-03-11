@@ -74,13 +74,13 @@ public class MainStreetLocation : BaseLocation
 
     protected override string[]? GetAmbientMessages() => new[]
     {
-        "A merchant bellows the price of his wares.",
-        "The crowd shifts and murmurs around you.",
-        "A distant bell tolls the hour.",
-        "Cart wheels clatter over the cobblestones.",
-        "The wind carries the smell of fresh bread from a nearby stall.",
-        "A dog barks somewhere down an alley.",
-        "Two guards exchange words as they pass.",
+        Loc.Get("main_street.ambient_merchant"),
+        Loc.Get("main_street.ambient_crowd"),
+        Loc.Get("main_street.ambient_bell"),
+        Loc.Get("main_street.ambient_cart"),
+        Loc.Get("main_street.ambient_bread"),
+        Loc.Get("main_street.ambient_dog"),
+        Loc.Get("main_street.ambient_guards"),
     };
 
     protected override void DisplayLocation()
@@ -94,7 +94,7 @@ public class MainStreetLocation : BaseLocation
         }
 
         // ASCII art header (simplified version)
-        WriteBoxHeader("MAIN STREET", "bright_blue");
+        WriteBoxHeader(Loc.Get("main_street.header"), "bright_blue");
         terminal.WriteLine("");
 
         // Online status bar (only in online mode)
@@ -102,7 +102,7 @@ public class MainStreetLocation : BaseLocation
         {
             int onlineCount = OnlineStateManager.Instance.CachedOnlinePlayerCount;
             terminal.SetColor("darkgray");
-            terminal.Write(" Players online: ");
+            terminal.Write($" {Loc.Get("main_street.players_online")}: ");
             terminal.SetColor("bright_green");
             terminal.Write($"{onlineCount}");
             terminal.SetColor("darkgray");
@@ -110,17 +110,17 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("cyan");
             terminal.Write("/say");
             terminal.SetColor("darkgray");
-            terminal.Write(" to chat  |  ");
+            terminal.Write($" {Loc.Get("main_street.to_chat")}  |  ");
             terminal.SetColor("cyan");
             terminal.Write("/who");
             terminal.SetColor("darkgray");
-            terminal.WriteLine(" for player list");
+            terminal.WriteLine($" {Loc.Get("main_street.for_player_list")}");
         }
 
         // Location description with time/weather
         terminal.SetColor("white");
-        terminal.WriteLine($"You are standing on the main street of {GetTownName()}.");
-        terminal.WriteLine($"The {GetTimeOfDay()} air is {GetWeather()}.");
+        terminal.WriteLine(Loc.Get("main_street.desc_standing", GetTownName()));
+        terminal.WriteLine(Loc.Get("main_street.desc_air", GetTimeOfDay(), GetWeather()));
         terminal.WriteLine("");
 
         // Show NPCs in location
@@ -142,11 +142,11 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("  >>> ");
             terminal.SetColor("bright_white");
-            terminal.Write("New adventurer? Press ");
+            terminal.Write(Loc.Get("main_street.new_adventurer_prefix"));
             terminal.SetColor("bright_yellow");
-            terminal.Write("[D]");
+            terminal.Write(Loc.Get("main_street.new_adventurer_key"));
             terminal.SetColor("bright_white");
-            terminal.Write(" to enter the Dungeons!");
+            terminal.Write(Loc.Get("main_street.new_adventurer_suffix"));
             terminal.SetColor("bright_yellow");
             terminal.WriteLine(" <<<");
             terminal.SetColor("white");
@@ -207,8 +207,8 @@ public class MainStreetLocation : BaseLocation
         {
             currentPlayer.HintsShown.Add(HintSystem.HINT_COMPANION_VEX_TEASER);
             terminal.SetColor("dark_yellow");
-            terminal.WriteLine("  A quick-fingered stranger weaves through the crowd.");
-            terminal.WriteLine("  They catch your eye, flash a wink, and disappear into the crowd.");
+            terminal.WriteLine(Loc.Get("main_street.vex_teaser1"));
+            terminal.WriteLine(Loc.Get("main_street.vex_teaser2"));
             terminal.SetColor("white");
         }
         else if (currentPlayer.Level >= 5 && CompanionSystem.Instance != null
@@ -218,8 +218,8 @@ public class MainStreetLocation : BaseLocation
         {
             currentPlayer.HintsShown.Add(HintSystem.HINT_COMPANION_LYRIS_TEASER);
             terminal.SetColor("dark_yellow");
-            terminal.WriteLine("  A hooded woman passes through the crowd, lips moving in silent prayer.");
-            terminal.WriteLine("  She glances your way briefly. Something about her eyes unsettles you.");
+            terminal.WriteLine(Loc.Get("main_street.lyris_teaser1"));
+            terminal.WriteLine(Loc.Get("main_street.lyris_teaser2"));
             terminal.SetColor("white");
         }
 
@@ -227,7 +227,7 @@ public class MainStreetLocation : BaseLocation
         if (currentPlayer.HasGodSlayerBuff)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"Divine power courses through you. ({currentPlayer.GodSlayerCombats} combats remaining)");
+            terminal.WriteLine(Loc.Get("main_street.god_slayer_buff", currentPlayer.GodSlayerCombats));
             terminal.SetColor("white");
         }
     }
@@ -241,35 +241,35 @@ public class MainStreetLocation : BaseLocation
         // Line 1: Header
         if (IsScreenReader)
         {
-            terminal.WriteLine("MAIN STREET", "bright_white");
+            terminal.WriteLine(Loc.Get("main_street.bbs_main_street"), "bright_white");
         }
         else
         {
             terminal.SetColor("bright_blue");
             terminal.Write("╔════════════════════════════════ ");
             terminal.SetColor("bright_white");
-            terminal.Write("MAIN STREET");
+            terminal.Write(Loc.Get("main_street.bbs_main_street"));
             terminal.SetColor("bright_blue");
             terminal.WriteLine(" ════════════════════════════════╗");
         }
 
         // Line 2: Description (one line)
         terminal.SetColor("white");
-        terminal.WriteLine($" The {GetTimeOfDay()} streets of {GetTownName()}. The air is {GetWeather()}.");
+        terminal.WriteLine(Loc.Get("main_street.bbs_desc", GetTimeOfDay(), GetTownName(), GetWeather()));
 
         // Line 3: NPCs (compressed to one line)
         var liveNPCs = GetLiveNPCsAtLocation();
         if (liveNPCs.Count > 0)
         {
             terminal.SetColor("gray");
-            terminal.Write(" You notice: ");
+            terminal.Write(Loc.Get("main_street.you_notice"));
             terminal.SetColor("cyan");
             var names = liveNPCs.Take(2).Select(n => n.Name2).ToList();
             terminal.Write(string.Join(", ", names));
             if (liveNPCs.Count > 2)
             {
                 terminal.SetColor("gray");
-                terminal.Write($", and {liveNPCs.Count - 2} other{(liveNPCs.Count - 2 == 1 ? "" : "s")}");
+                terminal.Write(Loc.Get("main_street.and_others", liveNPCs.Count - 2, liveNPCs.Count - 2 == 1 ? "" : "s"));
             }
             terminal.WriteLine("");
         }
@@ -283,46 +283,46 @@ public class MainStreetLocation : BaseLocation
         // Tier 1 (always): Core combat loop
         terminal.SetColor("darkgray");
         terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("D"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("ungeons    ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_dungeons_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("W"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("eapon Shop ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_weapon_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("A"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("rmor Shop  ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_armor_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("M"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("agic Shop  ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_magic_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("U"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("cyan"); terminal.WriteLine("Music Shop");
+        terminal.SetColor("cyan"); terminal.WriteLine(Loc.Get("menu.action.music_shop"));
 
         terminal.SetColor("darkgray");
         terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("I"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("nn         ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_inn_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("1"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Healer     ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_healer"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("2"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Quest Hall ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_quest_hall"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("V"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.WriteLine("Master");
+        terminal.SetColor("white"); terminal.WriteLine(Loc.Get("main_street.menu_master"));
 
         // Tier 2 (Level 3+): Town services
         if (tier >= 2)
         {
             terminal.SetColor("darkgray");
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("B"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("ank        ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_bank_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("T"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("emple      ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_temple_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("K"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("Castle     ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_castle"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("H"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.WriteLine("ome");
+            terminal.SetColor("white"); terminal.WriteLine(Loc.Get("main_street.menu_home_suffix"));
 
             terminal.SetColor("darkgray");
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("N"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("ews        ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_news_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("F"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("ame        ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_fame_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("E"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("bright_green"); terminal.WriteLine("xplore Wild");
+            terminal.SetColor("bright_green"); terminal.WriteLine(Loc.Get("main_street.menu_explore_suffix"));
         }
 
         // Tier 3 (Level 5+): Full menu
@@ -330,31 +330,31 @@ public class MainStreetLocation : BaseLocation
         {
             terminal.SetColor("darkgray");
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("Y"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("gray"); terminal.Write("Dark Alley ");
+            terminal.SetColor("gray"); terminal.Write(Loc.Get("main_street.menu_dark_alley"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("X"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("magenta"); terminal.Write("Love St    ");
+            terminal.SetColor("magenta"); terminal.Write(Loc.Get("main_street.menu_love_st"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("O"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("ld Church  ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_church_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("J"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.WriteLine("Auction");
+            terminal.SetColor("white"); terminal.WriteLine(Loc.Get("main_street.menu_auction"));
 
             terminal.SetColor("darkgray");
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("C"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("hallenges  ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_challenges_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("L"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("odging     ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_lodging_suffix"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("="); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("Stats      ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_stats"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("P"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.WriteLine("rogress");
+            terminal.SetColor("white"); terminal.WriteLine(Loc.Get("main_street.menu_progress_suffix"));
 
             terminal.SetColor("darkgray");
             terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("Z"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("Team Corner");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_team_corner"));
             if (UsurperRemake.Systems.SettlementSystem.Instance?.State.IsEstablished == true)
             {
                 terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write(">"); terminal.SetColor("darkgray"); terminal.Write("]");
-                terminal.SetColor("bright_green"); terminal.Write("Outskirts");
+                terminal.SetColor("bright_green"); terminal.Write(Loc.Get("main_street.menu_outskirts"));
             }
             terminal.WriteLine("");
         }
@@ -363,15 +363,15 @@ public class MainStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         if (tier < 3) terminal.Write(" "); // indent if not continuing a row
         terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("Q"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("gray"); terminal.Write("uit        ");
+        terminal.SetColor("gray"); terminal.Write(Loc.Get("main_street.menu_quit_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("~"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("gray"); terminal.WriteLine("Settings");
+        terminal.SetColor("gray"); terminal.WriteLine(Loc.Get("main_street.menu_settings"));
 
         // Compact mode number-key hint (offline only — online mode has its own number row)
         if (GameConfig.CompactMode && !DoorMode.IsOnlineMode)
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine(" Numpad: 1=Healer 2=Quests 3=Wpn 4=Armor 5=Temple 6=Castle 7=Home 8=Master");
+            terminal.WriteLine(Loc.Get("main_street.numpad_hint"));
         }
 
         // Online multiplayer row (only in online mode)
@@ -380,23 +380,23 @@ public class MainStreetLocation : BaseLocation
             int onlineCount = OnlineStateManager.Instance?.CachedOnlinePlayerCount ?? 0;
             if (IsScreenReader)
             {
-                terminal.WriteLine("Online:", "bright_green");
+                terminal.WriteLine(Loc.Get("main_street.online_label"), "bright_green");
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.Write(" ── Online ── ");
+                terminal.Write(Loc.Get("main_street.online_separator"));
             }
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("3"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write($"Who({onlineCount}) ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.who_count", onlineCount));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("4"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("Chat ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_chat_short"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("5"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("News ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_news_short"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("6"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write("Arena ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_arena_short"));
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("7"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.WriteLine("Boss");
+            terminal.SetColor("white"); terminal.WriteLine(Loc.Get("main_street.menu_boss_short"));
         }
 
         // Blank line
@@ -408,7 +408,7 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write(" >>> ");
             terminal.SetColor("bright_green");
-            terminal.Write($"You have {currentPlayer.TrainingPoints} training points! Visit the Level Master to spend them!");
+            terminal.Write(Loc.Get("main_street.training_points", currentPlayer.TrainingPoints));
             terminal.SetColor("bright_yellow");
             terminal.WriteLine(" <<<");
         }
@@ -419,34 +419,34 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write(" >>> ");
             terminal.SetColor("bright_white");
-            terminal.Write("New adventurer? Press ");
+            terminal.Write(Loc.Get("main_street.new_adventurer_prefix"));
             terminal.SetColor("bright_yellow");
-            terminal.Write("[D]");
+            terminal.Write(Loc.Get("main_street.new_adventurer_key"));
             terminal.SetColor("bright_white");
-            terminal.Write(" to enter the Dungeons!");
+            terminal.Write(Loc.Get("main_street.new_adventurer_suffix"));
             terminal.SetColor("bright_yellow");
             terminal.WriteLine(" <<<");
         }
 
         // Line 14: Status line (compact)
         terminal.SetColor("gray");
-        terminal.Write(" HP:");
+        terminal.Write(Loc.Get("main_street.status_hp"));
         float hpPct = currentPlayer.MaxHP > 0 ? (float)currentPlayer.HP / currentPlayer.MaxHP : 0;
         terminal.SetColor(hpPct > 0.5f ? "bright_green" : hpPct > 0.25f ? "yellow" : "bright_red");
         terminal.Write($"{currentPlayer.HP}/{currentPlayer.MaxHP}");
         terminal.SetColor("gray");
-        terminal.Write(" Gold:");
+        terminal.Write(Loc.Get("main_street.status_gold"));
         terminal.SetColor("yellow");
         terminal.Write($"{currentPlayer.Gold:N0}");
         if (currentPlayer.MaxMana > 0)
         {
             terminal.SetColor("gray");
-            terminal.Write(" Mana:");
+            terminal.Write(Loc.Get("main_street.status_mana"));
             terminal.SetColor("blue");
             terminal.Write($"{currentPlayer.Mana}/{currentPlayer.MaxMana}");
         }
         terminal.SetColor("gray");
-        terminal.Write(" Lv:");
+        terminal.Write(Loc.Get("main_street.status_lv"));
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Level}");
         if (currentPlayer.Level < GameConfig.MaxLevel)
@@ -466,20 +466,20 @@ public class MainStreetLocation : BaseLocation
         // Line 15: Quick commands (compact)
         terminal.SetColor("darkgray");
         terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("S"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("tatus ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_status_suffix"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("*"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Inv ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_inv"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("?"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Help ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_help_short"));
         if (liveNPCs.Count > 0)
         {
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("0"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write($"Talk({liveNPCs.Count}) ");
+            terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.talk_count", liveNPCs.Count));
         }
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("~"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Prefs ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_prefs"));
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("!"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Bug");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("main_street.menu_bug"));
         terminal.WriteLine("");
 
         // Line 16: Bottom border
@@ -506,14 +506,14 @@ public class MainStreetLocation : BaseLocation
             if (IsScreenReader)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("You are eligible for a level raise! Visit your Master to advance!");
+                terminal.WriteLine(Loc.Get("main_street.level_eligible_sr"));
             }
             else
             {
                 terminal.SetColor("bright_yellow");
                 terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("║     * You are eligible for a level raise! Visit your Master to advance! *    ║");
+                terminal.WriteLine($"║{Loc.Get("main_street.level_eligible"),78}║");
                 terminal.SetColor("bright_yellow");
                 terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
             }
@@ -674,14 +674,14 @@ public class MainStreetLocation : BaseLocation
             terminal.WriteLine("");
             if (IsScreenReader)
             {
-                terminal.WriteLine("Online:", "bright_white");
+                terminal.WriteLine(Loc.Get("main_street.online_label"), "bright_white");
             }
             else
             {
                 terminal.SetColor("bright_green");
                 terminal.Write(" ═══ ");
                 terminal.SetColor("bright_white");
-                terminal.Write("Online");
+                terminal.Write(Loc.Get("main_street.online_header"));
                 terminal.SetColor("bright_green");
                 terminal.WriteLine(" ═══");
             }
@@ -696,11 +696,11 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write($"Who's Online ");
+            terminal.Write(Loc.Get("main_street.whos_online_label"));
             terminal.SetColor("bright_green");
             terminal.Write($"({onlineCount}");
             terminal.SetColor("white");
-            terminal.WriteLine($" player{(onlineCount != 1 ? "s" : "")})");
+            terminal.WriteLine(Loc.Get("main_street.player_count", onlineCount != 1 ? Loc.Get("main_street.player_plural") : ""));
 
             terminal.SetColor("darkgray");
             terminal.Write(" [");
@@ -709,7 +709,7 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("Chat         ");
+            terminal.Write(Loc.Get("main_street.menu_chat_padded"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -718,7 +718,7 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("News Feed    ");
+            terminal.Write(Loc.Get("main_street.menu_news_padded"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -727,7 +727,7 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("Arena (PvP)  ");
+            terminal.Write(Loc.Get("main_street.menu_arena_padded"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -736,7 +736,7 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("World Boss");
+            terminal.WriteLine(Loc.Get("main_street.world_boss"));
         }
 
         terminal.WriteLine("");
@@ -756,94 +756,93 @@ public class MainStreetLocation : BaseLocation
     {
         int tier = GetMenuTier();
         terminal.WriteLine("");
-        terminal.WriteLine("Main Street Menu");
+        terminal.WriteLine(Loc.Get("main_street.menu_title"));
         terminal.WriteLine("");
 
-        terminal.WriteLine("Locations:");
-        terminal.WriteLine("  D - Dungeons");
-        terminal.WriteLine("  I - Inn");
+        terminal.WriteLine(Loc.Get("main_street.section_locations"));
+        terminal.WriteLine($"  D - {Loc.Get("menu.action.dungeon")}");
+        terminal.WriteLine($"  I - {Loc.Get("menu.action.inn")}");
         if (tier >= 2)
         {
-            terminal.WriteLine("  T - Temple");
-            terminal.WriteLine("  K - Castle");
-            terminal.WriteLine("  H - Home");
+            terminal.WriteLine($"  T - {Loc.Get("menu.action.temple")}");
+            terminal.WriteLine($"  K - {Loc.Get("menu.action.castle")}");
+            terminal.WriteLine($"  H - {Loc.Get("menu.action.home")}");
         }
         if (tier >= 3)
         {
-            terminal.WriteLine("  O - Old Church");
-            terminal.WriteLine("  L - Lodging (Dormitory)");
+            terminal.WriteLine($"  O - {Loc.Get("menu.action.church")}");
+            terminal.WriteLine($"  L - {Loc.Get("menu.action.lodging")}");
         }
         terminal.WriteLine("");
 
-        terminal.WriteLine("Shops:");
-        terminal.WriteLine("  W - Weapon Shop");
-        terminal.WriteLine("  A - Armor Shop");
-        terminal.WriteLine("  M - Magic Shop");
-        terminal.WriteLine("  U - Music Shop");
-        if (tier >= 3) terminal.WriteLine("  J - Auction House");
-        if (tier >= 2) terminal.WriteLine("  B - Bank");
-        terminal.WriteLine("  1 - Healer");
+        terminal.WriteLine(Loc.Get("main_street.section_shops"));
+        terminal.WriteLine($"  W - {Loc.Get("menu.action.weapon_shop")}");
+        terminal.WriteLine($"  A - {Loc.Get("menu.action.armor_shop")}");
+        terminal.WriteLine($"  M - {Loc.Get("menu.action.magic_shop")}");
+        terminal.WriteLine($"  U - {Loc.Get("menu.action.music_shop")}");
+        if (tier >= 3) terminal.WriteLine($"  J - {Loc.Get("menu.action.auction_house")}");
+        if (tier >= 2) terminal.WriteLine($"  B - {Loc.Get("menu.action.bank")}");
+        terminal.WriteLine($"  1 - {Loc.Get("menu.action.healer")}");
         terminal.WriteLine("");
 
-        terminal.WriteLine("Services:");
-        terminal.WriteLine("  V - Visit Master");
-        terminal.WriteLine("  2 - Quest Hall");
-        if (tier >= 3) terminal.WriteLine("  C - Challenges");
-        if (tier >= 3) terminal.WriteLine("  Z - Team Corner");
+        terminal.WriteLine(Loc.Get("main_street.section_services"));
+        terminal.WriteLine($"  V - {Loc.Get("menu.action.level_master")}");
+        terminal.WriteLine($"  2 - {Loc.Get("menu.action.quest_hall")}");
+        if (tier >= 3) terminal.WriteLine($"  C - {Loc.Get("menu.action.challenges")}");
+        if (tier >= 3) terminal.WriteLine($"  Z - {Loc.Get("menu.action.team_corner")}");
         terminal.WriteLine("");
 
         if (tier >= 2)
         {
-            terminal.WriteLine("Information:");
-            terminal.WriteLine("  S - Status");
-            terminal.WriteLine("  N - News");
-            terminal.WriteLine("  F - Fame");
+            terminal.WriteLine(Loc.Get("main_street.section_info"));
+            terminal.WriteLine($"  S - {Loc.Get("menu.action.status")}");
+            terminal.WriteLine($"  N - {Loc.Get("menu.action.news")}");
+            terminal.WriteLine($"  F - {Loc.Get("menu.action.fame")}");
             if (tier >= 3)
             {
-                terminal.WriteLine("  = - Stats Record");
-                terminal.WriteLine("  P - Progress");
+                terminal.WriteLine($"  = - {Loc.Get("menu.action.stats_record")}");
+                terminal.WriteLine($"  P - {Loc.Get("menu.action.progress")}");
             }
             terminal.WriteLine("");
         }
         else
         {
-            // Tier 1 only shows Status
-            terminal.WriteLine("  S - Status");
+            terminal.WriteLine($"  S - {Loc.Get("menu.action.status")}");
             terminal.WriteLine("");
         }
 
         if (tier >= 2)
         {
-            terminal.WriteLine("Exploration:");
-            terminal.WriteLine("  E - Wilderness");
+            terminal.WriteLine(Loc.Get("main_street.section_exploration_label"));
+            terminal.WriteLine($"  E - {Loc.Get("menu.action.wilderness")}");
             if (UsurperRemake.Systems.SettlementSystem.Instance?.State.IsEstablished == true)
-                terminal.WriteLine("  > - The Outskirts (Settlement)");
+                terminal.WriteLine($"  > - {Loc.Get("menu.action.settlement")}");
             terminal.WriteLine("");
         }
 
-        terminal.WriteLine("Other:");
+        terminal.WriteLine(Loc.Get("main_street.section_other"));
         if (tier >= 3)
         {
-            terminal.WriteLine("  Y - Dark Alley");
-            terminal.WriteLine("  X - Love Street");
+            terminal.WriteLine($"  Y - {Loc.Get("menu.action.dark_alley")}");
+            terminal.WriteLine($"  X - {Loc.Get("menu.action.love_street")}");
         }
-        terminal.WriteLine("  Q - Quit Game");
-        terminal.WriteLine("  ? - Help");
-        terminal.WriteLine("  ! - Report Bug");
+        terminal.WriteLine($"  Q - {Loc.Get("menu.action.quit")}");
+        terminal.WriteLine($"  ? - {Loc.Get("menu.action.help")}");
+        terminal.WriteLine($"  ! - {Loc.Get("menu.action.report_bug")}");
         terminal.WriteLine("");
 
         if (DoorMode.IsOnlineMode && OnlineChatSystem.IsActive)
         {
-            terminal.WriteLine("Online:");
-            terminal.WriteLine("  3 - Who's Online");
-            terminal.WriteLine("  4 - Chat");
-            terminal.WriteLine("  5 - News Feed");
-            terminal.WriteLine("  6 - Arena (PvP)");
-            terminal.WriteLine("  7 - World Boss");
-            terminal.WriteLine("  /say message - Broadcast chat");
-            terminal.WriteLine("  /tell player message - Private message");
-            terminal.WriteLine("  /who - See online players");
-            terminal.WriteLine("  /news - Recent news");
+            terminal.WriteLine(Loc.Get("main_street.online_label"));
+            terminal.WriteLine($"  3 - {Loc.Get("main_street.whos_online")}");
+            terminal.WriteLine($"  4 - {Loc.Get("main_street.chat")}");
+            terminal.WriteLine($"  5 - {Loc.Get("main_street.news_feed")}");
+            terminal.WriteLine($"  6 - {Loc.Get("main_street.arena_pvp")}");
+            terminal.WriteLine($"  7 - {Loc.Get("main_street.world_boss")}");
+            terminal.WriteLine($"  /say message - {Loc.Get("main_street.broadcast_chat")}");
+            terminal.WriteLine($"  /tell player message - {Loc.Get("main_street.private_message")}");
+            terminal.WriteLine($"  /who - {Loc.Get("main_street.see_online")}");
+            terminal.WriteLine($"  /news - {Loc.Get("main_street.recent_news")}");
             terminal.WriteLine("");
         }
     }
@@ -959,7 +958,7 @@ public class MainStreetLocation : BaseLocation
                 if (currentPlayer.Level >= GameConfig.MenuTier3Level)
                     await NavigateToTeamCorner();
                 else
-                    terminal.WriteLine("You must be level 5 or higher to access the Team Corner.", "yellow");
+                    terminal.WriteLine(Loc.Get("main_street.team_corner_level_req"), "yellow");
                 return currentPlayer.Level >= GameConfig.MenuTier3Level;
 
             // List Citizens removed - merged into Fame (F) which now shows locations
@@ -968,12 +967,12 @@ public class MainStreetLocation : BaseLocation
             //     return false;
                 
             case "T":
-                terminal.WriteLine("You enter the Temple of the Gods...", "cyan");
+                terminal.WriteLine(Loc.Get("main_street.nav_temple"), "cyan");
                 await Task.Delay(1500);
                 throw new LocationExitException(GameLocation.Temple);
                 
             case "X":
-                terminal.WriteLine("You head to Love Street...", "magenta");
+                terminal.WriteLine(Loc.Get("main_street.nav_love_street"), "magenta");
                 await Task.Delay(1500);
                 throw new LocationExitException(GameLocation.LoveCorner);
                 
@@ -1030,14 +1029,14 @@ public class MainStreetLocation : BaseLocation
             //     return false;
 
             case "Y":
-                terminal.WriteLine("You head to the Dark Alley...", "gray");
+                terminal.WriteLine(Loc.Get("main_street.nav_dark_alley"), "gray");
                 await Task.Delay(1500);
                 throw new LocationExitException(GameLocation.DarkAlley);
 
             case ">":
                 if (UsurperRemake.Systems.SettlementSystem.Instance?.State.IsEstablished == true)
                 {
-                    terminal.WriteLine("You head beyond the gates to the settlement...", "gray");
+                    terminal.WriteLine(Loc.Get("main_street.nav_settlement"), "gray");
                     await Task.Delay(1500);
                     throw new LocationExitException(GameLocation.Settlement);
                 }
@@ -1066,14 +1065,14 @@ public class MainStreetLocation : BaseLocation
                 if (DoorMode.IsOnlineMode && OnlineChatSystem.IsActive)
                 {
                     terminal.SetColor("bright_cyan");
-                    terminal.Write("  Say: ");
+                    terminal.Write(Loc.Get("main_street.say_prompt"));
                     terminal.SetColor("white");
                     var chatMsg = await terminal.GetInput("");
                     if (!string.IsNullOrWhiteSpace(chatMsg))
                     {
                         await OnlineChatSystem.Instance!.Say(chatMsg);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"  [You] {chatMsg}");
+                        terminal.WriteLine(Loc.Get("main_street.say_you", chatMsg));
                         await Task.Delay(1000);
                     }
                 }
@@ -1132,7 +1131,7 @@ public class MainStreetLocation : BaseLocation
                 return false;
 
             default:
-                terminal.WriteLine("Invalid choice! Type ? for help.", "red");
+                terminal.WriteLine(Loc.Get("main_street.invalid_choice"), "red");
                 await Task.Delay(1500);
                 return false;
         }
@@ -1143,28 +1142,28 @@ public class MainStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_white");
-        terminal.WriteLine("Good Deeds");
-        terminal.WriteLine("==========");
+        terminal.WriteLine(Loc.Get("main_street.good_deeds_title"));
+        terminal.WriteLine(Loc.Get("main_street.good_deeds_divider"));
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine($"Your Chivalry: {currentPlayer.Chivalry}");
-        terminal.WriteLine($"Good deeds left today: {currentPlayer.ChivNr}");
+        terminal.WriteLine(Loc.Get("main_street.your_chivalry", currentPlayer.Chivalry));
+        terminal.WriteLine(Loc.Get("main_street.deeds_left", currentPlayer.ChivNr));
         terminal.WriteLine("");
         
         if (currentPlayer.ChivNr > 0)
         {
-            terminal.WriteLine("Available good deeds:");
-            terminal.WriteLine("1. Give gold to the poor");
-            terminal.WriteLine("2. Help at the temple");
-            terminal.WriteLine("3. Volunteer at orphanage");
+            terminal.WriteLine(Loc.Get("main_street.available_deeds"));
+            terminal.WriteLine(Loc.Get("main_street.deed_give_gold"));
+            terminal.WriteLine(Loc.Get("main_street.deed_help_temple"));
+            terminal.WriteLine(Loc.Get("main_street.deed_orphanage"));
             terminal.WriteLine("");
             
-            var choice = await terminal.GetInput("Choose a deed (1-3, 0 to cancel): ");
+            var choice = await terminal.GetInput(Loc.Get("main_street.deed_prompt"));
             await ProcessGoodDeed(choice);
         }
         else
         {
-            terminal.WriteLine("You have done enough good for today.", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.deed_done_today"), "yellow");
         }
         
         await terminal.PressAnyKey();
@@ -1173,7 +1172,7 @@ public class MainStreetLocation : BaseLocation
     
     private async Task NavigateToTeamCorner()
     {
-        terminal.WriteLine("You head to the Adventurers Team Corner...", "yellow");
+        terminal.WriteLine(Loc.Get("main_street.nav_team_corner"), "yellow");
         await Task.Delay(1000);
         
         // Navigate to TeamCornerLocation
@@ -1247,22 +1246,22 @@ public class MainStreetLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("HALL OF FAME", "bright_yellow");
+            WriteBoxHeader(Loc.Get("main_street.hall_fame"), "bright_yellow");
             if (!IsScreenReader)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  The Greatest Heroes of the Realm");
+                terminal.WriteLine(Loc.Get("main_street.fame_subtitle"));
             }
             terminal.WriteLine("");
 
             // Show player's rank
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"  Your Rank: #{playerRank} of {ranked.Count} - {currentPlayer.DisplayName} (Level {currentPlayer.Level})");
+            terminal.WriteLine(Loc.Get("main_street.fame_your_rank", playerRank, ranked.Count, currentPlayer.DisplayName, currentPlayer.Level));
             terminal.WriteLine("");
 
             // Column headers (adjusted for location)
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {"Rank",-5} {"Name",-18} {"Lv",3} {"Class",-10} {"Location",-12} {"Experience",10}");
+            terminal.WriteLine($"  {Loc.Get("main_street.fame_rank"),-5} {Loc.Get("main_street.fame_name"),-18} {Loc.Get("main_street.fame_lv"),3} {Loc.Get("main_street.fame_class"),-10} {Loc.Get("main_street.fame_location"),-12} {Loc.Get("main_street.fame_experience"),10}");
             WriteDivider(64);
 
             // Display current page
@@ -1305,7 +1304,7 @@ public class MainStreetLocation : BaseLocation
 
             // Navigation
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  Page {currentPage + 1}/{totalPages}");
+            terminal.WriteLine(Loc.Get("main_street.fame_page", currentPage + 1, totalPages));
             var options = new List<string>();
             if (currentPage > 0) options.Add("[P]rev");
             if (currentPage < totalPages - 1) options.Add("[N]ext");
@@ -1349,21 +1348,21 @@ public class MainStreetLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("CITIZENS OF THE REALM", "bright_cyan");
+            WriteBoxHeader(Loc.Get("main_street.citizens"), "bright_cyan");
             terminal.WriteLine("");
 
             // Always show player first
-            WriteSectionHeader("PLAYERS", "bright_green");
+            WriteSectionHeader(Loc.Get("main_street.section_players"), "bright_green");
             terminal.SetColor("yellow");
             string playerSex = currentPlayer.Sex == CharacterSex.Male ? "M" : "F";
-            terminal.WriteLine($"  * {currentPlayer.DisplayName,-18} {playerSex} Lv{currentPlayer.Level,3} {currentPlayer.Class,-10} HP:{currentPlayer.HP}/{currentPlayer.MaxHP} (You)");
+            terminal.WriteLine($"  * {currentPlayer.DisplayName,-18} {playerSex} Lv{currentPlayer.Level,3} {currentPlayer.Class,-10} HP:{currentPlayer.HP}/{currentPlayer.MaxHP} {Loc.Get("main_street.citizens_you_tag")}");
             terminal.WriteLine("");
 
             if (!viewingDead)
             {
                 // Show alive NPCs
                 int totalPages = Math.Max(1, totalAlivePages);
-                WriteSectionHeader($"ADVENTURERS ({aliveNPCs.Count} active) - Page {currentPage + 1}/{totalPages}", "bright_green");
+                WriteSectionHeader(Loc.Get("main_street.citizens_adventurers", aliveNPCs.Count, currentPage + 1, totalPages), "bright_green");
 
                 if (aliveNPCs.Count > 0)
                 {
@@ -1388,14 +1387,14 @@ public class MainStreetLocation : BaseLocation
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  No adventurers found in the realm.");
+                    terminal.WriteLine($"  {Loc.Get("main_street.citizens_no_adventurers")}");
                 }
             }
             else
             {
                 // Show dead NPCs
                 int totalPages = Math.Max(1, totalDeadPages);
-                WriteSectionHeader($"FALLEN ({deadNPCs.Count}) - Page {currentPage + 1}/{totalPages}", "dark_gray");
+                WriteSectionHeader(Loc.Get("main_street.citizens_fallen", deadNPCs.Count, currentPage + 1, totalPages), "dark_gray");
 
                 if (deadNPCs.Count > 0)
                 {
@@ -1408,13 +1407,13 @@ public class MainStreetLocation : BaseLocation
                         terminal.SetColor("dark_gray");
                         string sex = npc.Sex == CharacterSex.Male ? "M" : "F";
                         string deathMarker = IsScreenReader ? "(dead)" : "†";
-                        terminal.WriteLine($"  {deathMarker} {npc.Name,-18} {sex} Lv{npc.Level,3} {npc.Class,-10} - R.I.P.");
+                        terminal.WriteLine($"  {deathMarker} {npc.Name,-18} {sex} Lv{npc.Level,3} {npc.Class,-10} - {Loc.Get("main_street.rip")}");
                     }
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  No fallen adventurers.");
+                    terminal.WriteLine($"  {Loc.Get("main_street.citizens_no_fallen")}");
                 }
             }
 
@@ -1475,68 +1474,68 @@ public class MainStreetLocation : BaseLocation
         stats.UpdateSessionTime(); // Ensure current session is counted
 
         terminal.ClearScreen();
-        WriteBoxHeader("PLAYER STATISTICS", "bright_cyan");
+        WriteBoxHeader(Loc.Get("main_street.statistics"), "bright_cyan");
         terminal.WriteLine("");
 
         // Combat Stats
-        WriteSectionHeader("COMBAT", "bright_red");
+        WriteSectionHeader(Loc.Get("main_street.section_combat"), "bright_red");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Monsters Slain:     {stats.TotalMonstersKilled,10:N0}     Bosses Killed:    {stats.TotalBossesKilled,8:N0}");
-        terminal.WriteLine($"  Unique Monsters:    {stats.TotalUniquesKilled,10:N0}     Combat Win Rate:  {stats.GetCombatWinRate(),7:F1}%");
-        terminal.WriteLine($"  Combats Won:        {stats.TotalCombatsWon,10:N0}     Combats Lost:     {stats.TotalCombatsLost,8:N0}");
-        terminal.WriteLine($"  Times Fled:         {stats.TotalCombatsFled,10:N0}     Player Kills (PvP):{stats.TotalPlayerKills,7:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_monsters_slain"),-21} {stats.TotalMonstersKilled,10:N0}     {Loc.Get("main_street.stat_bosses_killed"),-17} {stats.TotalBossesKilled,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_unique_monsters"),-21} {stats.TotalUniquesKilled,10:N0}     {Loc.Get("main_street.stat_combat_win_rate"),-17} {stats.GetCombatWinRate(),7:F1}%");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_combats_won"),-21} {stats.TotalCombatsWon,10:N0}     {Loc.Get("main_street.stat_combats_lost"),-17} {stats.TotalCombatsLost,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_times_fled"),-21} {stats.TotalCombatsFled,10:N0}     {Loc.Get("main_street.stat_player_kills"),-18}{stats.TotalPlayerKills,7:N0}");
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Total Damage Dealt: {stats.TotalDamageDealt,10:N0}     Damage Taken:     {stats.TotalDamageTaken,8:N0}");
-        terminal.WriteLine($"  Highest Single Hit: {stats.HighestSingleHit,10:N0}     Critical Hits:    {stats.TotalCriticalHits,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_damage_dealt"),-21} {stats.TotalDamageDealt,10:N0}     {Loc.Get("main_street.stat_damage_taken"),-17} {stats.TotalDamageTaken,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_highest_hit"),-21} {stats.HighestSingleHit,10:N0}     {Loc.Get("main_street.stat_critical_hits"),-17} {stats.TotalCriticalHits,8:N0}");
         terminal.WriteLine("");
 
         // Economic Stats
-        WriteSectionHeader("ECONOMY", "bright_green");
+        WriteSectionHeader(Loc.Get("main_street.section_economy"), "bright_green");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Total Gold Earned:  {stats.TotalGoldEarned,10:N0}     Gold from Monsters:{stats.TotalGoldFromMonsters,7:N0}");
-        terminal.WriteLine($"  Gold Spent:         {stats.TotalGoldSpent,10:N0}     Peak Gold Held:   {stats.HighestGoldHeld,8:N0}");
-        terminal.WriteLine($"  Items Bought:       {stats.TotalItemsBought,10:N0}     Items Sold:       {stats.TotalItemsSold,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_gold_earned"),-21} {stats.TotalGoldEarned,10:N0}     {Loc.Get("main_street.stat_gold_monsters"),-18}{stats.TotalGoldFromMonsters,7:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_gold_spent"),-21} {stats.TotalGoldSpent,10:N0}     {Loc.Get("main_street.stat_peak_gold"),-17} {stats.HighestGoldHeld,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_items_bought"),-21} {stats.TotalItemsBought,10:N0}     {Loc.Get("main_street.stat_items_sold"),-17} {stats.TotalItemsSold,8:N0}");
         terminal.WriteLine("");
 
         // Experience Stats
-        WriteSectionHeader("EXPERIENCE", "bright_magenta");
+        WriteSectionHeader(Loc.Get("main_street.section_experience"), "bright_magenta");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Total XP Earned:    {stats.TotalExperienceEarned,10:N0}     Level Ups:        {stats.TotalLevelUps,8:N0}");
-        terminal.WriteLine($"  Highest Level:      {stats.HighestLevelReached,10}     Current Level:    {currentPlayer.Level,8}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_xp_earned"),-21} {stats.TotalExperienceEarned,10:N0}     {Loc.Get("main_street.stat_level_ups"),-17} {stats.TotalLevelUps,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_highest_level"),-21} {stats.HighestLevelReached,10}     {Loc.Get("main_street.stat_current_level"),-17} {currentPlayer.Level,8}");
         terminal.WriteLine("");
 
         // Exploration Stats
-        WriteSectionHeader("EXPLORATION", "bright_blue");
+        WriteSectionHeader(Loc.Get("main_street.section_exploration"), "bright_blue");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Deepest Dungeon:    {stats.DeepestDungeonLevel,10}     Floors Explored:  {stats.TotalDungeonFloorsCovered,8:N0}");
-        terminal.WriteLine($"  Chests Opened:      {stats.TotalChestsOpened,10:N0}     Secrets Found:    {stats.TotalSecretsFound,8:N0}");
-        terminal.WriteLine($"  Traps Triggered:    {stats.TotalTrapsTriggered,10:N0}     Traps Disarmed:   {stats.TotalTrapsDisarmed,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_deepest_dungeon"),-21} {stats.DeepestDungeonLevel,10}     {Loc.Get("main_street.stat_floors_explored"),-17} {stats.TotalDungeonFloorsCovered,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_chests_opened"),-21} {stats.TotalChestsOpened,10:N0}     {Loc.Get("main_street.stat_secrets_found"),-17} {stats.TotalSecretsFound,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_traps_triggered"),-21} {stats.TotalTrapsTriggered,10:N0}     {Loc.Get("main_street.stat_traps_disarmed"),-17} {stats.TotalTrapsDisarmed,8:N0}");
         terminal.WriteLine("");
 
         // Survival Stats
-        WriteSectionHeader("SURVIVAL", "yellow");
+        WriteSectionHeader(Loc.Get("main_street.section_survival"), "yellow");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Deaths (Monster):   {stats.TotalMonsterDeaths,10:N0}     Deaths (PvP):     {stats.TotalPlayerDeaths,8:N0}");
-        terminal.WriteLine($"  Potions Used:       {stats.TotalHealingPotionsUsed,10:N0}     Health Restored:  {stats.TotalHealthRestored,8:N0}");
-        terminal.WriteLine($"  Resurrections:      {stats.TotalTimesResurrected,10:N0}     Diseases Cured:   {stats.TotalDiseasesCured,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_deaths_monster"),-21} {stats.TotalMonsterDeaths,10:N0}     {Loc.Get("main_street.stat_deaths_pvp"),-17} {stats.TotalPlayerDeaths,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_potions_used"),-21} {stats.TotalHealingPotionsUsed,10:N0}     {Loc.Get("main_street.stat_health_restored"),-17} {stats.TotalHealthRestored,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_resurrections"),-21} {stats.TotalTimesResurrected,10:N0}     {Loc.Get("main_street.stat_diseases_cured"),-17} {stats.TotalDiseasesCured,8:N0}");
         terminal.WriteLine("");
 
         // Time Stats
-        WriteSectionHeader("TIME", "gray");
+        WriteSectionHeader(Loc.Get("main_street.section_time"), "gray");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Total Play Time:    {stats.GetFormattedPlayTime(),10}     Sessions Played:  {stats.TotalSessionsPlayed,8:N0}");
-        terminal.WriteLine($"  Character Created:  {stats.CharacterCreated:yyyy-MM-dd}     Current Streak:   {stats.CurrentStreak,8} days");
-        terminal.WriteLine($"  Longest Streak:     {stats.LongestStreak,10} days");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_play_time"),-21} {stats.GetFormattedPlayTime(),10}     {Loc.Get("main_street.stat_sessions"),-17} {stats.TotalSessionsPlayed,8:N0}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_created"),-21} {stats.CharacterCreated:yyyy-MM-dd}     {Loc.Get("main_street.stat_current_streak"),-17} {stats.CurrentStreak,8} {Loc.Get("main_street.stat_days")}");
+        terminal.WriteLine($"  {Loc.Get("main_street.stat_longest_streak"),-21} {stats.LongestStreak,10} {Loc.Get("main_street.stat_days")}");
         terminal.WriteLine("");
 
         // Difficulty indicator
         terminal.SetColor(DifficultySystem.GetColor(currentPlayer.Difficulty));
-        terminal.WriteLine($"  Difficulty: {DifficultySystem.GetDisplayName(currentPlayer.Difficulty)}");
+        terminal.WriteLine(Loc.Get("main_street.stat_difficulty", DifficultySystem.GetDisplayName(currentPlayer.Difficulty)));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.PressAnyKey();
     }
 
@@ -1549,7 +1548,7 @@ public class MainStreetLocation : BaseLocation
         AchievementSystem.Initialize();
 
         terminal.ClearScreen();
-        WriteBoxHeader("ACHIEVEMENTS", "bright_yellow");
+        WriteBoxHeader(Loc.Get("main_street.achievements"), "bright_yellow");
 
         var achievements = currentPlayer.Achievements;
         int totalAchievements = AchievementSystem.TotalAchievements;
@@ -1557,35 +1556,35 @@ public class MainStreetLocation : BaseLocation
 
         // Summary line
         terminal.SetColor("white");
-        terminal.WriteLine($"  Unlocked: {unlocked}/{totalAchievements} ({achievements.CompletionPercentage:F1}%)");
+        terminal.WriteLine($"  {Loc.Get("main_street.achieve_unlocked", unlocked, totalAchievements, achievements.CompletionPercentage)}");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  Achievement Points: {achievements.TotalPoints}");
+        terminal.WriteLine($"  {Loc.Get("main_street.achieve_points", achievements.TotalPoints)}");
         terminal.WriteLine("");
 
         // Category selection
         if (IsScreenReader)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("Categories:");
-            terminal.WriteLine("  1 - Combat");
-            terminal.WriteLine("  2 - Progression");
-            terminal.WriteLine("  3 - Economy");
-            terminal.WriteLine("  4 - Exploration");
-            terminal.WriteLine("  5 - Social");
-            terminal.WriteLine("  6 - Challenge");
-            terminal.WriteLine("  7 - Secret");
-            terminal.WriteLine("  A - All");
+            terminal.WriteLine(Loc.Get("main_street.achieve_categories_label"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_combat"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_progression"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_economy"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_exploration"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_social"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_challenge"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_secret"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_all"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine("  [1] Combat     [2] Progression  [3] Economy    [4] Exploration");
-            terminal.WriteLine("  [5] Social     [6] Challenge    [7] Secret     [A] All");
+            terminal.WriteLine(Loc.Get("main_street.achieve_categories_visual"));
+            terminal.WriteLine(Loc.Get("main_street.achieve_categories_visual2"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        var input = await terminal.GetInput("Select category (or press Enter for All): ");
+        var input = await terminal.GetInput(Loc.Get("main_street.achieve_select_prompt"));
         input = input.Trim().ToUpper();
 
         AchievementCategory? selectedCategory = input switch
@@ -1664,7 +1663,7 @@ public class MainStreetLocation : BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("Press Enter for more, or Q to quit...");
+                terminal.WriteLine(Loc.Get("main_street.achieve_more_prompt"));
                 var key = await terminal.GetKeyInput();
                 if (key?.ToUpper() == "Q") return;
                 terminal.ClearScreen();
@@ -1675,7 +1674,7 @@ public class MainStreetLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.PressAnyKey();
     }
 
@@ -1685,7 +1684,7 @@ public class MainStreetLocation : BaseLocation
     private async Task AttackSomeone()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ATTACK SOMEONE", "bright_red");
+        WriteBoxHeader(Loc.Get("main_street.attack"), "bright_red");
         terminal.WriteLine("");
 
         // Get NPCs in the area
@@ -1701,14 +1700,14 @@ public class MainStreetLocation : BaseLocation
         if (npcsInArea.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  There's no one around to attack right now.");
+            terminal.WriteLine($"  {Loc.Get("main_street.attack_no_targets")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  Who do you want to attack?");
+        terminal.WriteLine($"  {Loc.Get("main_street.attack_who_question")}");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -1720,28 +1719,28 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("white");
             terminal.Write($"{npc.Name}");
             terminal.SetColor("gray");
-            terminal.WriteLine($" - Level {npc.Level} {npc.Class}");
+            terminal.WriteLine($" - {Loc.Get("main_street.attack_npc_info", npc.Level, npc.Class)}");
         }
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  [0] Cancel");
+        terminal.WriteLine($"  {Loc.Get("main_street.attack_cancel")}");
         terminal.WriteLine("");
 
-        string choice = await terminal.GetInput("Attack who? ");
+        string choice = await terminal.GetInput(Loc.Get("main_street.attack_prompt"));
 
         if (int.TryParse(choice, out int targetIndex) && targetIndex >= 1 && targetIndex <= npcsInArea.Count)
         {
             var target = npcsInArea[targetIndex - 1];
 
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  You approach {target.Name} with hostile intent!");
+            terminal.WriteLine($"\n  {Loc.Get("main_street.attack_approach", target.Name)}");
             await Task.Delay(1000);
 
             // Warn about consequences
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\n  Warning: Attacking citizens increases your Darkness!");
-            terminal.WriteLine($"  Are you sure? (Y/N)");
+            terminal.WriteLine($"\n  {Loc.Get("main_street.attack_warning")}");
+            terminal.WriteLine($"  {Loc.Get("main_street.attack_confirm")}");
 
             string confirm = (await terminal.GetKeyInput()).ToUpperInvariant();
 
@@ -1757,26 +1756,26 @@ public class MainStreetLocation : BaseLocation
                 if (encounterResult.Victory)
                 {
                     terminal.SetColor("green");
-                    terminal.WriteLine($"\n  You defeated {target.Name}!");
+                    terminal.WriteLine($"\n  {Loc.Get("main_street.attack_victory", target.Name)}");
                     currentPlayer.PKills++;
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\n  {target.Name} got the better of you...");
+                    terminal.WriteLine($"\n  {Loc.Get("main_street.attack_defeat", target.Name)}");
                     currentPlayer.PDefeats++;
                 }
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("\n  You decide against it.");
+                terminal.WriteLine($"\n  {Loc.Get("main_street.attack_cancel_decision")}");
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  You change your mind.");
+            terminal.WriteLine($"\n  {Loc.Get("main_street.attack_change_mind")}");
         }
 
         await Task.Delay(1500);
@@ -1789,27 +1788,27 @@ public class MainStreetLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  Where will you sleep tonight?");
+            terminal.WriteLine($"  {Loc.Get("main_street.quit_where_sleep")}");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Dormitory: 10 gold, vulnerable to attack.");
-            terminal.WriteLine("  Inn: protected sleep with +50% ATK/DEF if attacked.");
+            terminal.WriteLine($"  {Loc.Get("main_street.quit_dormitory_desc")}");
+            terminal.WriteLine($"  {Loc.Get("main_street.quit_inn_desc")}");
             if (currentPlayer.HasReinforcedDoor)
-                terminal.WriteLine("  Home: safe behind your reinforced door.");
+                terminal.WriteLine($"  {Loc.Get("main_street.quit_home_desc")}");
             terminal.WriteLine("");
             terminal.SetColor("white");
             terminal.Write("  [D] ");
             terminal.SetColor("gray");
-            terminal.Write("Dormitory   ");
+            terminal.Write(Loc.Get("main_street.menu_dormitory_padded"));
             terminal.SetColor("white");
             terminal.Write("[I] ");
             terminal.SetColor("gray");
-            terminal.WriteLine("Inn");
+            terminal.WriteLine(Loc.Get("main_street.menu_inn"));
             if (currentPlayer.HasReinforcedDoor)
             {
                 terminal.SetColor("white");
                 terminal.Write("  [H] ");
                 terminal.SetColor("gray");
-                terminal.Write("Home        ");
+                terminal.Write(Loc.Get("main_street.menu_home_padded"));
             }
             else
             {
@@ -1818,10 +1817,10 @@ public class MainStreetLocation : BaseLocation
             terminal.SetColor("white");
             terminal.Write("[C] ");
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancel");
+            terminal.WriteLine(Loc.Get("main_street.menu_cancel"));
             terminal.WriteLine("");
 
-            var choice = (await terminal.GetInput("  Your choice: ")).Trim().ToUpperInvariant();
+            var choice = (await terminal.GetInput($"  {Loc.Get("ui.your_choice")} ")).Trim().ToUpperInvariant();
 
             if (choice == "C" || string.IsNullOrEmpty(choice))
                 return false; // Back to Main Street
@@ -1847,7 +1846,7 @@ public class MainStreetLocation : BaseLocation
                 }
 
                 terminal.SetColor("gray");
-                terminal.WriteLine("\n  You bar the reinforced door and drift into a safe sleep...");
+                terminal.WriteLine($"\n  {Loc.Get("main_street.quit_home_sleep")}");
                 throw new LocationExitException(GameLocation.NoWhere);
             }
 
@@ -1882,8 +1881,8 @@ public class MainStreetLocation : BaseLocation
 
             terminal.SetColor("gray");
             terminal.WriteLine(isBroke
-                ? "\n  You curl up in the street and drift off..."
-                : "\n  You head to the dormitory and drift off...");
+                ? $"\n  {Loc.Get("main_street.quit_street_sleep")}"
+                : $"\n  {Loc.Get("main_street.quit_dormitory_sleep")}");
 
             throw new LocationExitException(GameLocation.NoWhere);
         }
@@ -1895,12 +1894,12 @@ public class MainStreetLocation : BaseLocation
         {
             var summary = currentPlayer.Statistics.GetSessionSummary();
 
-            WriteBoxHeader("SESSION SUMMARY", "bright_cyan");
+            WriteBoxHeader(Loc.Get("main_street.session_summary"), "bright_cyan");
             terminal.WriteLine("");
 
             // Session duration
             terminal.SetColor("white");
-            terminal.Write("  Session Duration: ");
+            terminal.Write($"  {Loc.Get("main_street.session_duration")} ");
             terminal.SetColor("bright_yellow");
             if (summary.Duration.TotalHours >= 1)
                 terminal.WriteLine($"{(int)summary.Duration.TotalHours}h {summary.Duration.Minutes}m");
@@ -1913,12 +1912,12 @@ public class MainStreetLocation : BaseLocation
 
             // Combat stats
             terminal.SetColor("bright_red");
-            terminal.Write("  Monsters Slain: ");
+            terminal.Write($"  {Loc.Get("main_street.session_monsters")} ");
             terminal.SetColor("white");
             terminal.WriteLine($"{summary.MonstersKilled:N0}");
 
             terminal.SetColor("bright_red");
-            terminal.Write("  Damage Dealt:   ");
+            terminal.Write($"  {Loc.Get("main_street.session_damage")} ");
             terminal.SetColor("white");
             terminal.WriteLine($"{summary.DamageDealt:N0}");
 
@@ -1926,35 +1925,35 @@ public class MainStreetLocation : BaseLocation
             if (summary.LevelsGained > 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.Write("  Levels Gained:  ");
+                terminal.Write($"  {Loc.Get("main_street.session_levels")} ");
                 terminal.SetColor("white");
                 terminal.WriteLine($"+{summary.LevelsGained}");
             }
 
             terminal.SetColor("bright_magenta");
-            terminal.Write("  XP Earned:      ");
+            terminal.Write($"  {Loc.Get("main_street.session_xp")} ");
             terminal.SetColor("white");
             terminal.WriteLine($"{summary.ExperienceGained:N0}");
 
             // Economy stats
             terminal.SetColor("bright_yellow");
-            terminal.Write("  Gold Earned:    ");
+            terminal.Write($"  {Loc.Get("main_street.session_gold")} ");
             terminal.SetColor("white");
             terminal.WriteLine($"{summary.GoldEarned:N0}");
 
             if (summary.ItemsBought > 0 || summary.ItemsSold > 0)
             {
                 terminal.SetColor("cyan");
-                terminal.Write("  Items Traded:   ");
+                terminal.Write($"  {Loc.Get("main_street.session_items")} ");
                 terminal.SetColor("white");
-                terminal.WriteLine($"{summary.ItemsBought} bought, {summary.ItemsSold} sold");
+                terminal.WriteLine(Loc.Get("main_street.session_items_detail", summary.ItemsBought, summary.ItemsSold));
             }
 
             // Exploration
             if (summary.RoomsExplored > 0)
             {
                 terminal.SetColor("bright_blue");
-                terminal.Write("  Rooms Explored: ");
+                terminal.Write($"  {Loc.Get("main_street.session_rooms")} ");
                 terminal.SetColor("white");
                 terminal.WriteLine($"{summary.RoomsExplored:N0}");
             }
@@ -1965,7 +1964,7 @@ public class MainStreetLocation : BaseLocation
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  Saving your progress...");
+        terminal.WriteLine($"  {Loc.Get("main_street.saving_progress")}");
 
         // Track session end telemetry
         if (currentPlayer != null)
@@ -1987,10 +1986,10 @@ public class MainStreetLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine("  Thanks for playing Usurper Reborn!");
+        terminal.WriteLine($"  {Loc.Get("main_street.thanks_playing")}");
         terminal.SetColor("gray");
         terminal.WriteLine("");
-        terminal.WriteLine("  Press any key to exit...");
+        terminal.WriteLine($"  {Loc.Get("main_street.press_exit")}");
         await terminal.PressAnyKey();
 
         // Signal game should quit
@@ -2014,17 +2013,17 @@ public class MainStreetLocation : BaseLocation
 
         return hour switch
         {
-            >= 6 and < 12 => "morning",
-            >= 12 and < 18 => "afternoon",
-            >= 18 and < 22 => "evening",
-            _ => "night"
+            >= 6 and < 12 => Loc.Get("main_street.time_morning"),
+            >= 12 and < 18 => Loc.Get("main_street.time_afternoon"),
+            >= 18 and < 22 => Loc.Get("main_street.time_evening"),
+            _ => Loc.Get("main_street.time_night")
         };
     }
     
     private string GetWeather()
     {
-        var weather = new[] { "clear", "cloudy", "misty", "cool", "warm", "breezy" };
-        return weather[Random.Shared.Next(0, weather.Length)];
+        var weatherKeys = new[] { "main_street.weather_clear", "main_street.weather_cloudy", "main_street.weather_misty", "main_street.weather_cool", "main_street.weather_warm", "main_street.weather_breezy" };
+        return Loc.Get(weatherKeys[Random.Shared.Next(0, weatherKeys.Length)]);
     }
     
     private int GetPlayerRank()
@@ -2058,13 +2057,13 @@ public class MainStreetLocation : BaseLocation
             
             var deedName = deed switch
             {
-                1 => "giving gold to the poor",
-                2 => "helping at the temple",
-                3 => "volunteering at the orphanage",
-                _ => "performing a good deed"
+                1 => Loc.Get("main_street.deed_giving_gold"),
+                2 => Loc.Get("main_street.deed_helping_temple"),
+                3 => Loc.Get("main_street.deed_volunteering"),
+                _ => Loc.Get("main_street.deed_generic")
             };
-            
-            terminal.WriteLine($"You gain chivalry by {deedName}!", "green");
+
+            terminal.WriteLine(Loc.Get("main_street.deed_chivalry_gain", deedName), "green");
             await Task.Delay(1500);
         }
     }
@@ -2077,7 +2076,7 @@ public class MainStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine("=== COMBAT TEST ===");
+        terminal.WriteLine(Loc.Get("main_street.combat_test_header"));
         terminal.WriteLine("");
         
         // Create a test monster (Street Thug)
@@ -2099,11 +2098,11 @@ public class MainStreetLocation : BaseLocation
             weappow: 8
         );
         
-        terminal.WriteLine("A street thug jumps out and blocks your path!");
-        terminal.WriteLine($"The {testMonster.Name} brandishes a {testMonster.Weapon}!");
+        terminal.WriteLine(Loc.Get("main_street.combat_test_intro"));
+        terminal.WriteLine(Loc.Get("main_street.combat_test_weapon", testMonster.Name, testMonster.Weapon));
         terminal.WriteLine("");
         
-        var confirm = await terminal.GetInput("Fight the thug? (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("main_street.combat_test_confirm"));
         
         if (confirm.ToUpper() == "Y")
         {
@@ -2117,7 +2116,7 @@ public class MainStreetLocation : BaseLocation
             if (result.ShouldReturnToTemple)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You awaken at the Temple of Light...");
+                terminal.WriteLine(Loc.Get("main_street.combat_test_temple"));
                 await Task.Delay(2000);
                 await NavigateToLocation(GameLocation.Temple);
                 return;
@@ -2126,7 +2125,7 @@ public class MainStreetLocation : BaseLocation
             // Display result summary
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("=== COMBAT SUMMARY ===");
+            terminal.WriteLine(Loc.Get("main_street.combat_test_summary"));
             terminal.WriteLine("");
             
             foreach (var logEntry in result.CombatLog)
@@ -2136,20 +2135,20 @@ public class MainStreetLocation : BaseLocation
             
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"Final Outcome: {result.Outcome}");
+            terminal.WriteLine(Loc.Get("main_street.combat_test_outcome", result.Outcome));
             
             if (result.Outcome == CombatOutcome.Victory)
             {
-                terminal.WriteLine("The thug flees into the shadows!", "green");
+                terminal.WriteLine(Loc.Get("main_street.combat_test_victory"), "green");
             }
             else if (result.Outcome == CombatOutcome.PlayerEscaped)
             {
-                terminal.WriteLine("You slip away from the dangerous encounter.", "yellow");
+                terminal.WriteLine(Loc.Get("main_street.combat_test_escaped"), "yellow");
             }
         }
         else
         {
-            terminal.WriteLine("You wisely avoid the confrontation.", "green");
+            terminal.WriteLine(Loc.Get("main_street.combat_test_avoided"), "green");
         }
         
         await terminal.PressAnyKey();
@@ -2165,38 +2164,38 @@ public class MainStreetLocation : BaseLocation
         while (!exitSettings)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("SETTINGS & SAVE OPTIONS", "bright_cyan");
+            WriteBoxHeader(Loc.Get("main_street.settings"), "bright_cyan");
             terminal.WriteLine("");
             
             var dailyManager = DailySystemManager.Instance;
             var currentMode = dailyManager.CurrentMode;
             
             terminal.SetColor("white");
-            terminal.WriteLine("Current Settings:");
+            terminal.WriteLine(Loc.Get("main_street.settings_current"));
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
-                terminal.WriteLine($"  Daily Cycle Mode: {GetDailyCycleModeDescription(currentMode)}", "yellow");
+                terminal.WriteLine(Loc.Get("main_street.settings_daily_cycle", GetDailyCycleModeDescription(currentMode)), "yellow");
             else if (currentPlayer != null)
-                terminal.WriteLine($"  Time of Day: {DailySystemManager.GetTimePeriodString(currentPlayer)} ({DailySystemManager.GetTimeString(currentPlayer)})", "yellow");
-            terminal.WriteLine($"  Auto-save: {(dailyManager.AutoSaveEnabled ? "Enabled" : "Disabled")}", "yellow");
-            terminal.WriteLine($"  Current Day: {dailyManager.CurrentDay}", "yellow");
+                terminal.WriteLine(Loc.Get("main_street.settings_time_of_day", DailySystemManager.GetTimePeriodString(currentPlayer), DailySystemManager.GetTimeString(currentPlayer)), "yellow");
+            terminal.WriteLine(Loc.Get("main_street.settings_autosave", dailyManager.AutoSaveEnabled ? Loc.Get("main_street.prefs_enabled") : Loc.Get("main_street.prefs_disabled")), "yellow");
+            terminal.WriteLine(Loc.Get("main_street.settings_current_day", dailyManager.CurrentDay), "yellow");
             terminal.WriteLine("");
 
-            terminal.WriteLine("Options:");
+            terminal.WriteLine(Loc.Get("main_street.settings_options"));
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode)
-                terminal.WriteLine("1. Change Daily Cycle Mode");
+                terminal.WriteLine(Loc.Get("main_street.settings_change_cycle"));
             else
-                terminal.WriteLine("1. (Time advances with your actions; rest at nightfall)", "gray");
-            terminal.WriteLine("2. Configure Auto-save Settings");
-            terminal.WriteLine("3. Save Game Now");
-            terminal.WriteLine("4. Load Different Save");
-            terminal.WriteLine("5. Delete Save Files");
-            terminal.WriteLine("6. View Save File Information");
-            terminal.WriteLine("7. Force Daily Reset");
-            terminal.WriteLine("8. Game Preferences (Combat Speed, Content Settings)");
-            terminal.WriteLine("9. Back to Main Street");
+                terminal.WriteLine(Loc.Get("main_street.settings_time_note"), "gray");
+            terminal.WriteLine(Loc.Get("main_street.settings_configure_autosave"));
+            terminal.WriteLine(Loc.Get("main_street.settings_save_now"));
+            terminal.WriteLine(Loc.Get("main_street.settings_load_save"));
+            terminal.WriteLine(Loc.Get("main_street.settings_delete_saves"));
+            terminal.WriteLine(Loc.Get("main_street.settings_view_info"));
+            terminal.WriteLine(Loc.Get("main_street.settings_force_reset"));
+            terminal.WriteLine(Loc.Get("main_street.settings_game_prefs"));
+            terminal.WriteLine(Loc.Get("main_street.settings_back"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Enter your choice (1-9): ");
+            var choice = await terminal.GetInput(Loc.Get("main_street.settings_prompt"));
 
             switch (choice)
             {
@@ -2238,7 +2237,7 @@ public class MainStreetLocation : BaseLocation
                     break;
 
                 default:
-                    terminal.WriteLine("Invalid choice!", "red");
+                    terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
                     await Task.Delay(1000);
                     break;
             }
@@ -2255,37 +2254,37 @@ public class MainStreetLocation : BaseLocation
         while (!exitPrefs)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("GAME PREFERENCES", "bright_cyan");
+            WriteBoxHeader(Loc.Get("main_street.preferences"), "bright_cyan");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Current Settings:");
+            terminal.WriteLine(Loc.Get("main_street.prefs_current"));
             terminal.WriteLine("");
 
             // Combat Speed
             string speedDesc = currentPlayer.CombatSpeed switch
             {
-                CombatSpeed.Instant => "Instant (no delays)",
-                CombatSpeed.Fast => "Fast (50% delays)",
-                _ => "Normal (full delays)"
+                CombatSpeed.Instant => Loc.Get("main_street.prefs_speed_instant"),
+                CombatSpeed.Fast => Loc.Get("main_street.prefs_speed_fast"),
+                _ => Loc.Get("main_street.prefs_speed_normal")
             };
-            terminal.WriteLine($"  Combat Speed: {speedDesc}", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.prefs_combat_speed", speedDesc), "yellow");
 
             // Auto-heal
-            terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.prefs_auto_heal", currentPlayer.AutoHeal ? Loc.Get("main_street.prefs_enabled") : Loc.Get("main_street.prefs_disabled")), "yellow");
 
             // Skip intimate scenes
-            terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled (Fade to Black)" : "Disabled (Full Scenes)")}", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.prefs_skip_intimate", currentPlayer.SkipIntimateScenes ? Loc.Get("main_street.prefs_skip_enabled") : Loc.Get("main_street.prefs_skip_disabled")), "yellow");
             terminal.WriteLine("");
 
-            terminal.WriteLine("Options:");
-            terminal.WriteLine("1. Change Combat Speed");
-            terminal.WriteLine("2. Toggle Auto-heal in Battle");
-            terminal.WriteLine("3. Toggle Skip Intimate Scenes");
-            terminal.WriteLine("4. Back to Settings");
+            terminal.WriteLine(Loc.Get("main_street.prefs_options"));
+            terminal.WriteLine(Loc.Get("main_street.prefs_change_speed"));
+            terminal.WriteLine(Loc.Get("main_street.prefs_toggle_heal"));
+            terminal.WriteLine(Loc.Get("main_street.prefs_toggle_intimate"));
+            terminal.WriteLine(Loc.Get("main_street.prefs_back"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Enter your choice (1-4): ");
+            var choice = await terminal.GetInput(Loc.Get("main_street.prefs_prompt"));
 
             switch (choice)
             {
@@ -2295,7 +2294,7 @@ public class MainStreetLocation : BaseLocation
 
                 case "2":
                     currentPlayer.AutoHeal = !currentPlayer.AutoHeal;
-                    terminal.WriteLine($"Auto-heal is now {(currentPlayer.AutoHeal ? "ENABLED" : "DISABLED")}", "green");
+                    terminal.WriteLine(Loc.Get("main_street.prefs_autoheal_toggled", currentPlayer.AutoHeal ? "ENABLED" : "DISABLED"), "green");
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1000);
                     break;
@@ -2304,12 +2303,12 @@ public class MainStreetLocation : BaseLocation
                     currentPlayer.SkipIntimateScenes = !currentPlayer.SkipIntimateScenes;
                     if (currentPlayer.SkipIntimateScenes)
                     {
-                        terminal.WriteLine("Intimate scenes will now 'fade to black' - showing a brief summary", "green");
-                        terminal.WriteLine("instead of detailed romantic content.", "gray");
+                        terminal.WriteLine(Loc.Get("main_street.prefs_intimate_fade"), "green");
+                        terminal.WriteLine(Loc.Get("main_street.prefs_intimate_fade2"), "gray");
                     }
                     else
                     {
-                        terminal.WriteLine("Intimate scenes will now show full romantic content.", "green");
+                        terminal.WriteLine(Loc.Get("main_street.prefs_intimate_full"), "green");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1500);
@@ -2320,7 +2319,7 @@ public class MainStreetLocation : BaseLocation
                     break;
 
                 default:
-                    terminal.WriteLine("Invalid choice!", "red");
+                    terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
                     await Task.Delay(1000);
                     break;
             }
@@ -2333,29 +2332,29 @@ public class MainStreetLocation : BaseLocation
     private async Task ChangeCombatSpeed()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("COMBAT SPEED", "bright_cyan");
+        WriteSectionHeader(Loc.Get("main_street.section_combat_speed"), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("Choose how fast combat text appears:");
+        terminal.WriteLine(Loc.Get("main_street.speed_choose"));
         terminal.WriteLine("");
 
-        terminal.WriteLine("1. Normal (Recommended)", "yellow");
-        terminal.WriteLine("   - Full delays between combat actions");
-        terminal.WriteLine("   - Best for reading and immersion");
+        terminal.WriteLine(Loc.Get("main_street.speed_normal_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.speed_normal_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.speed_normal_desc2"));
         terminal.WriteLine("");
 
-        terminal.WriteLine("2. Fast", "yellow");
-        terminal.WriteLine("   - 50% of normal delays");
-        terminal.WriteLine("   - Quicker combat, still readable");
+        terminal.WriteLine(Loc.Get("main_street.speed_fast_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.speed_fast_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.speed_fast_desc2"));
         terminal.WriteLine("");
 
-        terminal.WriteLine("3. Instant", "yellow");
-        terminal.WriteLine("   - No delays at all");
-        terminal.WriteLine("   - Maximum speed, combat flies by");
+        terminal.WriteLine(Loc.Get("main_street.speed_instant_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.speed_instant_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.speed_instant_desc2"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Select speed (1-3) or 0 to cancel: ");
+        var choice = await terminal.GetInput(Loc.Get("main_street.speed_prompt"));
 
         CombatSpeed? newSpeed = choice switch
         {
@@ -2374,7 +2373,7 @@ public class MainStreetLocation : BaseLocation
                 CombatSpeed.Fast => "Fast",
                 _ => "Normal"
             };
-            terminal.WriteLine($"Combat speed changed to: {desc}", "green");
+            terminal.WriteLine(Loc.Get("main_street.speed_changed", desc), "green");
             await GameEngine.Instance.SaveCurrentGame();
         }
 
@@ -2387,44 +2386,44 @@ public class MainStreetLocation : BaseLocation
     private async Task ChangeDailyCycleMode()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("DAILY CYCLE MODES", "bright_cyan");
+        WriteSectionHeader(Loc.Get("main_street.section_daily_cycle"), "bright_cyan");
         terminal.WriteLine("");
         
         terminal.SetColor("white");
-        terminal.WriteLine("Available modes:");
+        terminal.WriteLine(Loc.Get("main_street.cycle_available"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("1. Session-Based (Default)", "yellow");
-        terminal.WriteLine("   - New day starts when you run out of turns or choose to rest");
-        terminal.WriteLine("   - Perfect for casual play sessions");
+        terminal.WriteLine(Loc.Get("main_street.cycle_session_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_session_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_session_desc2"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("2. Real-Time (24 hours)", "yellow");
-        terminal.WriteLine("   - Classic BBS-style daily reset at midnight");
-        terminal.WriteLine("   - NPCs continue to act while you're away");
+        terminal.WriteLine(Loc.Get("main_street.cycle_realtime_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_realtime_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_realtime_desc2"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("3. Accelerated (4 hours)", "yellow");
-        terminal.WriteLine("   - New day every 4 real hours");
-        terminal.WriteLine("   - Faster progression for active players");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel4_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel4_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel4_desc2"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("4. Accelerated (8 hours)", "yellow");
-        terminal.WriteLine("   - New day every 8 real hours");
-        terminal.WriteLine("   - Balanced progression");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel8_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel8_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel8_desc2"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("5. Accelerated (12 hours)", "yellow");
-        terminal.WriteLine("   - New day every 12 real hours");
-        terminal.WriteLine("   - Slower but steady progression");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel12_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel12_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_accel12_desc2"));
         terminal.WriteLine("");
         
-        terminal.WriteLine("6. Endless", "yellow");
-        terminal.WriteLine("   - No turn limits, play as long as you want");
-        terminal.WriteLine("   - Perfect for exploration and experimentation");
+        terminal.WriteLine(Loc.Get("main_street.cycle_endless_title"), "yellow");
+        terminal.WriteLine(Loc.Get("main_street.cycle_endless_desc1"));
+        terminal.WriteLine(Loc.Get("main_street.cycle_endless_desc2"));
         terminal.WriteLine("");
         
-        var choice = await terminal.GetInput("Select mode (1-6) or 0 to cancel: ");
+        var choice = await terminal.GetInput(Loc.Get("main_street.cycle_prompt"));
         
         var newMode = choice switch
         {
@@ -2442,17 +2441,17 @@ public class MainStreetLocation : BaseLocation
             var dailyManager = DailySystemManager.Instance;
             dailyManager.SetDailyCycleMode(newMode.Value);
             
-            terminal.WriteLine($"Daily cycle mode changed to: {GetDailyCycleModeDescription(newMode.Value)}", "green");
+            terminal.WriteLine(Loc.Get("main_street.cycle_changed", GetDailyCycleModeDescription(newMode.Value)), "green");
             
             // Save the change
             await GameEngine.Instance.SaveCurrentGame();
         }
         else if (choice != "0")
         {
-            terminal.WriteLine("Invalid choice!", "red");
+            terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2461,46 +2460,46 @@ public class MainStreetLocation : BaseLocation
     private async Task ConfigureAutoSave()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("AUTO-SAVE SETTINGS", "bright_cyan");
+        WriteSectionHeader(Loc.Get("main_street.section_autosave"), "bright_cyan");
         terminal.WriteLine("");
         
         var dailyManager = DailySystemManager.Instance;
         
         terminal.SetColor("white");
-        terminal.WriteLine($"Current auto-save: {(dailyManager.AutoSaveEnabled ? "Enabled" : "Disabled")}");
+        terminal.WriteLine(Loc.Get("main_street.autosave_current", dailyManager.AutoSaveEnabled ? Loc.Get("main_street.prefs_enabled") : Loc.Get("main_street.prefs_disabled")));
         terminal.WriteLine("");
-        
-        terminal.WriteLine("1. Enable auto-save");
-        terminal.WriteLine("2. Disable auto-save");
-        terminal.WriteLine("3. Change auto-save interval");
-        terminal.WriteLine("4. Back");
+
+        terminal.WriteLine(Loc.Get("main_street.autosave_enable"));
+        terminal.WriteLine(Loc.Get("main_street.autosave_disable"));
+        terminal.WriteLine(Loc.Get("main_street.autosave_change_interval"));
+        terminal.WriteLine(Loc.Get("main_street.autosave_back"));
         terminal.WriteLine("");
-        
-        var choice = await terminal.GetInput("Enter your choice (1-4): ");
+
+        var choice = await terminal.GetInput(Loc.Get("main_street.autosave_prompt"));
         
         switch (choice)
         {
             case "1":
                 dailyManager.ConfigureAutoSave(true, TimeSpan.FromMinutes(5));
-                terminal.WriteLine("Auto-save enabled (every 5 minutes)", "green");
+                terminal.WriteLine(Loc.Get("main_street.autosave_enabled"), "green");
                 break;
                 
             case "2":
                 dailyManager.ConfigureAutoSave(false, TimeSpan.FromMinutes(5));
-                terminal.WriteLine("Auto-save disabled", "yellow");
+                terminal.WriteLine(Loc.Get("main_street.autosave_disabled"), "yellow");
                 break;
                 
             case "3":
-                terminal.WriteLine("Enter auto-save interval in minutes (1-60): ");
+                terminal.WriteLine(Loc.Get("main_street.autosave_interval_prompt"));
                 var intervalInput = await terminal.GetInput("");
                 if (int.TryParse(intervalInput, out var minutes) && minutes >= 1 && minutes <= 60)
                 {
                     dailyManager.ConfigureAutoSave(true, TimeSpan.FromMinutes(minutes));
-                    terminal.WriteLine($"Auto-save interval set to {minutes} minutes", "green");
+                    terminal.WriteLine(Loc.Get("main_street.autosave_interval_set", minutes), "green");
                 }
                 else
                 {
-                    terminal.WriteLine("Invalid interval!", "red");
+                    terminal.WriteLine(Loc.Get("main_street.autosave_interval_invalid"), "red");
                 }
                 break;
                 
@@ -2508,11 +2507,11 @@ public class MainStreetLocation : BaseLocation
                 return;
                 
             default:
-                terminal.WriteLine("Invalid choice!", "red");
+                terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
                 break;
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2521,7 +2520,7 @@ public class MainStreetLocation : BaseLocation
     private async Task SaveGameNow()
     {
         await GameEngine.Instance.SaveCurrentGame();
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2530,47 +2529,47 @@ public class MainStreetLocation : BaseLocation
     private async Task LoadDifferentSave()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("LOAD DIFFERENT SAVE", "bright_cyan");
+        WriteSectionHeader(Loc.Get("main_street.load_save"), "bright_cyan");
         terminal.WriteLine("");
         
         var saves = SaveSystem.Instance.GetAllSaves();
         
         if (saves.Count == 0)
         {
-            terminal.WriteLine("No save files found!", "red");
-            await terminal.PressAnyKey("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("save.no_saves"), "red");
+            await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
             return;
         }
-        
+
         terminal.SetColor("white");
-        terminal.WriteLine("Available save files:");
+        terminal.WriteLine(Loc.Get("main_street.save_available"));
         terminal.WriteLine("");
         
         for (int i = 0; i < saves.Count; i++)
         {
             var save = saves[i];
-            terminal.WriteLine($"{i + 1}. {save.PlayerName} (Level {save.Level}, Day {save.CurrentDay}, {save.TurnsRemaining} turns)");
-            terminal.WriteLine($"   Saved: {save.SaveTime:yyyy-MM-dd HH:mm:ss}");
+            terminal.WriteLine(Loc.Get("main_street.save_entry", i + 1, save.PlayerName, save.Level, save.CurrentDay, save.TurnsRemaining));
+            terminal.WriteLine(Loc.Get("main_street.save_saved_at", $"{save.SaveTime:yyyy-MM-dd HH:mm:ss}"));
             terminal.WriteLine("");
         }
         
-        var choice = await terminal.GetInput($"Select save file (1-{saves.Count}) or 0 to cancel: ");
+        var choice = await terminal.GetInput(Loc.Get("main_street.save_select", saves.Count));
         
         if (int.TryParse(choice, out var index) && index >= 1 && index <= saves.Count)
         {
             var selectedSave = saves[index - 1];
-            terminal.WriteLine($"Loading {selectedSave.PlayerName}...", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.save_loading", selectedSave.PlayerName), "yellow");
             
             // This would require restarting the game with the new save
-            terminal.WriteLine("Note: Loading a different save requires restarting the game.", "cyan");
-            terminal.WriteLine("Please exit and restart, then enter the character name to load.", "cyan");
+            terminal.WriteLine(Loc.Get("main_street.save_load_note1"), "cyan");
+            terminal.WriteLine(Loc.Get("main_street.save_load_note2"), "cyan");
         }
         else if (choice != "0")
         {
-            terminal.WriteLine("Invalid choice!", "red");
+            terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2579,65 +2578,65 @@ public class MainStreetLocation : BaseLocation
     private async Task DeleteSaveFiles()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("DELETE SAVE FILES", "bright_red");
+        WriteSectionHeader(Loc.Get("main_street.section_delete_saves"), "bright_red");
         terminal.WriteLine("");
         
         terminal.SetColor("red");
-        terminal.WriteLine("WARNING: This action cannot be undone!");
+        terminal.WriteLine(Loc.Get("main_street.delete_warning"));
         terminal.WriteLine("");
         
         var saves = SaveSystem.Instance.GetAllSaves();
         
         if (saves.Count == 0)
         {
-            terminal.WriteLine("No save files found!", "yellow");
-            await terminal.PressAnyKey("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("save.no_saves"), "yellow");
+            await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
             return;
         }
         
         terminal.SetColor("white");
-        terminal.WriteLine("Available save files:");
+        terminal.WriteLine(Loc.Get("main_street.save_available"));
         terminal.WriteLine("");
         
         for (int i = 0; i < saves.Count; i++)
         {
             var save = saves[i];
-            terminal.WriteLine($"{i + 1}. {save.PlayerName} (Level {save.Level}, Day {save.CurrentDay})");
+            terminal.WriteLine(Loc.Get("main_street.save_entry_short", i + 1, save.PlayerName, save.Level, save.CurrentDay));
         }
         
         terminal.WriteLine("");
-        var choice = await terminal.GetInput($"Select save file to delete (1-{saves.Count}) or 0 to cancel: ");
+        var choice = await terminal.GetInput(Loc.Get("main_street.delete_select", saves.Count));
         
         if (int.TryParse(choice, out var index) && index >= 1 && index <= saves.Count)
         {
             var selectedSave = saves[index - 1];
             
             terminal.WriteLine("");
-            var confirm = await terminal.GetInput($"Are you sure you want to delete '{selectedSave.PlayerName}'? Type 'DELETE' to confirm: ");
+            var confirm = await terminal.GetInput(Loc.Get("ui.confirm_delete", selectedSave.PlayerName));
             
             if (confirm == "DELETE")
             {
                 var success = SaveSystem.Instance.DeleteSave(selectedSave.PlayerName);
                 if (success)
                 {
-                    terminal.WriteLine("Save file deleted successfully!", "green");
+                    terminal.WriteLine(Loc.Get("main_street.delete_success"), "green");
                 }
                 else
                 {
-                    terminal.WriteLine("Failed to delete save file!", "red");
+                    terminal.WriteLine(Loc.Get("main_street.delete_fail"), "red");
                 }
             }
             else
             {
-                terminal.WriteLine("Deletion cancelled.", "yellow");
+                terminal.WriteLine(Loc.Get("main_street.delete_cancelled"), "yellow");
             }
         }
         else if (choice != "0")
         {
-            terminal.WriteLine("Invalid choice!", "red");
+            terminal.WriteLine(Loc.Get("main_street.settings_invalid"), "red");
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2646,31 +2645,31 @@ public class MainStreetLocation : BaseLocation
     private async Task ViewSaveFileInfo()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("SAVE FILE INFORMATION", "bright_cyan");
+        WriteSectionHeader(Loc.Get("main_street.section_save_info"), "bright_cyan");
         terminal.WriteLine("");
         
         var saves = SaveSystem.Instance.GetAllSaves();
         
         if (saves.Count == 0)
         {
-            terminal.WriteLine("No save files found!", "red");
-            await terminal.PressAnyKey("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("save.no_saves"), "red");
+            await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
             return;
         }
-        
+
         terminal.SetColor("white");
         foreach (var save in saves)
         {
-            terminal.WriteLine($"Character: {save.PlayerName}", "yellow");
-            terminal.WriteLine($"Level: {save.Level}");
-            terminal.WriteLine($"Current Day: {save.CurrentDay}");
-            terminal.WriteLine($"Turns Remaining: {save.TurnsRemaining}");
-            terminal.WriteLine($"Last Saved: {save.SaveTime:yyyy-MM-dd HH:mm:ss}");
-            terminal.WriteLine($"File: {save.FileName}");
+            terminal.WriteLine(Loc.Get("save.character", save.PlayerName), "yellow");
+            terminal.WriteLine($"{Loc.Get("ui.level")}: {save.Level}");
+            terminal.WriteLine(Loc.Get("save.current_day", save.CurrentDay));
+            terminal.WriteLine(Loc.Get("save.turns_remaining", save.TurnsRemaining));
+            terminal.WriteLine(Loc.Get("save.last_saved", save.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")));
+            terminal.WriteLine(Loc.Get("save.file", save.FileName));
             terminal.WriteLine("");
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2679,29 +2678,29 @@ public class MainStreetLocation : BaseLocation
     private async Task ForceDailyReset()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("FORCE DAILY RESET", "bright_yellow");
+        WriteSectionHeader(Loc.Get("main_street.section_force_reset"), "bright_yellow");
         terminal.WriteLine("");
         
         terminal.SetColor("white");
-        terminal.WriteLine("This will immediately trigger a daily reset, restoring your");
-        terminal.WriteLine("daily limits and advancing the game day.");
+        terminal.WriteLine(Loc.Get("main_street.reset_description1"));
+        terminal.WriteLine(Loc.Get("main_street.reset_description2"));
         terminal.WriteLine("");
         
-        var confirm = await terminal.GetInput("Are you sure? (yes/no): ");
+        var confirm = await terminal.GetInput(Loc.Get("ui.confirm_yes_no"));
         
         if (confirm.ToLower() == "yes")
         {
             var dailyManager = DailySystemManager.Instance;
             await dailyManager.ForceDailyReset();
             
-            terminal.WriteLine("Daily reset completed!", "green");
+            terminal.WriteLine(Loc.Get("main_street.reset_completed"), "green");
         }
         else
         {
-            terminal.WriteLine("Reset cancelled.", "yellow");
+            terminal.WriteLine(Loc.Get("main_street.reset_cancelled"), "yellow");
         }
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2711,13 +2710,13 @@ public class MainStreetLocation : BaseLocation
     {
         return mode switch
         {
-            DailyCycleMode.SessionBased => "Session-Based (resets when turns depleted)",
-            DailyCycleMode.RealTime24Hour => "Real-Time 24 Hour (resets at midnight)",
-            DailyCycleMode.Accelerated4Hour => "Accelerated 4 Hour (resets every 4 hours)",
-            DailyCycleMode.Accelerated8Hour => "Accelerated 8 Hour (resets every 8 hours)", 
-            DailyCycleMode.Accelerated12Hour => "Accelerated 12 Hour (resets every 12 hours)",
-            DailyCycleMode.Endless => "Endless (no turn limits)",
-            _ => "Unknown"
+            DailyCycleMode.SessionBased => Loc.Get("main_street.cycle_desc_session"),
+            DailyCycleMode.RealTime24Hour => Loc.Get("main_street.cycle_desc_realtime"),
+            DailyCycleMode.Accelerated4Hour => Loc.Get("main_street.cycle_desc_accel4"),
+            DailyCycleMode.Accelerated8Hour => Loc.Get("main_street.cycle_desc_accel8"),
+            DailyCycleMode.Accelerated12Hour => Loc.Get("main_street.cycle_desc_accel12"),
+            DailyCycleMode.Endless => Loc.Get("main_street.cycle_desc_endless"),
+            _ => Loc.Get("main_street.cycle_desc_unknown")
         };
     }
 
@@ -2726,9 +2725,9 @@ public class MainStreetLocation : BaseLocation
     /// </summary>
     private async Task ShowMail()
     {
-        terminal.WriteLine("Checking your mailbox...", "cyan");
+        terminal.WriteLine(Loc.Get("main_street.mail_checking"), "cyan");
         await MailSystem.ReadPlayerMail(currentPlayer.Name2, terminal);
-        terminal.WriteLine("Press ENTER to return to Main Street.", "gray");
+        terminal.WriteLine(Loc.Get("main_street.mail_return"), "gray");
         await terminal.GetInput("");
     }
 
@@ -2738,57 +2737,56 @@ public class MainStreetLocation : BaseLocation
     private async Task ShowHelp()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("HELP & COMMANDS", "bright_cyan");
+        WriteBoxHeader(Loc.Get("main_street.help"), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("=== LOCATIONS ===");
+        terminal.WriteLine(Loc.Get("help.section_locations"));
         terminal.SetColor("white");
-        terminal.WriteLine("  [D] Dungeons      - Fight monsters, find treasure, gain experience");
-        terminal.WriteLine("  [I] Inn           - Rest, socialize, gamble, and romance");
-        terminal.WriteLine("  [W] Weapon Shop   - Buy and sell weapons");
-        terminal.WriteLine("  [A] Armor Shop    - Buy and sell armor");
-        terminal.WriteLine("  [M] Magic Shop    - Buy spells and magical items");
-        terminal.WriteLine("  [H] Healer        - Cure wounds, poison, and ailments");
-        terminal.WriteLine("  [B] Bank          - Deposit/withdraw gold, take loans");
-        terminal.WriteLine("  [T] Temple        - Pray, donate, receive blessings");
-        terminal.WriteLine("  [C] Castle        - Visit the royal court");
-        terminal.WriteLine("  [Y] Your Home     - Rest and manage your belongings");
-        terminal.WriteLine("  [*] Level Master  - Train to increase your level");
-        terminal.WriteLine("  [J] Auction House  - Buy and sell items with other players");
-        terminal.WriteLine("  [X] Dark Alley    - Shady dealings and criminal activity");
+        terminal.WriteLine(Loc.Get("help.dungeons"));
+        terminal.WriteLine(Loc.Get("help.inn"));
+        terminal.WriteLine(Loc.Get("help.weapon_shop"));
+        terminal.WriteLine(Loc.Get("help.armor_shop"));
+        terminal.WriteLine(Loc.Get("help.magic_shop"));
+        terminal.WriteLine(Loc.Get("help.healer"));
+        terminal.WriteLine(Loc.Get("help.bank"));
+        terminal.WriteLine(Loc.Get("help.temple"));
+        terminal.WriteLine(Loc.Get("help.castle"));
+        terminal.WriteLine(Loc.Get("help.home"));
+        terminal.WriteLine(Loc.Get("help.level_master"));
+        terminal.WriteLine(Loc.Get("help.auction"));
+        terminal.WriteLine(Loc.Get("help.dark_alley"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("=== INFORMATION ===");
+        terminal.WriteLine(Loc.Get("help.section_information"));
         terminal.SetColor("white");
-        terminal.WriteLine("  [S] Status        - View your character stats");
-        // terminal.WriteLine("  [L] List Players  - See other characters in the realm");  // Merged into Fame
-        terminal.WriteLine("  [N] News          - Read the daily news");
-        terminal.WriteLine("  [F] Fame          - View the hall of fame");
-        terminal.WriteLine("  [$] World Events  - See current events affecting the realm");
+        terminal.WriteLine(Loc.Get("help.status"));
+        terminal.WriteLine(Loc.Get("help.news"));
+        terminal.WriteLine(Loc.Get("help.fame"));
+        terminal.WriteLine(Loc.Get("help.world_events"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("=== ACTIONS ===");
+        terminal.WriteLine(Loc.Get("help.section_actions"));
         terminal.SetColor("white");
-        terminal.WriteLine("  [G] Good Deeds    - Perform charitable acts (+Chivalry)");
-        terminal.WriteLine("  [E] Wilderness    - Explore the wilds beyond the city gates");
-        terminal.WriteLine("  [0] Talk to NPCs  - Interact with characters at your location");
+        terminal.WriteLine(Loc.Get("help.good_deeds"));
+        terminal.WriteLine(Loc.Get("help.wilderness"));
+        terminal.WriteLine(Loc.Get("help.talk_npcs"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("=== TIPS ===");
+        terminal.WriteLine(Loc.Get("help.section_tips"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  - Visit the Dungeons to gain experience and gold");
-        terminal.WriteLine("  - When you have enough experience, visit your Level Master to advance");
-        terminal.WriteLine("  - Keep gold in the Bank to protect it from thieves");
-        terminal.WriteLine("  - Build relationships with NPCs - they can become allies or enemies");
-        terminal.WriteLine("  - Your alignment (Chivalry vs Darkness) affects how NPCs treat you");
+        terminal.WriteLine(Loc.Get("help.tip_dungeons"));
+        terminal.WriteLine(Loc.Get("help.tip_level"));
+        terminal.WriteLine(Loc.Get("help.tip_bank"));
+        terminal.WriteLine(Loc.Get("help.tip_npcs"));
+        terminal.WriteLine(Loc.Get("help.tip_alignment"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        await terminal.PressAnyKey("Press Enter to return to Main Street...");
+        await terminal.PressAnyKey(Loc.Get("main_street.press_return"));
     }
 
     /// <summary>
@@ -2799,7 +2797,7 @@ public class MainStreetLocation : BaseLocation
         terminal.ClearScreen();
         WorldEventSystem.Instance.DisplayWorldStatus(terminal);
         terminal.WriteLine("");
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
 
     /// <summary>
@@ -2816,7 +2814,7 @@ public class MainStreetLocation : BaseLocation
                 !string.Equals(playerName, "fastfinge", StringComparison.OrdinalIgnoreCase))
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  Access denied.");
+                terminal.WriteLine($"  {Loc.Get("main_street.dev_access_denied")}");
                 await Task.Delay(1000);
                 return;
             }
@@ -2827,7 +2825,7 @@ public class MainStreetLocation : BaseLocation
             if (!UsurperRemake.BBS.DoorMode.IsSysOp)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  Access denied.");
+                terminal.WriteLine($"  {Loc.Get("main_street.dev_access_denied")}");
                 await Task.Delay(1000);
                 return;
             }
@@ -2835,9 +2833,9 @@ public class MainStreetLocation : BaseLocation
 
         terminal.SetColor("dark_magenta");
         terminal.WriteLine("");
-        terminal.WriteLine("  You notice a strange shimmer in the air...");
+        terminal.WriteLine($"  {Loc.Get("main_street.dev_shimmer")}");
         await Task.Delay(500);
-        terminal.WriteLine("  Reality seems to bend around you...");
+        terminal.WriteLine($"  {Loc.Get("main_street.dev_reality")}");
         await Task.Delay(500);
 
         var devMenu = new DevMenuLocation();
@@ -2854,22 +2852,22 @@ public class MainStreetLocation : BaseLocation
         var grief = GriefSystem.Instance;
 
         terminal.ClearScreen();
-        WriteBoxHeader("YOUR JOURNEY", "bright_cyan");
+        WriteBoxHeader(Loc.Get("main_street.journey"), "bright_cyan");
         terminal.WriteLine("");
 
         // === SEALS SECTION ===
-        WriteSectionHeader("THE SEVEN SEALS", "bright_yellow");
+        WriteSectionHeader(Loc.Get("main_street.section_seals"), "bright_yellow");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Ancient artifacts that reveal the truth of creation");
+        terminal.WriteLine($"  {Loc.Get("main_street.seals_desc")}");
         terminal.WriteLine("");
 
         // Seal status display
         var sealTypes = new[] { SealType.Creation, SealType.FirstWar, SealType.Corruption, SealType.Imprisonment, SealType.Prophecy, SealType.Regret, SealType.Truth };
-        var sealNames = new[] { "Creation", "First War", "Corruption", "Imprisonment", "Prophecy", "Regret", "Truth" };
+        var sealNames = new[] { Loc.Get("main_street.seal_creation"), Loc.Get("main_street.seal_first_war"), Loc.Get("main_street.seal_corruption"), Loc.Get("main_street.seal_imprisonment"), Loc.Get("main_street.seal_prophecy"), Loc.Get("main_street.seal_regret"), Loc.Get("main_street.seal_truth") };
 
         int sealsCollected = story.CollectedSeals?.Count ?? 0;
         terminal.SetColor("white");
-        terminal.Write($"  Seals Collected: {sealsCollected}/7   ");
+        terminal.Write($"  {Loc.Get("main_street.seals_collected", sealsCollected)}   ");
 
         for (int i = 0; i < sealTypes.Length; i++)
         {
@@ -2893,23 +2891,23 @@ public class MainStreetLocation : BaseLocation
             bool hasIt = story.CollectedSeals?.Contains(sealTypes[i]) ?? false;
             string status = hasIt ? "+" : " ";
             string color = hasIt ? "bright_green" : "darkgray";
-            string locationHint = hasIt ? "Found" : "Hidden in the depths...";
+            string locationHint = hasIt ? Loc.Get("main_street.story_seal_found") : Loc.Get("main_street.story_seal_hidden");
             terminal.SetColor(color);
-            terminal.WriteLine($"    {status} Seal of {sealNames[i],-12} - {locationHint}");
+            terminal.WriteLine(Loc.Get("main_street.seal_display", status, sealNames[i], locationHint));
         }
         terminal.WriteLine("");
 
         // === GODS SECTION ===
-        WriteSectionHeader("THE OLD GODS", "bright_magenta");
+        WriteSectionHeader(Loc.Get("main_street.section_old_gods"), "bright_magenta");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Ancient beings you may challenge for power or wisdom");
+        terminal.WriteLine($"  {Loc.Get("main_street.gods_desc")}");
         terminal.WriteLine("");
 
         var godData = new[]
         {
-            ("Maelketh", "God of War", "maelketh_encountered", "maelketh_defeated"),
-            ("Terravok", "God of Earth", "terravok_encountered", "terravok_defeated"),
-            ("Manwe", "Lord of Air", "manwe_encountered", "manwe_defeated")
+            ("Maelketh", Loc.Get("main_street.god_maelketh_title"), "maelketh_encountered", "maelketh_defeated"),
+            ("Terravok", Loc.Get("main_street.god_terravok_title"), "terravok_encountered", "terravok_defeated"),
+            ("Manwe", Loc.Get("main_street.god_manwe_title"), "manwe_encountered", "manwe_defeated")
         };
 
         foreach (var (name, title, encFlag, defFlag) in godData)
@@ -2922,21 +2920,21 @@ public class MainStreetLocation : BaseLocation
             string location;
             if (defeated)
             {
-                status = "DEFEATED";
+                status = Loc.Get("main_street.god_defeated");
                 color = "bright_green";
-                location = "Conquered";
+                location = Loc.Get("main_street.god_conquered");
             }
             else if (encountered)
             {
-                status = "Encountered";
+                status = Loc.Get("main_street.god_encountered");
                 color = "bright_yellow";
-                location = "Known";
+                location = Loc.Get("main_street.god_known");
             }
             else
             {
-                status = "Unknown";
+                status = Loc.Get("main_street.god_unknown");
                 color = "darkgray";
-                location = "Somewhere in the depths...";
+                location = Loc.Get("main_street.god_somewhere");
             }
 
             terminal.SetColor(color);
@@ -2945,62 +2943,62 @@ public class MainStreetLocation : BaseLocation
         terminal.WriteLine("");
 
         // === AWAKENING SECTION ===
-        WriteSectionHeader("OCEAN PHILOSOPHY", "bright_blue");
+        WriteSectionHeader(Loc.Get("main_street.section_ocean"), "bright_blue");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Your spiritual awakening through grief, sacrifice, and understanding");
+        terminal.WriteLine($"  {Loc.Get("main_street.ocean_desc")}");
         terminal.WriteLine("");
 
         int awakeningLevel = ocean.AwakeningLevel;
         string awakeningDesc = awakeningLevel switch
         {
-            0 => "Unawakened - You see only the surface of things",
-            1 => "Stirring - Something deep within begins to move",
-            2 => "Ripples - You sense connections between all things",
-            3 => "Currents - The depths call to you with ancient whispers",
-            4 => "Depths - You understand the ocean's sorrow",
-            >= 5 => "Enlightened - You are one with the eternal tide",
-            _ => "Unknown"
+            0 => Loc.Get("main_street.awakening_0"),
+            1 => Loc.Get("main_street.awakening_1"),
+            2 => Loc.Get("main_street.awakening_2"),
+            3 => Loc.Get("main_street.awakening_3"),
+            4 => Loc.Get("main_street.awakening_4"),
+            >= 5 => Loc.Get("main_street.awakening_5"),
+            _ => Loc.Get("main_street.awakening_unknown")
         };
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  Awakening Level: {awakeningLevel}/5");
+        terminal.WriteLine($"  {Loc.Get("main_street.awakening_level", awakeningLevel)}");
         terminal.SetColor("white");
         terminal.WriteLine($"  {awakeningDesc}");
         terminal.WriteLine("");
         string griefStatus = grief.CurrentStage switch
         {
-            GriefStage.None => "At Peace",
-            GriefStage.Denial => "In Denial - Loss seems unreal",
-            GriefStage.Anger => "Angry - Why did this happen?",
-            GriefStage.Bargaining => "Bargaining - If only...",
-            GriefStage.Depression => "Depressed - The weight of loss",
-            GriefStage.Acceptance => "Acceptance - Finding peace",
-            _ => "Unknown"
+            GriefStage.None => Loc.Get("main_street.grief_none"),
+            GriefStage.Denial => Loc.Get("main_street.grief_denial"),
+            GriefStage.Anger => Loc.Get("main_street.grief_anger"),
+            GriefStage.Bargaining => Loc.Get("main_street.grief_bargaining"),
+            GriefStage.Depression => Loc.Get("main_street.grief_depression"),
+            GriefStage.Acceptance => Loc.Get("main_street.grief_acceptance"),
+            _ => Loc.Get("main_street.awakening_unknown")
         };
 
         string griefColor = grief.CurrentStage == GriefStage.None || grief.CurrentStage == GriefStage.Acceptance
             ? "bright_green"
             : "yellow";
         terminal.SetColor(griefColor);
-        terminal.WriteLine($"  Grief: {griefStatus}");
+        terminal.WriteLine($"  {Loc.Get("main_street.grief_label")} {griefStatus}");
         if (grief.IsGrieving)
         {
             var griefFx = grief.GetCurrentEffects();
             var parts = new List<string>();
             if (griefFx.DamageModifier != 0)
-                parts.Add($"Damage {(griefFx.DamageModifier > 0 ? "+" : "")}{griefFx.DamageModifier * 100:0}%");
+                parts.Add(Loc.Get("main_street.grief_damage", griefFx.DamageModifier > 0 ? "+" : "", $"{griefFx.DamageModifier * 100:0}"));
             if (griefFx.DefenseModifier != 0)
-                parts.Add($"Defense {(griefFx.DefenseModifier > 0 ? "+" : "")}{griefFx.DefenseModifier * 100:0}%");
+                parts.Add(Loc.Get("main_street.grief_defense", griefFx.DefenseModifier > 0 ? "+" : "", $"{griefFx.DefenseModifier * 100:0}"));
             if (griefFx.CombatModifier != 0)
-                parts.Add($"Combat {(griefFx.CombatModifier > 0 ? "+" : "")}{griefFx.CombatModifier * 100:0}%");
+                parts.Add(Loc.Get("main_street.grief_combat", griefFx.CombatModifier > 0 ? "+" : "", $"{griefFx.CombatModifier * 100:0}"));
             if (griefFx.AllStatModifier != 0)
-                parts.Add($"All Stats {(griefFx.AllStatModifier > 0 ? "+" : "")}{griefFx.AllStatModifier * 100:0}%");
+                parts.Add(Loc.Get("main_street.grief_all_stats", griefFx.AllStatModifier > 0 ? "+" : "", $"{griefFx.AllStatModifier * 100:0}"));
             if (griefFx.PermanentWisdomBonus > 0)
-                parts.Add($"+{griefFx.PermanentWisdomBonus} Wisdom");
+                parts.Add(Loc.Get("main_street.grief_wisdom", griefFx.PermanentWisdomBonus));
             if (parts.Count > 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"    Combat Effects: {string.Join(", ", parts)}");
+                terminal.WriteLine(Loc.Get("main_street.grief_combat_effects", string.Join(", ", parts)));
             }
             if (!string.IsNullOrEmpty(griefFx.Description))
             {
@@ -3011,49 +3009,49 @@ public class MainStreetLocation : BaseLocation
         terminal.WriteLine("");
 
         // === ALIGNMENT SECTION ===
-        WriteSectionHeader("ALIGNMENT", "bright_white");
+        WriteSectionHeader(Loc.Get("main_street.section_alignment"), "bright_white");
 
         long chivalry = currentPlayer.Chivalry;
         string alignmentDesc;
         string alignColor;
         if (chivalry >= 100)
         {
-            alignmentDesc = "Paragon of Virtue";
+            alignmentDesc = Loc.Get("main_street.align_paragon");
             alignColor = "bright_cyan";
         }
         else if (chivalry >= 50)
         {
-            alignmentDesc = "Noble Hero";
+            alignmentDesc = Loc.Get("main_street.align_noble");
             alignColor = "bright_green";
         }
         else if (chivalry >= 20)
         {
-            alignmentDesc = "Good-Hearted";
+            alignmentDesc = Loc.Get("main_street.align_good");
             alignColor = "green";
         }
         else if (chivalry >= -20)
         {
-            alignmentDesc = "Neutral";
+            alignmentDesc = Loc.Get("main_street.align_neutral");
             alignColor = "gray";
         }
         else if (chivalry >= -50)
         {
-            alignmentDesc = "Questionable";
+            alignmentDesc = Loc.Get("main_street.align_questionable");
             alignColor = "yellow";
         }
         else if (chivalry >= -100)
         {
-            alignmentDesc = "Villain";
+            alignmentDesc = Loc.Get("main_street.align_villain");
             alignColor = "red";
         }
         else
         {
-            alignmentDesc = "Usurper - Embodiment of Darkness";
+            alignmentDesc = Loc.Get("main_street.align_usurper");
             alignColor = "bright_red";
         }
 
         terminal.SetColor(alignColor);
-        terminal.WriteLine($"  Chivalry: {chivalry,4}  -  {alignmentDesc}");
+        terminal.WriteLine($"  {Loc.Get("main_street.chivalry_label")} {chivalry,4}  -  {alignmentDesc}");
 
         // Show Darkness and wanted status
         long darkness = currentPlayer.Darkness;
@@ -3061,46 +3059,46 @@ public class MainStreetLocation : BaseLocation
         string darkColor;
         if (darkness > 100)
         {
-            darkDesc = "WANTED by the Royal Guard!";
+            darkDesc = Loc.Get("main_street.dark_wanted");
             darkColor = "bright_red";
         }
         else if (darkness > 50)
         {
-            darkDesc = "Suspicious reputation";
+            darkDesc = Loc.Get("main_street.dark_suspicious");
             darkColor = "yellow";
         }
         else if (darkness > 20)
         {
-            darkDesc = "Rumored misdeeds";
+            darkDesc = Loc.Get("main_street.dark_rumored");
             darkColor = "gray";
         }
         else
         {
-            darkDesc = "Clean record";
+            darkDesc = Loc.Get("main_street.dark_clean");
             darkColor = "bright_green";
         }
         terminal.SetColor(darkColor);
-        terminal.WriteLine($"  Darkness: {darkness,4}  -  {darkDesc}");
+        terminal.WriteLine($"  {Loc.Get("main_street.darkness_label")} {darkness,4}  -  {darkDesc}");
 
         // Next objective hint (vague to encourage exploration)
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
         if (sealsCollected < 7)
         {
-            terminal.WriteLine($"  The ancient seals await discovery in the dungeon's depths...");
+            terminal.WriteLine($"  {Loc.Get("main_street.hint_seals")}");
         }
         else if (!story.HasStoryFlag("manwe_defeated"))
         {
-            terminal.WriteLine("  All seals gathered. The Creator awaits in the deepest reaches...");
+            terminal.WriteLine($"  {Loc.Get("main_street.hint_creator")}");
         }
         else
         {
-            terminal.WriteLine("  You have completed your journey. Seek your ending.");
+            terminal.WriteLine($"  {Loc.Get("main_street.hint_ending")}");
         }
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        await terminal.PressAnyKey("Press Enter to return to Main Street...");
+        await terminal.PressAnyKey(Loc.Get("main_street.press_return"));
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -3127,10 +3125,10 @@ public class MainStreetLocation : BaseLocation
             for (int j = i + 1; j < npcs.Count && j < 6; j++)
             {
                 if (RelationshipSystem.AreMarried(npcs[i], npcs[j]))
-                    return $"{npcs[i].Name2} and {npcs[j].Name2} walk together, sharing a quiet conversation.";
+                    return Loc.Get("main_street.micro_married_walk", npcs[i].Name2, npcs[j].Name2);
                 int rel = RelationshipSystem.GetRelationshipLevel(npcs[i], npcs[j]);
                 if (rel <= GameConfig.RelationLove)
-                    return $"{npcs[i].Name2} and {npcs[j].Name2} are walking close together, talking in low voices.";
+                    return Loc.Get("main_street.micro_lovers_walk", npcs[i].Name2, npcs[j].Name2);
             }
         }
 
@@ -3144,37 +3142,37 @@ public class MainStreetLocation : BaseLocation
                 // Won a fight recently
                 var defeated = recentEvents.FirstOrDefault(e => e.Type == MemoryType.Defeated);
                 if (defeated != null)
-                    return $"{npc.Name2} carries a confident swagger. Looks like they bested {defeated.InvolvedCharacter} recently.";
+                    return Loc.Get("main_street.micro_fight_won", npc.Name2, defeated.InvolvedCharacter);
 
                 // Witnessed a death
                 var sawDeath = recentEvents.FirstOrDefault(e => e.Type == MemoryType.SawDeath);
                 if (sawDeath != null)
-                    return $"{npc.Name2} has a faraway look, like they saw something they'd rather forget.";
+                    return Loc.Get("main_street.micro_saw_death", npc.Name2);
 
                 // Was attacked / in a fight
                 var attacked = recentEvents.FirstOrDefault(e => e.Type == MemoryType.Attacked);
                 if (attacked != null)
-                    return $"{npc.Name2} sports fresh bruises. Someone picked a fight.";
+                    return Loc.Get("main_street.micro_was_attacked", npc.Name2);
             }
 
             // Emotional state checks
             if (npc.EmotionalState != null)
             {
                 if (npc.EmotionalState.HasEmotion(EmotionType.Anger))
-                    return $"{npc.Name2}'s jaw is clenched. They look ready to hit something.";
+                    return Loc.Get("main_street.micro_angry", npc.Name2);
                 if (npc.EmotionalState.HasEmotion(EmotionType.Joy))
-                    return $"{npc.Name2} is humming cheerfully as they pass.";
+                    return Loc.Get("main_street.micro_joyful", npc.Name2);
                 if (npc.EmotionalState.HasEmotion(EmotionType.Sadness))
-                    return $"{npc.Name2} sits alone on a bench, looking like they could use a drink.";
+                    return Loc.Get("main_street.micro_sad", npc.Name2);
                 if (npc.EmotionalState.HasEmotion(EmotionType.Fear))
-                    return $"{npc.Name2} keeps glancing over their shoulder, jumpy about something.";
+                    return Loc.Get("main_street.micro_fearful", npc.Name2);
             }
         }
 
         // Priority 8: Gang members present together
         var gangNpcs = npcs.Where(n => !string.IsNullOrEmpty(n.GangId)).ToList();
         if (gangNpcs.Count >= 2)
-            return "A knot of gang members huddle together, speaking in low tones.";
+            return Loc.Get("main_street.micro_gang_huddle");
 
         // Priority 9: Enemy pair
         for (int i = 0; i < npcs.Count && i < 5; i++)
@@ -3182,7 +3180,7 @@ public class MainStreetLocation : BaseLocation
             for (int j = i + 1; j < npcs.Count && j < 5; j++)
             {
                 if (RelationshipSystem.GetRelationshipLevel(npcs[i], npcs[j]) >= GameConfig.RelationEnemy)
-                    return $"{npcs[i].Name2} and {npcs[j].Name2} eye each other warily from across the street.";
+                    return Loc.Get("main_street.micro_enemies_wary", npcs[i].Name2, npcs[j].Name2);
             }
         }
 
@@ -3193,10 +3191,10 @@ public class MainStreetLocation : BaseLocation
             {
                 return npc.EmergentRole switch
                 {
-                    "Defender" => $"{npc.Name2} stands watch near the gate, keeping an eye on things.",
-                    "Merchant" => $"{npc.Name2} is haggling loudly with a street vendor.",
-                    "Healer" => $"{npc.Name2} is tending to a scrape on a child's knee.",
-                    "Explorer" => $"{npc.Name2} is studying a worn map, planning their next trip.",
+                    "Defender" => Loc.Get("main_street.micro_role_defender", npc.Name2),
+                    "Merchant" => Loc.Get("main_street.micro_role_merchant", npc.Name2),
+                    "Healer" => Loc.Get("main_street.micro_role_healer", npc.Name2),
+                    "Explorer" => Loc.Get("main_street.micro_role_explorer", npc.Name2),
                     _ => null
                 };
             }

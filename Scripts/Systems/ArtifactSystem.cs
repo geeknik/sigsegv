@@ -266,7 +266,7 @@ namespace UsurperRemake.Systems
 
             if (story.CollectedArtifacts.Contains(type))
             {
-                terminal.WriteLine($"You already possess {artifact.Name}.", "yellow");
+                terminal.WriteLine(Loc.Get("artifact.already_possess", artifact.Name), "yellow");
                 return false;
             }
 
@@ -306,7 +306,7 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "A R T I F A C T   A C Q U I R E D", artifact.IconColor, 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("artifact.header_acquired"), artifact.IconColor, 67);
             terminal.WriteLine("");
 
             await Task.Delay(500);
@@ -321,7 +321,7 @@ namespace UsurperRemake.Systems
 
             await Task.Delay(500);
 
-            terminal.WriteLine("  --- LORE ---", "dark_cyan");
+            terminal.WriteLine($"  --- {Loc.Get("artifact.lore")} ---", "dark_cyan");
             foreach (var line in artifact.LoreText)
             {
                 terminal.WriteLine($"  {line}", "white");
@@ -331,17 +331,17 @@ namespace UsurperRemake.Systems
 
             await Task.Delay(500);
 
-            terminal.WriteLine("  --- POWERS GRANTED ---", "bright_green");
+            terminal.WriteLine($"  --- {Loc.Get("artifact.powers_granted")} ---", "bright_green");
             foreach (var bonus in artifact.StatBonuses)
             {
                 terminal.WriteLine($"  +{bonus.Value} {bonus.Key}", "green");
                 await Task.Delay(100);
             }
             terminal.WriteLine("");
-            terminal.WriteLine($"  Special: {artifact.SpecialAbility}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("artifact.special")}: {artifact.SpecialAbility}", "bright_yellow");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -418,37 +418,37 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            terminal.WriteLine("Something stirs in the depths of reality...", "dark_magenta");
+            terminal.WriteLine(Loc.Get("artifact.stirs_depths"), "dark_magenta");
             await Task.Delay(2000);
 
             terminal.WriteLine("");
-            terminal.WriteLine("The six artifacts you carry begin to resonate.", "bright_cyan");
+            terminal.WriteLine(Loc.Get("artifact.artifacts_resonate"), "bright_cyan");
             await Task.Delay(1500);
 
-            terminal.WriteLine("Light and shadow dance around you.", "white");
+            terminal.WriteLine(Loc.Get("artifact.light_shadow_dance"), "white");
             await Task.Delay(1500);
 
             terminal.WriteLine("");
-            terminal.WriteLine("A tear opens in the fabric of existence...", "bright_magenta");
+            terminal.WriteLine(Loc.Get("artifact.tear_opens"), "bright_magenta");
             await Task.Delay(2000);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "T H E   V O I D   K E Y   A P P E A R S", "white", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("artifact.header_void_key"), "white", 67);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("From the void between worlds, a key of pure nothing", "white");
-            terminal.WriteLine("materializes before you. It is absence given form,", "white");
-            terminal.WriteLine("the shape of possibility itself.", "white");
+            terminal.WriteLine(Loc.Get("artifact.void_key_desc1"), "white");
+            terminal.WriteLine(Loc.Get("artifact.void_key_desc2"), "white");
+            terminal.WriteLine(Loc.Get("artifact.void_key_desc3"), "white");
             terminal.WriteLine("");
 
-            terminal.WriteLine("\"The way is open.\"", "bright_yellow");
-            terminal.WriteLine("A voice that is no voice whispers in your mind.", "gray");
+            terminal.WriteLine(Loc.Get("artifact.way_is_open"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("artifact.voice_whispers"), "gray");
             terminal.WriteLine("");
 
-            terminal.WriteLine("\"Seek the Creator's Prison at dungeon level 100.\"", "bright_yellow");
-            terminal.WriteLine("\"There, your journey will end. One way or another.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("artifact.seek_prison"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("artifact.journey_end"), "bright_yellow");
             terminal.WriteLine("");
 
             // Collect the Void Key
@@ -458,7 +458,7 @@ namespace UsurperRemake.Systems
             StoryProgressionSystem.Instance.SetStoryFlag("void_key_obtained", true);
             StoryProgressionSystem.Instance.AdvanceChapter(StoryChapter.TheFinalConfrontation);
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         /// <summary>

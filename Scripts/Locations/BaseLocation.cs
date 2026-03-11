@@ -88,7 +88,15 @@ public abstract class BaseLocation
     /// since we always have a valid player when inside a location.
     /// </summary>
     protected Character GetCurrentPlayer() => currentPlayer ?? GameEngine.Instance.CurrentPlayer;
-    
+
+    /// <summary>
+    /// Localized Loc.Get("ui.your_choice") prompt. Use instead of terminal.GetInput(Loc.Get("ui.your_choice")).
+    /// </summary>
+    protected async Task<string> GetChoice()
+    {
+        return await terminal.GetInput(Loc.Get("ui.your_choice"));
+    }
+
     /// <summary>
     /// Setup location-specific data (exits, NPCs, actions)
     /// </summary>
@@ -131,7 +139,7 @@ public abstract class BaseLocation
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("");
-            terminal.WriteLine("  You are a being of pure divinity. The mortal realm holds nothing for you.");
+            terminal.WriteLine($"  {Loc.Get("base.immortal_locked")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             throw new LocationExitException(GameLocation.Pantheon);
@@ -143,10 +151,10 @@ public abstract class BaseLocation
             var king = CastleLocation.GetCurrentKing();
             terminal.SetColor("red");
             terminal.WriteLine("");
-            terminal.WriteLine("  This establishment has been CLOSED by royal decree!");
+            terminal.WriteLine($"  {Loc.Get("base.establishment_closed")}");
             terminal.SetColor("gray");
             if (king != null)
-                terminal.WriteLine($"  By order of {king.GetTitle()} {king.Name}, this location is off-limits.");
+                terminal.WriteLine($"  {Loc.Get("base.establishment_closed_by", king.GetTitle(), king.Name)}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             throw new LocationExitException(GameLocation.MainStreet);
@@ -159,7 +167,7 @@ public abstract class BaseLocation
             if (otherPlayers.Count > 0)
             {
                 term.SetColor("cyan");
-                term.WriteLine($"  Also here: {string.Join(", ", otherPlayers)}");
+                term.WriteLine($"  {Loc.Get("base.also_here")}: {string.Join(", ", otherPlayers)}");
                 term.SetColor("white");
             }
         }
@@ -201,7 +209,7 @@ public abstract class BaseLocation
         }
 
         term.WriteLine("");
-        WriteBoxHeader("IMPORTANT NEWS", "bright_yellow");
+        WriteBoxHeader(Loc.Get("base.important_news"), "bright_yellow");
         term.WriteLine("");
 
         foreach (var notification in notifications)
@@ -275,11 +283,11 @@ public abstract class BaseLocation
                         term.WriteLine("");
                         if (!GameConfig.ScreenReaderMode)
                             term.WriteLine("═══════════════════════════════════════════════════════════");
-                        term.WriteLine("  You have been DEPOSED! You are no longer the monarch!");
+                        term.WriteLine($"  {Loc.Get("base.deposed")}");
                         if (currentKing != null && currentKing.IsActive)
-                            term.WriteLine($"  The throne now belongs to {currentKing.Name}.");
+                            term.WriteLine($"  {Loc.Get("base.throne_belongs_to", currentKing.Name)}");
                         else
-                            term.WriteLine("  The throne stands vacant.");
+                            term.WriteLine($"  {Loc.Get("base.throne_vacant")}");
                         if (!GameConfig.ScreenReaderMode)
                             term.WriteLine("═══════════════════════════════════════════════════════════");
                         term.WriteLine("");
@@ -351,11 +359,11 @@ public abstract class BaseLocation
             // Show the whisper message
             term.SetColor("gray");
             if (averageImpression < -0.3f)
-                term.WriteLine("  You notice a few NPCs exchange uneasy glances as you arrive.");
+                term.WriteLine($"  {Loc.Get("base.whisper_uneasy")}");
             else if (averageImpression > 0.3f)
-                term.WriteLine("  You notice a few NPCs nod approvingly as you walk past.");
+                term.WriteLine($"  {Loc.Get("base.whisper_approving")}");
             else
-                term.WriteLine("  You notice a few NPCs whispering among themselves as you enter.");
+                term.WriteLine($"  {Loc.Get("base.whisper_neutral")}");
             term.SetColor("white");
         }
         catch (Exception)
@@ -388,24 +396,24 @@ public abstract class BaseLocation
 
             terminal.ClearScreen();
             terminal.WriteLine("");
-            WriteBoxHeader("*** URGENT: CASTLE UNDER ATTACK! ***", "bright_red");
+            WriteBoxHeader(Loc.Get("base.castle_under_attack"), "bright_red");
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"A messenger rushes to find you with dire news!");
+            terminal.WriteLine(Loc.Get("base.guard_messenger"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"{king.ActiveDefenseEvent.ChallengerName} (Level {king.ActiveDefenseEvent.ChallengerLevel})");
-            terminal.WriteLine($"is challenging {king.GetTitle()} {king.Name} for the throne!");
+            terminal.WriteLine($"{king.ActiveDefenseEvent.ChallengerName} ({Loc.Get("base.guard_level")} {king.ActiveDefenseEvent.ChallengerLevel})");
+            terminal.WriteLine(Loc.Get("base.guard_challenging", king.GetTitle(), king.Name));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("As a Royal Guard, you are honor-bound to defend the crown!");
-            terminal.WriteLine("Will you rush to the castle to aid in the defense?");
+            terminal.WriteLine(Loc.Get("base.guard_honor_bound"));
+            terminal.WriteLine(Loc.Get("base.guard_rush_question"));
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.Write("Rush to defend the throne? (Y/N): ");
+            terminal.Write(Loc.Get("base.guard_rush_prompt"));
             terminal.SetColor("white");
 
             string response = await terminal.ReadLineAsync();
@@ -415,8 +423,8 @@ public abstract class BaseLocation
                 king.ActiveDefenseEvent.PlayerResponded = true;
                 terminal.SetColor("bright_green");
                 terminal.WriteLine("");
-                terminal.WriteLine("You rush toward the castle, sword drawn!");
-                terminal.WriteLine("Your loyalty to the crown shall not be questioned!");
+                terminal.WriteLine(Loc.Get("base.guard_rush_castle"));
+                terminal.WriteLine(Loc.Get("base.guard_loyalty_unquestioned"));
                 await terminal.PressAnyKey();
 
                 // Transport player to castle for defense
@@ -430,15 +438,15 @@ public abstract class BaseLocation
 
                 terminal.SetColor("red");
                 terminal.WriteLine("");
-                terminal.WriteLine("You turn away from your duty...");
-                terminal.WriteLine("The crown will remember this betrayal.");
-                terminal.WriteLine($"Your loyalty has dropped to {playerGuard.Loyalty}%!");
+                terminal.WriteLine(Loc.Get("base.guard_turn_away"));
+                terminal.WriteLine(Loc.Get("base.guard_crown_remembers"));
+                terminal.WriteLine(Loc.Get("base.guard_loyalty_dropped", playerGuard.Loyalty));
 
                 if (playerGuard.Loyalty <= 20)
                 {
                     terminal.SetColor("bright_red");
                     terminal.WriteLine("");
-                    terminal.WriteLine("*** You have been STRIPPED of your Royal Guard status! ***");
+                    terminal.WriteLine(Loc.Get("base.guard_stripped"));
                     king.Guards.Remove(playerGuard);
                     NewsSystem.Instance?.Newsy(true, $"Royal Guard {playerGuard.Name} was dismissed for cowardice!");
                 }
@@ -509,10 +517,10 @@ public abstract class BaseLocation
                 {
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  *** LEVEL UP! You are now Level {currentPlayer.Level}! ***");
+                    terminal.WriteLine($"  {Loc.Get("base.level_up", currentPlayer.Level)}");
                     terminal.SetColor("yellow");
                     if (currentPlayer.TrainingPoints > 0)
-                        terminal.WriteLine($"  You earned training points! Visit the Level Master to spend them.");
+                        terminal.WriteLine($"  {Loc.Get("base.training_points_hint")}");
                     terminal.SetColor("white");
                     terminal.WriteLine("");
 
@@ -567,7 +575,7 @@ public abstract class BaseLocation
                 if (UsurperRemake.BBS.DoorMode.IsMudServerMode && _coPresenceCache.Count > 0)
                 {
                     terminal.SetColor("cyan");
-                    terminal.Write("Also here: ");
+                    terminal.Write(Loc.Get("base.also_here") + ": ");
                     terminal.SetColor("bright_cyan");
                     terminal.WriteLine(string.Join(", ", _coPresenceCache.Select(p => p.DisplayName)));
                     terminal.WriteLine("");
@@ -601,7 +609,7 @@ public abstract class BaseLocation
             if (!string.IsNullOrEmpty(broadcast))
             {
                 terminal.WriteLine("");
-                terminal.WriteLine($"*** SYSTEM MESSAGE: {broadcast} ***", "bright_red");
+                terminal.WriteLine($"*** {Loc.Get("base.system_message")}: {broadcast} ***", "bright_red");
             }
 
             // World boss active notification (online mode)
@@ -619,7 +627,7 @@ public abstract class BaseLocation
                         _lastBossNotifyTime = DateTime.Now;
                         terminal.WriteLine("");
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"  *** {activeBossName} is rampaging across the realm! Type /boss to join the fight! ***");
+                        terminal.WriteLine($"  *** {Loc.Get("base.world_boss_rampaging", activeBossName)} ***");
                     }
                 }
                 else
@@ -791,7 +799,7 @@ public abstract class BaseLocation
     private async Task DisplayStrangerEncounter(StrangerEncounter encounter)
     {
         terminal.ClearScreen();
-        WriteBoxHeader("A MYSTERIOUS ENCOUNTER", "dark_magenta");
+        WriteBoxHeader(Loc.Get("base.mysterious_encounter"), "dark_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -821,7 +829,7 @@ public abstract class BaseLocation
         if (encounter.ResponseOptions != null && encounter.ResponseOptions.Count > 0)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  How do you respond?");
+            terminal.WriteLine(Loc.Get("base.how_respond"));
             terminal.WriteLine("");
 
             foreach (var opt in encounter.ResponseOptions)
@@ -844,7 +852,7 @@ public abstract class BaseLocation
             }
 
             terminal.WriteLine("");
-            var choice = await terminal.GetInput("Your response: ");
+            var choice = await terminal.GetInput(Loc.Get("base.your_response"));
 
             var selectedOpt = encounter.ResponseOptions
                 .FirstOrDefault(o => o.Key.Equals(choice?.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -870,7 +878,7 @@ public abstract class BaseLocation
             var options = StrangerEncounterSystem.Instance.GetResponseOptions(encounter, currentPlayer);
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("  How do you respond?");
+            terminal.WriteLine(Loc.Get("base.how_respond"));
             terminal.WriteLine("");
 
             foreach (var (key, text, _) in options)
@@ -886,7 +894,7 @@ public abstract class BaseLocation
             }
 
             terminal.WriteLine("");
-            var choice = await terminal.GetInput("Your response: ");
+            var choice = await terminal.GetInput(Loc.Get("base.your_response"));
 
             var selectedOption = options.FirstOrDefault(o => o.key.Equals(choice, StringComparison.OrdinalIgnoreCase));
             if (selectedOption.response != null)
@@ -958,7 +966,7 @@ public abstract class BaseLocation
         if (encounter.Responses.Count > 0)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  How do you respond?");
+            terminal.WriteLine(Loc.Get("base.how_respond"));
             terminal.WriteLine("");
 
             foreach (var opt in encounter.Responses)
@@ -974,7 +982,7 @@ public abstract class BaseLocation
             }
 
             terminal.WriteLine("");
-            var choice = await terminal.GetInput("Your response: ");
+            var choice = await terminal.GetInput(Loc.Get("base.your_response"));
 
             var selectedOpt = encounter.Responses
                 .FirstOrDefault(o => o.Key.Equals(choice?.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -1062,7 +1070,7 @@ public abstract class BaseLocation
             }
             terminal.WriteLine("");
 
-            var input = await terminal.GetInput("Your choice: ");
+            var input = await GetChoice();
             var selected = stage.Choice.Options.FirstOrDefault(o =>
                 o.Key.Equals(input, StringComparison.OrdinalIgnoreCase));
 
@@ -1074,17 +1082,17 @@ public abstract class BaseLocation
                 if (selected.GoldCost > 0 && currentPlayer.Gold >= selected.GoldCost)
                 {
                     currentPlayer.Gold -= selected.GoldCost;
-                    terminal.WriteLine($"  (You paid {selected.GoldCost} gold)", "yellow");
+                    terminal.WriteLine(Loc.Get("base.you_paid_gold", selected.GoldCost), "yellow");
                 }
                 if (selected.Chivalry > 0)
                 {
                     currentPlayer.Chivalry += selected.Chivalry;
-                    terminal.WriteLine($"  (+{selected.Chivalry} Chivalry)", "bright_green");
+                    terminal.WriteLine(Loc.Get("base.plus_chivalry", selected.Chivalry), "bright_green");
                 }
                 if (selected.Darkness > 0)
                 {
                     currentPlayer.Darkness += selected.Darkness;
-                    terminal.WriteLine($"  (+{selected.Darkness} Darkness)", "dark_red");
+                    terminal.WriteLine(Loc.Get("base.plus_darkness", selected.Darkness), "dark_red");
                 }
             }
         }
@@ -1098,27 +1106,27 @@ public abstract class BaseLocation
             if (stage.Reward.ChivalryBonus > 0)
             {
                 currentPlayer.Chivalry += stage.Reward.ChivalryBonus;
-                terminal.WriteLine($"  +{stage.Reward.ChivalryBonus} Chivalry!");
+                terminal.WriteLine(Loc.Get("base.reward_chivalry", stage.Reward.ChivalryBonus));
             }
             if (stage.Reward.Wisdom > 0)
             {
                 currentPlayer.Wisdom += stage.Reward.Wisdom;
-                terminal.WriteLine($"  +{stage.Reward.Wisdom} Wisdom!");
+                terminal.WriteLine(Loc.Get("base.reward_wisdom", stage.Reward.Wisdom));
             }
             if (stage.Reward.Dexterity > 0)
             {
                 currentPlayer.Dexterity += stage.Reward.Dexterity;
-                terminal.WriteLine($"  +{stage.Reward.Dexterity} Dexterity!");
+                terminal.WriteLine(Loc.Get("base.reward_dexterity", stage.Reward.Dexterity));
             }
             if (stage.Reward.WaveFragment.HasValue)
             {
                 OceanPhilosophySystem.Instance.CollectFragment(stage.Reward.WaveFragment.Value);
-                terminal.WriteLine("  (A fragment of truth settles into your consciousness...)");
+                terminal.WriteLine(Loc.Get("base.fragment_truth"));
             }
             if (stage.Reward.AwakeningMoment.HasValue)
             {
                 OceanPhilosophySystem.Instance.ExperienceMoment(stage.Reward.AwakeningMoment.Value);
-                terminal.WriteLine("  (Something shifts in your understanding...)");
+                terminal.WriteLine(Loc.Get("base.something_shifts"));
             }
         }
 
@@ -1127,7 +1135,7 @@ public abstract class BaseLocation
         {
             OceanPhilosophySystem.Instance.GainInsight(stage.AwakeningGain * 10);
             terminal.SetColor("magenta");
-            terminal.WriteLine("  (A deeper understanding settles within you...)");
+            terminal.WriteLine(Loc.Get("base.deeper_understanding"));
         }
 
         // Apply gold loss if any
@@ -1136,7 +1144,7 @@ public abstract class BaseLocation
             var actualLoss = Math.Min(stage.GoldLost, currentPlayer.Gold);
             currentPlayer.Gold -= actualLoss;
             terminal.SetColor("red");
-            terminal.WriteLine($"  (-{actualLoss} gold)");
+            terminal.WriteLine(Loc.Get("base.minus_gold", actualLoss));
         }
 
         // Complete the stage
@@ -1199,16 +1207,16 @@ public abstract class BaseLocation
         // Show poison damage message with remaining turns
         terminal.SetColor("magenta");
         if (currentPlayer.PoisonTurns > 0)
-            terminal.WriteLine($"The poison courses through your veins! (-{totalDamage} HP, {currentPlayer.PoisonTurns} turns left)");
+            terminal.WriteLine(Loc.Get("base.poison_damage_turns", totalDamage, currentPlayer.PoisonTurns));
         else
-            terminal.WriteLine($"The poison courses through your veins! (-{totalDamage} HP)");
+            terminal.WriteLine(Loc.Get("base.poison_damage", totalDamage));
 
         // Check if player died from poison
         if (currentPlayer.HP <= 0)
         {
             currentPlayer.HP = 0;
             terminal.SetColor("red");
-            terminal.WriteLine("The poison has claimed your life!");
+            terminal.WriteLine(Loc.Get("base.poison_death"));
             await Task.Delay(1500);
         }
         else if (currentPlayer.PoisonTurns <= 0)
@@ -1216,7 +1224,7 @@ public abstract class BaseLocation
             // Poison has expired
             currentPlayer.Poison = 0;
             terminal.SetColor("green");
-            terminal.WriteLine("The poison has finally left your system!");
+            terminal.WriteLine(Loc.Get("base.poison_cleared"));
             await Task.Delay(800);
         }
         else
@@ -1377,39 +1385,39 @@ public abstract class BaseLocation
         {
             // Evil NPCs
             shouts.AddRange(new[] {
-                "glares at you menacingly",
-                "mutters a curse under their breath",
-                "eyes your gold pouch hungrily",
-                "spits on the ground as you pass",
-                "sharpens a dagger while watching you",
-                "laughs coldly",
-                "sneers at the weak",
+                Loc.Get("base.shout_evil_glare"),
+                Loc.Get("base.shout_evil_curse"),
+                Loc.Get("base.shout_evil_gold"),
+                Loc.Get("base.shout_evil_spit"),
+                Loc.Get("base.shout_evil_dagger"),
+                Loc.Get("base.shout_evil_laugh"),
+                Loc.Get("base.shout_evil_sneer"),
             });
         }
         else if (npc.Chivalry > 500)
         {
             // Good NPCs
             shouts.AddRange(new[] {
-                "nods respectfully",
-                "offers a friendly wave",
-                "shares news of their latest adventures",
-                "mentions a rumor they heard",
-                "practices sword forms gracefully",
-                "hums a cheerful tune",
-                "smiles warmly",
+                Loc.Get("base.shout_good_nod"),
+                Loc.Get("base.shout_good_wave"),
+                Loc.Get("base.shout_good_news"),
+                Loc.Get("base.shout_good_rumor"),
+                Loc.Get("base.shout_good_sword"),
+                Loc.Get("base.shout_good_hum"),
+                Loc.Get("base.shout_good_smile"),
             });
         }
         else
         {
             // Neutral NPCs
             shouts.AddRange(new[] {
-                "goes about their business",
-                "seems lost in thought",
-                "examines some merchandise",
-                "chats with a merchant",
-                "stretches after a long journey",
-                "counts their gold coins",
-                "yawns lazily",
+                Loc.Get("base.shout_neutral_business"),
+                Loc.Get("base.shout_neutral_thought"),
+                Loc.Get("base.shout_neutral_merchandise"),
+                Loc.Get("base.shout_neutral_chat"),
+                Loc.Get("base.shout_neutral_stretch"),
+                Loc.Get("base.shout_neutral_gold"),
+                Loc.Get("base.shout_neutral_yawn"),
             });
         }
 
@@ -1418,22 +1426,22 @@ public abstract class BaseLocation
         {
             case CharacterClass.Warrior:
             case CharacterClass.Barbarian:
-                shouts.Add("flexes their muscles");
-                shouts.Add("polishes their weapon");
+                shouts.Add(Loc.Get("base.shout_class_flex"));
+                shouts.Add(Loc.Get("base.shout_class_polish"));
                 break;
             case CharacterClass.Magician:
             case CharacterClass.Sage:
-                shouts.Add("reads from an ancient tome");
-                shouts.Add("mutters arcane words");
+                shouts.Add(Loc.Get("base.shout_class_tome"));
+                shouts.Add(Loc.Get("base.shout_class_arcane"));
                 break;
             case CharacterClass.Cleric:
             case CharacterClass.Paladin:
-                shouts.Add("offers a blessing");
-                shouts.Add("prays quietly");
+                shouts.Add(Loc.Get("base.shout_class_blessing"));
+                shouts.Add(Loc.Get("base.shout_class_pray"));
                 break;
             case CharacterClass.Assassin:
-                shouts.Add("watches from the shadows");
-                shouts.Add("tests the edge of a blade");
+                shouts.Add(Loc.Get("base.shout_class_shadows"));
+                shouts.Add(Loc.Get("base.shout_class_blade"));
                 break;
         }
 
@@ -1445,9 +1453,9 @@ public abstract class BaseLocation
     /// </summary>
     protected virtual string GetAlignmentDisplay(NPC npc)
     {
-        if (npc.Darkness > npc.Chivalry + 300) return "(Evil)";
-        if (npc.Chivalry > npc.Darkness + 300) return "(Good)";
-        return "(Neutral)";
+        if (npc.Darkness > npc.Chivalry + 300) return $"({Loc.Get("base.align_evil")})";
+        if (npc.Chivalry > npc.Darkness + 300) return $"({Loc.Get("base.align_good")})";
+        return $"({Loc.Get("base.align_neutral")})";
     }
 
     /// <summary>
@@ -1459,17 +1467,17 @@ public abstract class BaseLocation
     {
         return relationLevel switch
         {
-            <= GameConfig.RelationMarried => ("bright_red", "Married", "<3"),     // 10 - Married (red with heart)
-            <= GameConfig.RelationLove => ("bright_magenta", "In Love", "<3"),    // 20 - Love
-            <= GameConfig.RelationPassion => ("magenta", "Passionate", ""),        // 30 - Passion
-            <= GameConfig.RelationFriendship => ("bright_cyan", "Friends", ""),   // 40 - Friendship
-            <= GameConfig.RelationTrust => ("cyan", "Trusted", ""),               // 50 - Trust
-            <= GameConfig.RelationRespect => ("bright_green", "Respected", ""),   // 60 - Respect
-            <= GameConfig.RelationNormal => ("gray", "Neutral", ""),              // 70 - Normal/Neutral
-            <= GameConfig.RelationSuspicious => ("yellow", "Wary", ""),           // 80 - Suspicious
-            <= GameConfig.RelationAnger => ("bright_yellow", "Hostile", ""),      // 90 - Anger
-            <= GameConfig.RelationEnemy => ("red", "Enemy", ""),                  // 100 - Enemy
-            _ => ("dark_red", "Hated", "")                                        // 110+ - Hate
+            <= GameConfig.RelationMarried => ("bright_red", Loc.Get("base.rel_married"), "<3"),     // 10 - Married (red with heart)
+            <= GameConfig.RelationLove => ("bright_magenta", Loc.Get("base.rel_in_love"), "<3"),    // 20 - Love
+            <= GameConfig.RelationPassion => ("magenta", Loc.Get("base.rel_passionate"), ""),        // 30 - Passion
+            <= GameConfig.RelationFriendship => ("bright_cyan", Loc.Get("base.rel_friends"), ""),   // 40 - Friendship
+            <= GameConfig.RelationTrust => ("cyan", Loc.Get("base.rel_trusted"), ""),               // 50 - Trust
+            <= GameConfig.RelationRespect => ("bright_green", Loc.Get("base.rel_respected"), ""),   // 60 - Respect
+            <= GameConfig.RelationNormal => ("gray", Loc.Get("base.rel_neutral"), ""),              // 70 - Normal/Neutral
+            <= GameConfig.RelationSuspicious => ("yellow", Loc.Get("base.rel_wary"), ""),           // 80 - Suspicious
+            <= GameConfig.RelationAnger => ("bright_yellow", Loc.Get("base.rel_hostile"), ""),      // 90 - Anger
+            <= GameConfig.RelationEnemy => ("red", Loc.Get("base.rel_enemy"), ""),                  // 100 - Enemy
+            _ => ("dark_red", Loc.Get("base.rel_hated"), "")                                        // 110+ - Hate
         };
     }
 
@@ -1497,7 +1505,7 @@ public abstract class BaseLocation
         if (visibleNPCs.Count > 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You notice:");
+            terminal.WriteLine(Loc.Get("base.you_notice"));
 
             foreach (var npc in visibleNPCs.Take(3))
             {
@@ -1523,7 +1531,7 @@ public abstract class BaseLocation
             if (otherCount > 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  ... and {otherCount} other{(otherCount == 1 ? "" : "s")} going about their business.");
+                terminal.WriteLine($"  {Loc.Get("base.others_going_about", otherCount)}");
             }
 
             terminal.WriteLine("");
@@ -1541,63 +1549,63 @@ public abstract class BaseLocation
         {
             GameLocation.TheInn or GameLocation.BobsBeer => _npcRandom.Next(3) switch
             {
-                0 => "nursing a drink at the bar",
-                1 => "chatting with the other patrons",
-                _ => "sitting alone at a corner table"
+                0 => Loc.Get("base.activity_inn_drink"),
+                1 => Loc.Get("base.activity_inn_chat"),
+                _ => Loc.Get("base.activity_inn_corner")
             },
             GameLocation.Church => _npcRandom.Next(3) switch
             {
-                0 => "praying quietly",
-                1 => "lighting a candle at the altar",
-                _ => "speaking with one of the priests"
+                0 => Loc.Get("base.activity_church_pray"),
+                1 => Loc.Get("base.activity_church_candle"),
+                _ => Loc.Get("base.activity_church_priest")
             },
             GameLocation.WeaponShop => _npcRandom.Next(3) switch
             {
-                0 => "examining a blade on the wall",
-                1 => "testing the weight of a mace",
-                _ => "haggling over prices"
+                0 => Loc.Get("base.activity_weapon_blade"),
+                1 => Loc.Get("base.activity_weapon_mace"),
+                _ => Loc.Get("base.activity_weapon_haggle")
             },
             GameLocation.ArmorShop => _npcRandom.Next(3) switch
             {
-                0 => "trying on a pair of gauntlets",
-                1 => "inspecting a shield",
-                _ => "admiring a suit of chainmail"
+                0 => Loc.Get("base.activity_armor_gauntlets"),
+                1 => Loc.Get("base.activity_armor_shield"),
+                _ => Loc.Get("base.activity_armor_chainmail")
             },
             GameLocation.MagicShop => _npcRandom.Next(3) switch
             {
-                0 => "studying a scroll with interest",
-                1 => "peering into a crystal ball",
-                _ => "sniffing a suspicious potion"
+                0 => Loc.Get("base.activity_magic_scroll"),
+                1 => Loc.Get("base.activity_magic_crystal"),
+                _ => Loc.Get("base.activity_magic_potion")
             },
             GameLocation.AuctionHouse => _npcRandom.Next(3) switch
             {
-                0 => "bidding on an auction",
-                1 => "browsing the auction listings",
-                _ => "appraising items for sale"
+                0 => Loc.Get("base.activity_auction_bid"),
+                1 => Loc.Get("base.activity_auction_browse"),
+                _ => Loc.Get("base.activity_auction_appraise")
             },
             GameLocation.Healer => _npcRandom.Next(2) switch
             {
-                0 => "browsing the healing potions",
-                _ => "waiting to see the healer"
+                0 => Loc.Get("base.activity_healer_potions"),
+                _ => Loc.Get("base.activity_healer_waiting")
             },
             GameLocation.MainStreet => _npcRandom.Next(4) switch
             {
-                0 => "strolling down the street",
-                1 => "leaning against a wall, watching passers-by",
-                2 => "talking with a friend",
-                _ => "going about their business"
+                0 => Loc.Get("base.activity_street_stroll"),
+                1 => Loc.Get("base.activity_street_lean"),
+                2 => Loc.Get("base.activity_street_talk"),
+                _ => Loc.Get("base.activity_street_business")
             },
             GameLocation.DarkAlley => _npcRandom.Next(3) switch
             {
-                0 => "lurking in the shadows",
-                1 => "whispering to a hooded figure",
-                _ => "keeping a watchful eye on the alley"
+                0 => Loc.Get("base.activity_alley_lurk"),
+                1 => Loc.Get("base.activity_alley_whisper"),
+                _ => Loc.Get("base.activity_alley_watch")
             },
             GameLocation.Castle => _npcRandom.Next(3) switch
             {
-                0 => "attending to court business",
-                1 => "standing guard near the throne room",
-                _ => "speaking with a courtier"
+                0 => Loc.Get("base.activity_castle_court"),
+                1 => Loc.Get("base.activity_castle_guard"),
+                _ => Loc.Get("base.activity_castle_courtier")
             },
             _ => GetNPCShout(npc) // Fallback to the old system
         };
@@ -1632,7 +1640,7 @@ public abstract class BaseLocation
         if (LocationActions.Count > 0)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("Available actions:");
+            terminal.WriteLine(Loc.Get("base.available_actions"));
             
             for (int i = 0; i < LocationActions.Count; i++)
             {
@@ -1650,7 +1658,7 @@ public abstract class BaseLocation
         if (PossibleExits.Count > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Exits:");
+            terminal.WriteLine(Loc.Get("base.exits"));
             
             foreach (var exit in PossibleExits)
             {
@@ -1668,7 +1676,7 @@ public abstract class BaseLocation
     protected virtual void ShowBreadcrumb()
     {
         terminal.SetColor("gray");
-        terminal.Write("Location: ");
+        terminal.Write(Loc.Get("base.location_label") + " ");
         terminal.SetColor("bright_cyan");
 
         // Build breadcrumb path based on current location
@@ -1687,31 +1695,31 @@ public abstract class BaseLocation
         switch (LocationId)
         {
             case GameLocation.MainStreet:
-                return "Main Street";
+                return Loc.Get("base.bc_main_street");
             case GameLocation.Home:
-                return "Anchor Road > Your Home";
+                return Loc.Get("base.bc_home");
             case GameLocation.AnchorRoad:
-                return "Main Street > Anchor Road";
+                return Loc.Get("base.bc_anchor_road");
             case GameLocation.WeaponShop:
-                return "Main Street > Weapon Shop";
+                return Loc.Get("base.bc_weapon_shop");
             case GameLocation.ArmorShop:
-                return "Main Street > Armor Shop";
+                return Loc.Get("base.bc_armor_shop");
             case GameLocation.MagicShop:
-                return "Main Street > Magic Shop";
+                return Loc.Get("base.bc_magic_shop");
             case GameLocation.TheInn:
-                return "Main Street > The Inn";
+                return Loc.Get("base.bc_the_inn");
             case GameLocation.DarkAlley:
-                return "Main Street > Dark Alley";
+                return Loc.Get("base.bc_dark_alley");
             case GameLocation.Church:
-                return "Main Street > Church";
+                return Loc.Get("base.bc_church");
             case GameLocation.Bank:
-                return "Main Street > Bank";
+                return Loc.Get("base.bc_bank");
             case GameLocation.Castle:
-                return "Main Street > Royal Castle";
+                return Loc.Get("base.bc_castle");
             case GameLocation.Prison:
-                return "Anchor Road > Outside Prison";
+                return Loc.Get("base.bc_prison");
             default:
-                return Name ?? "Unknown";
+                return Name ?? Loc.Get("base.bc_unknown");
         }
     }
 
@@ -1724,8 +1732,8 @@ public abstract class BaseLocation
         {
             // Screen reader: plain labeled text, one stat per line
             string resource = currentPlayer.IsManaClass
-                ? $"Mana: {currentPlayer.Mana}/{currentPlayer.MaxMana}"
-                : $"Stamina: {currentPlayer.CurrentCombatStamina}/{currentPlayer.MaxCombatStamina}";
+                ? $"{Loc.Get("status.mana")}: {currentPlayer.Mana}/{currentPlayer.MaxMana}"
+                : $"{Loc.Get("status.stamina")}: {currentPlayer.CurrentCombatStamina}/{currentPlayer.MaxCombatStamina}";
             string xpInfo = "";
             if (currentPlayer.Level < GameConfig.MaxLevel)
             {
@@ -1736,17 +1744,17 @@ public abstract class BaseLocation
                 long xpNeeded = nextLevelXP - prevLevelXP;
                 int xpPercent = xpNeeded > 0 ? (int)((xpIntoLevel * 100) / xpNeeded) : 0;
                 xpPercent = Math.Clamp(xpPercent, 0, 100);
-                xpInfo = $", XP: {xpPercent}% to next level";
+                xpInfo = $", {Loc.Get("status.xp_to_next", xpPercent)}";
             }
             terminal.SetColor("white");
-            terminal.WriteLine($"HP: {currentPlayer.HP}/{currentPlayer.MaxHP}, Gold: {currentPlayer.Gold:N0}, {resource}, Level {currentPlayer.Level}{xpInfo}");
+            terminal.WriteLine($"{Loc.Get("status.hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP}, {Loc.Get("status.gold_label")}: {currentPlayer.Gold:N0}, {resource}, {Loc.Get("ui.level")} {currentPlayer.Level}{xpInfo}");
             terminal.WriteLine("");
         }
         else
         {
         // HP with urgency coloring
         terminal.SetColor("gray");
-        terminal.Write("HP: ");
+        terminal.Write($"{Loc.Get("status.hp")}: ");
         float hpPercent = currentPlayer.MaxHP > 0 ? (float)currentPlayer.HP / currentPlayer.MaxHP : 0;
         string hpColor = hpPercent > 0.5f ? "bright_green" : hpPercent > 0.25f ? "yellow" : "bright_red";
         terminal.SetColor(hpColor);
@@ -1757,14 +1765,14 @@ public abstract class BaseLocation
         terminal.Write($"{currentPlayer.MaxHP}");
 
         terminal.SetColor("gray");
-        terminal.Write(" | Gold: ");
+        terminal.Write($" | {Loc.Get("status.gold_label")}: ");
         terminal.SetColor("yellow");
         terminal.Write($"{currentPlayer.Gold:N0}");
 
         if (currentPlayer.IsManaClass)
         {
             terminal.SetColor("gray");
-            terminal.Write(" | Mana: ");
+            terminal.Write($" | {Loc.Get("status.mp")}: ");
             terminal.SetColor("blue");
             terminal.Write($"{currentPlayer.Mana}");
             terminal.SetColor("gray");
@@ -1775,7 +1783,7 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.Write(" | Stamina: ");
+            terminal.Write($" | {Loc.Get("status.sta")}: ");
             terminal.SetColor("yellow");
             terminal.Write($"{currentPlayer.CurrentCombatStamina}");
             terminal.SetColor("gray");
@@ -1785,7 +1793,7 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("gray");
-        terminal.Write(" | Lv ");
+        terminal.Write($" | {Loc.Get("ui.level")} ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Level}");
 
@@ -1839,14 +1847,14 @@ public abstract class BaseLocation
         {
             // Screen reader: plain text list without decorative brackets or divider
             terminal.SetColor("white");
-            terminal.Write("Quick Commands: S Status, ");
+            terminal.Write($"{Loc.Get("ui.quick_commands")}: S {Loc.Get("menu.action.status")}, ");
             if (LocationId != GameLocation.MainStreet)
-                terminal.Write("R Return, ");
-            terminal.Write("* Inventory, ? Help, ");
+                terminal.Write($"R {Loc.Get("ui.return")}, ");
+            terminal.Write($"* {Loc.Get("menu.action.inventory")}, ? {Loc.Get("menu.action.help")}, ");
             var srNpcsHere = GetLiveNPCsAtLocation();
             if (srNpcsHere.Count > 0)
-                terminal.Write($"0 Talk ({srNpcsHere.Count}), ");
-            terminal.Write("~ Prefs, / Commands, ! Bug Report");
+                terminal.Write($"0 {Loc.Get("ui.talk")} ({srNpcsHere.Count}), ");
+            terminal.Write($"~ {Loc.Get("menu.action.preferences")}, / {Loc.Get("ui.commands")}, ! {Loc.Get("menu.action.report_bug")}");
             terminal.WriteLine("");
             terminal.WriteLine("");
             return;
@@ -1857,7 +1865,7 @@ public abstract class BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.Write("Quick Commands: ");
+        terminal.Write($"{Loc.Get("ui.quick_commands")}: ");
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -1866,7 +1874,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("tatus  ");
+        terminal.Write(Loc.Get("base.qc_status_suffix") + "  ");
 
         if (LocationId != GameLocation.MainStreet)
         {
@@ -1877,7 +1885,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("eturn  ");
+            terminal.Write(Loc.Get("base.qc_return_suffix") + "  ");
         }
 
         terminal.SetColor("darkgray");
@@ -1887,7 +1895,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("Inventory  ");
+        terminal.Write(Loc.Get("base.qc_inventory") + "  ");
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -1896,7 +1904,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("Help  ");
+        terminal.Write(Loc.Get("base.qc_help") + "  ");
 
         // Show Talk option if NPCs are present
         var npcsHere = GetLiveNPCsAtLocation();
@@ -1909,7 +1917,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write($" Talk ({npcsHere.Count})  ");
+            terminal.Write($" {Loc.Get("base.qc_talk")} ({npcsHere.Count})  ");
         }
 
         // Show Preferences option
@@ -1920,7 +1928,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("Prefs  ");
+        terminal.Write(Loc.Get("base.qc_prefs") + "  ");
 
         // Show slash commands hint
         terminal.SetColor("darkgray");
@@ -1930,7 +1938,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("Cmds  ");
+        terminal.Write(Loc.Get("base.qc_cmds") + "  ");
 
         // Show bug report hint
         terminal.SetColor("darkgray");
@@ -1940,7 +1948,7 @@ public abstract class BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write("Bug");
+        terminal.Write(Loc.Get("base.qc_bug"));
 
         terminal.WriteLine("");
         terminal.WriteLine("");
@@ -1982,14 +1990,14 @@ public abstract class BaseLocation
         if (liveNPCs.Count > 0)
         {
             terminal.SetColor("gray");
-            terminal.Write(" You notice: ");
+            terminal.Write($" {Loc.Get("base.you_notice")}: ");
             terminal.SetColor("cyan");
             var names = liveNPCs.Take(2).Select(n => n.Name2).ToList();
             terminal.Write(string.Join(", ", names));
             if (liveNPCs.Count > 2)
             {
                 terminal.SetColor("gray");
-                terminal.Write($", +{liveNPCs.Count - 2} more");
+                terminal.Write($", +{liveNPCs.Count - 2} {Loc.Get("base.more")}");
             }
             terminal.WriteLine("");
         }
@@ -2001,30 +2009,30 @@ public abstract class BaseLocation
     protected void ShowBBSStatusLine()
     {
         terminal.SetColor("gray");
-        terminal.Write(" HP:");
+        terminal.Write($" {Loc.Get("status.hp")}:");
         float hpPct = currentPlayer.MaxHP > 0 ? (float)currentPlayer.HP / currentPlayer.MaxHP : 0;
         terminal.SetColor(hpPct > 0.5f ? "bright_green" : hpPct > 0.25f ? "yellow" : "bright_red");
         terminal.Write($"{currentPlayer.HP}/{currentPlayer.MaxHP}");
         terminal.SetColor("gray");
-        terminal.Write(" Gold:");
+        terminal.Write($" {Loc.Get("status.gold_label")}:");
         terminal.SetColor("yellow");
         terminal.Write($"{currentPlayer.Gold:N0}");
         if (currentPlayer.IsManaClass)
         {
             terminal.SetColor("gray");
-            terminal.Write(" Mana:");
+            terminal.Write($" {Loc.Get("status.mp")}:");
             terminal.SetColor("blue");
             terminal.Write($"{currentPlayer.Mana}/{currentPlayer.MaxMana}");
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.Write(" ST:");
+            terminal.Write($" {Loc.Get("status.sta")}:");
             terminal.SetColor("yellow");
             terminal.Write($"{currentPlayer.CurrentCombatStamina}/{currentPlayer.MaxCombatStamina}");
         }
         terminal.SetColor("gray");
-        terminal.Write(" Lv:");
+        terminal.Write($" {Loc.Get("base.lv_label")}:");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Level}");
         if (currentPlayer.Level < GameConfig.MaxLevel)
@@ -2049,18 +2057,18 @@ public abstract class BaseLocation
         var npcsHere = GetLiveNPCsAtLocation();
         terminal.SetColor("darkgray");
         terminal.Write(" ["); terminal.SetColor("bright_yellow"); terminal.Write("S"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("tatus ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("base.qc_status_suffix") + " ");
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("*"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Inv ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("base.qc_inv") + " ");
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("?"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Help ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("base.qc_help") + " ");
         if (npcsHere.Count > 0)
         {
             terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("0"); terminal.SetColor("darkgray"); terminal.Write("]");
-            terminal.SetColor("white"); terminal.Write($"Talk({npcsHere.Count}) ");
+            terminal.SetColor("white"); terminal.Write($" {Loc.Get("base.qc_talk")} ({npcsHere.Count}) ");
         }
         terminal.SetColor("darkgray"); terminal.Write("["); terminal.SetColor("bright_yellow"); terminal.Write("~"); terminal.SetColor("darkgray"); terminal.Write("]");
-        terminal.SetColor("white"); terminal.Write("Prefs ");
+        terminal.SetColor("white"); terminal.Write(Loc.Get("base.qc_prefs") + " ");
         terminal.WriteLine("");
     }
 
@@ -2115,12 +2123,12 @@ public abstract class BaseLocation
             terminal.Write($"{promptName}", "bright_white");
             terminal.Write(" | ", "darkgray");
             terminal.Write("look", "bright_yellow");
-            terminal.Write(" to redraw", "darkgray");
+            terminal.Write($" {Loc.Get("base.mud_to_redraw")}", "darkgray");
             terminal.Write(" > ", "bright_white");
             return await terminal.GetInput("");
         }
         terminal.SetColor("bright_white");
-        return await terminal.GetInput("Your choice: ");
+        return await GetChoice();
     }
 
     /// <summary>
@@ -2301,21 +2309,21 @@ public abstract class BaseLocation
                     currentPlayer.Poison = 0;
                     currentPlayer.PoisonTurns = 0;
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("You drink an antidote — the poison drains from your body!");
+                    terminal.WriteLine(Loc.Get("base.antidote_used"));
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"Antidotes remaining: {currentPlayer.Antidotes}/{currentPlayer.MaxAntidotes}");
+                    terminal.WriteLine(Loc.Get("base.antidotes_remaining", currentPlayer.Antidotes, currentPlayer.MaxAntidotes));
                     await Task.Delay(1500);
                 }
                 else if (currentPlayer.Antidotes > 0)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("You're not poisoned.");
+                    terminal.WriteLine(Loc.Get("base.not_poisoned"));
                     await Task.Delay(1000);
                 }
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("You don't have any antidotes. Buy them from dungeon merchants or the healer.");
+                    terminal.WriteLine(Loc.Get("base.no_antidotes"));
                     await Task.Delay(1000);
                 }
                 return (true, false);
@@ -2333,7 +2341,7 @@ public abstract class BaseLocation
                 else
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  Mail is only available in online mode.");
+                    terminal.WriteLine($"  {Loc.Get("base.online_only_mail")}");
                     await Task.Delay(1500);
                 }
                 return (true, false);
@@ -2347,7 +2355,7 @@ public abstract class BaseLocation
                 else
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  Trading is only available in online mode.");
+                    terminal.WriteLine($"  {Loc.Get("base.online_only_trade")}");
                     await Task.Delay(1500);
                 }
                 return (true, false);
@@ -2359,7 +2367,7 @@ public abstract class BaseLocation
                 else
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  Bounties are only available in online mode.");
+                    terminal.WriteLine($"  {Loc.Get("base.online_only_bounties")}");
                     await Task.Delay(1500);
                 }
                 return (true, false);
@@ -2372,7 +2380,7 @@ public abstract class BaseLocation
                 else
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  The Auction House is only available in online mode.");
+                    terminal.WriteLine($"  {Loc.Get("base.online_only_auction")}");
                     await Task.Delay(1500);
                 }
                 return (true, false);
@@ -2391,7 +2399,7 @@ public abstract class BaseLocation
                 else
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  World Boss is only available in online mode.");
+                    terminal.WriteLine($"  {Loc.Get("base.online_only_boss")}");
                     await Task.Delay(1500);
                 }
                 return (true, false);
@@ -2407,8 +2415,8 @@ public abstract class BaseLocation
                 currentPlayer.CompactMode = !currentPlayer.CompactMode;
                 GameConfig.CompactMode = currentPlayer.CompactMode;
                 terminal.WriteLine(currentPlayer.CompactMode
-                    ? "  Compact Mode ENABLED - menus optimized for mobile/small screens."
-                    : "  Compact Mode DISABLED - full-size menus restored.", "green");
+                    ? $"  {Loc.Get("base.compact_enabled")}"
+                    : $"  {Loc.Get("base.compact_disabled")}", "green");
                 await GameEngine.Instance.SaveCurrentGame();
                 await Task.Delay(1000);
                 return (true, false);
@@ -2416,9 +2424,9 @@ public abstract class BaseLocation
             default:
                 terminal.WriteLine("");
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Unknown command: /{command}");
+                terminal.WriteLine($"  {Loc.Get("base.unknown_command", command)}");
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Type /help or just / for a list of commands.");
+                terminal.WriteLine($"  {Loc.Get("base.type_help")}");
                 terminal.WriteLine("");
                 await terminal.PressAnyKey();
                 return (true, false);
@@ -2451,10 +2459,13 @@ public abstract class BaseLocation
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write("                           QUICK COMMANDS"); }, 40);
+        var helpTitle = Loc.Get("base.quick_commands");
+        int helpTitlePad = (78 - helpTitle.Length) / 2;
+        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write(new string(' ', helpTitlePad) + helpTitle); }, helpTitlePad + helpTitle.Length);
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("╠══════════════════════════════════════════════════════════════════════════════╣");
-        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write("  These commands work from any location:"); }, 39);
+        var helpSubtitle = "  " + Loc.Get("base.help_commands_work");
+        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write(helpSubtitle); }, helpSubtitle.Length);
         WriteBoxLine(() => { }, 0);
 
         // Slash commands with aliases
@@ -2485,26 +2496,27 @@ public abstract class BaseLocation
             }, 18 + 1 + desc.Length + 1);
         }
 
-        WriteCmdAlias("/stats", "/s", "- View your character stats");
-        WriteCmdAlias("/inventory", "/i", "- View your inventory");
-        WriteCmdAlias("/quests", "/q", "- View active quests");
-        WriteCmdAlias("/gold", "/g", "- Show gold and bank balance");
-        WriteCmdAlias("/health", "/hp", "- Show health and mana status");
-        WriteCmdAlias("/gear", "/eq", "- Show detailed equipment and bonuses (yours or team)");
-        WriteCmdAlias("/potion", "/pot", "- Use a healing potion");
-        WriteCmdAlias("/herb", "/j", "- Use an herb from your pouch");
-        WriteCmdAlias("/materials", "/mat", "- View crafting materials");
-        WriteCmdAlias("/time", "/t", "- Show current time of day");
-        WriteCmdAlias("/prefs", "/p", "- Open preferences menu");
-        WriteCmd("/mail", "- Open your mailbox (online)");
-        WriteCmd("/trade", "- View trade packages (online)");
-        WriteCmd("/auction", "- Buy and sell items (Auction House)");
-        WriteCmd("/boss", "- World Boss status and combat (online)");
-        WriteCmd("/compact", "- Toggle compact mode (mobile/small screens)");
-        WriteCmd("/bug", "- Report a bug (opens GitHub)");
+        WriteCmdAlias("/stats", "/s", Loc.Get("base.help_stats"));
+        WriteCmdAlias("/inventory", "/i", Loc.Get("base.help_inventory"));
+        WriteCmdAlias("/quests", "/q", Loc.Get("base.help_quests"));
+        WriteCmdAlias("/gold", "/g", Loc.Get("base.help_gold"));
+        WriteCmdAlias("/health", "/hp", Loc.Get("base.help_health"));
+        WriteCmdAlias("/gear", "/eq", Loc.Get("base.help_gear"));
+        WriteCmdAlias("/potion", "/pot", Loc.Get("base.help_potion"));
+        WriteCmdAlias("/herb", "/j", Loc.Get("base.help_herb"));
+        WriteCmdAlias("/materials", "/mat", Loc.Get("base.help_materials"));
+        WriteCmdAlias("/time", "/t", Loc.Get("base.help_time"));
+        WriteCmdAlias("/prefs", "/p", Loc.Get("base.help_prefs"));
+        WriteCmd("/mail", Loc.Get("base.help_mail"));
+        WriteCmd("/trade", Loc.Get("base.help_trade"));
+        WriteCmd("/auction", Loc.Get("base.help_auction"));
+        WriteCmd("/boss", Loc.Get("base.help_boss"));
+        WriteCmd("/compact", Loc.Get("base.help_compact"));
+        WriteCmd("/bug", Loc.Get("base.help_bug"));
 
         WriteBoxLine(() => { }, 0);
-        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write("  Quick keys (single character):"); }, 31);
+        var quickKeysLabel = "  " + Loc.Get("base.help_quick_keys");
+        WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write(quickKeysLabel); }, quickKeysLabel.Length);
 
         void WriteQuickKey(string key, string desc)
         {
@@ -2517,17 +2529,18 @@ public abstract class BaseLocation
             }, 2 + 1 + desc.Length + 1);
         }
 
-        WriteQuickKey("*", "- Inventory");
-        WriteQuickKey("~", "- Preferences");
-        WriteQuickKey("S", "- Status");
-        WriteQuickKey("?", "- This help");
-        WriteQuickKey("!", "- Report bug");
+        WriteQuickKey("*", Loc.Get("base.help_key_inventory"));
+        WriteQuickKey("~", Loc.Get("base.help_key_prefs"));
+        WriteQuickKey("S", Loc.Get("base.help_key_status"));
+        WriteQuickKey("?", Loc.Get("base.help_key_help"));
+        WriteQuickKey("!", Loc.Get("base.help_key_bug"));
 
         // Online/MUD chat commands
         if (UsurperRemake.Server.SessionContext.IsActive || OnlineChatSystem.IsActive)
         {
             WriteBoxLine(() => { }, 0);
-            WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write("  Online commands:"); }, 18);
+            var onlineCmdsLabel = "  " + Loc.Get("base.help_online_commands");
+            WriteBoxLine(() => { terminal.SetColor("white"); terminal.Write(onlineCmdsLabel); }, onlineCmdsLabel.Length);
 
             void WriteOnlineCmd(string cmd, string desc)
             {
@@ -2540,12 +2553,12 @@ public abstract class BaseLocation
                 }, 20 + 1 + desc.Length + 1);
             }
 
-            WriteOnlineCmd("/say <msg>", "- Chat to players at your location");
-            WriteOnlineCmd("/shout <msg>", "- Shout to all online players");
-            WriteOnlineCmd("/tell <name> <msg>", "- Private message to a player");
-            WriteOnlineCmd("/emote <action>", "- Emote (e.g. /emote waves hello)");
-            WriteOnlineCmd("/who", "- See who's online");
-            WriteOnlineCmd("/gossip <msg>", "- Global out-of-character chat (/gos)");
+            WriteOnlineCmd("/say <msg>", Loc.Get("base.help_say"));
+            WriteOnlineCmd("/shout <msg>", Loc.Get("base.help_shout"));
+            WriteOnlineCmd("/tell <name> <msg>", Loc.Get("base.help_tell"));
+            WriteOnlineCmd("/emote <action>", Loc.Get("base.help_emote"));
+            WriteOnlineCmd("/who", Loc.Get("base.help_who"));
+            WriteOnlineCmd("/gossip <msg>", Loc.Get("base.help_gossip"));
         }
 
         terminal.SetColor("bright_cyan");
@@ -2558,45 +2571,45 @@ public abstract class BaseLocation
     /// <summary>
     private async Task ShowQuickCommandsHelpSR()
     {
-        WriteSectionHeader("QUICK COMMANDS", "white");
+        WriteSectionHeader(Loc.Get("base.quick_commands"), "white");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("These commands work from any location:");
+        terminal.WriteLine(Loc.Get("base.help_commands_work"));
         terminal.WriteLine("");
-        terminal.WriteLine("/stats or /s - View your character stats");
-        terminal.WriteLine("/inventory or /i - View your inventory");
-        terminal.WriteLine("/quests or /q - View active quests");
-        terminal.WriteLine("/gold or /g - Show gold and bank balance");
-        terminal.WriteLine("/health or /hp - Show health and mana status");
-        terminal.WriteLine("/potion or /pot - Use a healing potion");
-        terminal.WriteLine("/herb or /j - Use an herb from your pouch");
-        terminal.WriteLine("/materials or /mat - View crafting materials");
-        terminal.WriteLine("/time or /t - Show current time of day");
-        terminal.WriteLine("/prefs or /p - Open preferences menu");
-        terminal.WriteLine("/mail - Open your mailbox (online)");
-        terminal.WriteLine("/trade - View trade packages (online)");
-        terminal.WriteLine("/auction - Buy and sell items (Auction House)");
-        terminal.WriteLine("/boss - World Boss status and combat (online)");
-        terminal.WriteLine("/compact - Toggle compact mode");
-        terminal.WriteLine("/bug - Report a bug");
+        terminal.WriteLine($"/stats or /s {Loc.Get("base.help_stats")}");
+        terminal.WriteLine($"/inventory or /i {Loc.Get("base.help_inventory")}");
+        terminal.WriteLine($"/quests or /q {Loc.Get("base.help_quests")}");
+        terminal.WriteLine($"/gold or /g {Loc.Get("base.help_gold")}");
+        terminal.WriteLine($"/health or /hp {Loc.Get("base.help_health")}");
+        terminal.WriteLine($"/potion or /pot {Loc.Get("base.help_potion")}");
+        terminal.WriteLine($"/herb or /j {Loc.Get("base.help_herb")}");
+        terminal.WriteLine($"/materials or /mat {Loc.Get("base.help_materials")}");
+        terminal.WriteLine($"/time or /t {Loc.Get("base.help_time")}");
+        terminal.WriteLine($"/prefs or /p {Loc.Get("base.help_prefs")}");
+        terminal.WriteLine($"/mail {Loc.Get("base.help_mail")}");
+        terminal.WriteLine($"/trade {Loc.Get("base.help_trade")}");
+        terminal.WriteLine($"/auction {Loc.Get("base.help_auction")}");
+        terminal.WriteLine($"/boss {Loc.Get("base.help_boss")}");
+        terminal.WriteLine($"/compact {Loc.Get("base.help_compact")}");
+        terminal.WriteLine($"/bug {Loc.Get("base.help_bug")}");
         terminal.WriteLine("");
-        terminal.WriteLine("Quick keys (single character):");
-        terminal.WriteLine("* - Inventory");
-        terminal.WriteLine("~ - Preferences");
-        terminal.WriteLine("S - Status");
-        terminal.WriteLine("? - This help");
-        terminal.WriteLine("! - Report bug");
+        terminal.WriteLine(Loc.Get("base.help_quick_keys"));
+        terminal.WriteLine($"* {Loc.Get("base.help_key_inventory")}");
+        terminal.WriteLine($"~ {Loc.Get("base.help_key_prefs")}");
+        terminal.WriteLine($"S {Loc.Get("base.help_key_status")}");
+        terminal.WriteLine($"? {Loc.Get("base.help_key_help")}");
+        terminal.WriteLine($"! {Loc.Get("base.help_key_bug")}");
 
         if (UsurperRemake.Server.SessionContext.IsActive || OnlineChatSystem.IsActive)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Online commands:");
-            terminal.WriteLine("/say <msg> - Chat to players at your location");
-            terminal.WriteLine("/shout <msg> - Shout to all online players");
-            terminal.WriteLine("/tell <name> <msg> - Private message to a player");
-            terminal.WriteLine("/emote <action> - Emote");
-            terminal.WriteLine("/who - See who's online");
-            terminal.WriteLine("/gossip <msg> - Global out-of-character chat");
+            terminal.WriteLine(Loc.Get("base.help_online_commands"));
+            terminal.WriteLine($"/say <msg> {Loc.Get("base.help_say")}");
+            terminal.WriteLine($"/shout <msg> {Loc.Get("base.help_shout")}");
+            terminal.WriteLine($"/tell <name> <msg> {Loc.Get("base.help_tell")}");
+            terminal.WriteLine($"/emote <action> {Loc.Get("base.help_emote")}");
+            terminal.WriteLine($"/who {Loc.Get("base.help_who")}");
+            terminal.WriteLine($"/gossip <msg> {Loc.Get("base.help_gossip")}");
         }
 
         terminal.WriteLine("");
@@ -2608,7 +2621,7 @@ public abstract class BaseLocation
     protected virtual async Task ShowActiveQuests()
     {
         terminal.WriteLine("");
-        WriteBoxHeader("ACTIVE QUESTS", "bright_magenta");
+        WriteBoxHeader(Loc.Get("base.active_quests"), "bright_magenta");
 
         var playerName = currentPlayer?.Name2 ?? currentPlayer?.DisplayName ?? "";
         var activeQuests = QuestSystem.GetActiveQuestsForPlayer(playerName);
@@ -2616,14 +2629,14 @@ public abstract class BaseLocation
         if (activeQuests == null || activeQuests.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No active quests. Visit the Castle or talk to NPCs to find quests.");
+            terminal.WriteLine($"  {Loc.Get("base.no_active_quests")}");
         }
         else
         {
             foreach (var quest in activeQuests.Take(5)) // Show up to 5 quests
             {
                 terminal.SetColor("bright_yellow");
-                terminal.Write($"  • {quest.Title ?? "Unknown Quest"}");
+                terminal.Write($"  • {quest.Title ?? Loc.Get("base.unknown_quest")}");
                 terminal.SetColor("gray");
                 terminal.WriteLine($" - {quest.GetTargetDescription()}");
             }
@@ -2631,7 +2644,7 @@ public abstract class BaseLocation
             if (activeQuests.Count > 5)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  ... and {activeQuests.Count - 5} more quests.");
+                terminal.WriteLine($"  {Loc.Get("base.more_quests", activeQuests.Count - 5)}");
             }
         }
 
@@ -2645,7 +2658,7 @@ public abstract class BaseLocation
     protected async Task ShowMaterials()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("CRAFTING MATERIALS", "bright_magenta");
+        WriteBoxHeader(Loc.Get("base.crafting_materials"), "bright_magenta");
         terminal.WriteLine("");
 
         bool hasAny = false;
@@ -2664,7 +2677,7 @@ public abstract class BaseLocation
                 terminal.SetColor("gray");
                 terminal.WriteLine($"  — {matDef.Description}");
                 terminal.SetColor("darkgray");
-                terminal.WriteLine($"    Found on dungeon floors {matDef.FloorMin}-{matDef.FloorMax}");
+                terminal.WriteLine($"    {Loc.Get("base.mat_found_floors", matDef.FloorMin, matDef.FloorMax)}");
                 terminal.WriteLine("");
             }
         }
@@ -2672,12 +2685,12 @@ public abstract class BaseLocation
         if (!hasAny)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You have no crafting materials.");
+            terminal.WriteLine($"  {Loc.Get("base.no_materials")}");
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("  Rare materials can be found in the dungeon depths.");
-            terminal.WriteLine("  Defeat monsters, open treasure chests, and challenge Old Gods");
-            terminal.WriteLine("  to collect materials needed for powerful enchantments.");
+            terminal.WriteLine($"  {Loc.Get("base.materials_hint1")}");
+            terminal.WriteLine($"  {Loc.Get("base.materials_hint2")}");
+            terminal.WriteLine($"  {Loc.Get("base.materials_hint3")}");
         }
 
         terminal.WriteLine("");
@@ -2691,18 +2704,18 @@ public abstract class BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.Write("  Gold on Hand: ");
+        terminal.Write($"  {Loc.Get("base.gold_on_hand")}: ");
         terminal.SetColor("white");
         terminal.WriteLine($"{currentPlayer?.Gold:N0}");
 
         var bankBalance = currentPlayer?.BankGold ?? 0;
         terminal.SetColor("bright_cyan");
-        terminal.Write("  Bank Balance: ");
+        terminal.Write($"  {Loc.Get("base.bank_balance")}: ");
         terminal.SetColor("white");
         terminal.WriteLine($"{bankBalance:N0}");
 
         terminal.SetColor("gray");
-        terminal.Write("  Total Wealth: ");
+        terminal.Write($"  {Loc.Get("base.total_wealth")}: ");
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{(currentPlayer?.Gold ?? 0) + bankBalance:N0}");
         terminal.WriteLine("");
@@ -2722,21 +2735,21 @@ public abstract class BaseLocation
             var period = DailySystemManager.GetTimePeriodString(currentPlayer);
             var color = DailySystemManager.GetTimePeriodColor(currentPlayer);
             terminal.SetColor(color);
-            terminal.WriteLine($"  Time: {timeStr} ({period})");
+            terminal.WriteLine($"  {Loc.Get("base.time_label")}: {timeStr} ({period})");
 
             // Show rest availability
             terminal.SetColor("gray");
             if (DailySystemManager.CanRestForNight(currentPlayer))
-                terminal.WriteLine("  You can rest for the night.");
+                terminal.WriteLine($"  {Loc.Get("base.can_rest")}");
             else
-                terminal.WriteLine($"  Rest available after {GameConfig.RestAvailableHour}:00 PM (Evening).");
+                terminal.WriteLine($"  {Loc.Get("base.rest_available_after", GameConfig.RestAvailableHour)}");
         }
         else
         {
             // Online: show real time (server time)
             var now = DateTime.Now;
             terminal.SetColor("white");
-            terminal.WriteLine($"  Server Time: {now:h:mm tt}");
+            terminal.WriteLine($"  {Loc.Get("base.server_time")}: {now:h:mm tt}");
         }
         terminal.WriteLine("");
     }
@@ -2750,7 +2763,7 @@ public abstract class BaseLocation
         int hpPercent = currentPlayer?.MaxHP > 0 ? (int)(100.0 * currentPlayer.CurrentHP / currentPlayer.MaxHP) : 0;
 
         terminal.SetColor("bright_red");
-        terminal.Write("  HP: ");
+        terminal.Write($"  {Loc.Get("status.hp")}: ");
         terminal.SetColor(hpPercent > 50 ? "bright_green" : hpPercent > 25 ? "yellow" : "red");
         terminal.WriteLine($"{currentPlayer?.CurrentHP}/{currentPlayer?.MaxHP} ({hpPercent}%)");
 
@@ -2758,7 +2771,7 @@ public abstract class BaseLocation
         {
             int mpPercent = currentPlayer.MaxMana > 0 ? (int)(100.0 * currentPlayer.CurrentMana / currentPlayer.MaxMana) : 0;
             terminal.SetColor("bright_blue");
-            terminal.Write("  MP: ");
+            terminal.Write($"  {Loc.Get("status.mp")}: ");
             terminal.SetColor(mpPercent > 50 ? "bright_cyan" : mpPercent > 25 ? "cyan" : "gray");
             terminal.WriteLine($"{currentPlayer.CurrentMana}/{currentPlayer.MaxMana} ({mpPercent}%)");
         }
@@ -2766,7 +2779,7 @@ public abstract class BaseLocation
         {
             int stPercent = currentPlayer.MaxCombatStamina > 0 ? (int)(100.0 * currentPlayer.CurrentCombatStamina / currentPlayer.MaxCombatStamina) : 0;
             terminal.SetColor("bright_yellow");
-            terminal.Write("  Stamina: ");
+            terminal.Write($"  {Loc.Get("status.stamina")}: ");
             terminal.SetColor(stPercent > 50 ? "bright_yellow" : stPercent > 25 ? "yellow" : "gray");
             terminal.WriteLine($"{currentPlayer.CurrentCombatStamina}/{currentPlayer.MaxCombatStamina} ({stPercent}%)");
         }
@@ -2776,7 +2789,7 @@ public abstract class BaseLocation
         {
             var (fatigueLabel, fatigueColor) = currentPlayer.GetFatigueTier();
             terminal.SetColor("white");
-            terminal.Write("  Fatigue: ");
+            terminal.Write($"  {Loc.Get("base.fatigue_label")}: ");
             if (!string.IsNullOrEmpty(fatigueLabel))
             {
                 terminal.SetColor(fatigueColor);
@@ -2786,9 +2799,9 @@ public abstract class BaseLocation
             terminal.Write($"({currentPlayer.Fatigue}/100)");
             // Show penalty description
             if (currentPlayer.Fatigue >= GameConfig.FatigueExhaustedThreshold)
-                terminal.WriteLine($" — -10% damage/defense/XP");
+                terminal.WriteLine($" — {Loc.Get("base.fatigue_exhausted_penalty")}");
             else if (currentPlayer.Fatigue >= GameConfig.FatigueTiredThreshold)
-                terminal.WriteLine($" — -5% damage/defense");
+                terminal.WriteLine($" — {Loc.Get("base.fatigue_tired_penalty")}");
             else
                 terminal.WriteLine("");
         }
@@ -2797,15 +2810,15 @@ public abstract class BaseLocation
         if (currentPlayer != null)
         {
             terminal.SetColor("white");
-            terminal.Write("  Fame: ");
+            terminal.Write($"  {Loc.Get("base.fame_label")}: ");
             string fameLabel = currentPlayer.Fame switch
             {
-                >= 200 => "Legendary",
-                >= 100 => "Renowned",
-                >= 50 => "Well-Known",
-                >= 20 => "Notable",
-                >= 1 => "Unknown",
-                _ => "Nobody"
+                >= 200 => Loc.Get("base.fame_legendary"),
+                >= 100 => Loc.Get("base.fame_renowned"),
+                >= 50 => Loc.Get("base.fame_well_known"),
+                >= 20 => Loc.Get("base.fame_notable"),
+                >= 1 => Loc.Get("base.fame_unknown"),
+                _ => Loc.Get("base.fame_nobody")
             };
             string fameColor = currentPlayer.Fame switch
             {
@@ -2831,7 +2844,7 @@ public abstract class BaseLocation
         terminal.WriteLine("");
         if (currentPlayer == null)
         {
-            terminal.WriteLine("  No active character.", "gray");
+            terminal.WriteLine($"  {Loc.Get("base.no_active_character")}", "gray");
             await terminal.PressAnyKey();
             return;
         }
@@ -2839,7 +2852,7 @@ public abstract class BaseLocation
         if (currentPlayer.HP >= currentPlayer.MaxHP)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  You're already at full health!");
+            terminal.WriteLine($"  {Loc.Get("base.already_full_health")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
@@ -2848,9 +2861,9 @@ public abstract class BaseLocation
         if (currentPlayer.Healing <= 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  You don't have any healing potions.");
+            terminal.WriteLine($"  {Loc.Get("base.no_healing_potions")}");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Visit the Healer to buy some.");
+            terminal.WriteLine($"  {Loc.Get("base.visit_healer")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
@@ -2864,9 +2877,9 @@ public abstract class BaseLocation
         currentPlayer.Statistics?.RecordPotionUsed(healAmount);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"  You drink a healing potion and recover {healAmount} HP!");
+        terminal.WriteLine($"  {Loc.Get("base.potion_healed", healAmount)}");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  HP: {currentPlayer.HP}/{currentPlayer.MaxHP}  |  Potions remaining: {currentPlayer.Healing}/{currentPlayer.MaxPotions}");
+        terminal.WriteLine($"  {Loc.Get("status.hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP}  |  {Loc.Get("base.potions_remaining")}: {currentPlayer.Healing}/{currentPlayer.MaxPotions}");
         terminal.WriteLine("");
         await terminal.PressAnyKey();
     }
@@ -2931,17 +2944,20 @@ public abstract class BaseLocation
                 break;
             default:
                 terminal.SetColor("red");
-                terminal.WriteLine($"Invalid choice: '{choice}'");
+                terminal.WriteLine(Loc.Get("base.invalid_choice", choice));
                 terminal.SetColor("gray");
-                terminal.Write("Try: [");
+                terminal.Write($"{Loc.Get("base.try_hint")}: [");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("S");
                 terminal.SetColor("gray");
-                terminal.Write("]tatus, [");
+                terminal.Write("]");
+                terminal.Write(Loc.Get("base.qc_status_suffix"));
+                terminal.Write(", [");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("*");
                 terminal.SetColor("gray");
-                terminal.Write("]Inventory");
+                terminal.Write("] ");
+                terminal.Write(Loc.Get("base.qc_inventory"));
 
                 if (LocationId != GameLocation.MainStreet)
                 {
@@ -2949,14 +2965,15 @@ public abstract class BaseLocation
                     terminal.SetColor("bright_yellow");
                     terminal.Write("R");
                     terminal.SetColor("gray");
-                    terminal.Write("]eturn");
+                    terminal.Write("]");
+                    terminal.Write(Loc.Get("base.qc_return_suffix"));
                 }
 
-                terminal.Write(", or [");
+                terminal.Write($", {Loc.Get("base.or")} [");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("?");
                 terminal.SetColor("gray");
-                terminal.WriteLine("] for help");
+                terminal.WriteLine($"] {Loc.Get("base.for_help")}");
                 await Task.Delay(2000);
                 break;
         }
@@ -2970,7 +2987,7 @@ public abstract class BaseLocation
     protected virtual async Task ExecuteLocationAction(int actionIndex)
     {
         // Override in derived classes
-        terminal.WriteLine("Nothing happens.", "gray");
+        terminal.WriteLine(Loc.Get("base.nothing_happens"), "gray");
         await Task.Delay(1000);
     }
     
@@ -2979,7 +2996,7 @@ public abstract class BaseLocation
     /// </summary>
     protected virtual async Task NavigateToLocation(GameLocation destination)
     {
-        terminal.WriteLine($"Heading to {GetLocationName(destination)}...", "yellow");
+        terminal.WriteLine(Loc.Get("base.heading_to", GetLocationName(destination)), "yellow");
         await Task.Delay(500);
 
         // Check for faction ambush while traveling
@@ -2989,7 +3006,7 @@ public abstract class BaseLocation
             // After surviving ambush, continue to destination
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("After the encounter, you continue on your way...");
+            terminal.WriteLine(Loc.Get("base.continue_on_way"));
             await Task.Delay(1000);
         }
 
@@ -3069,7 +3086,7 @@ public abstract class BaseLocation
         };
 
         // Show ambush header
-        WriteBoxHeader("AMBUSH!", "bright_red");
+        WriteBoxHeader(Loc.Get("base.ambush"), "bright_red");
         terminal.WriteLine("");
 
         // Show faction context
@@ -3077,7 +3094,7 @@ public abstract class BaseLocation
         {
             var factionData = UsurperRemake.Systems.FactionSystem.Factions[ambusher.NPCFaction.Value];
             terminal.SetColor(factionColor);
-            terminal.WriteLine($"A member of {factionData.Name} has found you!");
+            terminal.WriteLine(Loc.Get("base.ambush_faction_found", factionData.Name));
             terminal.WriteLine("");
         }
 
@@ -3093,27 +3110,27 @@ public abstract class BaseLocation
 
         // Show ambusher stats
         terminal.SetColor("gray");
-        terminal.WriteLine($"  {ambusher.Name} - Level {ambusher.Level} {ambusher.Class}");
-        terminal.WriteLine($"  HP: {ambusher.HP}/{ambusher.MaxHP}  STR: {ambusher.Strength}  DEF: {ambusher.Defence}");
+        terminal.WriteLine($"  {ambusher.Name} - {Loc.Get("base.guard_level")} {ambusher.Level} {ambusher.Class}");
+        terminal.WriteLine($"  {Loc.Get("status.hp")}: {ambusher.HP}/{ambusher.MaxHP}  STR: {ambusher.Strength}  DEF: {ambusher.Defence}");
         terminal.WriteLine("");
 
         // Give player choice
         terminal.SetColor("yellow");
-        terminal.WriteLine("What do you do?");
+        terminal.WriteLine(Loc.Get("base.what_do_you_do"));
         terminal.SetColor("white");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
         terminal.Write("F");
         terminal.SetColor("white");
-        terminal.WriteLine("]ight - Engage the ambusher");
+        terminal.WriteLine($"]{Loc.Get("base.ambush_fight")}");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
         terminal.Write("R");
         terminal.SetColor("white");
-        terminal.WriteLine("]un  - Attempt to flee (may fail)");
+        terminal.WriteLine($"]{Loc.Get("base.ambush_run")}");
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInputAsync("Your choice: ");
+        var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
         if (choice.ToUpper() == "R")
         {
@@ -3125,7 +3142,7 @@ public abstract class BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("green");
-                terminal.WriteLine("You manage to escape into the crowd!");
+                terminal.WriteLine(Loc.Get("base.ambush_escaped"));
                 await Task.Delay(1500);
                 return;
             }
@@ -3133,7 +3150,7 @@ public abstract class BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("red");
-                terminal.WriteLine("You couldn't escape! They block your path!");
+                terminal.WriteLine(Loc.Get("base.ambush_blocked"));
                 await Task.Delay(1500);
             }
         }
@@ -3141,7 +3158,7 @@ public abstract class BaseLocation
         // Combat!
         terminal.WriteLine("");
         terminal.SetColor("bright_red");
-        terminal.WriteLine("COMBAT BEGINS!");
+        terminal.WriteLine(Loc.Get("base.combat_begins"));
         await Task.Delay(1000);
 
         // Use the combat engine to fight the NPC
@@ -3153,7 +3170,7 @@ public abstract class BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"You defeated {ambusher.Name}!");
+            terminal.WriteLine(Loc.Get("base.ambush_defeated", ambusher.Name));
 
             // Mark NPC dead with permadeath roll (self-defense — no blood price)
             WorldSimulator.Instance?.MarkNPCDead(ambusher, GameConfig.PermadeathChancePlayerKill,
@@ -3163,19 +3180,19 @@ public abstract class BaseLocation
             terminal.WriteLine("");
             if (result.ExperienceGained > 0 || result.GoldGained > 0)
             {
-                WriteSectionHeader("REWARDS", "bright_yellow");
+                WriteSectionHeader(Loc.Get("base.rewards"), "bright_yellow");
                 terminal.SetColor("yellow");
                 if (result.ExperienceGained > 0)
-                    terminal.WriteLine($"  Experience: +{result.ExperienceGained:N0}");
+                    terminal.WriteLine($"  {Loc.Get("base.experience_label")}: +{result.ExperienceGained:N0}");
                 if (result.GoldGained > 0)
-                    terminal.WriteLine($"  Gold: +{result.GoldGained:N0}");
+                    terminal.WriteLine($"  {Loc.Get("status.gold_label")}: +{result.GoldGained:N0}");
             }
 
             // Display any looted items
             if (result.ItemsFound != null && result.ItemsFound.Count > 0)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine("  Loot:");
+                terminal.WriteLine($"  {Loc.Get("base.loot_label")}:");
                 foreach (var item in result.ItemsFound)
                 {
                     terminal.WriteLine($"    • {item}");
@@ -3188,7 +3205,7 @@ public abstract class BaseLocation
             {
                 factionSystem.ModifyReputation(ambusher.NPCFaction.Value, -50);
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Your standing with {UsurperRemake.Systems.FactionSystem.Factions[ambusher.NPCFaction.Value].Name} has decreased! (-50)");
+                terminal.WriteLine($"  {Loc.Get("base.standing_decreased", UsurperRemake.Systems.FactionSystem.Factions[ambusher.NPCFaction.Value].Name, 50)}");
 
                 // Gain standing with rival factions
                 foreach (var faction in UsurperRemake.Systems.FactionSystem.Factions.Keys
@@ -3202,7 +3219,7 @@ public abstract class BaseLocation
                     {
                         factionSystem.ModifyReputation(faction, 10);
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"  {UsurperRemake.Systems.FactionSystem.Factions[faction].Name} approves! (+10 standing)");
+                        terminal.WriteLine($"  {Loc.Get("base.standing_approves", UsurperRemake.Systems.FactionSystem.Factions[faction].Name, 10)}");
                     }
                 }
             }
@@ -3215,7 +3232,7 @@ public abstract class BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("You managed to disengage from combat!");
+            terminal.WriteLine(Loc.Get("base.ambush_disengaged"));
         }
         // If player lost, the death handling is done by the combat engine
 
@@ -3245,159 +3262,168 @@ public abstract class BaseLocation
             if (currentPlayer.ScreenReaderMode)
             {
                 // Screen reader friendly: plain text, no box-drawing, no color switching
-                terminal.WriteLine("QUICK PREFERENCES");
+                terminal.WriteLine(Loc.Get("prefs.title"));
                 terminal.WriteLine("");
 
                 string speedDesc = currentPlayer.CombatSpeed switch
                 {
-                    CombatSpeed.Instant => "Instant, no delays",
-                    CombatSpeed.Fast => "Fast, 50% delays",
-                    _ => "Normal, full delays"
+                    CombatSpeed.Instant => Loc.Get("prefs.combat_speed.instant"),
+                    CombatSpeed.Fast => Loc.Get("prefs.combat_speed.fast"),
+                    _ => Loc.Get("prefs.combat_speed.normal")
                 };
 
-                terminal.WriteLine("Current Settings:");
-                terminal.WriteLine($"  Combat Speed: {speedDesc}");
-                terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}");
-                terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled" : "Disabled")}");
-                terminal.WriteLine($"  Screen Reader Mode: Enabled");
-                terminal.WriteLine($"  Alpha Telemetry: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? "Enabled" : "Disabled")}");
-                terminal.WriteLine($"  Color Theme: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)}");
-                terminal.WriteLine($"  Auto-Level Up: {(currentPlayer.AutoLevelUp ? "Enabled" : "Disabled")}");
-                terminal.WriteLine($"  Compact Mode: {(currentPlayer.CompactMode ? "Enabled" : "Disabled")}");
-                terminal.WriteLine($"  Auto-Equip: {(currentPlayer.AutoEquipDisabled ? "Disabled" : "Enabled")}");
+                terminal.WriteLine(Loc.Get("prefs.current_settings"));
+                terminal.WriteLine($"  {Loc.Get("prefs.combat_speed")}: {speedDesc}");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_heal")}: {(currentPlayer.AutoHeal ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}");
+                terminal.WriteLine($"  {Loc.Get("prefs.skip_intimate")}: {(currentPlayer.SkipIntimateScenes ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}");
+                terminal.WriteLine($"  {Loc.Get("prefs.screen_reader")}: {Loc.Get("prefs.enabled")}");
+                terminal.WriteLine($"  {Loc.Get("prefs.telemetry")}: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}");
+                terminal.WriteLine($"  {Loc.Get("prefs.color_theme")}: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)}");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_level")}: {(currentPlayer.AutoLevelUp ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}");
+                terminal.WriteLine($"  {Loc.Get("prefs.compact_mode")}: {(currentPlayer.CompactMode ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_equip")}: {(currentPlayer.AutoEquipDisabled ? Loc.Get("prefs.disabled") : Loc.Get("prefs.enabled"))}");
                 terminal.WriteLine("");
 
-                terminal.WriteLine("Options:");
-                terminal.WriteLine("1. Toggle Combat Speed");
-                terminal.WriteLine("2. Toggle Auto-heal in Battle");
-                terminal.WriteLine("3. Toggle Skip Intimate Scenes");
-                terminal.WriteLine("4. Toggle Screen Reader Mode");
-                terminal.WriteLine("5. Toggle Alpha Telemetry");
-                terminal.WriteLine("6. Cycle Color Theme");
+                terminal.WriteLine($"{Loc.Get("prefs.options")}");
+                terminal.WriteLine($"1. {Loc.Get("prefs.toggle", Loc.Get("prefs.combat_speed"))}");
+                terminal.WriteLine($"2. {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_heal"))}");
+                terminal.WriteLine($"3. {Loc.Get("prefs.toggle", Loc.Get("prefs.skip_intimate"))}");
+                terminal.WriteLine($"4. {Loc.Get("prefs.toggle", Loc.Get("prefs.screen_reader"))}");
+                terminal.WriteLine($"5. {Loc.Get("prefs.toggle", Loc.Get("prefs.telemetry"))}");
+                terminal.WriteLine($"6. {Loc.Get("prefs.color_theme")}");
                 if (IsRunningInWezTerm())
-                    terminal.WriteLine("7. Change Terminal Font");
-                terminal.WriteLine("8. Toggle Auto-Level Up");
-                terminal.WriteLine("9. Toggle Compact Mode");
-                terminal.WriteLine("A. Toggle Auto-Equip");
-                terminal.WriteLine("0. Back");
+                    terminal.WriteLine($"7. {Loc.Get("prefs.terminal_font")}");
+                terminal.WriteLine($"8. {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_level"))}");
+                terminal.WriteLine($"9. {Loc.Get("prefs.toggle", Loc.Get("prefs.compact_mode"))}");
+                terminal.WriteLine($"A. {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_equip"))}");
+                terminal.WriteLine($"B. {Loc.Get("prefs.language")} ({UsurperRemake.Systems.Loc.GetLanguageName(currentPlayer.Language)})");
+                terminal.WriteLine($"0. {Loc.Get("prefs.back")}");
                 terminal.WriteLine("");
             }
             else
             {
                 // Standard visual menu
-                WriteBoxHeader("QUICK PREFERENCES", "bright_yellow");
+                WriteBoxHeader(Loc.Get("prefs.title"), "bright_yellow");
                 terminal.WriteLine("");
 
                 terminal.SetColor("white");
-                terminal.WriteLine("Current Settings:");
+                terminal.WriteLine(Loc.Get("prefs.current_settings"));
                 terminal.WriteLine("");
 
                 // Combat Speed
                 string speedDesc = currentPlayer.CombatSpeed switch
                 {
-                    CombatSpeed.Instant => "Instant (no delays)",
-                    CombatSpeed.Fast => "Fast (50% delays)",
-                    _ => "Normal (full delays)"
+                    CombatSpeed.Instant => Loc.Get("prefs.combat_speed.instant"),
+                    CombatSpeed.Fast => Loc.Get("prefs.combat_speed.fast"),
+                    _ => Loc.Get("prefs.combat_speed.normal")
                 };
-                terminal.WriteLine($"  Combat Speed: {speedDesc}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.combat_speed")}: {speedDesc}", "yellow");
 
                 // Auto-heal
-                terminal.WriteLine($"  Auto-heal in Battle: {(currentPlayer.AutoHeal ? "Enabled" : "Disabled")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_heal")}: {(currentPlayer.AutoHeal ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled"))}", "yellow");
 
                 // Skip intimate scenes
-                terminal.WriteLine($"  Skip Intimate Scenes: {(currentPlayer.SkipIntimateScenes ? "Enabled (Fade to Black)" : "Disabled (Full Scenes)")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.skip_intimate")}: {(currentPlayer.SkipIntimateScenes ? Loc.Get("prefs.skip_intimate.on") : Loc.Get("prefs.skip_intimate.off"))}", "yellow");
 
                 // Screen reader mode
-                terminal.WriteLine($"  Screen Reader Mode: {(currentPlayer.ScreenReaderMode ? "Enabled (Simplified Text)" : "Disabled")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.screen_reader")}: {(currentPlayer.ScreenReaderMode ? Loc.Get("prefs.screen_reader.on") : Loc.Get("prefs.disabled"))}", "yellow");
 
                 // Telemetry
-                terminal.WriteLine($"  Alpha Telemetry: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? "Enabled (Sending Anonymous Stats)" : "Disabled")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.telemetry")}: {(UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled ? Loc.Get("prefs.telemetry.on") : Loc.Get("prefs.disabled"))}", "yellow");
 
                 // Color Theme
-                terminal.WriteLine($"  Color Theme: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)} - {ColorTheme.GetThemeDescription(currentPlayer.ColorTheme)}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.color_theme")}: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)} - {ColorTheme.GetThemeDescription(currentPlayer.ColorTheme)}", "yellow");
 
                 // Auto-Level
-                terminal.WriteLine($"  Auto-Level Up: {(currentPlayer.AutoLevelUp ? "Enabled (Level up automatically)" : "Disabled (Visit Level Master to level up)")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_level")}: {(currentPlayer.AutoLevelUp ? Loc.Get("prefs.auto_level.on") : Loc.Get("prefs.auto_level.off"))}", "yellow");
 
                 // Compact Mode
-                terminal.WriteLine($"  Compact Mode: {(currentPlayer.CompactMode ? "Enabled (Mobile/Small Screen)" : "Disabled")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.compact_mode")}: {(currentPlayer.CompactMode ? Loc.Get("prefs.compact_mode.on") : Loc.Get("prefs.disabled"))}", "yellow");
 
                 // Auto-Equip
-                terminal.WriteLine($"  Auto-Equip: {(currentPlayer.AutoEquipDisabled ? "Disabled (Purchases go to inventory)" : "Enabled (Equip on purchase)")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("prefs.auto_equip")}: {(currentPlayer.AutoEquipDisabled ? Loc.Get("prefs.auto_equip.off") : Loc.Get("prefs.auto_equip.on"))}", "yellow");
+
+                // Language
+                terminal.WriteLine($"  {Loc.Get("prefs.language")}: {UsurperRemake.Systems.Loc.GetLanguageName(currentPlayer.Language)}", "yellow");
 
                 // Terminal Font (only when running inside WezTerm)
                 if (IsRunningInWezTerm())
                 {
-                    terminal.WriteLine($"  Terminal Font: {ReadCurrentFont()}", "yellow");
+                    terminal.WriteLine($"  {Loc.Get("prefs.terminal_font")}: {ReadCurrentFont()}", "yellow");
                 }
                 terminal.WriteLine("");
 
                 terminal.SetColor("white");
-                terminal.WriteLine("Options:");
+                terminal.WriteLine($"{Loc.Get("prefs.options")}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("1");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Toggle Combat Speed (Normal -> Fast -> Instant)");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.combat_speed"))}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("2");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Toggle Auto-heal in Battle");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_heal"))}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("3");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Toggle Skip Intimate Scenes");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.skip_intimate"))}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("4");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Toggle Screen Reader Mode (Accessibility)");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.screen_reader"))}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("5");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Toggle Alpha Telemetry (Anonymous Stats)");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.telemetry"))}");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("6");
                 terminal.SetColor("white");
-                terminal.WriteLine($"] Color Theme (Current: {ColorTheme.GetThemeName(currentPlayer.ColorTheme)})");
+                terminal.WriteLine($"] {Loc.Get("prefs.color_theme")} ({Loc.Get("prefs.current", ColorTheme.GetThemeName(currentPlayer.ColorTheme))})");
                 if (IsRunningInWezTerm())
                 {
                     terminal.Write("[");
                     terminal.SetColor("bright_yellow");
                     terminal.Write("7");
                     terminal.SetColor("white");
-                    terminal.WriteLine($"] Terminal Font (Current: {ReadCurrentFont()})");
+                    terminal.WriteLine($"] {Loc.Get("prefs.terminal_font")} ({Loc.Get("prefs.current", ReadCurrentFont())})");
                 }
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("8");
                 terminal.SetColor("white");
-                terminal.WriteLine($"] Toggle Auto-Level Up (Current: {(currentPlayer.AutoLevelUp ? "ON" : "OFF")})");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_level"))} ({Loc.Get("prefs.current", currentPlayer.AutoLevelUp ? Loc.Get("prefs.on") : Loc.Get("prefs.off"))})");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("9");
                 terminal.SetColor("white");
-                terminal.WriteLine($"] Toggle Compact Mode (Current: {(currentPlayer.CompactMode ? "ON" : "OFF")})");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.compact_mode"))} ({Loc.Get("prefs.current", currentPlayer.CompactMode ? Loc.Get("prefs.on") : Loc.Get("prefs.off"))})");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("A");
                 terminal.SetColor("white");
-                terminal.WriteLine($"] Toggle Auto-Equip (Current: {(currentPlayer.AutoEquipDisabled ? "OFF" : "ON")})");
+                terminal.WriteLine($"] {Loc.Get("prefs.toggle", Loc.Get("prefs.auto_equip"))} ({Loc.Get("prefs.current", currentPlayer.AutoEquipDisabled ? Loc.Get("prefs.off") : Loc.Get("prefs.on"))})");
+                terminal.Write("[");
+                terminal.SetColor("bright_yellow");
+                terminal.Write("B");
+                terminal.SetColor("white");
+                terminal.WriteLine($"] {Loc.Get("prefs.language")} ({Loc.Get("prefs.current", UsurperRemake.Systems.Loc.GetLanguageName(currentPlayer.Language))})");
                 terminal.Write("[");
                 terminal.SetColor("bright_yellow");
                 terminal.Write("0");
                 terminal.SetColor("white");
-                terminal.WriteLine("] Back");
+                terminal.WriteLine($"] {Loc.Get("prefs.back")}");
                 terminal.WriteLine("");
             }
 
-            var choice = await terminal.GetInput("Choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.choice"));
 
-            switch (choice.Trim())
+            switch (choice.Trim().ToUpperInvariant())
             {
                 case "1":
                     // Cycle through combat speeds
@@ -3409,18 +3435,18 @@ public abstract class BaseLocation
                     };
                     string newSpeed = currentPlayer.CombatSpeed switch
                     {
-                        CombatSpeed.Instant => "Instant",
-                        CombatSpeed.Fast => "Fast",
-                        _ => "Normal"
+                        CombatSpeed.Instant => Loc.Get("prefs.combat_speed.instant"),
+                        CombatSpeed.Fast => Loc.Get("prefs.combat_speed.fast"),
+                        _ => Loc.Get("prefs.combat_speed.normal")
                     };
-                    terminal.WriteLine($"Combat speed set to: {newSpeed}", "green");
+                    terminal.WriteLine(Loc.Get("base.combat_speed_set", newSpeed), "green");
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(800);
                     break;
 
                 case "2":
                     currentPlayer.AutoHeal = !currentPlayer.AutoHeal;
-                    terminal.WriteLine($"Auto-heal is now {(currentPlayer.AutoHeal ? "ENABLED" : "DISABLED")}", "green");
+                    terminal.WriteLine(Loc.Get("base.pref_auto_heal_toggled", currentPlayer.AutoHeal ? Loc.Get("prefs.enabled") : Loc.Get("prefs.disabled")), "green");
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(800);
                     break;
@@ -3429,11 +3455,11 @@ public abstract class BaseLocation
                     currentPlayer.SkipIntimateScenes = !currentPlayer.SkipIntimateScenes;
                     if (currentPlayer.SkipIntimateScenes)
                     {
-                        terminal.WriteLine("Intimate scenes will now 'fade to black'", "green");
+                        terminal.WriteLine(Loc.Get("base.pref_intimate_fade"), "green");
                     }
                     else
                     {
-                        terminal.WriteLine("Intimate scenes will now show full content", "green");
+                        terminal.WriteLine(Loc.Get("base.pref_intimate_full"), "green");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1000);
@@ -3444,13 +3470,13 @@ public abstract class BaseLocation
                     GameConfig.ScreenReaderMode = currentPlayer.ScreenReaderMode;
                     if (currentPlayer.ScreenReaderMode)
                     {
-                        terminal.WriteLine("Screen Reader Mode ENABLED", "green");
-                        terminal.WriteLine("Menus will use simplified plain text format.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_sr_enabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_sr_enabled_desc"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Screen Reader Mode DISABLED", "green");
-                        terminal.WriteLine("Menus will use visual ASCII art format.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_sr_disabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_sr_disabled_desc"), "white");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1200);
@@ -3460,14 +3486,14 @@ public abstract class BaseLocation
                     if (UsurperRemake.Systems.TelemetrySystem.Instance.IsEnabled)
                     {
                         UsurperRemake.Systems.TelemetrySystem.Instance.Disable();
-                        terminal.WriteLine("Alpha Telemetry DISABLED", "green");
-                        terminal.WriteLine("We will no longer collect anonymous gameplay statistics.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_telemetry_disabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_telemetry_disabled_desc"), "white");
                     }
                     else
                     {
                         UsurperRemake.Systems.TelemetrySystem.Instance.Enable();
-                        terminal.WriteLine("Alpha Telemetry ENABLED", "green");
-                        terminal.WriteLine("Thank you for helping us improve the game!", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_telemetry_enabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_telemetry_enabled_desc"), "white");
                         // Track session start when enabling
                         UsurperRemake.Systems.TelemetrySystem.Instance.TrackSessionStart(
                             GameConfig.Version,
@@ -3485,7 +3511,7 @@ public abstract class BaseLocation
                     ColorTheme.Current = nextTheme;
                     // Force screen clear even in MUD mode so new theme colors are visible immediately
                     terminal.WriteRawAnsi("\x1b[2J\x1b[H");
-                    terminal.WriteLine($"Color theme set to: {ColorTheme.GetThemeName(nextTheme)}", "green");
+                    terminal.WriteLine(Loc.Get("base.pref_theme_set", ColorTheme.GetThemeName(nextTheme)), "green");
                     terminal.WriteLine($"  {ColorTheme.GetThemeDescription(nextTheme)}", "white");
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(800);
@@ -3500,8 +3526,8 @@ public abstract class BaseLocation
                         int idx = Array.IndexOf(fonts, currentFont);
                         int next = (idx + 1) % fonts.Length;
                         WriteTerminalFont(fonts[next]);
-                        terminal.WriteLine($"Terminal font set to: {fonts[next]}", "green");
-                        terminal.WriteLine("  Font will update in the terminal momentarily.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_font_set", fonts[next]), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_font_update"), "white");
                         await Task.Delay(800);
                     }
                     break;
@@ -3510,13 +3536,13 @@ public abstract class BaseLocation
                     currentPlayer.AutoLevelUp = !currentPlayer.AutoLevelUp;
                     if (currentPlayer.AutoLevelUp)
                     {
-                        terminal.WriteLine("Auto-Level Up ENABLED", "green");
-                        terminal.WriteLine("You will level up automatically when you have enough XP.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_autolevel_enabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_autolevel_enabled_desc"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Auto-Level Up DISABLED", "green");
-                        terminal.WriteLine("Visit the Level Master to level up manually.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_autolevel_disabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_autolevel_disabled_desc"), "white");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1000);
@@ -3527,14 +3553,14 @@ public abstract class BaseLocation
                     GameConfig.CompactMode = currentPlayer.CompactMode;
                     if (currentPlayer.CompactMode)
                     {
-                        terminal.WriteLine("Compact Mode ENABLED", "green");
-                        terminal.WriteLine("Menus will use compact layout for mobile/small screens.", "white");
-                        terminal.WriteLine("Use number keys to navigate menus.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_compact_enabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_compact_enabled_desc"), "white");
+                        terminal.WriteLine(Loc.Get("base.pref_compact_enabled_keys"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Compact Mode DISABLED", "green");
-                        terminal.WriteLine("Menus will use full-size layout.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_compact_disabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_compact_disabled_desc"), "white");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1000);
@@ -3544,16 +3570,39 @@ public abstract class BaseLocation
                     currentPlayer.AutoEquipDisabled = !currentPlayer.AutoEquipDisabled;
                     if (currentPlayer.AutoEquipDisabled)
                     {
-                        terminal.WriteLine("Auto-Equip DISABLED", "green");
-                        terminal.WriteLine("Shop purchases will go straight to inventory.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_autoequip_disabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_autoequip_disabled_desc"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Auto-Equip ENABLED", "green");
-                        terminal.WriteLine("You'll be prompted to equip or inventory on purchase.", "white");
+                        terminal.WriteLine(Loc.Get("base.pref_autoequip_enabled"), "green");
+                        terminal.WriteLine(Loc.Get("base.pref_autoequip_enabled_desc"), "white");
                     }
                     await GameEngine.Instance.SaveCurrentGame();
                     await Task.Delay(1000);
+                    break;
+
+                case "B":
+                    terminal.WriteLine("");
+                    terminal.WriteLine(Loc.Get("prefs.select_language"), "bright_yellow");
+                    terminal.WriteLine("");
+                    var langs = UsurperRemake.Systems.Loc.AvailableLanguages;
+                    for (int li = 0; li < langs.Length; li++)
+                    {
+                        var marker = langs[li].Code == currentPlayer.Language ? " *" : "";
+                        terminal.WriteLine($"  {li + 1}. {langs[li].Name}{marker}");
+                    }
+                    terminal.WriteLine("");
+                    var langChoice = await terminal.GetInput(Loc.Get("ui.your_choice"));
+                    if (int.TryParse(langChoice.Trim(), out int langIdx) && langIdx >= 1 && langIdx <= langs.Length)
+                    {
+                        var selectedLang = langs[langIdx - 1].Code;
+                        currentPlayer.Language = selectedLang;
+                        GameConfig.Language = selectedLang;
+                        terminal.WriteLine(Loc.Get("prefs.language_set", UsurperRemake.Systems.Loc.GetLanguageName(selectedLang)), "green");
+                        await GameEngine.Instance.SaveCurrentGame();
+                        await Task.Delay(800);
+                    }
                     break;
 
                 case "0":
@@ -3562,7 +3611,7 @@ public abstract class BaseLocation
                     break;
 
                 default:
-                    terminal.WriteLine("Invalid choice.", "red");
+                    terminal.WriteLine(Loc.Get("base.invalid_choice_simple"), "red");
                     await Task.Delay(500);
                     break;
             }
@@ -3720,17 +3769,17 @@ public abstract class BaseLocation
         if (allNPCs.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("There's no one here to talk to.");
+            terminal.WriteLine(Loc.Get("base.no_one_to_talk"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("PEOPLE NEARBY", "bright_cyan");
+        WriteBoxHeader(Loc.Get("base.people_nearby"), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  Who would you like to talk to?");
+        terminal.WriteLine($"  {Loc.Get("base.who_talk_to")}");
         terminal.WriteLine("");
 
         // List NPCs with numbers
@@ -3755,7 +3804,7 @@ public abstract class BaseLocation
 
             // Show class/level
             terminal.SetColor("gray");
-            terminal.Write($" - Level {npc.Level} {npc.Class}");
+            terminal.Write($" - {Loc.Get("base.guard_level")} {npc.Level} {npc.Class}");
 
             // Show relationship status in brackets with color
             terminal.Write(" [");
@@ -3776,10 +3825,10 @@ public abstract class BaseLocation
         terminal.SetColor("bright_yellow");
         terminal.Write("0");
         terminal.SetColor("white");
-        terminal.WriteLine("] Never mind");
+        terminal.WriteLine($"] {Loc.Get("base.never_mind")}");
         terminal.WriteLine("");
 
-        string choice = await terminal.GetInput("Talk to who? ");
+        string choice = await terminal.GetInput(Loc.Get("base.talk_to_who"));
 
         if (int.TryParse(choice, out int targetIndex) && targetIndex >= 1 && targetIndex <= allNPCs.Count)
         {
@@ -3789,7 +3838,7 @@ public abstract class BaseLocation
         else if (choice != "0")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You decide not to talk to anyone.");
+            terminal.WriteLine(Loc.Get("base.decide_not_talk"));
             await Task.Delay(1000);
         }
     }
@@ -3808,7 +3857,7 @@ public abstract class BaseLocation
         while (stayInConversation)
         {
             terminal.ClearScreen();
-            WriteBoxHeader($"Talking to: {npc.Name2}", "bright_cyan");
+            WriteBoxHeader(Loc.Get("base.talking_to", npc.Name2), "bright_cyan");
             terminal.WriteLine("");
 
             // Show NPC portrait (skip for screen readers)
@@ -3821,8 +3870,8 @@ public abstract class BaseLocation
 
             // Show NPC info
             terminal.SetColor("gray");
-            string sexDisplay = npc.Sex == CharacterSex.Female ? "Female" : "Male";
-            terminal.WriteLine($"  Level {npc.Level} {npc.Race} {sexDisplay} {npc.Class}");
+            string sexDisplay = npc.Sex == CharacterSex.Female ? Loc.Get("base.female") : Loc.Get("base.male");
+            terminal.WriteLine($"  {Loc.Get("base.guard_level")} {npc.Level} {npc.Race} {sexDisplay} {npc.Class}");
             terminal.WriteLine($"  {GetAlignmentDisplay(npc)}");
             terminal.WriteLine("");
 
@@ -3835,7 +3884,7 @@ public abstract class BaseLocation
 
                 string greeting = npc.GetGreeting(currentPlayer);
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  {npc.Name2} says:");
+                terminal.WriteLine($"  {Loc.Get("base.npc_says", npc.Name2)}");
                 terminal.SetColor("white");
                 terminal.WriteLine($"  \"{greeting}\"");
                 terminal.WriteLine("");
@@ -3844,7 +3893,7 @@ public abstract class BaseLocation
 
             // Show interaction options
             terminal.SetColor("cyan");
-            terminal.WriteLine("  What do you want to do?");
+            terminal.WriteLine($"  {Loc.Get("base.what_do_you_do")}");
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
@@ -3854,7 +3903,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Chat with them");
+            terminal.WriteLine($" {Loc.Get("base.chat_with_them")}");
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -3863,7 +3912,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Ask about rumors");
+            terminal.WriteLine($" {Loc.Get("base.ask_rumors")}");
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -3872,7 +3921,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Ask about the dungeons");
+            terminal.WriteLine($" {Loc.Get("base.ask_dungeons")}");
 
             // Only show challenge option if they're a fighter type
             if (npc.Level > 0 && npc.IsAlive)
@@ -3884,7 +3933,7 @@ public abstract class BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Challenge to a duel");
+                terminal.WriteLine($" {Loc.Get("base.challenge_duel")}");
             }
 
             // Full conversation option (visual novel style)
@@ -3895,7 +3944,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine(" Have a deep conversation...");
+            terminal.WriteLine($" {Loc.Get("base.deep_conversation")}");
 
             // Attack option (murder/assassination)
             if (npc.Level > 0 && npc.IsAlive && !npc.IsStoryNPC && !npc.King)
@@ -3907,7 +3956,7 @@ public abstract class BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("dark_red");
-                terminal.WriteLine(" Attack...");
+                terminal.WriteLine($" {Loc.Get("base.attack_npc")}");
             }
 
             terminal.WriteLine("");
@@ -3916,7 +3965,7 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("0");
             terminal.SetColor("white");
-            terminal.WriteLine("] Walk away");
+            terminal.WriteLine($"] {Loc.Get("base.walk_away")}");
 
             // Debug option
             terminal.SetColor("dark_gray");
@@ -3924,10 +3973,10 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("9");
             terminal.SetColor("dark_gray");
-            terminal.WriteLine("] (DEBUG) View personality traits");
+            terminal.WriteLine($"] {Loc.Get("base.debug_personality")}");
             terminal.WriteLine("");
 
-            string action = await terminal.GetInput("Your choice: ");
+            string action = await GetChoice();
 
             switch (action)
             {
@@ -3966,12 +4015,12 @@ public abstract class BaseLocation
                     // Show NPC's farewell using dynamic dialogue system
                     string farewell = npc.GetFarewell((currentPlayer as Player)!);
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  {npc.Name2} says:");
+                    terminal.WriteLine($"  {Loc.Get("base.npc_says", npc.Name2)}");
                     terminal.SetColor("white");
                     terminal.WriteLine($"  \"{farewell}\"");
                     terminal.WriteLine("");
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  You nod and walk away.");
+                    terminal.WriteLine($"  {Loc.Get("base.nod_walk_away")}");
                     await Task.Delay(1500);
                     stayInConversation = false;
                     break;
@@ -3997,7 +4046,7 @@ public abstract class BaseLocation
         string smallTalk = npc.GetSmallTalk(player);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {npc.Name2} says:");
+        terminal.WriteLine($"  {Loc.Get("base.npc_says", npc.Name2)}");
         terminal.SetColor("white");
         terminal.WriteLine($"  \"{smallTalk}\"");
         await Task.Delay(800);
@@ -4076,7 +4125,7 @@ public abstract class BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  You ask {npc.Name2} if they've heard any interesting rumors...");
+        terminal.WriteLine($"  {Loc.Get("base.ask_rumors_to", npc.Name2)}");
         terminal.WriteLine("");
 
         var random = new Random();
@@ -4084,7 +4133,7 @@ public abstract class BaseLocation
         var selectedRumor = rumors[random.Next(rumors.Length)];
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {npc.Name2} leans in and whispers:");
+        terminal.WriteLine($"  {Loc.Get("base.npc_whispers", npc.Name2)}");
         terminal.SetColor("white");
         terminal.WriteLine($"  \"{selectedRumor}\"");
 
@@ -4099,21 +4148,21 @@ public abstract class BaseLocation
     {
         return new[]
         {
-            "They say seven ancient seals lie hidden in the dungeon depths...",
-            "The old gods stir in their prisons. Dark times are coming.",
-            "A mysterious stranger has been seen around town. Trust no one.",
-            "The king grows paranoid. He sees enemies everywhere.",
-            "Deep in the dungeon, there's a creature that guards untold riches.",
-            "Some adventurers never return from the lower levels. Choose your depth wisely.",
-            "I've heard whispers of a hidden shop in the Dark Alley...",
-            "The temple priests know more than they let on about the old gods.",
-            "There's talk of a secret passage in the castle. But I've said too much.",
-            "A wave returns to the ocean... whatever that means. Cryptic nonsense if you ask me.",
-            "They say Manwe himself cursed these dungeons. But that's just a story... right?",
-            "The healers can cure almost anything, for a price.",
-            "Team up with others if you want to survive the deeper levels.",
-            "I've heard there's a way to save Veloura... if you have the courage to try.",
-            "Some NPCs carry powerful items. Defeat them in a duel and claim their gear!"
+            Loc.Get("base.rumor_seals"),
+            Loc.Get("base.rumor_old_gods"),
+            Loc.Get("base.rumor_stranger"),
+            Loc.Get("base.rumor_king"),
+            Loc.Get("base.rumor_creature"),
+            Loc.Get("base.rumor_lower_levels"),
+            Loc.Get("base.rumor_dark_alley"),
+            Loc.Get("base.rumor_temple"),
+            Loc.Get("base.rumor_castle"),
+            Loc.Get("base.rumor_wave"),
+            Loc.Get("base.rumor_manwe"),
+            Loc.Get("base.rumor_healers"),
+            Loc.Get("base.rumor_team"),
+            Loc.Get("base.rumor_veloura"),
+            Loc.Get("base.rumor_npc_items")
         };
     }
 
@@ -4124,28 +4173,28 @@ public abstract class BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  You ask {npc.Name2} about the dungeons...");
+        terminal.WriteLine($"  {Loc.Get("base.ask_dungeons_to", npc.Name2)}");
         terminal.WriteLine("");
 
         // Give advice based on NPC's level/experience
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {npc.Name2} says:");
+        terminal.WriteLine($"  {Loc.Get("base.npc_says", npc.Name2)}");
         terminal.SetColor("white");
 
         if (npc.Level > currentPlayer.Level + 10)
         {
-            terminal.WriteLine($"  \"You're brave to ask, but you're not ready for the depths I've seen.\"");
-            terminal.WriteLine($"  \"Get stronger first. Level {currentPlayer.Level} won't cut it down there.\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_not_ready")}\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_get_stronger", currentPlayer.Level)}\"");
         }
         else if (npc.Level > currentPlayer.Level)
         {
-            terminal.WriteLine($"  \"The upper levels should be manageable for you.\"");
-            terminal.WriteLine($"  \"Watch out for floor {Math.Min(npc.Level, 10)} though - things get nasty there.\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_upper_ok")}\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_watch_floor", Math.Min(npc.Level, 10))}\"");
         }
         else
         {
-            terminal.WriteLine($"  \"Ha! You asking ME for dungeon advice?\"");
-            terminal.WriteLine($"  \"You look more experienced than I am. Good luck down there.\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_you_experienced")}\"");
+            terminal.WriteLine($"  \"{Loc.Get("base.dungeon_good_luck")}\"");
         }
 
         terminal.WriteLine("");
@@ -4198,7 +4247,7 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("None (Independent)");
+            terminal.WriteLine(Loc.Get("base.none_independent"));
         }
         terminal.WriteLine("");
 
@@ -4281,7 +4330,7 @@ public abstract class BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"  You challenge {npc.Name2} to a duel!");
+        terminal.WriteLine(Loc.Get("base.duel_challenge", npc.Name2));
         terminal.WriteLine("");
 
         // Check if NPC accepts
@@ -4290,20 +4339,20 @@ public abstract class BaseLocation
         if (!accepts)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  {npc.Name2} says:");
+            terminal.WriteLine(Loc.Get("base.npc_says_label", npc.Name2));
             terminal.SetColor("white");
 
             if (npc.Level > currentPlayer.Level + 5)
             {
-                terminal.WriteLine($"  \"You're not worth my time, weakling. Come back when you're stronger.\"");
+                terminal.WriteLine(Loc.Get("base.duel_decline_strong"));
             }
             else if (npc.Level < currentPlayer.Level - 5)
             {
-                terminal.WriteLine($"  \"I know when I'm outmatched. Maybe another time.\"");
+                terminal.WriteLine(Loc.Get("base.duel_decline_weak"));
             }
             else
             {
-                terminal.WriteLine($"  \"Not today, friend. I've got other things to do.\"");
+                terminal.WriteLine(Loc.Get("base.duel_decline_busy"));
             }
 
             await Task.Delay(2000);
@@ -4311,11 +4360,11 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  {npc.Name2} accepts your challenge!");
+        terminal.WriteLine(Loc.Get("base.duel_accepted", npc.Name2));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("  \"Let's settle this honorably!\"");
+        terminal.WriteLine(Loc.Get("base.duel_honorably"));
         terminal.WriteLine("");
 
         await Task.Delay(1500);
@@ -4326,7 +4375,7 @@ public abstract class BaseLocation
         if (result.Victory)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"\n  You defeated {npc.Name2} in honorable combat!");
+            terminal.WriteLine("\n  " + Loc.Get("base.duel_victory", npc.Name2));
             currentPlayer.PKills++;
 
             // Small reputation boost for honorable duel
@@ -4335,7 +4384,7 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  {npc.Name2} got the better of you...");
+            terminal.WriteLine("\n  " + Loc.Get("base.duel_defeat", npc.Name2));
             currentPlayer.PDefeats++;
         }
 
@@ -4356,7 +4405,7 @@ public abstract class BaseLocation
             currentPlayer.Team.Equals(npc.Team, StringComparison.OrdinalIgnoreCase))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  You can't attack your own teammate!");
+            terminal.WriteLine(Loc.Get("base.attack_teammate"));
             await Task.Delay(1500);
             return;
         }
@@ -4365,22 +4414,22 @@ public abstract class BaseLocation
         if (npc.Level > currentPlayer.Level + 10)
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"  {npc.Name2} is level {npc.Level}. This looks extremely dangerous.");
-            terminal.Write("  Are you sure? (Y/N): ");
+            terminal.WriteLine(Loc.Get("base.attack_dangerous", npc.Name2, npc.Level));
+            terminal.Write(Loc.Get("base.attack_confirm"));
             var confirm = await terminal.GetInput("");
             if (confirm.Trim().ToUpper() != "Y")
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  You think better of it.");
+                terminal.WriteLine(Loc.Get("base.attack_reconsider"));
                 await Task.Delay(1000);
                 return;
             }
         }
 
         terminal.SetColor("dark_red");
-        terminal.WriteLine($"  You draw your weapon and lunge at {npc.Name2}!");
+        terminal.WriteLine(Loc.Get("base.attack_lunge", npc.Name2));
         terminal.SetColor("red");
-        terminal.WriteLine($"  \"What?! You treacherous—!\"");
+        terminal.WriteLine(Loc.Get("base.attack_treacherous"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -4390,26 +4439,26 @@ public abstract class BaseLocation
         if (result.Victory)
         {
             terminal.SetColor("dark_red");
-            terminal.WriteLine($"\n  {npc.Name2} falls to the ground, lifeless.");
+            terminal.WriteLine("\n  " + Loc.Get("base.attack_killed", npc.Name2));
 
             if (result.GoldGained > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  You loot {result.GoldGained:N0} gold from their body.");
+                terminal.WriteLine(Loc.Get("base.attack_looted", result.GoldGained));
             }
 
             currentPlayer.PKills++;
             currentPlayer.Darkness += GameConfig.MurderDarknessGain;
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"  (+{GameConfig.MurderDarknessGain} Darkness)");
+            terminal.WriteLine(Loc.Get("base.attack_darkness", GameConfig.MurderDarknessGain));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  {npc.Name2} overpowered you...");
+            terminal.WriteLine("\n  " + Loc.Get("base.attack_overpowered", npc.Name2));
             terminal.SetColor("gray");
-            terminal.WriteLine("  They'll remember this.");
+            terminal.WriteLine(Loc.Get("base.attack_remember"));
             currentPlayer.PDefeats++;
             currentPlayer.Darkness += 10; // Still get some darkness for the attempt
         }
@@ -4454,39 +4503,39 @@ public abstract class BaseLocation
         terminal.ClearScreen();
 
         // Header
-        WriteBoxHeader("CHARACTER STATUS", "bright_cyan");
+        WriteBoxHeader(Loc.Get("base.character_status"), "bright_cyan");
         terminal.WriteLine("");
 
         // Basic Info
-        WriteSectionHeader("BASIC INFORMATION", "yellow");
+        WriteSectionHeader(Loc.Get("base.basic_information"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Name: ");
+        terminal.Write(Loc.Get("base.stat_name") + " ");
         terminal.SetColor("bright_white");
         terminal.WriteLine(currentPlayer.DisplayName);
 
         terminal.SetColor("white");
-        terminal.Write("Class: ");
+        terminal.Write(Loc.Get("base.stat_class") + " ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.Class}");
         terminal.SetColor("white");
-        terminal.Write("  |  Race: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_race") + " ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.Race}");
         terminal.SetColor("white");
-        terminal.Write("  |  Sex: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_sex") + " ");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{(currentPlayer.Sex == CharacterSex.Male ? "Male" : "Female")}");
+        terminal.WriteLine($"{(currentPlayer.Sex == CharacterSex.Male ? Loc.Get("base.male") : Loc.Get("base.female"))}");
 
         terminal.SetColor("white");
-        terminal.Write("Age: ");
+        terminal.Write(Loc.Get("base.stat_age") + " ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Age}");
         terminal.SetColor("white");
-        terminal.Write("  |  Height: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_height") + " ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Height}cm");
         terminal.SetColor("white");
-        terminal.Write("  |  Weight: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_weight") + " ");
         terminal.SetColor("cyan");
         terminal.WriteLine($"{currentPlayer.Weight}kg");
 
@@ -4494,19 +4543,19 @@ public abstract class BaseLocation
         if (currentPlayer.King)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  Royal Authority: +10% ATK, +10% DEF, +5% HP");
+            terminal.WriteLine(Loc.Get("base.stat_royal_authority"));
         }
         terminal.WriteLine("");
 
         // Level & Experience
-        WriteSectionHeader("LEVEL & EXPERIENCE", "yellow");
+        WriteSectionHeader(Loc.Get("base.level_experience"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Current Level: ");
+        terminal.Write(Loc.Get("base.stat_current_level") + " ");
         terminal.SetColor("bright_yellow");
         terminal.WriteLine($"{currentPlayer.Level}");
 
         terminal.SetColor("white");
-        terminal.Write("Experience: ");
+        terminal.Write($"{Loc.Get("ui.experience")}: ");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine($"{currentPlayer.Experience:N0}");
 
@@ -4515,17 +4564,17 @@ public abstract class BaseLocation
         long xpNeeded = nextLevelXP - currentPlayer.Experience;
 
         terminal.SetColor("white");
-        terminal.Write("XP to Next Level: ");
+        terminal.Write(Loc.Get("base.stat_xp_next") + " ");
         terminal.SetColor("bright_magenta");
         terminal.Write($"{xpNeeded:N0}");
         terminal.SetColor("gray");
-        terminal.WriteLine($" (Need {nextLevelXP:N0} total)");
+        terminal.WriteLine(Loc.Get("base.stat_xp_need_total", nextLevelXP));
         terminal.WriteLine("");
 
         // Combat Stats
-        WriteSectionHeader("COMBAT STATISTICS", "yellow");
+        WriteSectionHeader(Loc.Get("base.combat_statistics"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("HP: ");
+        terminal.Write($"{Loc.Get("combat.bar_hp")}: ");
         terminal.SetColor("bright_red");
         terminal.Write($"{currentPlayer.HP}");
         terminal.SetColor("white");
@@ -4536,7 +4585,7 @@ public abstract class BaseLocation
         if (currentPlayer.MaxMana > 0)
         {
             terminal.SetColor("white");
-            terminal.Write("Mana: ");
+            terminal.Write($"{Loc.Get("ui.mana_label")}: ");
             terminal.SetColor("bright_blue");
             terminal.Write($"{currentPlayer.Mana}");
             terminal.SetColor("white");
@@ -4546,127 +4595,127 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.Write("Strength: ");
+        terminal.Write($"{Loc.Get("ui.stat_strength")}: ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.Strength}");
         terminal.SetColor("white");
-        terminal.Write("  |  Defence: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_defense")}: ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.Defence}");
         terminal.SetColor("white");
-        terminal.Write("  |  Agility: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_agility")}: ");
         terminal.SetColor("bright_green");
         terminal.WriteLine($"{currentPlayer.Agility}");
 
         terminal.SetColor("white");
-        terminal.Write("Dexterity: ");
+        terminal.Write($"{Loc.Get("ui.stat_dexterity")}: ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Dexterity}");
         terminal.SetColor("white");
-        terminal.Write("  |  Stamina: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_stamina")}: ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Stamina}");
         terminal.SetColor("white");
-        terminal.Write("  |  Wisdom: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_wisdom")}: ");
         terminal.SetColor("cyan");
         terminal.WriteLine($"{currentPlayer.Wisdom}");
 
         terminal.SetColor("white");
-        terminal.Write("Intelligence: ");
+        terminal.Write($"{Loc.Get("ui.stat_intelligence")}: ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Intelligence}");
         terminal.SetColor("white");
-        terminal.Write("  |  Charisma: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_charisma")}: ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Charisma}");
         terminal.SetColor("white");
-        terminal.Write("  |  Constitution: ");
+        terminal.Write($"  |  {Loc.Get("ui.stat_constitution")}: ");
         terminal.SetColor("cyan");
         terminal.WriteLine($"{currentPlayer.Constitution}");
         terminal.WriteLine("");
 
         // Pagination - Page 1 break
         terminal.SetColor("gray");
-        terminal.Write("Press Enter to continue...");
+        terminal.Write(Loc.Get("ui.press_enter"));
         await terminal.GetInput("");
         terminal.WriteLine("");
 
         // Equipment - Full Slot Display
-        WriteSectionHeader("EQUIPMENT", "yellow");
+        WriteSectionHeader(Loc.Get("base.equipment"), "yellow");
 
         // Combat style indicator
         terminal.SetColor("white");
-        terminal.Write("Combat Style: ");
+        terminal.Write(Loc.Get("base.stat_combat_style") + " ");
         if (currentPlayer.IsTwoHanding)
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine("Two-Handed (+25% damage, -15% defense)");
+            terminal.WriteLine(Loc.Get("base.style_two_handed"));
         }
         else if (currentPlayer.IsDualWielding)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Dual-Wield (+1 attack, -10% defense)");
+            terminal.WriteLine(Loc.Get("base.style_dual_wield"));
         }
         else if (currentPlayer.HasShieldEquipped)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Sword & Board (balanced, 20% block chance)");
+            terminal.WriteLine(Loc.Get("base.style_sword_board"));
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("One-Handed");
+            terminal.WriteLine(Loc.Get("base.style_one_handed"));
         }
         terminal.WriteLine("");
 
         // Weapons
         terminal.SetColor("bright_red");
-        terminal.Write("Main Hand: ");
+        terminal.Write(Loc.Get("base.slot_main_hand") + " ");
         DisplayEquipmentSlot(EquipmentSlot.MainHand);
         terminal.SetColor("bright_red");
-        terminal.Write("Off Hand:  ");
+        terminal.Write(Loc.Get("base.slot_off_hand") + " ");
         DisplayEquipmentSlot(EquipmentSlot.OffHand);
         terminal.WriteLine("");
 
         // Armor slots (in two columns)
         terminal.SetColor("bright_cyan");
-        terminal.Write("Head:      ");
+        terminal.Write(Loc.Get("base.slot_head") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Head);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Body:      ");
+        terminal.Write(Loc.Get("base.slot_body") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Body);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Arms:      ");
+        terminal.Write(Loc.Get("base.slot_arms") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Arms);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Hands:     ");
+        terminal.Write(Loc.Get("base.slot_hands") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Hands);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Legs:      ");
+        terminal.Write(Loc.Get("base.slot_legs") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Legs);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Feet:      ");
+        terminal.Write(Loc.Get("base.slot_feet") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Feet);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Waist:     ");
+        terminal.Write(Loc.Get("base.slot_waist") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Waist);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Face:      ");
+        terminal.Write(Loc.Get("base.slot_face") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Face);
         terminal.SetColor("bright_cyan");
-        terminal.Write("Cloak:     ");
+        terminal.Write(Loc.Get("base.slot_cloak") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Cloak);
         terminal.WriteLine("");
 
         // Accessories
         terminal.SetColor("bright_magenta");
-        terminal.Write("Neck:      ");
+        terminal.Write(Loc.Get("base.slot_neck") + " ");
         DisplayEquipmentSlot(EquipmentSlot.Neck);
         terminal.SetColor("bright_magenta");
-        terminal.Write("Left Ring: ");
+        terminal.Write(Loc.Get("base.slot_left_ring") + " ");
         DisplayEquipmentSlot(EquipmentSlot.LFinger);
         terminal.SetColor("bright_magenta");
-        terminal.Write("Right Ring:");
+        terminal.Write(Loc.Get("base.slot_right_ring") + " ");
         DisplayEquipmentSlot(EquipmentSlot.RFinger);
         terminal.WriteLine("");
 
@@ -4679,27 +4728,27 @@ public abstract class BaseLocation
             currentPlayer.IsRaging || currentPlayer.SmiteChargesRemaining > 0)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("Active Effects:");
+            terminal.WriteLine(Loc.Get("base.stat_active_effects"));
 
             if (currentPlayer.MagicACBonus > 0)
             {
                 terminal.SetColor("magenta");
-                terminal.WriteLine($"  - Magic AC Bonus: +{currentPlayer.MagicACBonus}");
+                terminal.WriteLine(Loc.Get("base.effect_magic_ac", currentPlayer.MagicACBonus));
             }
             if (currentPlayer.DamageAbsorptionPool > 0)
             {
                 terminal.SetColor("magenta");
-                terminal.WriteLine($"  - Stoneskin: {currentPlayer.DamageAbsorptionPool} damage absorption");
+                terminal.WriteLine(Loc.Get("base.effect_stoneskin", currentPlayer.DamageAbsorptionPool));
             }
             if (currentPlayer.IsRaging)
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("  - RAGING! (+Strength, +HP, -AC)");
+                terminal.WriteLine(Loc.Get("base.effect_raging"));
             }
             if (currentPlayer.SmiteChargesRemaining > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  - Smite Evil: {currentPlayer.SmiteChargesRemaining} charges");
+                terminal.WriteLine(Loc.Get("base.effect_smite", currentPlayer.SmiteChargesRemaining));
             }
             terminal.WriteLine("");
         }
@@ -4715,21 +4764,21 @@ public abstract class BaseLocation
         if (hasAnyBuff)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Active Buffs:");
+            terminal.WriteLine(Loc.Get("base.stat_active_buffs"));
             if (currentPlayer.Class == CharacterClass.Alchemist)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  - Potion Mastery: +{(int)(GameConfig.AlchemistPotionMasteryBonus * 100)}% healing (potions, herbs, elixirs)");
+                terminal.WriteLine(Loc.Get("base.buff_potion_mastery", (int)(GameConfig.AlchemistPotionMasteryBonus * 100)));
             }
             if (currentPlayer.Class == CharacterClass.Magician)
             {
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  - Arcane Mastery: +{(int)((GameConfig.MagicianArcaneSpellBonus - 1.0f) * 100)}% spell damage");
+                terminal.WriteLine(Loc.Get("base.buff_arcane_mastery", (int)((GameConfig.MagicianArcaneSpellBonus - 1.0f) * 100)));
             }
             if (currentPlayer.Class == CharacterClass.Jester)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"  - Trickster's Luck: {GameConfig.JesterTrickstersLuckChance}% chance per attack for bonus damage, dodge, or stamina");
+                terminal.WriteLine(Loc.Get("base.buff_tricksters_luck", GameConfig.JesterTrickstersLuckChance));
             }
             if (currentPlayer.HasGodSlayerBuff)
             {
@@ -4793,50 +4842,50 @@ public abstract class BaseLocation
             var awakeningLevel = ocean.AwakeningLevel;
             var awakeningLabel = awakeningLevel switch
             {
-                0 => "Dormant",
-                1 => "Stirring",
-                2 => "Aware",
-                3 => "Seeking",
-                4 => "Illuminated",
-                5 => "Transcendent",
-                6 => "Enlightened",
-                7 => "Awakened",
-                _ => "Dormant"
+                0 => Loc.Get("base.awakening_dormant"),
+                1 => Loc.Get("base.awakening_stirring"),
+                2 => Loc.Get("base.awakening_aware"),
+                3 => Loc.Get("base.awakening_seeking"),
+                4 => Loc.Get("base.awakening_illuminated"),
+                5 => Loc.Get("base.awakening_transcendent"),
+                6 => Loc.Get("base.awakening_enlightened"),
+                7 => Loc.Get("base.awakening_awakened"),
+                _ => Loc.Get("base.awakening_dormant")
             };
             terminal.SetColor("dark_magenta");
-            terminal.WriteLine($"  Awakening: {awakeningLabel} ({awakeningLevel}/7)");
+            terminal.WriteLine(Loc.Get("base.stat_awakening", awakeningLabel, awakeningLevel));
             terminal.SetColor("white");
             terminal.WriteLine("");
         }
 
         // Wealth
-        WriteSectionHeader("WEALTH", "yellow");
+        WriteSectionHeader(Loc.Get("base.wealth"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Gold on Hand: ");
+        terminal.Write(Loc.Get("base.stat_gold_hand") + " ");
         terminal.SetColor("bright_yellow");
         terminal.WriteLine($"{currentPlayer.Gold:N0}");
 
         terminal.SetColor("white");
-        terminal.Write("Gold in Bank: ");
+        terminal.Write(Loc.Get("base.stat_gold_bank") + " ");
         terminal.SetColor("yellow");
         terminal.WriteLine($"{currentPlayer.BankGold:N0}");
 
         terminal.SetColor("white");
-        terminal.Write("Total Wealth: ");
+        terminal.Write(Loc.Get("base.stat_total_wealth") + " ");
         terminal.SetColor("bright_yellow");
         terminal.WriteLine($"{(currentPlayer.Gold + currentPlayer.BankGold):N0}");
         terminal.WriteLine("");
 
         // Pagination - Page 2 break
         terminal.SetColor("gray");
-        terminal.Write("Press Enter to continue...");
+        terminal.Write(Loc.Get("ui.press_enter"));
         await terminal.GetInput("");
         terminal.WriteLine("");
 
         // Relationships
-        WriteSectionHeader("RELATIONSHIPS", "yellow");
+        WriteSectionHeader(Loc.Get("base.relationships"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Marital Status: ");
+        terminal.Write(Loc.Get("base.stat_marital") + " ");
 
         // Check both Character properties AND RomanceTracker for marriage status
         var romanceTracker = UsurperRemake.Systems.RomanceTracker.Instance;
@@ -4845,7 +4894,7 @@ public abstract class BaseLocation
         if (isMarried)
         {
             terminal.SetColor("bright_magenta");
-            terminal.Write("Married");
+            terminal.Write(Loc.Get("base.stat_married"));
 
             // Get spouse name from RomanceTracker first, fall back to Character property
             string spouseName = "";
@@ -4867,7 +4916,7 @@ public abstract class BaseLocation
             if (!string.IsNullOrEmpty(spouseName))
             {
                 terminal.SetColor("white");
-                terminal.Write(" to ");
+                terminal.Write(" " + Loc.Get("base.stat_married_to") + " ");
                 terminal.SetColor("magenta");
                 terminal.Write(spouseName);
             }
@@ -4877,7 +4926,7 @@ public abstract class BaseLocation
             if (romanceTracker != null && romanceTracker.Spouses.Count > 1)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  ({romanceTracker.Spouses.Count} spouses total)");
+                terminal.WriteLine(Loc.Get("base.stat_spouses_total", romanceTracker.Spouses.Count));
             }
 
             // Get children count from both systems
@@ -4889,31 +4938,31 @@ public abstract class BaseLocation
             }
 
             terminal.SetColor("white");
-            terminal.Write("Children: ");
+            terminal.Write(Loc.Get("base.stat_children") + " ");
             terminal.SetColor("cyan");
             terminal.WriteLine($"{childCount}");
 
             if (currentPlayer.Pregnancy > 0)
             {
                 terminal.SetColor("white");
-                terminal.Write("Pregnancy: ");
+                terminal.Write(Loc.Get("base.stat_pregnancy") + " ");
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"{currentPlayer.Pregnancy} days");
+                terminal.WriteLine(Loc.Get("base.stat_days", currentPlayer.Pregnancy));
             }
         }
         else if (romanceTracker?.CurrentLovers?.Count > 0)
         {
             terminal.SetColor("magenta");
-            terminal.WriteLine($"In a relationship ({romanceTracker.CurrentLovers.Count} lover{(romanceTracker.CurrentLovers.Count > 1 ? "s" : "")})");
+            terminal.WriteLine(Loc.Get("base.stat_in_relationship", romanceTracker.CurrentLovers.Count));
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Single");
+            terminal.WriteLine(Loc.Get("base.stat_single"));
         }
 
         terminal.SetColor("white");
-        terminal.Write("Team: ");
+        terminal.Write(Loc.Get("base.stat_team") + " ");
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("bright_green");
@@ -4922,27 +4971,27 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("None");
+            terminal.WriteLine(Loc.Get("ui.none"));
         }
         terminal.WriteLine("");
 
         // Alignment & Reputation
-        WriteSectionHeader("ALIGNMENT & REPUTATION", "yellow");
+        WriteSectionHeader(Loc.Get("base.alignment_reputation"), "yellow");
 
         // Get alignment info from AlignmentSystem
         var (alignText, alignColor) = AlignmentSystem.Instance.GetAlignmentDisplay(currentPlayer);
 
         terminal.SetColor("white");
-        terminal.Write("Alignment: ");
+        terminal.Write($"{Loc.Get("ui.alignment")}: ");
         terminal.SetColor(alignColor);
         terminal.WriteLine(alignText);
 
         terminal.SetColor("white");
-        terminal.Write("Chivalry: ");
+        terminal.Write(Loc.Get("base.stat_chivalry") + " ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.Chivalry}/1000");
         terminal.SetColor("white");
-        terminal.Write("  |  Darkness: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_darkness") + " ");
         terminal.SetColor("red");
         terminal.WriteLine($"{currentPlayer.Darkness}/1000");
 
@@ -4950,7 +4999,7 @@ public abstract class BaseLocation
         if (!IsScreenReader)
         {
             terminal.SetColor("gray");
-            terminal.Write("  Holy ");
+            terminal.Write("  " + Loc.Get("base.stat_holy") + " ");
             terminal.SetColor("bright_green");
             int chivBars = (int)Math.Min(10, currentPlayer.Chivalry / 100);
             int darkBars = (int)Math.Min(10, currentPlayer.Darkness / 100);
@@ -4962,7 +5011,7 @@ public abstract class BaseLocation
             terminal.Write(new string('█', darkBars));
             terminal.SetColor("darkgray");
             terminal.Write(new string('░', 10 - darkBars));
-            terminal.WriteLine(" Evil");
+            terminal.WriteLine(" " + Loc.Get("base.stat_evil"));
         }
 
         // Show alignment abilities
@@ -4970,7 +5019,7 @@ public abstract class BaseLocation
         if (abilities.Count > 0)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  Alignment Abilities:");
+            terminal.WriteLine(Loc.Get("base.stat_align_abilities"));
             terminal.SetColor("white");
             foreach (var ability in abilities)
             {
@@ -4980,23 +5029,23 @@ public abstract class BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.Write("Loyalty: ");
+        terminal.Write(Loc.Get("base.stat_loyalty") + " ");
         terminal.SetColor("cyan");
         terminal.Write($"{currentPlayer.Loyalty}%");
         terminal.SetColor("white");
-        terminal.Write("  |  Mental Health: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_mental") + " ");
         terminal.SetColor(currentPlayer.Mental >= 50 ? "green" : "red");
         terminal.WriteLine($"{currentPlayer.Mental}");
 
         if (currentPlayer.King)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("*** REIGNING MONARCH ***");
+            terminal.WriteLine(Loc.Get("base.stat_monarch"));
         }
         terminal.WriteLine("");
 
         // Faction
-        WriteSectionHeader("FACTION", "yellow");
+        WriteSectionHeader(Loc.Get("base.faction"), "yellow");
         var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
         if (factionSystem.PlayerFaction != null)
         {
@@ -5004,12 +5053,12 @@ public abstract class BaseLocation
             var factionData = UsurperRemake.Systems.FactionSystem.Factions[faction];
 
             terminal.SetColor("white");
-            terminal.Write("Allegiance: ");
+            terminal.Write(Loc.Get("base.stat_allegiance") + " ");
             terminal.SetColor(GetFactionColor(faction));
             terminal.WriteLine(factionData.Name);
 
             terminal.SetColor("white");
-            terminal.Write("Rank: ");
+            terminal.Write(Loc.Get("base.stat_rank") + " ");
             terminal.SetColor("bright_cyan");
             terminal.Write($"{factionSystem.FactionRank}");
             terminal.SetColor("gray");
@@ -5021,33 +5070,33 @@ public abstract class BaseLocation
 
             // Show active bonuses
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Active Bonuses:");
+            terminal.WriteLine(Loc.Get("base.stat_active_bonuses"));
             terminal.SetColor("green");
             switch (faction)
             {
                 case UsurperRemake.Systems.Faction.TheCrown:
-                    terminal.WriteLine("  • 10% discount at all shops");
+                    terminal.WriteLine(Loc.Get("base.faction_crown_bonus"));
                     break;
                 case UsurperRemake.Systems.Faction.TheFaith:
-                    terminal.WriteLine("  • 25% discount on healing services");
+                    terminal.WriteLine(Loc.Get("base.faction_faith_bonus"));
                     break;
                 case UsurperRemake.Systems.Faction.TheShadows:
-                    terminal.WriteLine("  • 20% better prices when selling items");
+                    terminal.WriteLine(Loc.Get("base.faction_shadows_bonus"));
                     break;
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You have not pledged allegiance to any faction.");
+            terminal.WriteLine(Loc.Get("base.stat_no_faction"));
             terminal.SetColor("darkgray");
-            terminal.WriteLine("  Visit the Castle, Temple, or Dark Alley to learn more.");
+            terminal.WriteLine(Loc.Get("base.stat_faction_hint"));
         }
 
         // Show standing with all factions
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("Faction Standing:");
+        terminal.WriteLine(Loc.Get("base.stat_faction_standing"));
         foreach (var faction in new[] { UsurperRemake.Systems.Faction.TheCrown,
                                          UsurperRemake.Systems.Faction.TheFaith,
                                          UsurperRemake.Systems.Faction.TheShadows })
@@ -5080,13 +5129,13 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             string standingDesc = standing switch
             {
-                >= 200 => " (Revered)",
-                >= 100 => " (Honored)",
-                >= 50 => " (Friendly)",
-                >= 0 => " (Neutral)",
-                >= -50 => " (Unfriendly)",
-                >= -100 => " (Hostile)",
-                _ => " (Hated)"
+                >= 200 => " (" + Loc.Get("base.standing_revered") + ")",
+                >= 100 => " (" + Loc.Get("base.standing_honored") + ")",
+                >= 50 => " (" + Loc.Get("base.standing_friendly") + ")",
+                >= 0 => " (" + Loc.Get("base.standing_neutral") + ")",
+                >= -50 => " (" + Loc.Get("base.standing_unfriendly") + ")",
+                >= -100 => " (" + Loc.Get("base.standing_hostile") + ")",
+                _ => " (" + Loc.Get("base.standing_hated") + ")"
             };
             terminal.WriteLine(standingDesc);
         }
@@ -5094,27 +5143,27 @@ public abstract class BaseLocation
 
         // Pagination - Page 3 break
         terminal.SetColor("gray");
-        terminal.Write("Press Enter to continue...");
+        terminal.Write(Loc.Get("ui.press_enter"));
         await terminal.GetInput("");
         terminal.WriteLine("");
 
         // Battle Record
-        WriteSectionHeader("BATTLE RECORD", "yellow");
+        WriteSectionHeader(Loc.Get("base.battle_record"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Monster Kills: ");
+        terminal.Write(Loc.Get("base.stat_monster_kills") + " ");
         terminal.SetColor("bright_green");
         terminal.Write($"{currentPlayer.MKills}");
         terminal.SetColor("white");
-        terminal.Write("  |  Monster Defeats: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_monster_defeats") + " ");
         terminal.SetColor("red");
         terminal.WriteLine($"{currentPlayer.MDefeats}");
 
         terminal.SetColor("white");
-        terminal.Write("Player Kills: ");
+        terminal.Write(Loc.Get("base.stat_player_kills") + " ");
         terminal.SetColor("bright_yellow");
         terminal.Write($"{currentPlayer.PKills}");
         terminal.SetColor("white");
-        terminal.Write("  |  Player Defeats: ");
+        terminal.Write("  |  " + Loc.Get("base.stat_player_defeats") + " ");
         terminal.SetColor("red");
         terminal.WriteLine($"{currentPlayer.PDefeats}");
 
@@ -5126,7 +5175,7 @@ public abstract class BaseLocation
         {
             double monsterWinRate = (double)currentPlayer.MKills / totalMonsterBattles * 100;
             terminal.SetColor("white");
-            terminal.Write("Monster Win Rate: ");
+            terminal.Write(Loc.Get("base.stat_monster_winrate") + " ");
             terminal.SetColor("cyan");
             terminal.WriteLine($"{monsterWinRate:F1}%");
         }
@@ -5135,16 +5184,16 @@ public abstract class BaseLocation
         {
             double playerWinRate = (double)currentPlayer.PKills / totalPlayerBattles * 100;
             terminal.SetColor("white");
-            terminal.Write("PvP Win Rate: ");
+            terminal.Write(Loc.Get("base.stat_pvp_winrate") + " ");
             terminal.SetColor("cyan");
             terminal.WriteLine($"{playerWinRate:F1}%");
         }
         terminal.WriteLine("");
 
         // Dungeon Progress
-        WriteSectionHeader("DUNGEON PROGRESS", "yellow");
+        WriteSectionHeader(Loc.Get("base.dungeon_progress"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Deepest Floor Reached: ");
+        terminal.Write(Loc.Get("base.stat_deepest_floor") + " ");
         int deepestFloor = currentPlayer.Statistics?.DeepestDungeonLevel ?? 1;
         if (currentPlayer is Player playerForDungeon && playerForDungeon.DungeonLevel > deepestFloor)
             deepestFloor = playerForDungeon.DungeonLevel;
@@ -5163,39 +5212,39 @@ public abstract class BaseLocation
                 .ToList();
 
             terminal.SetColor("white");
-            terminal.Write("Old Gods: ");
+            terminal.Write(Loc.Get("base.stat_old_gods") + " ");
             bool hasAny = false;
             if (godsDefeated > 0)
             {
                 terminal.SetColor("bright_red");
-                terminal.Write($"{godsDefeated} defeated");
+                terminal.Write(Loc.Get("base.gods_defeated", godsDefeated));
                 hasAny = true;
             }
             if (godsAllied > 0)
             {
                 if (hasAny) terminal.Write(", ");
                 terminal.SetColor("bright_green");
-                terminal.Write($"{godsAllied} allied");
+                terminal.Write(Loc.Get("base.gods_allied", godsAllied));
                 hasAny = true;
             }
             if (godsSaved > 0)
             {
                 if (hasAny) terminal.Write(", ");
                 terminal.SetColor("bright_cyan");
-                terminal.Write($"{godsSaved} saved");
+                terminal.Write(Loc.Get("base.gods_saved", godsSaved));
                 hasAny = true;
             }
             if (godsAwakened.Count > 0)
             {
                 if (hasAny) terminal.Write(", ");
                 terminal.SetColor("bright_magenta");
-                terminal.Write($"{godsAwakened.Count} awaiting rescue");
+                terminal.Write(Loc.Get("base.gods_awaiting", godsAwakened.Count));
                 hasAny = true;
             }
             if (!hasAny)
             {
                 terminal.SetColor("gray");
-                terminal.Write("None encountered");
+                terminal.Write(Loc.Get("base.gods_none"));
             }
             terminal.WriteLine("");
 
@@ -5206,24 +5255,24 @@ public abstract class BaseLocation
                 bool hasLoom = UsurperRemake.Systems.ArtifactSystem.Instance.HasArtifact(UsurperRemake.Systems.ArtifactType.SoulweaversLoom);
                 terminal.SetColor("bright_magenta");
                 if (hasLoom)
-                    terminal.WriteLine($"  {godName}: You have the artifact. Return to their floor.");
+                    terminal.WriteLine(Loc.Get("base.god_have_artifact", godName));
                 else
-                    terminal.WriteLine($"  {godName}: Seek the artifact deeper in the dungeon.");
+                    terminal.WriteLine(Loc.Get("base.god_seek_artifact", godName));
             }
 
             // Show seals collected
             int sealsCollected = storySystem.CollectedSeals.Count;
             terminal.SetColor("white");
-            terminal.Write("Ancient Seals: ");
+            terminal.Write(Loc.Get("base.stat_seals") + " ");
             terminal.SetColor(sealsCollected > 0 ? "bright_yellow" : "gray");
-            terminal.WriteLine($"{sealsCollected}/7 collected");
+            terminal.WriteLine(Loc.Get("base.seals_collected", sealsCollected));
         }
         terminal.WriteLine("");
 
         // God Worship & Divine Wrath
-        WriteSectionHeader("DIVINE STATUS", "yellow");
+        WriteSectionHeader(Loc.Get("base.divine_status"), "yellow");
         terminal.SetColor("white");
-        terminal.Write("Worshipped God: ");
+        terminal.Write(Loc.Get("base.stat_worshipped_god") + " ");
         string worshippedGod = UsurperRemake.GodSystemSingleton.Instance?.GetPlayerGod(currentPlayer.Name2) ?? "";
         // Also check player-created (immortal) god worship
         if (string.IsNullOrEmpty(worshippedGod) && !string.IsNullOrEmpty(currentPlayer.WorshippedGod))
@@ -5239,7 +5288,7 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("None (Agnostic)");
+            terminal.WriteLine(Loc.Get("base.stat_agnostic"));
         }
 
         // Show Divine Wrath status if active
@@ -5247,21 +5296,21 @@ public abstract class BaseLocation
         {
             terminal.SetColor("bright_red");
             terminal.WriteLine("");
-            terminal.WriteLine("*** DIVINE WRATH ACTIVE ***");
+            terminal.WriteLine(Loc.Get("base.wrath_active"));
             terminal.SetColor("red");
-            terminal.WriteLine($"  Angered: {currentPlayer.AngeredGodName}");
-            terminal.WriteLine($"  By worshipping: {currentPlayer.BetrayedForGodName}");
+            terminal.WriteLine(Loc.Get("base.wrath_angered", currentPlayer.AngeredGodName));
+            terminal.WriteLine(Loc.Get("base.wrath_by_worshipping", currentPlayer.BetrayedForGodName));
             terminal.SetColor("yellow");
             string severity = currentPlayer.DivineWrathLevel switch
             {
-                1 => "Minor (same alignment betrayal)",
-                2 => "Moderate (opposite alignment betrayal)",
-                3 => "Severe (major opposite betrayal)",
-                _ => "Unknown"
+                1 => Loc.Get("base.wrath_minor"),
+                2 => Loc.Get("base.wrath_moderate"),
+                3 => Loc.Get("base.wrath_severe"),
+                _ => Loc.Get("base.wrath_unknown")
             };
-            terminal.WriteLine($"  Severity: {severity}");
+            terminal.WriteLine(Loc.Get("base.wrath_severity", severity));
             terminal.SetColor("gray");
-            terminal.WriteLine("  (Punishment may strike during dungeon exploration)");
+            terminal.WriteLine(Loc.Get("base.wrath_punishment_hint"));
         }
         terminal.WriteLine("");
 
@@ -5272,7 +5321,7 @@ public abstract class BaseLocation
             var artifactAbilities = artifactSystem.GetActiveArtifactAbilities();
             if (artifactAbilities.Count > 0)
             {
-                WriteSectionHeader("ARTIFACTS", "yellow");
+                WriteSectionHeader(Loc.Get("base.artifacts"), "yellow");
                 foreach (var ability in artifactAbilities)
                 {
                     terminal.SetColor("bright_yellow");
@@ -5287,47 +5336,47 @@ public abstract class BaseLocation
             currentPlayer.Measles || currentPlayer.Leprosy || currentPlayer.Poison > 0 ||
             currentPlayer.Addict > 0 || currentPlayer.Haunt > 0)
         {
-            WriteSectionHeader("AFFLICTIONS", "bright_red");
+            WriteSectionHeader(Loc.Get("base.afflictions"), "bright_red");
 
             if (currentPlayer.Blind)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  - Blind");
+                terminal.WriteLine("  - " + Loc.Get("base.affliction_blind"));
             }
             if (currentPlayer.Plague)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  - Plague");
+                terminal.WriteLine("  - " + Loc.Get("base.affliction_plague"));
             }
             if (currentPlayer.Smallpox)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  - Smallpox");
+                terminal.WriteLine("  - " + Loc.Get("base.affliction_smallpox"));
             }
             if (currentPlayer.Measles)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  - Measles");
+                terminal.WriteLine("  - " + Loc.Get("base.affliction_measles"));
             }
             if (currentPlayer.Leprosy)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  - Leprosy");
+                terminal.WriteLine("  - " + Loc.Get("base.affliction_leprosy"));
             }
             if (currentPlayer.Poison > 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  - Poisoned (Level {currentPlayer.Poison})");
+                terminal.WriteLine(Loc.Get("base.affliction_poisoned", currentPlayer.Poison));
             }
             if (currentPlayer.Addict > 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  - Addicted (Level {currentPlayer.Addict})");
+                terminal.WriteLine(Loc.Get("base.affliction_addicted", currentPlayer.Addict));
             }
             if (currentPlayer.Haunt > 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  - Haunted by {currentPlayer.Haunt} demon(s)");
+                terminal.WriteLine(Loc.Get("base.affliction_haunted", currentPlayer.Haunt));
             }
             terminal.WriteLine("");
         }
@@ -5399,7 +5448,7 @@ public abstract class BaseLocation
         // Show selection
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  Whose gear do you want to inspect?");
+        terminal.WriteLine(Loc.Get("base.gear_inspect_who"));
         terminal.WriteLine("");
 
         for (int i = 0; i < targets.Count; i++)
@@ -5411,7 +5460,7 @@ public abstract class BaseLocation
         }
 
         terminal.WriteLine("");
-        string input = await terminal.GetInput("  Selection (or Enter for yours): ");
+        string input = await terminal.GetInput(Loc.Get("base.gear_selection_prompt"));
 
         Character selected;
         if (string.IsNullOrWhiteSpace(input))
@@ -5445,20 +5494,20 @@ public abstract class BaseLocation
 
         var slots = new (EquipmentSlot slot, string label)[]
         {
-            (EquipmentSlot.MainHand, "Main Hand"),
-            (EquipmentSlot.OffHand, "Off Hand"),
-            (EquipmentSlot.Head, "Head"),
-            (EquipmentSlot.Body, "Body"),
-            (EquipmentSlot.Arms, "Arms"),
-            (EquipmentSlot.Hands, "Hands"),
-            (EquipmentSlot.Legs, "Legs"),
-            (EquipmentSlot.Feet, "Feet"),
-            (EquipmentSlot.Waist, "Waist"),
-            (EquipmentSlot.Face, "Face"),
-            (EquipmentSlot.Cloak, "Cloak"),
-            (EquipmentSlot.Neck, "Neck"),
-            (EquipmentSlot.LFinger, "Left Ring"),
-            (EquipmentSlot.RFinger, "Right Ring"),
+            (EquipmentSlot.MainHand, Loc.Get("base.slot_main_hand")),
+            (EquipmentSlot.OffHand, Loc.Get("base.slot_off_hand")),
+            (EquipmentSlot.Head, Loc.Get("base.slot_head")),
+            (EquipmentSlot.Body, Loc.Get("base.slot_body")),
+            (EquipmentSlot.Arms, Loc.Get("base.slot_arms")),
+            (EquipmentSlot.Hands, Loc.Get("base.slot_hands")),
+            (EquipmentSlot.Legs, Loc.Get("base.slot_legs")),
+            (EquipmentSlot.Feet, Loc.Get("base.slot_feet")),
+            (EquipmentSlot.Waist, Loc.Get("base.slot_waist")),
+            (EquipmentSlot.Face, Loc.Get("base.slot_face")),
+            (EquipmentSlot.Cloak, Loc.Get("base.slot_cloak")),
+            (EquipmentSlot.Neck, Loc.Get("base.slot_neck")),
+            (EquipmentSlot.LFinger, Loc.Get("base.slot_left_ring")),
+            (EquipmentSlot.RFinger, Loc.Get("base.slot_right_ring")),
         };
 
         int totalWP = 0, totalAC = 0, totalStr = 0, totalDex = 0, totalCon = 0;
@@ -5486,7 +5535,7 @@ public abstract class BaseLocation
                     }
                 }
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("Empty");
+                terminal.WriteLine(Loc.Get("ui.empty"));
                 continue;
             }
 
@@ -5515,22 +5564,22 @@ public abstract class BaseLocation
 
             // Line 1: Combat stats
             var combatStats = new List<string>();
-            if (item.WeaponPower > 0) combatStats.Add($"WP:{item.WeaponPower}");
-            if (item.ArmorClass > 0) combatStats.Add($"AC:{item.ArmorClass}");
-            if (item.ShieldBonus > 0) combatStats.Add($"Block:{item.ShieldBonus}");
-            if (item.DefenceBonus > 0) combatStats.Add($"Def:{item.DefenceBonus:+#;-#;0}");
+            if (item.WeaponPower > 0) combatStats.Add($"{Loc.Get("ui.stat_wp")}:{item.WeaponPower}");
+            if (item.ArmorClass > 0) combatStats.Add($"{Loc.Get("ui.stat_ac")}:{item.ArmorClass}");
+            if (item.ShieldBonus > 0) combatStats.Add($"{Loc.Get("ui.stat_block")}:{item.ShieldBonus}");
+            if (item.DefenceBonus > 0) combatStats.Add($"{Loc.Get("ui.stat_def")}:{item.DefenceBonus:+#;-#;0}");
 
             // Primary stats
-            if (item.StrengthBonus != 0) combatStats.Add($"Str:{item.StrengthBonus:+#;-#;0}");
-            if (item.DexterityBonus != 0) combatStats.Add($"Dex:{item.DexterityBonus:+#;-#;0}");
-            if (item.ConstitutionBonus != 0) combatStats.Add($"Con:{item.ConstitutionBonus:+#;-#;0}");
-            if (item.IntelligenceBonus != 0) combatStats.Add($"Int:{item.IntelligenceBonus:+#;-#;0}");
-            if (item.WisdomBonus != 0) combatStats.Add($"Wis:{item.WisdomBonus:+#;-#;0}");
-            if (item.CharismaBonus != 0) combatStats.Add($"Cha:{item.CharismaBonus:+#;-#;0}");
-            if (item.AgilityBonus != 0) combatStats.Add($"Agi:{item.AgilityBonus:+#;-#;0}");
-            if (item.MaxHPBonus != 0) combatStats.Add($"HP:{item.MaxHPBonus:+#;-#;0}");
-            if (item.MaxManaBonus != 0) combatStats.Add($"MP:{item.MaxManaBonus:+#;-#;0}");
-            if (item.StaminaBonus != 0) combatStats.Add($"Sta:{item.StaminaBonus:+#;-#;0}");
+            if (item.StrengthBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_str")}:{item.StrengthBonus:+#;-#;0}");
+            if (item.DexterityBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_dex")}:{item.DexterityBonus:+#;-#;0}");
+            if (item.ConstitutionBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_con")}:{item.ConstitutionBonus:+#;-#;0}");
+            if (item.IntelligenceBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_int")}:{item.IntelligenceBonus:+#;-#;0}");
+            if (item.WisdomBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_wis")}:{item.WisdomBonus:+#;-#;0}");
+            if (item.CharismaBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_cha")}:{item.CharismaBonus:+#;-#;0}");
+            if (item.AgilityBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_agi")}:{item.AgilityBonus:+#;-#;0}");
+            if (item.MaxHPBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_hp")}:{item.MaxHPBonus:+#;-#;0}");
+            if (item.MaxManaBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_mp")}:{item.MaxManaBonus:+#;-#;0}");
+            if (item.StaminaBonus != 0) combatStats.Add($"{Loc.Get("ui.stat_sta")}:{item.StaminaBonus:+#;-#;0}");
 
             if (combatStats.Count > 0)
             {
@@ -5574,22 +5623,22 @@ public abstract class BaseLocation
         // Combat totals
         terminal.Write("    ");
         if (totalWP > 0) { terminal.SetColor("bright_red"); terminal.Write($"WP:{totalWP}  "); }
-        if (totalAC > 0) { terminal.SetColor("bright_cyan"); terminal.Write($"AC:{totalAC}  "); }
-        if (totalDef > 0) { terminal.SetColor("bright_cyan"); terminal.Write($"Def:+{totalDef}  "); }
+        if (totalAC > 0) { terminal.SetColor("bright_cyan"); terminal.Write($"{Loc.Get("ui.stat_ac")}:{totalAC}  "); }
+        if (totalDef > 0) { terminal.SetColor("bright_cyan"); terminal.Write($"{Loc.Get("ui.stat_def")}:+{totalDef}  "); }
         terminal.WriteLine("");
 
         // Stat totals
         var statLine = new List<string>();
-        if (totalStr != 0) statLine.Add($"Str:{totalStr:+#;-#;0}");
-        if (totalDex != 0) statLine.Add($"Dex:{totalDex:+#;-#;0}");
-        if (totalCon != 0) statLine.Add($"Con:{totalCon:+#;-#;0}");
-        if (totalInt != 0) statLine.Add($"Int:{totalInt:+#;-#;0}");
-        if (totalWis != 0) statLine.Add($"Wis:{totalWis:+#;-#;0}");
-        if (totalCha != 0) statLine.Add($"Cha:{totalCha:+#;-#;0}");
-        if (totalAgi != 0) statLine.Add($"Agi:{totalAgi:+#;-#;0}");
-        if (totalHP != 0) statLine.Add($"HP:{totalHP:+#;-#;0}");
-        if (totalMP != 0) statLine.Add($"MP:{totalMP:+#;-#;0}");
-        if (totalSta != 0) statLine.Add($"Sta:{totalSta:+#;-#;0}");
+        if (totalStr != 0) statLine.Add($"{Loc.Get("ui.stat_str")}:{totalStr:+#;-#;0}");
+        if (totalDex != 0) statLine.Add($"{Loc.Get("ui.stat_dex")}:{totalDex:+#;-#;0}");
+        if (totalCon != 0) statLine.Add($"{Loc.Get("ui.stat_con")}:{totalCon:+#;-#;0}");
+        if (totalInt != 0) statLine.Add($"{Loc.Get("ui.stat_int")}:{totalInt:+#;-#;0}");
+        if (totalWis != 0) statLine.Add($"{Loc.Get("ui.stat_wis")}:{totalWis:+#;-#;0}");
+        if (totalCha != 0) statLine.Add($"{Loc.Get("ui.stat_cha")}:{totalCha:+#;-#;0}");
+        if (totalAgi != 0) statLine.Add($"{Loc.Get("ui.stat_agi")}:{totalAgi:+#;-#;0}");
+        if (totalHP != 0) statLine.Add($"{Loc.Get("ui.stat_hp")}:{totalHP:+#;-#;0}");
+        if (totalMP != 0) statLine.Add($"{Loc.Get("ui.stat_mp")}:{totalMP:+#;-#;0}");
+        if (totalSta != 0) statLine.Add($"{Loc.Get("ui.stat_sta")}:{totalSta:+#;-#;0}");
 
         if (statLine.Count > 0)
         {
@@ -5636,7 +5685,7 @@ public abstract class BaseLocation
                 }
             }
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
     }
 
@@ -5664,15 +5713,15 @@ public abstract class BaseLocation
     {
         var stats = new List<string>();
 
-        if (item.WeaponPower > 0) stats.Add($"WP:{item.WeaponPower}");
-        if (item.ArmorClass > 0) stats.Add($"AC:{item.ArmorClass}");
-        if (item.ShieldBonus > 0) stats.Add($"Block:{item.ShieldBonus}");
-        if (item.StrengthBonus != 0) stats.Add($"Str:{item.StrengthBonus:+#;-#;0}");
-        if (item.DexterityBonus != 0) stats.Add($"Dex:{item.DexterityBonus:+#;-#;0}");
-        if (item.ConstitutionBonus != 0) stats.Add($"Con:{item.ConstitutionBonus:+#;-#;0}");
-        if (item.IntelligenceBonus != 0) stats.Add($"Int:{item.IntelligenceBonus:+#;-#;0}");
-        if (item.MaxHPBonus != 0) stats.Add($"HP:{item.MaxHPBonus:+#;-#;0}");
-        if (item.MaxManaBonus != 0) stats.Add($"MP:{item.MaxManaBonus:+#;-#;0}");
+        if (item.WeaponPower > 0) stats.Add($"{Loc.Get("ui.stat_wp")}:{item.WeaponPower}");
+        if (item.ArmorClass > 0) stats.Add($"{Loc.Get("ui.stat_ac")}:{item.ArmorClass}");
+        if (item.ShieldBonus > 0) stats.Add($"{Loc.Get("ui.stat_block")}:{item.ShieldBonus}");
+        if (item.StrengthBonus != 0) stats.Add($"{Loc.Get("ui.stat_str")}:{item.StrengthBonus:+#;-#;0}");
+        if (item.DexterityBonus != 0) stats.Add($"{Loc.Get("ui.stat_dex")}:{item.DexterityBonus:+#;-#;0}");
+        if (item.ConstitutionBonus != 0) stats.Add($"{Loc.Get("ui.stat_con")}:{item.ConstitutionBonus:+#;-#;0}");
+        if (item.IntelligenceBonus != 0) stats.Add($"{Loc.Get("ui.stat_int")}:{item.IntelligenceBonus:+#;-#;0}");
+        if (item.MaxHPBonus != 0) stats.Add($"{Loc.Get("ui.stat_hp")}:{item.MaxHPBonus:+#;-#;0}");
+        if (item.MaxManaBonus != 0) stats.Add($"{Loc.Get("ui.stat_mp")}:{item.MaxManaBonus:+#;-#;0}");
 
         // Limit to 4 stats for concise display
         return string.Join(", ", stats.Take(4));
@@ -5705,13 +5754,13 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("Equipment Totals:");
+        terminal.WriteLine(Loc.Get("base.equipment_totals"));
         terminal.SetColor("white");
-        terminal.Write("  Weapon Power: ");
+        terminal.Write("  " + Loc.Get("base.weapon_power") + " ");
         terminal.SetColor("bright_red");
         terminal.Write($"{totalWeapPow}");
         terminal.SetColor("white");
-        terminal.Write("  |  Armor Class: ");
+        terminal.Write("  |  " + Loc.Get("base.armor_class") + " ");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine($"{totalArmPow}");
 
@@ -5721,7 +5770,7 @@ public abstract class BaseLocation
         if (hasStatBonuses)
         {
             terminal.SetColor("white");
-            terminal.Write("  Bonuses: ");
+            terminal.Write("  " + Loc.Get("base.bonuses") + " ");
             if (totalStr != 0) { terminal.SetColor("green"); terminal.Write($"Str {totalStr:+#;-#;0}  "); }
             if (totalDex != 0) { terminal.SetColor("green"); terminal.Write($"Dex {totalDex:+#;-#;0}  "); }
             if (totalCon != 0) { terminal.SetColor("green"); terminal.Write($"Con {totalCon:+#;-#;0}  "); }
@@ -6010,63 +6059,63 @@ public abstract class BaseLocation
         {
             case 0: // Gift
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{npc.Name2} approaches you.");
+                terminal.WriteLine(Loc.Get("base.npc_approaches", npc.Name2));
                 terminal.SetColor("white");
-                terminal.WriteLine($"\"I never thanked you properly. Take this - it's not much, but...\"");
+                terminal.WriteLine(Loc.Get("base.npc_gift_dialogue"));
 
                 // Small gold gift based on NPC level
                 var giftGold = (int)(npc.Level * (5 + random.Next(10)));
                 currentPlayer.Gold += giftGold;
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  (Received {giftGold} gold)");
+                terminal.WriteLine(Loc.Get("base.received_gold", giftGold));
                 break;
 
             case 1: // Information
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"{npc.Name2} catches your eye and walks over.");
+                terminal.WriteLine(Loc.Get("base.npc_catches_eye", npc.Name2));
                 terminal.SetColor("white");
                 var tips = new[]
                 {
-                    "\"I heard there are powerful weapons hidden on the deeper dungeon floors. Be careful down there.\"",
-                    "\"A word of advice - the healer offers better prices if you buy in bulk.\"",
-                    "\"I've been training at the gym lately. You should try it - the results are worth it.\"",
-                    "\"The temple priests have been acting strange lately. Something is troubling them.\"",
-                    "\"Keep an eye on the marketplace. Rare goods come through every now and then.\"",
+                    Loc.Get("base.tip_weapons"),
+                    Loc.Get("base.tip_healer"),
+                    Loc.Get("base.tip_training"),
+                    Loc.Get("base.tip_temple"),
+                    Loc.Get("base.tip_marketplace"),
                 };
                 terminal.WriteLine(tips[random.Next(tips.Length)]);
                 break;
 
             case 2: // Compliment
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{npc.Name2} smiles as you pass by.");
+                terminal.WriteLine(Loc.Get("base.npc_smiles", npc.Name2));
                 terminal.SetColor("white");
                 var compliments = new[]
                 {
-                    $"\"Good to see you, friend. This town's a better place with you in it.\"",
-                    $"\"I've heard stories about your adventures. Impressive stuff.\"",
-                    $"\"You know, people around here look up to you. Keep it up.\"",
-                    $"\"I was just telling someone about you the other day. All good things, of course.\"",
+                    Loc.Get("base.compliment1"),
+                    Loc.Get("base.compliment2"),
+                    Loc.Get("base.compliment3"),
+                    Loc.Get("base.compliment4"),
                 };
                 terminal.WriteLine(compliments[random.Next(compliments.Length)]);
                 break;
 
             default: // Healing potion gift
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{npc.Name2} presses something into your hand.");
+                terminal.WriteLine(Loc.Get("base.npc_presses", npc.Name2));
                 terminal.SetColor("white");
-                terminal.WriteLine($"\"You look like you could use this. Stay safe out there.\"");
+                terminal.WriteLine(Loc.Get("base.npc_heal_dialogue"));
 
                 var healAmount = Math.Min(currentPlayer.MaxHP / 5, currentPlayer.MaxHP - currentPlayer.HP);
                 if (healAmount > 0)
                 {
                     currentPlayer.HP += healAmount;
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  (Restored {healAmount} HP)");
+                    terminal.WriteLine(Loc.Get("base.restored_hp", healAmount));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  (You're already in good health.)");
+                    terminal.WriteLine(Loc.Get("base.already_healthy"));
                 }
                 break;
         }
@@ -6083,31 +6132,31 @@ public abstract class BaseLocation
         {
             case 0: // Threat
                 terminal.SetColor("red");
-                terminal.WriteLine($"{npc.Name2} blocks your path.");
+                terminal.WriteLine(Loc.Get("base.npc_blocks_path", npc.Name2));
                 terminal.SetColor("white");
                 var threats = new[]
                 {
-                    $"\"I know what you did. Stay away from me and mine, or next time we won't be talking.\"",
-                    $"\"You've got a lot of nerve showing your face around here.\"",
-                    $"\"Watch your back. Not everyone around here is as forgiving as I am.\"",
+                    Loc.Get("base.threat1"),
+                    Loc.Get("base.threat2"),
+                    Loc.Get("base.threat3"),
                 };
                 terminal.WriteLine(threats[random.Next(threats.Length)]);
                 break;
 
             case 1: // Warning
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"{npc.Name2} catches your arm as you pass.");
+                terminal.WriteLine(Loc.Get("base.npc_catches_arm", npc.Name2));
                 terminal.SetColor("white");
-                terminal.WriteLine("\"People are talking about you. And not in a good way. You might want to lay low.\"");
+                terminal.WriteLine(Loc.Get("base.warning_talking"));
                 break;
 
             default: // Cold shoulder with intimidation
                 terminal.SetColor("red");
-                terminal.WriteLine($"{npc.Name2} stares you down from across the room.");
+                terminal.WriteLine(Loc.Get("base.npc_stares_down", npc.Name2));
                 terminal.SetColor("white");
-                terminal.WriteLine("Their hand rests pointedly on the pommel of their weapon.");
+                terminal.WriteLine(Loc.Get("base.hand_on_pommel"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("The message is clear: you're not welcome here.");
+                terminal.WriteLine(Loc.Get("base.not_welcome"));
                 break;
         }
 
@@ -6131,14 +6180,14 @@ public abstract class BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("YOUR MAILBOX", "bright_cyan");
+            WriteBoxHeader(Loc.Get("base.your_mailbox"), "bright_cyan");
             terminal.WriteLine("");
 
             int unread = backend.GetUnreadMailCount(username);
             var inbox = await backend.GetMailInbox(username, pageSize, page * pageSize);
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Unread: {unread}");
+            terminal.WriteLine(Loc.Get("base.mail_unread", unread));
             if (!IsScreenReader)
             {
                 terminal.SetColor("darkgray");
@@ -6148,7 +6197,7 @@ public abstract class BaseLocation
             if (inbox.Count == 0 && page == 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("Your mailbox is empty.");
+                terminal.WriteLine(Loc.Get("base.mailbox_empty"));
             }
             else
             {
@@ -6186,15 +6235,15 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("D");
             terminal.SetColor("white");
-            terminal.Write("]elete #  [");
+            terminal.Write(Loc.Get("base.mail_delete_menu"));
             terminal.SetColor("bright_yellow");
             terminal.Write("N");
             terminal.SetColor("white");
-            terminal.Write("]ext Page  [");
+            terminal.Write(Loc.Get("base.mail_next_menu"));
             terminal.SetColor("bright_yellow");
             terminal.Write("P");
             terminal.SetColor("white");
-            terminal.Write("]rev Page  [");
+            terminal.Write(Loc.Get("base.mail_prev_menu"));
             terminal.SetColor("bright_yellow");
             terminal.Write("Q");
             terminal.SetColor("white");
@@ -6231,7 +6280,7 @@ public abstract class BaseLocation
                 {
                     await backend.DeleteMessage(inbox[delIdx - 1].Id, username);
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("Message deleted.");
+                    terminal.WriteLine(Loc.Get("base.mail_deleted"));
                     await Task.Delay(1000);
                 }
             }
@@ -6248,18 +6297,18 @@ public abstract class BaseLocation
         if (IsScreenReader)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"MESSAGE FROM {msg.FromPlayer.ToUpper()}");
+            terminal.WriteLine(Loc.Get("base.mail_message_from", msg.FromPlayer.ToUpper()));
         }
         else
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"═══ MESSAGE FROM {msg.FromPlayer.ToUpper()} ═══");
+            terminal.WriteLine(Loc.Get("base.mail_message_from_box", msg.FromPlayer.ToUpper()));
         }
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine($"Date: {msg.CreatedAt:yyyy-MM-dd HH:mm}");
+        terminal.WriteLine(Loc.Get("base.mail_date", msg.CreatedAt.ToString("yyyy-MM-dd HH:mm")));
         terminal.SetColor("white");
-        terminal.WriteLine($"Type: {msg.MessageType}");
+        terminal.WriteLine(Loc.Get("base.mail_type", msg.MessageType));
         terminal.WriteLine("");
         terminal.SetColor("white");
         terminal.WriteLine(msg.Message);
@@ -6268,7 +6317,7 @@ public abstract class BaseLocation
         // Mark as read (using existing MarkMessagesRead won't work for a single message,
         // but the message has been seen)
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -6279,14 +6328,14 @@ public abstract class BaseLocation
         if (sentToday >= 20)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You've reached the daily mail limit (20 messages).");
+            terminal.WriteLine(Loc.Get("base.mail_daily_limit"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Send to: ");
+        terminal.Write(Loc.Get("base.mail_send_to"));
         terminal.SetColor("white");
         string recipient = await terminal.ReadLineAsync();
 
@@ -6297,14 +6346,14 @@ public abstract class BaseLocation
         if (resolvedMailName == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Player '{recipient}' not found.");
+            terminal.WriteLine(Loc.Get("base.mail_player_not_found", recipient));
             await Task.Delay(2000);
             return;
         }
         recipient = resolvedMailName;
 
         terminal.SetColor("cyan");
-        terminal.Write("Message (max 200 chars):");
+        terminal.Write(Loc.Get("base.mail_message_prompt"));
         terminal.SetColor("white");
         string message = await terminal.ReadLineAsync();
 
@@ -6319,7 +6368,7 @@ public abstract class BaseLocation
             $"\u001b[35m  [Mail] {currentPlayer.DisplayName}: {message}\u001b[0m");
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Message sent to {recipient}!");
+        terminal.WriteLine(Loc.Get("base.mail_sent", recipient));
         await Task.Delay(1500);
     }
 
@@ -6338,7 +6387,7 @@ public abstract class BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("TRADE PACKAGES", "bright_cyan");
+            WriteBoxHeader(Loc.Get("base.trade_packages"), "bright_cyan");
             terminal.WriteLine("");
 
             // Get incoming and sent offers
@@ -6357,7 +6406,7 @@ public abstract class BaseLocation
             if (incoming.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  No pending packages.");
+                terminal.WriteLine(Loc.Get("base.trade_no_pending"));
             }
             else
             {
@@ -6399,7 +6448,7 @@ public abstract class BaseLocation
             if (sent.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  No outgoing packages.");
+                terminal.WriteLine(Loc.Get("base.trade_no_outgoing"));
             }
             else
             {
@@ -6425,38 +6474,38 @@ public abstract class BaseLocation
                 terminal.WriteLine(new string('─', 65));
             }
             terminal.SetColor("cyan");
-            terminal.WriteLine("  Commands:  Type a letter + number together, e.g. A1, D2, C3");
+            terminal.WriteLine(Loc.Get("base.trade_commands"));
             terminal.WriteLine("");
             terminal.SetColor("white");
             terminal.Write("  [");
             terminal.SetColor("bright_yellow");
             terminal.Write("A#");
             terminal.SetColor("white");
-            terminal.Write("] Accept package    ");
+            terminal.Write(Loc.Get("base.trade_accept"));
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
             terminal.Write("D#");
             terminal.SetColor("white");
-            terminal.WriteLine("] Decline package");
+            terminal.WriteLine(Loc.Get("base.trade_decline"));
             terminal.Write("  [");
             terminal.SetColor("bright_yellow");
             terminal.Write("S");
             terminal.SetColor("white");
-            terminal.Write("]  Send new package  ");
+            terminal.Write(Loc.Get("base.trade_send_new"));
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
             terminal.Write("C#");
             terminal.SetColor("white");
-            terminal.WriteLine("] Cancel sent package");
+            terminal.WriteLine(Loc.Get("base.trade_cancel_sent"));
             terminal.Write("  [");
             terminal.SetColor("bright_yellow");
             terminal.Write("Q");
             terminal.SetColor("white");
-            terminal.WriteLine("]  Quit");
+            terminal.WriteLine(Loc.Get("base.trade_quit"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
             if (incoming.Count > 0)
-                terminal.WriteLine($"  Example: Type A1 to accept package #1, D1 to decline it");
+                terminal.WriteLine(Loc.Get("base.trade_example"));
             terminal.Write("> ");
             terminal.SetColor("white");
             string input = (await terminal.ReadLineAsync()).Trim();
@@ -6552,7 +6601,7 @@ public abstract class BaseLocation
         terminal.SetColor("bright_green");
         if (offer.Gold > 0)
             terminal.WriteLine($"Received {offer.Gold:N0} gold!");
-        terminal.WriteLine("Package accepted!");
+        terminal.WriteLine(Loc.Get("base.trade_accepted"));
         await Task.Delay(1500);
     }
 
@@ -6574,7 +6623,7 @@ public abstract class BaseLocation
             $"\u001b[93m  {currentPlayer.DisplayName} declined your package. Gold returned.\u001b[0m");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("Package declined. Items/gold returned to sender.");
+        terminal.WriteLine(Loc.Get("base.trade_declined"));
         await Task.Delay(1500);
     }
 
@@ -6589,7 +6638,7 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("Package cancelled. Gold returned.");
+        terminal.WriteLine(Loc.Get("base.trade_cancelled"));
         await Task.Delay(1500);
     }
 
@@ -6600,14 +6649,14 @@ public abstract class BaseLocation
         if (sentCount >= 10)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You have too many pending outgoing packages (max 10).");
+            terminal.WriteLine(Loc.Get("base.trade_too_many"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Send to: ");
+        terminal.Write(Loc.Get("base.send_to_prompt"));
         terminal.SetColor("white");
         string recipient = await terminal.ReadLineAsync();
 
@@ -6628,7 +6677,7 @@ public abstract class BaseLocation
         if (recipient.Equals(currentPlayer.DisplayName, StringComparison.OrdinalIgnoreCase))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You can't send packages to yourself!");
+            terminal.WriteLine(Loc.Get("base.trade_no_self"));
             await Task.Delay(1500);
             return;
         }
@@ -6636,7 +6685,7 @@ public abstract class BaseLocation
         // Select items from inventory
         var selectedItems = new List<Item>();
         terminal.SetColor("cyan");
-        terminal.WriteLine("Select items to send (up to 5). Enter 0 when done.");
+        terminal.WriteLine(Loc.Get("base.trade_select_items"));
 
         if (currentPlayer.Inventory.Count > 0)
         {
@@ -6644,7 +6693,7 @@ public abstract class BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine("Your inventory:");
+                terminal.WriteLine(Loc.Get("base.trade_your_inventory"));
                 var available = currentPlayer.Inventory.Where(i => !selectedItems.Contains(i)).ToList();
                 for (int i = 0; i < available.Count; i++)
                 {
@@ -6658,7 +6707,7 @@ public abstract class BaseLocation
                 }
 
                 terminal.SetColor("cyan");
-                terminal.Write("Add item # (0 to stop): ");
+                terminal.Write(Loc.Get("base.trade_add_item"));
                 terminal.SetColor("white");
                 string itemInput = await terminal.ReadLineAsync();
 
@@ -6667,14 +6716,14 @@ public abstract class BaseLocation
                 {
                     selectedItems.Add(available[itemIdx - 1]);
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"Added {available[itemIdx - 1].Name}");
+                    terminal.WriteLine(Loc.Get("base.trade_added", available[itemIdx - 1].Name));
                 }
             }
         }
 
         // Enter gold amount
         terminal.SetColor("cyan");
-        terminal.Write($"Gold to send (you have {currentPlayer.Gold:N0}): ");
+        terminal.Write(Loc.Get("base.trade_gold_prompt", currentPlayer.Gold.ToString("N0")));
         terminal.SetColor("white");
         string goldInput = await terminal.ReadLineAsync();
         long goldAmount = 0;
@@ -6687,14 +6736,14 @@ public abstract class BaseLocation
         if (selectedItems.Count == 0 && goldAmount == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Package is empty - nothing to send.");
+            terminal.WriteLine(Loc.Get("base.trade_empty"));
             await Task.Delay(1500);
             return;
         }
 
         // Optional note
         terminal.SetColor("cyan");
-        terminal.Write("Add a note (optional): ");
+        terminal.Write(Loc.Get("base.trade_note"));
         terminal.SetColor("white");
         string note = await terminal.ReadLineAsync();
         if (note?.Length > 100) note = note.Substring(0, 100);
@@ -6702,19 +6751,19 @@ public abstract class BaseLocation
         // Confirm
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.Write($"Send ");
+        terminal.Write(Loc.Get("base.trade_send_prefix"));
         if (selectedItems.Count > 0)
-            terminal.Write($"{selectedItems.Count} item(s) ");
+            terminal.Write(Loc.Get("base.trade_items_count", selectedItems.Count));
         if (goldAmount > 0)
-            terminal.Write($"+ {goldAmount:N0} gold ");
-        terminal.Write($"to {recipient}? (Y/N): ");
+            terminal.Write(Loc.Get("base.trade_gold_amount", goldAmount.ToString("N0")));
+        terminal.Write(Loc.Get("base.trade_to_confirm", recipient));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
         if (confirm?.ToUpper().StartsWith("Y") != true)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -6761,7 +6810,7 @@ public abstract class BaseLocation
             $"\u001b[93m  {currentPlayer.DisplayName} sent you a package! Type /trade to view.\u001b[0m");
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Package sent to {recipient}!");
+        terminal.WriteLine(Loc.Get("base.trade_package_sent", recipient));
         await Task.Delay(1500);
     }
 
@@ -6775,14 +6824,14 @@ public abstract class BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("BOUNTY BOARD", "bright_red");
+            WriteBoxHeader(Loc.Get("base.bounty_board"), "bright_red");
             terminal.WriteLine("");
 
             var bounties = await backend.GetActiveBounties(20);
             if (bounties.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  The bounty board is empty. No active bounties.");
+                terminal.WriteLine(Loc.Get("base.bounty_empty"));
             }
             else
             {
@@ -6811,17 +6860,17 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("P");
             terminal.SetColor("white");
-            terminal.Write("] Place Bounty    [");
+            terminal.Write(Loc.Get("base.bounty_place_menu"));
             terminal.SetColor("bright_yellow");
             terminal.Write("M");
             terminal.SetColor("white");
-            terminal.Write("] My Bounties    [");
+            terminal.Write(Loc.Get("base.bounty_my_menu"));
             terminal.SetColor("bright_yellow");
             terminal.Write("Q");
             terminal.SetColor("white");
-            terminal.WriteLine("] Back");
+            terminal.WriteLine(Loc.Get("base.bounty_back_menu"));
             terminal.SetColor("white");
-            terminal.Write("\n  Choice: ");
+            terminal.Write(Loc.Get("base.bounty_choice"));
             string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
             if (input == "Q" || input == "") break;
@@ -6846,20 +6895,20 @@ public abstract class BaseLocation
         if (activeCount >= 3)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  You already have 3 active bounties. Wait for them to be claimed.");
+            terminal.WriteLine(Loc.Get("base.bounty_max"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.Write("\n  Target player name: ");
+        terminal.Write(Loc.Get("base.bounty_target_prompt"));
         string target = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (string.IsNullOrEmpty(target)) return;
 
         if (target.ToLower() == username)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You can't place a bounty on yourself!");
+            terminal.WriteLine(Loc.Get("base.bounty_no_self"));
             await Task.Delay(1500);
             return;
         }
@@ -6870,19 +6919,19 @@ public abstract class BaseLocation
         if (targetPlayer == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Player not found.");
+            terminal.WriteLine(Loc.Get("base.bounty_not_found"));
             await Task.Delay(1500);
             return;
         }
 
         long minBounty = 500;
         terminal.SetColor("white");
-        terminal.Write($"  Bounty amount (min {minBounty:N0}, you have {currentPlayer.Gold:N0}g): ");
+        terminal.Write(Loc.Get("base.bounty_amount_prompt", minBounty.ToString("N0"), currentPlayer.Gold.ToString("N0")));
         string amountStr = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!long.TryParse(amountStr, out long amount) || amount < minBounty)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"  Minimum bounty is {minBounty:N0} gold.");
+            terminal.WriteLine(Loc.Get("base.bounty_min_amount", minBounty.ToString("N0")));
             await Task.Delay(1500);
             return;
         }
@@ -6890,7 +6939,7 @@ public abstract class BaseLocation
         if (amount > currentPlayer.Gold)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You don't have enough gold!");
+            terminal.WriteLine(Loc.Get("base.bounty_not_enough"));
             await Task.Delay(1500);
             return;
         }
@@ -6906,7 +6955,7 @@ public abstract class BaseLocation
             _ = UsurperRemake.Systems.OnlineStateManager.Instance!.AddNews($"{currentPlayer.DisplayName} placed a {amount:N0}g bounty on {targetPlayer.DisplayName}!", "bounty");
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"\n  Bounty of {amount:N0} gold placed on {targetPlayer.DisplayName}!");
+        terminal.WriteLine(Loc.Get("base.bounty_placed", amount.ToString("N0"), targetPlayer.DisplayName));
         await Task.Delay(2000);
     }
 
@@ -6919,37 +6968,37 @@ public abstract class BaseLocation
 
         terminal.ClearScreen();
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("\n  === Bounties You Placed ===");
+        terminal.WriteLine(Loc.Get("base.bounty_placed_header"));
         if (placed.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  None.");
+            terminal.WriteLine(Loc.Get("base.bounty_none"));
         }
         else
         {
             foreach (var b in placed)
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"  {b.TargetPlayer} - {b.Amount:N0} gold");
+                terminal.WriteLine(Loc.Get("base.bounty_target_entry", b.TargetPlayer, b.Amount.ToString("N0")));
             }
         }
 
         terminal.SetColor("bright_red");
-        terminal.WriteLine("\n  === Bounties On You ===");
+        terminal.WriteLine(Loc.Get("base.bounty_on_you_header"));
         if (onMe.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  None. You're clean!");
+            terminal.WriteLine(Loc.Get("base.bounty_clean"));
         }
         else
         {
             long total = onMe.Sum(b => b.Amount);
             terminal.SetColor("red");
-            terminal.WriteLine($"  {onMe.Count} active bounties totaling {total:N0} gold!");
+            terminal.WriteLine(Loc.Get("base.bounty_total", onMe.Count, total.ToString("N0")));
             foreach (var b in onMe)
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"  {b.Amount:N0} gold - posted by {b.PlacedBy}");
+                terminal.WriteLine(Loc.Get("base.bounty_entry", b.Amount.ToString("N0"), b.PlacedBy));
             }
         }
 
@@ -6971,7 +7020,7 @@ public abstract class BaseLocation
             terminal.ClearScreen();
 
             // Header
-            WriteBoxHeader("AUCTION HOUSE", "bright_cyan");
+            WriteBoxHeader(Loc.Get("base.auction_house"), "bright_cyan");
             terminal.WriteLine("");
 
             // Get listing count for atmospheric text
@@ -6980,51 +7029,51 @@ public abstract class BaseLocation
 
             // Atmospheric description
             terminal.SetColor("white");
-            terminal.Write("A cavernous hall of polished stone, lined with glass display cases and ");
-            terminal.WriteLine("wooden");
-            terminal.Write("stalls. ");
+            terminal.Write(Loc.Get("base.auction_hall_desc"));
+            terminal.WriteLine(Loc.Get("base.auction_hall_desc2"));
+            terminal.Write(Loc.Get("base.auction_hall_desc3"));
             if (totalListings > 10)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The air buzzes with haggling voices and the clink of coin purses.");
+                terminal.WriteLine(Loc.Get("base.auction_busy"));
             }
             else if (totalListings > 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("A few merchants stand behind their stalls, calling to passersby.");
+                terminal.WriteLine(Loc.Get("base.auction_moderate"));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The stalls stand mostly empty today, dust settling on the counters.");
+                terminal.WriteLine(Loc.Get("base.auction_quiet"));
             }
             terminal.WriteLine("");
 
             // Auctioneer flavor
             terminal.SetColor("yellow");
-            terminal.Write("Grimjaw");
+            terminal.Write(Loc.Get("base.auction_grimjaw"));
             terminal.SetColor("gray");
-            terminal.Write(", the half-orc auctioneer, looms behind the registry desk. ");
+            terminal.Write(Loc.Get("base.auction_grimjaw_desc"));
             if (totalListings == 0)
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("He yawns.");
+                terminal.WriteLine(Loc.Get("base.auction_yawns"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"Slow day. You selling or just wasting my time?\"");
+                terminal.WriteLine(Loc.Get("base.auction_slow_day"));
             }
             else if (totalListings < 5)
             {
                 terminal.SetColor("white");
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"Got a few things worth looking at. Browse the board.\"");
+                terminal.WriteLine(Loc.Get("base.auction_few_things"));
             }
             else
             {
                 terminal.SetColor("white");
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine("\"Plenty of goods today! Step up, step up!\"");
+                terminal.WriteLine(Loc.Get("base.auction_plenty"));
             }
             terminal.WriteLine("");
 
@@ -7034,11 +7083,11 @@ public abstract class BaseLocation
                 long totalValue = 0;
                 foreach (var l in listings) totalValue += l.Price;
                 terminal.SetColor("cyan");
-                terminal.Write("  Listings: ");
+                terminal.Write(Loc.Get("base.auction_listings"));
                 terminal.SetColor("white");
                 terminal.Write($"{totalListings}");
                 terminal.SetColor("gray");
-                terminal.Write("   Total value: ");
+                terminal.Write(Loc.Get("base.auction_total_value"));
                 terminal.SetColor("bright_yellow");
                 terminal.WriteLine($"{totalValue:N0} {GameConfig.MoneyType}");
                 terminal.WriteLine("");
@@ -7053,7 +7102,7 @@ public abstract class BaseLocation
             if (npcsHere.Count > 0)
             {
                 terminal.SetColor("gray");
-                terminal.Write("  People here: ");
+                terminal.Write(Loc.Get("base.auction_people"));
                 for (int i = 0; i < npcsHere.Count && i < 8; i++)
                 {
                     if (i > 0) terminal.Write(", ");
@@ -7063,7 +7112,7 @@ public abstract class BaseLocation
                 if (npcsHere.Count > 8)
                 {
                     terminal.SetColor("gray");
-                    terminal.Write($" and {npcsHere.Count - 8} others");
+                    terminal.Write(Loc.Get("base.auction_and_others", npcsHere.Count - 8));
                 }
                 terminal.SetColor("gray");
                 terminal.WriteLine("");
@@ -7072,7 +7121,7 @@ public abstract class BaseLocation
 
             // Menu
             terminal.SetColor("cyan");
-            terminal.WriteLine("What would you like to do?");
+            terminal.WriteLine(Loc.Get("base.auction_what_do"));
             terminal.WriteLine("");
 
             // Row 1
@@ -7083,7 +7132,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rowse Listings        ");
+            terminal.Write(Loc.Get("base.auction_browse"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -7092,7 +7141,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ell Item       ");
+            terminal.Write(Loc.Get("base.auction_sell"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -7101,7 +7150,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("y Listings");
+            terminal.WriteLine(Loc.Get("base.auction_my_listings"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -7111,7 +7160,7 @@ public abstract class BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("eturn to Town         ");
+            terminal.Write(Loc.Get("base.auction_return"));
 
             if (npcsHere.Count > 0)
             {
@@ -7122,7 +7171,7 @@ public abstract class BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write($" Talk ({npcsHere.Count})");
+                terminal.Write(Loc.Get("base.auction_talk", npcsHere.Count));
             }
             terminal.WriteLine("");
             terminal.WriteLine("");
@@ -7131,7 +7180,7 @@ public abstract class BaseLocation
             ShowStatusLine();
 
             terminal.SetColor("bright_white");
-            string input = await terminal.GetInput("Your choice: ");
+            string input = await GetChoice();
             input = input?.Trim().ToUpper() ?? "";
 
             if (input == "R" || input == "Q" || input == "") break;
@@ -7166,17 +7215,17 @@ public abstract class BaseLocation
         if (npcsHere.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("There's no one here to talk to.");
+            terminal.WriteLine(Loc.Get("base.no_one_to_talk"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("PEOPLE NEARBY", "bright_cyan");
+        WriteBoxHeader(Loc.Get("base.people_nearby"), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  Who would you like to talk to?");
+        terminal.WriteLine($"  {Loc.Get("base.who_talk_to")}");
         terminal.WriteLine("");
 
         for (int i = 0; i < npcsHere.Count; i++)
@@ -7225,7 +7274,7 @@ public abstract class BaseLocation
         if (listings.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  No items for sale. Check back later!");
+            terminal.WriteLine(Loc.Get("base.auction_no_items"));
             await Task.Delay(2000);
             return;
         }
@@ -7241,9 +7290,9 @@ public abstract class BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("\nAUCTION LISTINGS");
+            terminal.WriteLine(Loc.Get("base.auction_listings_header"));
         else
-            terminal.WriteLine("\n  ═══════════ AUCTION LISTINGS ═══════════");
+            terminal.WriteLine(Loc.Get("base.auction_listings_header_box"));
         terminal.SetColor("darkgray");
         string priceHeader = "Price".PadLeft(10);
         terminal.WriteLine($"  {"#",-4} {"Item",-24} {"Stats",-16} {priceHeader}   {"Seller",-14} {"Expires"}");
@@ -7278,9 +7327,9 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("darkgray");
-        terminal.WriteLine("\n  Enter # to inspect/buy, or press Enter to go back.");
+        terminal.WriteLine(Loc.Get("base.auction_inspect"));
         terminal.SetColor("white");
-        terminal.Write("  Choice: ");
+        terminal.Write(Loc.Get("base.auction_choice"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > listings.Count) return;
 
@@ -7349,16 +7398,16 @@ public abstract class BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("\nITEM DETAILS");
+            terminal.WriteLine(Loc.Get("base.auction_item_header"));
         else
-            terminal.WriteLine("\n  ═══════════ ITEM DETAILS ═══════════");
+            terminal.WriteLine(Loc.Get("base.auction_item_header_box"));
         terminal.SetColor("white");
         terminal.WriteLine($"\n  {listing.ItemName}");
 
         if (item != null)
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine($"  Type: {GetItemTypeName(item.Type)}    Value: {item.Value:N0}g");
+            terminal.WriteLine(Loc.Get("base.auction_type", GetItemTypeName(item.Type), item.Value.ToString("N0")));
 
             // Stat bonuses
             terminal.SetColor("bright_cyan");
@@ -7387,36 +7436,36 @@ public abstract class BaseLocation
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  No stat bonuses");
+                terminal.WriteLine(Loc.Get("base.auction_no_stats"));
             }
 
             // Requirements and flags
             terminal.SetColor("darkgray");
             terminal.WriteLine("");
             if (item.MinLevel > 0)
-                terminal.WriteLine($"  Requires Level {item.MinLevel}+");
+                terminal.WriteLine(Loc.Get("base.auction_requires_level", item.MinLevel));
             if (item.StrengthNeeded > 0)
-                terminal.WriteLine($"  Requires {item.StrengthNeeded} Strength");
+                terminal.WriteLine(Loc.Get("base.auction_requires_str", item.StrengthNeeded));
             if (item.RequiresGood || item.OnlyForGood)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  Requires Good alignment");
+                terminal.WriteLine(Loc.Get("base.auction_req_good"));
             }
             if (item.RequiresEvil || item.OnlyForEvil)
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("  Requires Evil alignment");
+                terminal.WriteLine(Loc.Get("base.auction_req_evil"));
             }
             if (item.Cursed || item.IsCursed)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  CURSED");
+                terminal.WriteLine(Loc.Get("base.auction_cursed"));
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  (Item details unavailable)");
+            terminal.WriteLine(Loc.Get("base.auction_unavailable"));
         }
 
         // Sale info
@@ -7436,8 +7485,8 @@ public abstract class BaseLocation
         if (isMine)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("\n  This is your listing.");
-            terminal.Write("  Press Enter to go back.");
+            terminal.WriteLine(Loc.Get("base.auction_your_listing"));
+            terminal.Write(Loc.Get("base.auction_press_enter"));
             await terminal.ReadLineAsync();
             return;
         }
@@ -7452,8 +7501,8 @@ public abstract class BaseLocation
             if (currentPlayer.Level < requiredLevel)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"\n  You must be level {requiredLevel}+ to use this item. (You are level {currentPlayer.Level})");
-                terminal.Write("  Press Enter to go back.");
+                terminal.WriteLine(Loc.Get("base.auction_req_level", requiredLevel, currentPlayer.Level));
+                terminal.Write(Loc.Get("base.auction_press_enter"));
                 await terminal.ReadLineAsync();
                 return;
             }
@@ -7462,14 +7511,14 @@ public abstract class BaseLocation
         if (currentPlayer.Gold < listing.Price)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  You need {listing.Price - currentPlayer.Gold:N0} more gold to buy this.");
-            terminal.Write("  Press Enter to go back.");
+            terminal.WriteLine(Loc.Get("base.auction_need_more", (listing.Price - currentPlayer.Gold).ToString("N0")));
+            terminal.Write(Loc.Get("base.auction_press_enter"));
             await terminal.ReadLineAsync();
             return;
         }
 
         terminal.SetColor("yellow");
-        terminal.Write($"\n  Buy for {listing.Price:N0} gold? (Y/N): ");
+        terminal.Write(Loc.Get("base.auction_buy_confirm", listing.Price.ToString("N0")));
         string confirm = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
         if (confirm != "Y") return;
 
@@ -7477,7 +7526,7 @@ public abstract class BaseLocation
         if (!success)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  That item was already sold or expired!");
+            terminal.WriteLine(Loc.Get("base.auction_already_sold"));
             await Task.Delay(1500);
             return;
         }
@@ -7493,13 +7542,13 @@ public abstract class BaseLocation
             {
                 currentPlayer.Inventory.Add(purchasedItem);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\n  Purchased {listing.ItemName} for {listing.Price:N0} gold!");
+                terminal.WriteLine(Loc.Get("base.auction_purchased", listing.ItemName, listing.Price.ToString("N0")));
             }
         }
         catch
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\n  Purchased item but couldn't add to inventory. Gold was deducted.");
+            terminal.WriteLine(Loc.Get("base.auction_purchased_error"));
         }
 
         await backend.SendMessage("Auction House", listing.Seller, "auction",
@@ -7539,7 +7588,7 @@ public abstract class BaseLocation
         if (currentPlayer.Inventory.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  You have no items to sell!");
+            terminal.WriteLine(Loc.Get("base.auction_no_items_sell"));
             await Task.Delay(1500);
             return;
         }
@@ -7550,7 +7599,7 @@ public abstract class BaseLocation
         if (activeCount >= 5)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  You already have 5 active listings. Cancel or wait for them to expire.");
+            terminal.WriteLine(Loc.Get("base.auction_max_listings"));
             await Task.Delay(2000);
             return;
         }
@@ -7558,9 +7607,9 @@ public abstract class BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("\nYOUR INVENTORY");
+            terminal.WriteLine(Loc.Get("base.auction_inv_header"));
         else
-            terminal.WriteLine("\n  ═══════════ YOUR INVENTORY ═══════════");
+            terminal.WriteLine(Loc.Get("base.auction_inv_header_box"));
         for (int i = 0; i < currentPlayer.Inventory.Count; i++)
         {
             terminal.SetColor("bright_yellow");
@@ -7570,25 +7619,25 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.Write("\n  Item # to sell: ");
+        terminal.Write(Loc.Get("base.auction_item_num"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > currentPlayer.Inventory.Count) return;
 
         var item = currentPlayer.Inventory[choice - 1];
 
-        terminal.Write("  Asking price (gold): ");
+        terminal.Write(Loc.Get("base.auction_asking_price"));
         string priceStr = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!long.TryParse(priceStr, out long price) || price < 1)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Invalid price.");
+            terminal.WriteLine(Loc.Get("base.auction_invalid_price"));
             await Task.Delay(1500);
             return;
         }
 
         // Duration selection with fee display
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\n  Select listing duration:");
+        terminal.WriteLine(Loc.Get("base.auction_duration"));
         for (int i = 0; i < AuctionDurations.Length; i++)
         {
             var (hours, label) = AuctionDurations[i];
@@ -7608,7 +7657,7 @@ public abstract class BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.Write("\n  Duration (1-4): ");
+        terminal.Write(Loc.Get("base.auction_duration_prompt"));
         string durInput = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!int.TryParse(durInput, out int durChoice) || durChoice < 1 || durChoice > AuctionDurations.Length) return;
 
@@ -7620,14 +7669,14 @@ public abstract class BaseLocation
         if (currentPlayer.Gold < listingFee)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  You need {listingFee:N0} gold for the listing fee. You have {currentPlayer.Gold:N0}.");
+            terminal.WriteLine(Loc.Get("base.auction_need_fee", listingFee.ToString("N0"), currentPlayer.Gold.ToString("N0")));
             await Task.Delay(2000);
             return;
         }
 
         // Confirm
         terminal.SetColor("yellow");
-        terminal.Write($"\n  List {item.Name} for {price:N0}g ({chosenLabel}, fee: {listingFee:N0}g)? (Y/N): ");
+        terminal.Write(Loc.Get("base.auction_list_confirm", item.Name, price.ToString("N0"), chosenLabel, listingFee.ToString("N0")));
         string confirm = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
         if (confirm != "Y") return;
 
@@ -7642,7 +7691,7 @@ public abstract class BaseLocation
             CityControlSystem.Instance.ProcessSaleTax(listingFee);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"\n  {item.Name} listed for {price:N0} gold! Fee: {listingFee:N0}g. Expires in {chosenLabel}.");
+            terminal.WriteLine(Loc.Get("base.auction_listed", item.Name, price.ToString("N0"), listingFee.ToString("N0"), chosenLabel));
 
             // Global announcement
             UsurperRemake.Server.MudServer.Instance?.BroadcastToAll(
@@ -7652,7 +7701,7 @@ public abstract class BaseLocation
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  Failed to create listing.");
+            terminal.WriteLine(Loc.Get("base.auction_failed"));
         }
         await Task.Delay(2000);
     }
@@ -7663,14 +7712,14 @@ public abstract class BaseLocation
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
         if (IsScreenReader)
-            terminal.WriteLine("\nMY LISTINGS");
+            terminal.WriteLine(Loc.Get("base.auction_my_header"));
         else
-            terminal.WriteLine("\n  ═══════════ MY LISTINGS ═══════════");
+            terminal.WriteLine(Loc.Get("base.auction_my_header_box"));
 
         if (listings.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  You have no listings.");
+            terminal.WriteLine(Loc.Get("base.auction_no_listings"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7708,13 +7757,13 @@ public abstract class BaseLocation
             };
 
             if (l.Status == "sold" && !l.GoldCollected)
-                statusText = "SOLD - COLLECT GOLD";
+                statusText = Loc.Get("base.auction_sold_uncollected");
             else if (l.Status == "sold" && l.GoldCollected)
-                statusText = "SOLD - COLLECTED";
+                statusText = Loc.Get("base.auction_sold_collected");
             else if (l.Status == "expired")
-                statusText = "EXPIRED - COLLECT ITEM";
+                statusText = Loc.Get("base.auction_expired_collect");
             else if (l.Status == "collected")
-                statusText = "EXPIRED - COLLECTED";
+                statusText = Loc.Get("base.auction_expired_collected");
 
             terminal.SetColor("bright_yellow");
             terminal.Write($"  {i + 1,-4} ");
@@ -7731,14 +7780,14 @@ public abstract class BaseLocation
         if (uncollectedGold > 0)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"\n  Gold awaiting collection: {uncollectedGold:N0}g ({soldUncollected.Count} item{(soldUncollected.Count != 1 ? "s" : "")})");
+            terminal.WriteLine(Loc.Get("base.auction_gold_awaiting", uncollectedGold.ToString("N0"), soldUncollected.Count, soldUncollected.Count != 1 ? "s" : ""));
         }
 
         // Show expired items summary
         if (expiredUncollected.Count > 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"  Expired items to collect: {expiredUncollected.Count} item{(expiredUncollected.Count != 1 ? "s" : "")}");
+            terminal.WriteLine(Loc.Get("base.auction_expired_count", expiredUncollected.Count, expiredUncollected.Count != 1 ? "s" : ""));
         }
 
         terminal.SetColor("white");
@@ -7750,7 +7799,7 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("C");
             terminal.SetColor("white");
-            terminal.Write("] Collect all gold    ");
+            terminal.Write(Loc.Get("base.auction_collect_gold"));
         }
         if (expiredUncollected.Count > 0)
         {
@@ -7758,16 +7807,16 @@ public abstract class BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("E");
             terminal.SetColor("white");
-            terminal.Write("] Collect expired items    ");
+            terminal.Write(Loc.Get("base.auction_collect_expired"));
         }
         terminal.Write("[");
         terminal.SetColor("bright_yellow");
         terminal.Write("#");
         terminal.SetColor("white");
-        terminal.Write("] Cancel/collect listing    [Enter] Back");
+        terminal.Write(Loc.Get("base.auction_cancel_collect"));
         terminal.WriteLine("");
 
-        terminal.Write("\n  Choice: ");
+        terminal.Write(Loc.Get("base.auction_my_choice"));
         string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
         if (string.IsNullOrEmpty(input)) return;
 
@@ -7786,12 +7835,12 @@ public abstract class BaseLocation
             {
                 currentPlayer.Gold += totalCollected;
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\n  Collected {totalCollected:N0} gold from auction sales!");
+                terminal.WriteLine(Loc.Get("base.auction_gold_collected", totalCollected.ToString("N0")));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("\n  No gold to collect.");
+                terminal.WriteLine(Loc.Get("base.auction_no_gold"));
             }
             await Task.Delay(2000);
             return;
@@ -7818,12 +7867,12 @@ public abstract class BaseLocation
             if (collected > 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\n  Collected {collected} expired item{(collected != 1 ? "s" : "")} back to your inventory.");
+                terminal.WriteLine(Loc.Get("base.auction_items_collected", collected));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("\n  No expired items to collect.");
+                terminal.WriteLine(Loc.Get("base.auction_no_expired"));
             }
             await Task.Delay(2000);
             return;
@@ -7847,12 +7896,12 @@ public abstract class BaseLocation
                 }
                 catch { }
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  Collected {listing.ItemName} back to your inventory.");
+                terminal.WriteLine(Loc.Get("base.auction_collected_back", listing.ItemName));
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  Failed to collect item.");
+                terminal.WriteLine(Loc.Get("base.auction_collect_failed"));
             }
             await Task.Delay(1500);
             return;
@@ -7861,7 +7910,7 @@ public abstract class BaseLocation
         if (listing.Status != "active")
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Can only cancel active listings.");
+            terminal.WriteLine(Loc.Get("base.auction_only_active"));
             await Task.Delay(1500);
             return;
         }
@@ -7878,7 +7927,7 @@ public abstract class BaseLocation
             catch { }
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  Listing cancelled. Item returned to inventory.");
+            terminal.WriteLine(Loc.Get("base.auction_listing_cancelled"));
         }
         await Task.Delay(1500);
     }

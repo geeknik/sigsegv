@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using UsurperRemake.Systems;
 
 /// <summary>
 /// News Location - Simple news display
@@ -51,13 +52,13 @@ public class NewsLocation : BaseLocation
         terminal.ClearScreen();
         terminal.WriteLine("");
 
-        WriteBoxHeader("TOWN NEWS BOARD", "bright_cyan");
+        WriteBoxHeader(Loc.Get("news.header"), "bright_cyan");
         terminal.WriteLine("");
 
         if (news == null || news.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  The news board is empty. Nothing to report.");
+            terminal.WriteLine($"  {Loc.Get("news.empty")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
@@ -76,7 +77,7 @@ public class NewsLocation : BaseLocation
         if (displayLines.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  The news board is empty. Nothing to report.");
+            terminal.WriteLine($"  {Loc.Get("news.empty")}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
@@ -98,7 +99,7 @@ public class NewsLocation : BaseLocation
             }
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine($"  {displayLines.Count} news items");
+            terminal.WriteLine($"  {Loc.Get("news.items_count", displayLines.Count)}");
             terminal.WriteLine("");
             await terminal.PressAnyKey();
         }
@@ -153,11 +154,11 @@ public class NewsLocation : BaseLocation
             terminal.ClearScreen();
             terminal.WriteLine("");
 
-            WriteBoxHeader("TOWN NEWS BOARD", "bright_cyan");
+            WriteBoxHeader(Loc.Get("news.header"), "bright_cyan");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"  Page {currentPage} of {totalPages} ({newsLines.Count} items)");
+            terminal.WriteLine($"  {Loc.Get("news.page_of", currentPage, totalPages, newsLines.Count)}");
             terminal.WriteLine("");
 
             int startIndex = (currentPage - 1) * PageSize;
@@ -172,7 +173,7 @@ public class NewsLocation : BaseLocation
             if (currentPage < totalPages)
             {
                 terminal.SetColor("yellow");
-                terminal.Write("  [ENTER] Next page, [R] Return: ");
+                terminal.Write($"  {Loc.Get("news.next_page")}");
 
                 string input = await terminal.GetInput("");
 
@@ -204,6 +205,6 @@ public class NewsLocation : BaseLocation
 
     protected override string GetBreadcrumbPath()
     {
-        return "Main Street > News Board";
+        return Loc.Get("news.breadcrumb");
     }
 }

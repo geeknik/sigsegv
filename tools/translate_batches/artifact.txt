@@ -1,0 +1,11 @@
+artifact.artifacts_resonate=The six artifacts you carry begin to resonate.
+artifact.light_shadow_dance=Light and shadow dance around you.
+artifact.lore=LORE
+artifact.seek_prison="Seek the Creator's Prison at dungeon level 100."
+artifact.special=Special
+artifact.tear_opens=A tear opens in the fabric of existence...
+artifact.voice_whispers=A voice that is no voice whispers in your mind.
+artifact.void_key_desc1=From the void between worlds, a key of pure nothing
+artifact.void_key_desc2=materializes before you. It is absence given form,
+artifact.void_key_desc3=the shape of possibility itself.
+artifact.way_is_open="The way is open."

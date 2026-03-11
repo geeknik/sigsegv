@@ -20,7 +20,7 @@ public static class SpellLearningSystem
         if (terminal == null || player == null) return;
         if (!SpellSystem.HasSpells(player))
         {
-            terminal.WriteLine("Only magical professions can learn spells here.", "red");
+            terminal.WriteLine(Loc.Get("spell_learning.no_magic"), "red");
             await Task.Delay(1000);
             return;
         }
@@ -34,12 +34,12 @@ public static class SpellLearningSystem
         while (true)
         {
             terminal.ClearScreen();
-            UIHelper.WriteSectionHeader(terminal, "SPELL LIBRARY", "bright_magenta");
-            terminal.WriteLine($"Class: {player.Class} | Level: {player.Level} | Mana: {player.Mana}/{player.MaxMana}", "cyan");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("spell_learning.header"), "bright_magenta");
+            terminal.WriteLine($"{Loc.Get("status.class")}: {player.Class} | {Loc.Get("ui.level")}: {player.Level} | {Loc.Get("ui.stat_mana")}: {player.Mana}/{player.MaxMana}", "cyan");
             terminal.WriteLine("");
 
             // Show current quickbar
-            terminal.WriteLine("  Your Quickbar:", "bright_white");
+            terminal.WriteLine(Loc.Get("spell_learning.your_quickbar"), "bright_white");
             for (int i = 0; i < 9; i++)
             {
                 var slotId = player.Quickbar[i];
@@ -63,13 +63,13 @@ public static class SpellLearningSystem
                     {
                         player.Quickbar[i] = null;
                         terminal.SetColor("darkgray");
-                        terminal.WriteLine($"  [{i + 1}] --- empty ---");
+                        terminal.WriteLine(Loc.Get("spell_learning.empty_slot", i + 1));
                     }
                 }
                 else
                 {
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine($"  [{i + 1}] --- empty ---");
+                    terminal.WriteLine(Loc.Get("spell_learning.empty_slot", i + 1));
                 }
             }
 
@@ -89,7 +89,7 @@ public static class SpellLearningSystem
             terminal.WriteLine("");
             if (knownUnequipped.Count > 0)
             {
-                terminal.WriteLine("  Known Spells (not on quickbar):", "bright_white");
+                terminal.WriteLine(Loc.Get("spell_learning.known_unequipped"), "bright_white");
                 for (int i = 0; i < knownUnequipped.Count; i++)
                 {
                     char letter = (char)('a' + i);
@@ -115,7 +115,7 @@ public static class SpellLearningSystem
             if (unknownLearnable.Count > 0)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Available to Learn:", "bright_white");
+                terminal.WriteLine(Loc.Get("spell_learning.available_learn"), "bright_white");
                 foreach (var spell in unknownLearnable)
                 {
                     int manaCost = SpellSystem.CalculateManaCost(spell, player);
@@ -136,25 +136,25 @@ public static class SpellLearningSystem
             if (locked.Count > 0)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Locked (level too low):", "darkgray");
+                terminal.WriteLine(Loc.Get("spell_learning.locked"), "darkgray");
                 foreach (var spell in locked)
                 {
                     int reqLevel = SpellSystem.GetLevelRequired(player.Class, spell.Level);
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine($"       {spell.Name,-22} Requires Lv{reqLevel} - {spell.Description}");
+                    terminal.WriteLine($"       {spell.Name,-22} {Loc.Get("spell_learning.locked_requires", reqLevel)} - {spell.Description}");
                 }
             }
 
             terminal.WriteLine("");
             if (GameConfig.ScreenReaderMode)
             {
-                terminal.WriteLine("1-9. Equip or change slot, C. Clear slot, A. Auto-fill", "bright_yellow");
-                terminal.WriteLine("L followed by number to learn spell (e.g. L5), F followed by number to forget spell, X. Exit", "bright_yellow");
+                terminal.WriteLine(Loc.Get("spell_learning.menu_sr"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("spell_learning.menu_sr_2"), "bright_yellow");
             }
             else
             {
-                terminal.WriteLine("[1-9] Equip/change slot  [C] Clear slot  [A] Auto-fill", "bright_yellow");
-                terminal.WriteLine("[L#] Learn spell (e.g. L5)  [F#] Forget spell  [X] Exit", "bright_yellow");
+                terminal.WriteLine(Loc.Get("spell_learning.menu_visual"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("spell_learning.menu_visual_2"), "bright_yellow");
             }
             var input = await terminal.GetInput("> ");
             if (string.IsNullOrWhiteSpace(input)) continue;
@@ -167,7 +167,7 @@ public static class SpellLearningSystem
             if (cmd == "A")
             {
                 GameEngine.AutoPopulateQuickbar(player);
-                terminal.WriteLine("Quickbar auto-filled!", "bright_green");
+                terminal.WriteLine(Loc.Get("spell_learning.auto_filled"), "bright_green");
                 await SaveSystem.Instance.AutoSave(player);
                 await Task.Delay(800);
                 continue;
@@ -176,7 +176,7 @@ public static class SpellLearningSystem
             // Clear a slot
             if (cmd == "C")
             {
-                terminal.Write("Clear which slot? (1-9): ", "yellow");
+                terminal.Write(Loc.Get("spell_learning.clear_which"), "yellow");
                 var clearInput = await terminal.GetInput("");
                 if (int.TryParse(clearInput.Trim(), out int clearSlot) && clearSlot >= 1 && clearSlot <= 9)
                 {
@@ -186,7 +186,7 @@ public static class SpellLearningSystem
                         var lvl = SpellSystem.ParseQuickbarSpellLevel(clearedId);
                         var spellName = lvl.HasValue ? SpellSystem.GetSpellInfo(player.Class, lvl.Value)?.Name ?? clearedId : clearedId;
                         player.Quickbar[clearSlot - 1] = null;
-                        terminal.WriteLine($"Removed {spellName} from slot {clearSlot}.", "cyan");
+                        terminal.WriteLine(Loc.Get("spell_learning.removed_slot", spellName, clearSlot), "cyan");
                         await SaveSystem.Instance.AutoSave(player);
                         await Task.Delay(800);
                     }
@@ -200,20 +200,20 @@ public static class SpellLearningSystem
                 var spell = allSpells.FirstOrDefault(s => s.Level == learnLevel);
                 if (spell == null)
                 {
-                    terminal.WriteLine("Invalid spell level!", "red");
+                    terminal.WriteLine(Loc.Get("spell_learning.invalid_spell"), "red");
                     await Task.Delay(800);
                     continue;
                 }
                 int reqLevel = SpellSystem.GetLevelRequired(player.Class, learnLevel);
                 if (player.Level < reqLevel)
                 {
-                    terminal.WriteLine($"You need to be level {reqLevel} to learn this spell!", "red");
+                    terminal.WriteLine(Loc.Get("spell_learning.need_level", reqLevel), "red");
                     await Task.Delay(800);
                     continue;
                 }
                 if (IsSpellKnown(player, learnLevel))
                 {
-                    terminal.WriteLine($"You already know {spell.Name}!", "yellow");
+                    terminal.WriteLine(Loc.Get("spell_learning.already_known", spell.Name), "yellow");
                     await Task.Delay(800);
                     continue;
                 }
@@ -225,11 +225,11 @@ public static class SpellLearningSystem
                 if (emptySlot >= 0)
                 {
                     player.Quickbar[emptySlot] = newQbId;
-                    terminal.WriteLine($"You have learned {spell.Name}! (added to slot {emptySlot + 1})", "bright_green");
+                    terminal.WriteLine(Loc.Get("spell_learning.learned_slot", spell.Name, emptySlot + 1), "bright_green");
                 }
                 else
                 {
-                    terminal.WriteLine($"You have learned {spell.Name}! (quickbar full - equip manually)", "bright_green");
+                    terminal.WriteLine(Loc.Get("spell_learning.learned_full", spell.Name), "bright_green");
                 }
                 await SaveSystem.Instance.AutoSave(player);
                 await Task.Delay(1000);
@@ -242,7 +242,7 @@ public static class SpellLearningSystem
                 var spell = allSpells.FirstOrDefault(s => s.Level == forgetLevel);
                 if (spell == null || !IsSpellKnown(player, forgetLevel))
                 {
-                    terminal.WriteLine("You don't know that spell!", "red");
+                    terminal.WriteLine(Loc.Get("spell_learning.dont_know"), "red");
                     await Task.Delay(800);
                     continue;
                 }
@@ -254,7 +254,7 @@ public static class SpellLearningSystem
                     if (player.Quickbar[i] == qbId)
                         player.Quickbar[i] = null;
                 }
-                terminal.WriteLine($"You forget {spell.Name}.", "cyan");
+                terminal.WriteLine(Loc.Get("spell_learning.forgot", spell.Name), "cyan");
                 await SaveSystem.Instance.AutoSave(player);
                 await Task.Delay(1000);
                 continue;
@@ -265,7 +265,7 @@ public static class SpellLearningSystem
             {
                 if (knownUnequipped.Count == 0)
                 {
-                    terminal.WriteLine("No known spells available to equip! Learn more spells first.", "yellow");
+                    terminal.WriteLine(Loc.Get("spell_learning.no_spells_equip"), "yellow");
                     await Task.Delay(800);
                     continue;
                 }
@@ -275,11 +275,11 @@ public static class SpellLearningSystem
                 {
                     var currentLevel = SpellSystem.ParseQuickbarSpellLevel(currentInSlot);
                     var currentSpell = currentLevel.HasValue ? SpellSystem.GetSpellInfo(player.Class, currentLevel.Value) : null;
-                    terminal.WriteLine($"Slot {slotNum} has: {currentSpell?.Name ?? currentInSlot}. Pick a replacement:", "cyan");
+                    terminal.WriteLine(Loc.Get("spell_learning.slot_has", slotNum, currentSpell?.Name ?? currentInSlot), "cyan");
                 }
                 else
                 {
-                    terminal.WriteLine($"Pick a spell for slot {slotNum}:", "cyan");
+                    terminal.WriteLine(Loc.Get("spell_learning.pick_spell", slotNum), "cyan");
                 }
 
                 for (int i = 0; i < knownUnequipped.Count; i++)
@@ -302,7 +302,7 @@ public static class SpellLearningSystem
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Cancel");
+                terminal.WriteLine(Loc.Get("spell_learning.cancel"));
 
                 var pick = await terminal.GetInput("> ");
                 if (string.IsNullOrWhiteSpace(pick) || pick.Trim() == "0") continue;
@@ -322,7 +322,7 @@ public static class SpellLearningSystem
                     }
 
                     player.Quickbar[slotNum - 1] = qbId;
-                    terminal.WriteLine($"Equipped {chosen.Name} to slot {slotNum}!", "bright_green");
+                    terminal.WriteLine(Loc.Get("spell_learning.equipped_slot", chosen.Name, slotNum), "bright_green");
                     await SaveSystem.Instance.AutoSave(player);
                     await Task.Delay(800);
                 }

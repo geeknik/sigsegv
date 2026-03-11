@@ -31,7 +31,7 @@ public class DevMenuLocation : BaseLocation
     protected override void DisplayLocation()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("* DEVELOPER MENU *", "bright_magenta");
+        WriteBoxHeader(Loc.Get("devmenu.header"), "bright_magenta");
         terminal.WriteLine("");
 
         if (!_authenticated)
@@ -256,7 +256,7 @@ public class DevMenuLocation : BaseLocation
                 }
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                string confirm = await terminal.GetInput("Are you sure you want to proceed? (Y/N): ");
+                string confirm = await terminal.GetInput(Loc.Get("ui.confirm_proceed"));
                 if (confirm.Trim().ToUpper() != "Y")
                 {
                     terminal.WriteLine("Dev menu access cancelled. Returning to Main Street...", "cyan");
@@ -1739,7 +1739,7 @@ public class DevMenuLocation : BaseLocation
         }
         else
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
         }
 
         await Task.Delay(1000);
@@ -1896,7 +1896,7 @@ public class DevMenuLocation : BaseLocation
         terminal.WriteLine("  [5] Set Armor Power");
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInput("Choice: ");
+        var choice = await terminal.GetInput(Loc.Get("ui.choice"));
         var valueInput = await terminal.GetInput("New value: ");
 
         if (!int.TryParse(valueInput, out int value)) return;
@@ -1987,7 +1987,7 @@ public class DevMenuLocation : BaseLocation
                 break;
             case "6":
                 await SaveSystem.Instance.SaveGame(currentPlayer.Name, currentPlayer);
-                terminal.WriteLine("Game saved!", "green");
+                terminal.WriteLine(Loc.Get("save.saved"), "green");
                 break;
         }
 
@@ -2083,10 +2083,10 @@ public class DevMenuLocation : BaseLocation
         terminal.WriteLine("  This will set ALL stats to maximum values!");
         terminal.WriteLine("");
 
-        var confirm = await terminal.GetInput("Are you sure? (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("ui.confirm"));
         if (confirm.ToUpper() != "Y")
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             await Task.Delay(1000);
             return;
         }
@@ -2134,7 +2134,7 @@ public class DevMenuLocation : BaseLocation
         currentPlayer.Addict = 0;
 
         terminal.WriteLine("");
-        WriteBoxHeader("YOU HAVE ASCENDED TO GODHOOD!", "bright_magenta", 55);
+        WriteBoxHeader(Loc.Get("devmenu.ascended"), "bright_magenta", 55);
         terminal.WriteLine("");
         terminal.SetColor("yellow");
         terminal.WriteLine("  All stats maximized. You are now unstoppable.");
@@ -2289,7 +2289,7 @@ public class DevMenuLocation : BaseLocation
         var confirm = await terminal.GetInput("Are you SURE? (Type YES to confirm): ");
         if (confirm.ToUpper() != "YES")
         {
-            terminal.WriteLine("Cancelled.", "gray");
+            terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
             await Task.Delay(1000);
             return;
         }
@@ -2324,7 +2324,7 @@ public class DevMenuLocation : BaseLocation
     private async Task ResetSteamStats()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("STEAM STATS RESET (DEBUG)", "bright_red");
+        WriteBoxHeader(Loc.Get("devmenu.steam_reset"), "bright_red");
         terminal.WriteLine("");
 
         if (!SteamIntegration.IsAvailable)
@@ -2429,7 +2429,7 @@ public class DevMenuLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("NARRATIVE SYSTEMS DEBUG", "bright_magenta");
+            WriteBoxHeader(Loc.Get("devmenu.narrative_debug"), "bright_magenta");
             terminal.WriteLine("");
 
             terminal.SetColor("white");

@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ public class CharacterCreationLocation : BaseLocation
         // Welcome message
         terminal.Clear();
         terminal.WriteLine("");
-        WriteBoxHeader("W E L C O M E   T O   U S U R P E R", "bright_cyan", 79);
+        WriteBoxHeader(Loc.Get("creation.welcome_to_usurper"), "bright_cyan", 79);
         terminal.WriteLine("");
         terminal.WriteLine("You are about to enter the medieval world of Usurper, a realm of", "white");
         terminal.WriteLine("magic, combat, politics, and intrigue. First, you must create", "white");
@@ -180,7 +181,7 @@ public class CharacterCreationLocation : BaseLocation
     {
         terminal.Clear();
         terminal.WriteLine("");
-        WriteBoxHeader("W E L C O M E   T O   T H E   R E A L M !", "bright_green", 79);
+        WriteBoxHeader(Loc.Get("creation.welcome_to_realm"), "bright_green", 79);
         terminal.WriteLine("");
         terminal.WriteLine($"Greetings, {player.Name2}!", "bright_yellow");
         terminal.WriteLine("");

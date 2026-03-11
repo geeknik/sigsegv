@@ -39,7 +39,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("white");
-                terminal.WriteLine("Login to existing account");
+                terminal.WriteLine(Loc.Get("auth.login"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -48,7 +48,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("green");
-                terminal.WriteLine("Register new account");
+                terminal.WriteLine(Loc.Get("auth.register"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -57,11 +57,11 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("red");
-                terminal.WriteLine("Quit");
+                terminal.WriteLine(Loc.Get("auth.quit"));
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_white");
-                terminal.Write("  Your choice: ");
+                terminal.Write($"  {Loc.Get("auth.your_choice")}");
 
                 string? choice = await ReadLineAsync();
                 if (choice == null) return null;
@@ -85,7 +85,7 @@ namespace UsurperRemake.Systems
 
                     default:
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("  Invalid choice.");
+                        terminal.WriteLine($"  {Loc.Get("auth.invalid_choice")}");
                         terminal.WriteLine("");
                         break;
                 }
@@ -93,7 +93,7 @@ namespace UsurperRemake.Systems
 
             terminal.SetColor("bright_red");
             terminal.WriteLine("");
-            terminal.WriteLine("  Too many failed attempts. Disconnecting.");
+            terminal.WriteLine($"  {Loc.Get("auth.too_many_attempts")}");
             return null;
         }
 
@@ -101,7 +101,7 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
 
-            const string titleText = "USURPER REBORN - ONLINE";
+            string titleText = Loc.Get("auth.title");
             const int innerWidth = 78;
             int leftPad  = (innerWidth - titleText.Length) / 2;
             int rightPad = innerWidth - titleText.Length - leftPad;
@@ -120,8 +120,8 @@ namespace UsurperRemake.Systems
             }
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Welcome to the Usurper Reborn online server!");
-            terminal.WriteLine("  Login with your account or register a new one.");
+            terminal.WriteLine($"  {Loc.Get("auth.welcome")}");
+            terminal.WriteLine($"  {Loc.Get("auth.welcome_instruction")}");
             terminal.WriteLine("");
         }
 
@@ -129,17 +129,17 @@ namespace UsurperRemake.Systems
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            terminal.Write("  Username: ");
+            terminal.Write($"  {Loc.Get("auth.username")}");
             string? username = await ReadLineAsync();
             if (string.IsNullOrWhiteSpace(username)) return null;
 
-            terminal.Write("  Password: ");
+            terminal.Write($"  {Loc.Get("auth.password")}");
             string? password = await ReadPasswordAsync();
             if (string.IsNullOrWhiteSpace(password)) return null;
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Authenticating...");
+            terminal.WriteLine($"  {Loc.Get("auth.authenticating")}");
 
             var (success, displayName, message) = await backend.AuthenticatePlayer(username.Trim(), password);
 
@@ -150,13 +150,13 @@ namespace UsurperRemake.Systems
                 {
                     await backend.UnregisterOnline(username.Trim());
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  Previous session disconnected.");
+                    terminal.WriteLine($"  {Loc.Get("auth.prev_session_disconnected")}");
                     terminal.SetColor("white");
                     terminal.WriteLine("");
                 }
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  Welcome back, {displayName}!");
+                terminal.WriteLine($"  {Loc.Get("auth.welcome_back", displayName)}");
                 terminal.WriteLine("");
                 await Task.Delay(1000);
                 return displayName;
@@ -176,26 +176,26 @@ namespace UsurperRemake.Systems
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
             if (GameConfig.ScreenReaderMode)
-                terminal.WriteLine("  Create New Account");
+                terminal.WriteLine($"  {Loc.Get("auth.create_sr")}");
             else
-                terminal.WriteLine("  ═══ Create New Account ═══");
+                terminal.WriteLine($"  ═══ {Loc.Get("auth.create_new_account")} ═══");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("  Choose a username (2-20 characters, letters/numbers/spaces).");
-            terminal.WriteLine("  This will also be your character name in the game.");
+            terminal.WriteLine($"  {Loc.Get("auth.username_instructions")}");
+            terminal.WriteLine($"  {Loc.Get("auth.username_also_name")}");
             terminal.WriteLine("");
 
             terminal.SetColor("bright_white");
-            terminal.Write("  Username: ");
+            terminal.Write($"  {Loc.Get("auth.username")}");
             string? username = await ReadLineAsync();
             if (string.IsNullOrWhiteSpace(username)) return null;
 
-            terminal.Write("  Password: ");
+            terminal.Write($"  {Loc.Get("auth.password")}");
             string? password = await ReadPasswordAsync();
             if (string.IsNullOrWhiteSpace(password)) return null;
 
-            terminal.Write("  Confirm password: ");
+            terminal.Write($"  {Loc.Get("auth.confirm_password")}");
             string? confirm = await ReadPasswordAsync();
             if (string.IsNullOrWhiteSpace(confirm)) return null;
 
@@ -203,14 +203,14 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("bright_red");
                 terminal.WriteLine("");
-                terminal.WriteLine("  Passwords do not match.");
+                terminal.WriteLine($"  {Loc.Get("auth.passwords_no_match")}");
                 await Task.Delay(1500);
                 return null;
             }
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("  Creating account...");
+            terminal.WriteLine($"  {Loc.Get("auth.creating_account")}");
 
             var (success, message) = await backend.RegisterPlayer(username.Trim(), password);
 
@@ -220,7 +220,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine($"  {message}");
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine($"  You are now logged in as: {username.Trim()}");
+                terminal.WriteLine($"  {Loc.Get("auth.logged_in_as", username.Trim())}");
                 terminal.WriteLine("");
                 await Task.Delay(1500);
                 return username.Trim();

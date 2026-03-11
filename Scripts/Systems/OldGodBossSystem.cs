@@ -175,32 +175,32 @@ namespace UsurperRemake.Systems
             await Task.Delay(1500);
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"\"You came back. You actually came back.\"");
+            terminal.WriteLine(Loc.Get("old_god.save_came_back"));
             await Task.Delay(1500);
-            terminal.WriteLine($"\"And you brought it. I can feel it from here.\"");
+            terminal.WriteLine(Loc.Get("old_god.save_brought_it"));
             await Task.Delay(1500);
             terminal.WriteLine("");
 
             terminal.SetColor("bright_white");
-            terminal.WriteLine("The artifact does its work. You dont really understand how.");
+            terminal.WriteLine(Loc.Get("old_god.save_artifact_works"));
             await Task.Delay(2000);
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("The corruption peels away like dead bark off a tree.");
+            terminal.WriteLine(Loc.Get("old_god.save_corruption_peels"));
             await Task.Delay(1500);
-            terminal.WriteLine("Underneath, something old and clean starts to show through.");
+            terminal.WriteLine(Loc.Get("old_god.save_something_clean"));
             await Task.Delay(1500);
             terminal.WriteLine("");
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"{godName} staggers, blinking, like someone waking from a bad dream.");
+            terminal.WriteLine(Loc.Get("old_god.save_staggers", godName));
             await Task.Delay(1500);
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"\"I remember... gods, I remember everything. What I did... what I was...\"");
+            terminal.WriteLine(Loc.Get("old_god.save_i_remember"));
             await Task.Delay(2000);
             terminal.WriteLine("");
 
             terminal.SetColor("bright_white");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.WaitForKey("");
 
             // Update god state to fully Saved
@@ -213,8 +213,8 @@ namespace UsurperRemake.Systems
             player.Chivalry += 100;
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"+{xpReward} XP for fulfilling your promise.");
-            terminal.WriteLine("+100 Chivalry - You kept your word to a god.");
+            terminal.WriteLine(Loc.Get("old_god.save_xp_reward", xpReward));
+            terminal.WriteLine(Loc.Get("old_god.save_chivalry"));
             terminal.WriteLine("");
 
             // Grant Ocean Philosophy fragment
@@ -344,13 +344,13 @@ namespace UsurperRemake.Systems
             {
                 // Player said nothing — the god forces combat
                 terminal.WriteLine("");
-                terminal.WriteLine($"You say nothing.", "gray");
+                terminal.WriteLine(Loc.Get("old_god.say_nothing"), "gray");
                 terminal.WriteLine("");
-                terminal.WriteLine($"{boss.Name} stares at you.", boss.ThemeColor);
+                terminal.WriteLine(Loc.Get("old_god.god_stares", boss.Name), boss.ThemeColor);
                 terminal.WriteLine("");
-                terminal.WriteLine($"\"{(type == OldGodType.Maelketh ? "You DARE stand there and say NOTHING to me?!" : "Fine. Have it your way.")}\"", boss.ThemeColor);
+                terminal.WriteLine($"\"{(type == OldGodType.Maelketh ? Loc.Get("old_god.maelketh_silence_rage") : Loc.Get("old_god.god_have_it_your_way"))}\"", boss.ThemeColor);
                 terminal.WriteLine("");
-                terminal.WriteLine("The god attacks!", "bright_red");
+                terminal.WriteLine(Loc.Get("old_god.god_attacks"), "bright_red");
                 await Task.Delay(2000);
             }
 
@@ -367,13 +367,13 @@ namespace UsurperRemake.Systems
             terminal.WriteLine("");
 
             // Build dramatic entrance
-            terminal.WriteLine("The ground trembles.", "red");
+            terminal.WriteLine(Loc.Get("old_god.ground_trembles"), "red");
             await Task.Delay(800);
 
-            terminal.WriteLine("Ancient power stirs.", "bright_red");
+            terminal.WriteLine(Loc.Get("old_god.ancient_power_stirs"), "bright_red");
             await Task.Delay(800);
 
-            terminal.WriteLine($"The seal around {boss.Name} shatters.", "bright_magenta");
+            terminal.WriteLine(Loc.Get("old_god.seal_shatters", boss.Name), "bright_magenta");
             await Task.Delay(1200);
 
             terminal.WriteLine("");
@@ -406,8 +406,8 @@ namespace UsurperRemake.Systems
             await Task.Delay(2000);
 
             // Show boss stats
-            terminal.WriteLine($"  Level: {boss.Level}", "gray");
-            terminal.WriteLine($"  HP: {boss.HP:N0}", "red");
+            terminal.WriteLine($"  {Loc.Get("ui.level")}: {boss.Level}", "gray");
+            terminal.WriteLine($"  {Loc.Get("ui.stat_hp")}: {boss.HP:N0}", "red");
 
             // Warning for unenchanted weapons against gods with divine armor
             double divineArmor = GetDivineArmorReduction(boss.Type, player);
@@ -417,21 +417,21 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("bright_red");
                 string armorName = boss.Type switch
                 {
-                    OldGodType.Aurelion => "Divine Shield",
-                    OldGodType.Terravok => "Stone Skin",
-                    OldGodType.Manwe => "Creator's Ward",
-                    _ => "Divine Armor"
+                    OldGodType.Aurelion => Loc.Get("old_god.armor_divine_shield"),
+                    OldGodType.Terravok => Loc.Get("old_god.armor_stone_skin"),
+                    OldGodType.Manwe => Loc.Get("old_god.armor_creators_ward"),
+                    _ => Loc.Get("old_god.armor_divine")
                 };
-                terminal.WriteLine($"  WARNING: {boss.Name} is protected by {armorName}!");
+                terminal.WriteLine(Loc.Get("old_god.warning_protected", boss.Name, armorName));
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Your unenchanted weapon will deal {divineArmor * 100:N0}% LESS damage.");
+                terminal.WriteLine(Loc.Get("old_god.warning_less_damage", $"{divineArmor * 100:N0}"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine("  Enchant your weapon at the Magic Shop to bypass this protection.");
+                terminal.WriteLine(Loc.Get("old_god.warning_enchant"));
             }
 
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to face the Old God...");
+            await terminal.GetInputAsync($"  {Loc.Get("old_god.press_enter_face")}");
         }
 
         /// <summary>
@@ -480,7 +480,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.DamageMultiplier = 1.25; // 25% more damage
                 activeCombatModifiers.DefenseMultiplier = 0.85; // 15% less defense (reckless)
                 activeCombatModifiers.CriticalChance = 0.15; // 15% crit chance
-                terminal.WriteLine("  Your fury burns bright! (+25% damage, +15% crit, -15% defense)", "bright_red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_fury_bright")}", "bright_red");
             }
             // Option 3: "Teach me" - Humble approach = Learn his patterns
             else if (story.HasStoryFlag("maelketh_teaching"))
@@ -489,7 +489,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.HasInsight = true;
                 activeCombatModifiers.DefenseMultiplier = 1.20; // 20% more defense
                 activeCombatModifiers.BossDamageMultiplier = 0.85; // Boss does 15% less damage
-                terminal.WriteLine("  Maelketh's teachings echo in your mind. (+20% defense, boss -15% damage)", "cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_maelketh_teachings")}", "cyan");
             }
             // Option 2: Peace path (fails but shows character) - No modifier, normal fight
         }
@@ -502,7 +502,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "aggressive";
                 activeCombatModifiers.DamageMultiplier = 1.15;
                 activeCombatModifiers.BossDamageMultiplier = 1.10; // She fights harder
-                terminal.WriteLine("  Your hostility fuels her passion. (+15% damage, but she hits 10% harder)", "red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_veloura_hostile")}", "red");
             }
             // Empathy shown
             else if (story.HasStoryFlag("veloura_empathy"))
@@ -510,7 +510,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "diplomatic";
                 activeCombatModifiers.BossWeakened = true;
                 activeCombatModifiers.BossDamageMultiplier = 0.80; // She's conflicted
-                terminal.WriteLine("  Your empathy weakens her resolve. (Boss -20% damage)", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_veloura_empathy")}", "bright_magenta");
             }
             // Mercy kill - she accepts death
             else if (story.HasStoryFlag("veloura_mercy_kill"))
@@ -518,7 +518,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "merciful";
                 activeCombatModifiers.BossWeakened = true;
                 activeCombatModifiers.BossDefenseMultiplier = 0.70; // She doesn't fully resist
-                terminal.WriteLine("  She accepts her fate with grace. (Boss -30% defense)", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_veloura_mercy")}", "bright_cyan");
             }
         }
 
@@ -530,7 +530,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "defiant";
                 activeCombatModifiers.DamageMultiplier = 1.10;
                 activeCombatModifiers.BossDamageMultiplier = 1.15; // He judges harshly
-                terminal.WriteLine("  Your defiance enrages the lawbringer! (+10% damage, but he hits 15% harder)", "yellow");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_thorgrim_defiant")}", "yellow");
             }
             // Honorable combat via Right of Challenge
             else if (story.HasStoryFlag("thorgrim_honorable_combat"))
@@ -538,7 +538,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "honorable";
                 activeCombatModifiers.DefenseMultiplier = 1.15;
                 activeCombatModifiers.BonusDefense = 20;
-                terminal.WriteLine("  The Right of Challenge grants you legal protection. (+15% defense, +20 armor)", "gray");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_thorgrim_honor")}", "gray");
             }
             // Broken his logic with paradox
             else if (story.HasStoryFlag("thorgrim_broken_logic"))
@@ -547,7 +547,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.BossConfused = true;
                 activeCombatModifiers.BossDamageMultiplier = 0.75;
                 activeCombatModifiers.BossDefenseMultiplier = 0.85;
-                terminal.WriteLine("  His broken logic makes him erratic! (Boss -25% damage, -15% defense)", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_thorgrim_broken")}", "bright_cyan");
             }
         }
 
@@ -570,8 +570,8 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.BossDamageMultiplier = 0.50; // 50% boss power
                 activeCombatModifiers.BossDefenseMultiplier = 0.70;
                 activeCombatModifiers.DamageMultiplier = 1.15;
-                terminal.WriteLine("  Noctura holds back. This is a lesson, not a death sentence.", "dark_magenta");
-                terminal.WriteLine("  (-50% boss damage, -30% boss defense, +15% your damage)", "cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_teaching")}", "dark_magenta");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_teaching_stats")}", "cyan");
                 return;
             }
 
@@ -581,8 +581,8 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "enraged";
                 activeCombatModifiers.BossDamageMultiplier = 1.25;
                 activeCombatModifiers.CriticalChance = 0.03; // Harder to land crits
-                terminal.WriteLine("  Noctura is ENRAGED. The shadows boil with fury.", "dark_magenta");
-                terminal.WriteLine("  (+25% boss damage, harder to crit)", "red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_enraged")}", "dark_magenta");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_enraged_stats")}", "red");
                 return;
             }
 
@@ -593,8 +593,8 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.BossDamageMultiplier = 0.70;
                 activeCombatModifiers.BossDefenseMultiplier = 0.85;
                 activeCombatModifiers.DamageMultiplier = 1.10;
-                terminal.WriteLine("  Noctura fights reluctantly. She hoped you'd understand.", "dark_magenta");
-                terminal.WriteLine("  (-30% boss damage, -15% boss defense, +10% your damage)", "cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_reluctant")}", "dark_magenta");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_reluctant_stats")}", "cyan");
                 return;
             }
 
@@ -602,7 +602,7 @@ namespace UsurperRemake.Systems
             activeCombatModifiers.ApproachType = "aggressive";
             activeCombatModifiers.DamageMultiplier = 1.10;
             activeCombatModifiers.CriticalChance = 0.03; // Harder to land crits
-            terminal.WriteLine("  The shadows hide her movements. (+10% damage, but harder to crit)", "dark_magenta");
+            terminal.WriteLine($"  {Loc.Get("old_god.mod_noctura_standard")}", "dark_magenta");
         }
 
         /// <summary>
@@ -628,7 +628,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "defiant";
                 activeCombatModifiers.DamageMultiplier = 1.20;
                 activeCombatModifiers.DefenseMultiplier = 0.90;
-                terminal.WriteLine("  Your defiance against the light empowers your strikes! (+20% damage, -10% defense)", "bright_yellow");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_aurelion_defiant")}", "bright_yellow");
             }
             // Humble approach
             else if (story.HasStoryFlag($"{godName}_humble"))
@@ -636,13 +636,13 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "humble";
                 activeCombatModifiers.BossDamageMultiplier = 0.85;
                 activeCombatModifiers.DefenseMultiplier = 1.15;
-                terminal.WriteLine("  Your humility earns a measure of restraint. (-15% boss damage, +15% defense)", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_aurelion_humble")}", "bright_cyan");
             }
             // Default combat
             else if (story.HasStoryFlag($"{godName}_combat_start"))
             {
                 activeCombatModifiers.ApproachType = "neutral";
-                terminal.WriteLine("  The God of Light prepares to judge you.", "bright_yellow");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_aurelion_neutral")}", "bright_yellow");
             }
         }
 
@@ -655,7 +655,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "aggressive";
                 activeCombatModifiers.DamageMultiplier = 1.30;
                 activeCombatModifiers.BossDamageMultiplier = 1.20;
-                terminal.WriteLine("  Your destructive intent awakens his full wrath! (+30% damage, but +20% boss damage)", "dark_green");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_terravok_destructive")}", "dark_green");
             }
             // Respect for nature
             else if (story.HasStoryFlag($"{godName}_respectful"))
@@ -663,13 +663,13 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "respectful";
                 activeCombatModifiers.BossWeakened = true;
                 activeCombatModifiers.BossDamageMultiplier = 0.90;
-                terminal.WriteLine("  Your respect for nature tempers his rage. (-10% boss damage)", "green");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_terravok_respectful")}", "green");
             }
             // Default
             else if (story.HasStoryFlag($"{godName}_combat_start"))
             {
                 activeCombatModifiers.ApproachType = "neutral";
-                terminal.WriteLine("  The God of Earth rises to crush you.", "dark_green");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_terravok_neutral")}", "dark_green");
             }
         }
 
@@ -681,14 +681,14 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.ApproachType = "compassionate";
                 activeCombatModifiers.BossDamageMultiplier *= 0.80;
                 activeCombatModifiers.BossDefenseMultiplier = 0.85;
-                terminal.WriteLine("  Manwe holds back, testing your resolve. (Boss -20% damage, -15% defense)", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_manwe_compassion")}", "bright_cyan");
             }
             else if (story.HasStoryFlag("manwe_righteous"))
             {
                 activeCombatModifiers.ApproachType = "righteous";
                 activeCombatModifiers.DefenseMultiplier *= 1.15;
                 activeCombatModifiers.BossDamageMultiplier *= 0.90;
-                terminal.WriteLine("  Your conviction shields you. (+15% defense, boss -10% damage)", "bright_green");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_manwe_righteous")}", "bright_green");
             }
             else
             {
@@ -697,7 +697,7 @@ namespace UsurperRemake.Systems
                 activeCombatModifiers.DamageMultiplier *= 1.25;
                 activeCombatModifiers.CriticalChance = Math.Max(activeCombatModifiers.CriticalChance, 0.15);
                 activeCombatModifiers.DefenseMultiplier *= 0.85;
-                terminal.WriteLine("  Your fury burns bright! (+25% damage, +15% crit, -15% defense)", "bright_red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_fury_bright")}", "bright_red");
             }
 
             // Additive bonuses based on choices with previous gods
@@ -709,33 +709,33 @@ namespace UsurperRemake.Systems
             {
                 activeCombatModifiers.DamageMultiplier += 0.20;
                 activeCombatModifiers.DefenseMultiplier += 0.20;
-                terminal.WriteLine("  Your allied gods lend you their power! (+20% damage and defense)", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_manwe_allies")}", "bright_magenta");
             }
             else if (godsSaved >= 3)
             {
                 activeCombatModifiers.BossWeakened = true;
                 activeCombatModifiers.BossDamageMultiplier *= 0.85;
-                terminal.WriteLine("  The saved gods weaken the Creator's hold. (-15% boss damage)", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_manwe_saved_gods")}", "bright_cyan");
             }
             else if (godsDestroyed >= 5)
             {
                 activeCombatModifiers.DamageMultiplier += 0.35;
                 activeCombatModifiers.CriticalChance = Math.Max(activeCombatModifiers.CriticalChance, 0.20);
-                terminal.WriteLine("  Consumed divine power surges through you! (+35% damage, +20% crit)", "dark_red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_manwe_destroyed")}", "dark_red");
             }
 
             // Defiant to stranger bonus
             if (story.HasStoryFlag("defiant_to_stranger"))
             {
                 activeCombatModifiers.BonusDamage += 50;
-                terminal.WriteLine("  Your defiant spirit burns bright! (+50 bonus damage)", "bright_red");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_defiant_spirit")}", "bright_red");
             }
 
             // Willing hero bonus
             if (story.HasStoryFlag("willing_hero"))
             {
                 activeCombatModifiers.BonusDefense += 30;
-                terminal.WriteLine("  Your willing heart shields you! (+30 bonus defense)", "bright_green");
+                terminal.WriteLine($"  {Loc.Get("old_god.mod_willing_hero")}", "bright_green");
             }
         }
 
@@ -958,13 +958,13 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, $"{boss.Name.ToUpper()} SAVED", "bright_green", 63);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("old_god.header_saved", boss.Name.ToUpper()), "bright_green", 63);
             terminal.WriteLine("");
 
             await Task.Delay(1500);
 
-            terminal.WriteLine($"  The darkness lifts from {boss.Name}.", "white");
-            terminal.WriteLine("  They look around like they're seeing the world for the first time.", "white");
+            terminal.WriteLine(Loc.Get("old_god.saved_darkness_lifts", boss.Name), "white");
+            terminal.WriteLine($"  {Loc.Get("old_god.saved_seeing_world")}", "white");
             terminal.WriteLine("");
 
             foreach (var line in boss.SaveDialogue)
@@ -983,11 +983,11 @@ namespace UsurperRemake.Systems
             // Award experience
             long xpReward = boss.Level * 1000;
             player.Experience += xpReward;
-            terminal.WriteLine($"  (+{xpReward:N0} Experience for showing mercy)", "cyan");
+            terminal.WriteLine(Loc.Get("old_god.saved_xp", $"{xpReward:N0}"), "cyan");
 
             // Award chivalry
             player.Chivalry += 100;
-            terminal.WriteLine($"  (+100 Chivalry)", "bright_green");
+            terminal.WriteLine(Loc.Get("old_god.saved_chivalry"), "bright_green");
 
             // Award thematic crafting materials (same as defeat)
             var thematicMaterial = GameConfig.CraftingMaterials.FirstOrDefault(
@@ -997,7 +997,7 @@ namespace UsurperRemake.Systems
                 player.AddMaterial(thematicMaterial.Id, 2);
                 terminal.WriteLine("");
                 terminal.SetColor(thematicMaterial.Color);
-                terminal.WriteLine($"  {boss.Name} leaves behind {thematicMaterial.Name} x2.");
+                terminal.WriteLine(Loc.Get("old_god.material_left_behind", boss.Name, thematicMaterial.Name, 2));
                 terminal.SetColor("gray");
                 terminal.WriteLine($"  \"{thematicMaterial.Description}\"");
             }
@@ -1005,7 +1005,7 @@ namespace UsurperRemake.Systems
             {
                 player.AddMaterial("heart_of_the_ocean", 1);
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  A strange pearl drops to the ground -- a Heart of the Ocean!");
+                terminal.WriteLine($"  {Loc.Get("old_god.heart_of_ocean")}");
             }
 
             OnBossSaved?.Invoke(boss.Type);
@@ -1013,7 +1013,7 @@ namespace UsurperRemake.Systems
             // Queue Stranger encounter after first Old God
             QueueStrangerOldGodEncounter(StrangerContextEvent.OldGodSaved);
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
 
             return new BossEncounterResult
             {
@@ -1033,7 +1033,7 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, $"{boss.Name.ToUpper()} DEFEATED", "bright_yellow", 63);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("old_god.header_defeated", boss.Name.ToUpper()), "bright_yellow", 63);
             terminal.WriteLine("");
 
             await Task.Delay(1500);
@@ -1045,9 +1045,9 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
             terminal.WriteLine("");
-            terminal.WriteLine($"  What's left of {boss.Name} breaks apart and fades.", "white");
+            terminal.WriteLine(Loc.Get("old_god.defeated_fades", boss.Name), "white");
             terminal.WriteLine("");
 
             // Update story state
@@ -1069,7 +1069,7 @@ namespace UsurperRemake.Systems
                 player.AddMaterial(thematicMaterial.Id, 2);
                 terminal.WriteLine("");
                 terminal.SetColor(thematicMaterial.Color);
-                terminal.WriteLine($"  Something crystallizes out of the remains... {thematicMaterial.Name} x2!");
+                terminal.WriteLine(Loc.Get("old_god.defeated_crystallizes", thematicMaterial.Name, 2));
                 terminal.SetColor("gray");
                 terminal.WriteLine($"  \"{thematicMaterial.Description}\"");
             }
@@ -1077,26 +1077,26 @@ namespace UsurperRemake.Systems
             {
                 player.AddMaterial("heart_of_the_ocean", 1);
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  A strange pearl drops to the ground -- a Heart of the Ocean!");
+                terminal.WriteLine($"  {Loc.Get("old_god.heart_of_ocean")}");
             }
             terminal.WriteLine("");
 
             // Award experience
             long xpReward = boss.Level * 2000;
             player.Experience += xpReward;
-            terminal.WriteLine($"  (+{xpReward:N0} Experience)", "cyan");
+            terminal.WriteLine(Loc.Get("old_god.defeated_xp", $"{xpReward:N0}"), "cyan");
 
             // Award gold
             int goldReward = boss.Level * 500;
             player.Gold += goldReward;
-            terminal.WriteLine($"  (+{goldReward:N0} Gold)", "yellow");
+            terminal.WriteLine(Loc.Get("old_god.defeated_gold", $"{goldReward:N0}"), "yellow");
 
             OnBossDefeated?.Invoke(boss.Type);
 
             // Queue Stranger encounter after first Old God
             QueueStrangerOldGodEncounter(StrangerContextEvent.OldGodDefeated);
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
 
             return new BossEncounterResult
             {
@@ -1117,29 +1117,29 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "D E F E A T", "dark_red", 63);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("old_god.header_defeat"), "dark_red", 63);
             terminal.WriteLine("");
 
             await Task.Delay(1500);
 
-            terminal.WriteLine($"  You hit the ground hard. {boss.Name} looms over you.", "red");
+            terminal.WriteLine(Loc.Get("old_god.defeat_hit_ground", boss.Name), "red");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  \"Not good enough, mortal. Not even close.\"", boss.ThemeColor);
+            terminal.WriteLine(Loc.Get("old_god.defeat_not_good_enough"), boss.ThemeColor);
             terminal.WriteLine("");
 
             await Task.Delay(2000);
 
             // Player doesn't die permanently in boss fights - they're sent back
-            terminal.WriteLine("  Everything goes dark. But before you're gone completely,", "gray");
-            terminal.WriteLine("  something pulls you back. Not yet.", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("old_god.defeat_goes_dark")}", "gray");
+            terminal.WriteLine($"  {Loc.Get("old_god.defeat_pulls_back")}", "bright_magenta");
             terminal.WriteLine("");
-            terminal.WriteLine("  You wake up at the dungeon entrance. Everything hurts.", "white");
+            terminal.WriteLine($"  {Loc.Get("old_god.defeat_wake_up")}", "white");
 
             player.HP = player.MaxHP / 4;
             player.Experience = Math.Max(0, player.Experience - (boss.Level * 100));
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
 
             return new BossEncounterResult
             {

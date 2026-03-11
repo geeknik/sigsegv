@@ -39,12 +39,12 @@ namespace UsurperRemake.Locations
                 term.WriteLine("");
                 if (player.ScreenReaderMode)
                 {
-                    term.WriteLine("ACCESS DENIED");
+                    term.WriteLine(Loc.Get("dark_alley.access_denied"));
                 }
                 else
                 {
                     term.WriteLine("═══════════════════════════════════════");
-                    term.WriteLine("          ACCESS DENIED");
+                    term.WriteLine($"          {Loc.Get("dark_alley.access_denied")}");
                     term.WriteLine("═══════════════════════════════════════");
                 }
                 term.WriteLine("");
@@ -52,10 +52,10 @@ namespace UsurperRemake.Locations
                 term.WriteLine(reason);
                 term.WriteLine("");
                 term.SetColor("yellow");
-                term.WriteLine("Guards block the entrance to the Dark Alley.");
-                term.WriteLine("You must return when martial law is lifted.");
+                term.WriteLine(Loc.Get("dark_alley.guards_block"));
+                term.WriteLine(Loc.Get("dark_alley.return_martial_law"));
                 term.WriteLine("");
-                await term.PressAnyKey("Press Enter to return...");
+                await term.PressAnyKey(Loc.Get("dark_alley.press_enter_return"));
                 throw new LocationExitException(GameLocation.MainStreet);
             }
 
@@ -91,16 +91,16 @@ namespace UsurperRemake.Locations
             var standing = FactionSystem.Instance?.FactionStanding[Faction.TheShadows] ?? 0;
             terminal.SetColor("dark_red");
             terminal.WriteLine("");
-            terminal.WriteLine("A heavy hand lands on your shoulder. You turn to find cold eyes staring you down.");
+            terminal.WriteLine(Loc.Get("dark_alley.rejection_hand"));
             terminal.SetColor("red");
             terminal.WriteLine("");
-            terminal.WriteLine("\"We don't serve your kind here. The Shadows have long memories,");
-            terminal.WriteLine(" and you've made too many enemies in this alley.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.rejection_kind"));
+            terminal.WriteLine(Loc.Get("dark_alley.rejection_enemies"));
             terminal.SetColor("gray");
             terminal.WriteLine("");
-            terminal.WriteLine($"  Shadows standing: {standing:N0} — you need at least -50 to access underground services.");
+            terminal.WriteLine(Loc.Get("dark_alley.rejection_standing", standing.ToString("N0")));
             terminal.SetColor("yellow");
-            terminal.Write("  Try paying ");
+            terminal.Write(Loc.Get("dark_alley.rejection_try_paying"));
             terminal.SetColor("darkgray");
             terminal.Write("[");
             terminal.SetColor("bright_yellow");
@@ -108,7 +108,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("yellow");
-            terminal.WriteLine("tribute to improve your standing.");
+            terminal.WriteLine(Loc.Get("dark_alley.rejection_tribute"));
             terminal.WriteLine("");
             await terminal.PressAnyKey();
         }
@@ -218,23 +218,23 @@ namespace UsurperRemake.Locations
 
         protected override string[]? GetAmbientMessages() => new[]
         {
-            "A distant footstep echoes and then stops.",
-            "Something small skitters across the cobblestones.",
-            "Water drips steadily from a broken gutter overhead.",
-            "Hushed voices drift from a darkened doorway.",
-            "A shadow shifts at the far end of the alley.",
-            "Distant laughter, low and brief, comes from somewhere unseen.",
+            Loc.Get("dark_alley.ambient_footstep"),
+            Loc.Get("dark_alley.ambient_skitter"),
+            Loc.Get("dark_alley.ambient_drip"),
+            Loc.Get("dark_alley.ambient_voices"),
+            Loc.Get("dark_alley.ambient_shadow"),
+            Loc.Get("dark_alley.ambient_laughter"),
         };
 
         private void DisplayLocationSR()
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Dark Alley");
+            terminal.WriteLine(Loc.Get("dark_alley.sr_title"));
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("Torches sputter in the moist air. Whispers of illicit trade echo between crooked doorways.");
+            terminal.WriteLine(Loc.Get("dark_alley.sr_desc"));
             terminal.WriteLine("");
 
             // Alignment info
@@ -244,64 +244,64 @@ namespace UsurperRemake.Locations
             if (alignment == AlignmentSystem.AlignmentType.Holy || alignment == AlignmentSystem.AlignmentType.Good)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Prices {(int)((priceModifier - 1.0f) * 100)}% higher for {alignText} alignment.");
+                terminal.WriteLine(Loc.Get("dark_alley.sr_prices_higher", (int)((priceModifier - 1.0f) * 100), alignText));
             }
             else if (alignment == AlignmentSystem.AlignmentType.Dark || alignment == AlignmentSystem.AlignmentType.Evil)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{(int)((1.0f - priceModifier) * 100)}% discount for {alignText} alignment.");
+                terminal.WriteLine(Loc.Get("dark_alley.sr_discount", (int)((1.0f - priceModifier) * 100), alignText));
             }
             terminal.WriteLine("");
 
             ShowNPCsInLocation();
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Shady Establishments:");
-            WriteSRMenuOption("D", "Drug Palace");
-            WriteSRMenuOption("S", "Steroid Shop");
-            WriteSRMenuOption("O", "Orbs Health Club");
-            WriteSRMenuOption("G", "Groggo's Magic Services");
-            WriteSRMenuOption("B", "Bob's Beer Hut");
-            WriteSRMenuOption("A", "Alchemist's Heaven");
+            terminal.WriteLine(Loc.Get("dark_alley.sr_shady"));
+            WriteSRMenuOption("D", Loc.Get("dark_alley.drug_palace"));
+            WriteSRMenuOption("S", Loc.Get("dark_alley.steroid_shop"));
+            WriteSRMenuOption("O", Loc.Get("dark_alley.orbs_club"));
+            WriteSRMenuOption("G", Loc.Get("dark_alley.magic_services"));
+            WriteSRMenuOption("B", Loc.Get("dark_alley.beer_hut"));
+            WriteSRMenuOption("A", Loc.Get("dark_alley.alchemist"));
             terminal.WriteLine("");
 
             bool undergroundLocked = !IsUndergroundAccessAllowed();
             var shadowsStanding = FactionSystem.Instance?.FactionStanding[Faction.TheShadows] ?? 0;
             terminal.SetColor("dark_red");
-            terminal.Write("Underground Services");
+            terminal.Write(Loc.Get("dark_alley.sr_underground"));
             if (undergroundLocked)
             {
                 terminal.SetColor("red");
-                terminal.Write($" (Locked, standing: {shadowsStanding:N0}, need -50+)");
+                terminal.Write(Loc.Get("dark_alley.sr_locked_standing", shadowsStanding));
             }
             terminal.WriteLine(":");
-            string lockNote = undergroundLocked ? " (locked)" : "";
-            WriteSRMenuOption("P", $"Pickpocket{lockNote}");
-            WriteSRMenuOption("F", $"Fence Stolen Goods{lockNote}");
-            WriteSRMenuOption("C", $"Gambling Den{lockNote}");
-            WriteSRMenuOption("T", $"The Pit, Arena{lockNote}");
-            WriteSRMenuOption("L", $"Loan Shark{lockNote}");
-            WriteSRMenuOption("N", $"Safe House{lockNote}");
+            string lockNote = undergroundLocked ? Loc.Get("dark_alley.locked_suffix") : "";
+            WriteSRMenuOption("P", Loc.Get("dark_alley.sr_pickpocket") + lockNote);
+            WriteSRMenuOption("F", Loc.Get("dark_alley.sr_fence") + lockNote);
+            WriteSRMenuOption("C", Loc.Get("dark_alley.sr_gambling_den") + lockNote);
+            WriteSRMenuOption("T", Loc.Get("dark_alley.sr_the_pit") + lockNote);
+            WriteSRMenuOption("L", Loc.Get("dark_alley.sr_loan_shark") + lockNote);
+            WriteSRMenuOption("N", Loc.Get("dark_alley.sr_safe_house") + lockNote);
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Other:");
+            terminal.WriteLine(Loc.Get("dark_alley.sr_other"));
             if (shadowsStanding < 0)
-                WriteSRMenuOption("W", "Pay Tribute to the Shadows");
+                WriteSRMenuOption("W", Loc.Get("dark_alley.tribute"));
             var factionSystem = FactionSystem.Instance;
             if (factionSystem.PlayerFaction != Faction.TheShadows)
-                WriteSRMenuOption("J", "Join The Shadows");
+                WriteSRMenuOption("J", Loc.Get("dark_alley.join_shadows"));
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  You are a member of The Shadows.");
+                terminal.WriteLine(Loc.Get("dark_alley.sr_shadow_member"));
             }
             if (FactionSystem.Instance?.HasBlackMarketAccess() == true)
-                WriteSRMenuOption("M", "Black Market");
+                WriteSRMenuOption("M", Loc.Get("dark_alley.black_market"));
             if (FactionSystem.Instance?.HasInformationNetwork() == true)
-                WriteSRMenuOption("I", "Informant");
-            WriteSRMenuOption("E", "Evil Deeds");
-            WriteSRMenuOption("R", "Return to Main Street");
+                WriteSRMenuOption("I", Loc.Get("dark_alley.informant"));
+            WriteSRMenuOption("E", Loc.Get("dark_alley.evil_deeds"));
+            WriteSRMenuOption("R", Loc.Get("dark_alley.return"));
             terminal.WriteLine("");
 
             ShowStatusLine();
@@ -315,13 +315,11 @@ namespace UsurperRemake.Locations
             terminal.ClearScreen();
 
             // Header - standardized format
-            WriteBoxHeader("THE DARK ALLEY", "bright_cyan", 77);
+            WriteBoxHeader(Loc.Get("dark_alley.header"), "bright_cyan", 77);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("Torches sputter in the moist air and the smell of trash " +
-                                "mixes with exotic spices.  Whispers of illicit trade echo " +
-                                "between crooked doorways.");
+            terminal.WriteLine(Loc.Get("dark_alley.visual_desc"));
             terminal.WriteLine("");
 
             // Show alignment reaction in shady area
@@ -332,23 +330,23 @@ namespace UsurperRemake.Locations
             if (alignment == AlignmentSystem.AlignmentType.Holy || alignment == AlignmentSystem.AlignmentType.Good)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("The vendors eye you suspiciously. Your virtuous aura doesn't belong here.");
+                terminal.WriteLine(Loc.Get("dark_alley.visual_virtuous"));
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Prices are {(int)((priceModifier - 1.0f) * 100)}% higher for someone of {alignText} alignment.");
+                terminal.WriteLine(Loc.Get("dark_alley.visual_prices_higher", (int)((priceModifier - 1.0f) * 100), alignText));
             }
             else if (alignment == AlignmentSystem.AlignmentType.Dark || alignment == AlignmentSystem.AlignmentType.Evil)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("The shady merchants nod in recognition. You're one of them.");
+                terminal.WriteLine(Loc.Get("dark_alley.visual_shadow_member"));
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  You receive a {(int)((1.0f - priceModifier) * 100)}% discount as a fellow {alignText} soul.");
+                terminal.WriteLine(Loc.Get("dark_alley.visual_discount", (int)((1.0f - priceModifier) * 100), alignText));
             }
             terminal.WriteLine("");
 
             ShowNPCsInLocation();
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Shady establishments:");
+            terminal.WriteLine(Loc.Get("dark_alley.visual_shady"));
             terminal.WriteLine("");
 
             // Row 1
@@ -359,7 +357,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rug Palace             ");
+            terminal.Write(Loc.Get("dark_alley.menu_drug_palace"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -368,7 +366,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("teroid Shop");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_steroid_shop"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -378,7 +376,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rbs Health Club        ");
+            terminal.Write(Loc.Get("dark_alley.menu_orbs_club"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -387,7 +385,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("roggo's Magic Services");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_groggo"));
 
             // Row 3
             terminal.SetColor("darkgray");
@@ -397,7 +395,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ob's Beer Hut          ");
+            terminal.Write(Loc.Get("dark_alley.menu_bob_beer"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -406,7 +404,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("lchemist's Heaven");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_alchemist"));
 
             terminal.WriteLine("");
 
@@ -415,11 +413,11 @@ namespace UsurperRemake.Locations
             var shadowsStanding = FactionSystem.Instance?.FactionStanding[Faction.TheShadows] ?? 0;
 
             terminal.SetColor("dark_red");
-            terminal.WriteLine("Underground Services:");
+            terminal.WriteLine(Loc.Get("dark_alley.visual_underground"));
             if (undergroundLocked)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  The Shadows don't trust you. (Standing: {shadowsStanding:N0}, need -50+)");
+                terminal.WriteLine(Loc.Get("dark_alley.visual_no_trust", shadowsStanding));
             }
             terminal.WriteLine("");
 
@@ -434,7 +432,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.Write("ickpocket              ");
+            terminal.Write(Loc.Get("dark_alley.menu_pickpocket"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -443,7 +441,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.WriteLine("ence Stolen Goods");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_fence"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -453,7 +451,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.Write(" Gambling Den           ");
+            terminal.Write(Loc.Get("dark_alley.menu_gambling"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -462,7 +460,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.WriteLine(" The Pit (Arena)");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_pit"));
 
             // Row 3
             terminal.SetColor("darkgray");
@@ -472,7 +470,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.Write("oan Shark               ");
+            terminal.Write(Loc.Get("dark_alley.menu_loan_shark"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -481,7 +479,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.WriteLine(" Safe House");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_safe_house"));
 
             terminal.WriteLine("");
 
@@ -495,7 +493,7 @@ namespace UsurperRemake.Locations
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("yellow");
-                terminal.WriteLine(" Pay Tribute to the Shadows");
+                terminal.WriteLine(Loc.Get("dark_alley.menu_pay_tribute"));
             }
 
             // The Shadows faction option
@@ -509,22 +507,22 @@ namespace UsurperRemake.Locations
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_magenta");
-                terminal.Write("oin The Shadows ");
+                terminal.Write(Loc.Get("dark_alley.menu_join_shadows"));
                 if (factionSystem.PlayerFaction == null)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(a figure watches from the darkness...)");
+                    terminal.WriteLine(Loc.Get("dark_alley.figure_watches"));
                 }
                 else
                 {
                     terminal.SetColor("dark_red");
-                    terminal.WriteLine("(you serve another...)");
+                    terminal.WriteLine(Loc.Get("dark_alley.serve_another"));
                 }
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine(" You are a member of The Shadows.");
+                terminal.WriteLine(Loc.Get("dark_alley.shadow_member_tag"));
             }
 
             // Black Market (Shadows only)
@@ -537,7 +535,7 @@ namespace UsurperRemake.Locations
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("magenta");
-                terminal.WriteLine(" Black Market");
+                terminal.WriteLine(Loc.Get("dark_alley.menu_black_market"));
             }
 
             // Informant (Shadows only)
@@ -550,7 +548,7 @@ namespace UsurperRemake.Locations
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("magenta");
-                terminal.WriteLine("nformant");
+                terminal.WriteLine(Loc.Get("dark_alley.menu_informant"));
             }
 
             // Evil Deeds
@@ -561,9 +559,9 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("red");
-            terminal.Write("vil Deeds ");
+            terminal.Write(Loc.Get("dark_alley.menu_evil_deeds"));
             terminal.SetColor("gray");
-            terminal.WriteLine("- Commit dark acts (+Darkness)");
+            terminal.WriteLine(Loc.Get("dark_alley.evil_deeds_desc"));
 
             // Navigation
             terminal.SetColor("darkgray");
@@ -573,7 +571,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn to Main Street");
+            terminal.WriteLine(Loc.Get("dark_alley.menu_return"));
             terminal.WriteLine("");
 
             ShowStatusLine();
@@ -585,51 +583,51 @@ namespace UsurperRemake.Locations
         private void DisplayLocationBBS()
         {
             terminal.ClearScreen();
-            ShowBBSHeader("THE DARK ALLEY");
+            ShowBBSHeader(Loc.Get("dark_alley.header"));
 
             // 1-line description
             terminal.SetColor("gray");
-            terminal.WriteLine(" Torches sputter in the moist air. Whispers of illicit trade echo in the dark.");
+            terminal.WriteLine(Loc.Get("dark_alley.bbs_desc"));
 
             ShowBBSNPCs();
             terminal.WriteLine("");
 
             // Shady establishments (2 rows)
             terminal.SetColor("dark_red");
-            terminal.WriteLine(" Shady Establishments:");
-            ShowBBSMenuRow(("D", "bright_yellow", "DrugPalace"), ("S", "bright_yellow", "Steroids"), ("O", "bright_yellow", "OrbsClub"), ("G", "bright_yellow", "Groggo"));
-            ShowBBSMenuRow(("B", "bright_yellow", "BeerHut"), ("A", "bright_yellow", "Alchemist"));
+            terminal.WriteLine(Loc.Get("dark_alley.bbs_shady"));
+            ShowBBSMenuRow(("D", "bright_yellow", Loc.Get("dark_alley.bbs_drug")), ("S", "bright_yellow", Loc.Get("dark_alley.bbs_steroids")), ("O", "bright_yellow", Loc.Get("dark_alley.bbs_orbs")), ("G", "bright_yellow", Loc.Get("dark_alley.bbs_groggo")));
+            ShowBBSMenuRow(("B", "bright_yellow", Loc.Get("dark_alley.bbs_beer")), ("A", "bright_yellow", Loc.Get("dark_alley.bbs_alchemist")));
 
             // Underground services (2 rows)
             bool locked = !IsUndergroundAccessAllowed();
             string kc = locked ? "darkgray" : "bright_yellow";
             terminal.SetColor("dark_red");
-            terminal.Write(" Underground");
+            terminal.Write(Loc.Get("dark_alley.bbs_underground"));
             if (locked)
             {
                 terminal.SetColor("red");
-                terminal.Write(" [LOCKED]");
+                terminal.Write(Loc.Get("dark_alley.bbs_locked"));
             }
             terminal.WriteLine(":");
-            ShowBBSMenuRow(("P", kc, "Pickpocket"), ("F", kc, "Fence"), ("C", kc, "Gamble"), ("T", kc, "ThePit"));
-            ShowBBSMenuRow(("L", kc, "LoanShark"), ("N", kc, "SafeHouse"));
+            ShowBBSMenuRow(("P", kc, Loc.Get("dark_alley.bbs_pickpocket")), ("F", kc, Loc.Get("dark_alley.bbs_fence")), ("C", kc, Loc.Get("dark_alley.bbs_gamble")), ("T", kc, Loc.Get("dark_alley.bbs_the_pit")));
+            ShowBBSMenuRow(("L", kc, Loc.Get("dark_alley.bbs_loan")), ("N", kc, Loc.Get("dark_alley.bbs_safe")));
 
             // Faction/special options (1 row)
             var factionSystem = FactionSystem.Instance;
             var shadowsStanding = FactionSystem.Instance?.FactionStanding[Faction.TheShadows] ?? 0;
             var specialItems = new List<(string key, string color, string label)>();
             if (shadowsStanding < 0)
-                specialItems.Add(("W", "bright_yellow", "Tribute"));
+                specialItems.Add(("W", "bright_yellow", Loc.Get("dark_alley.bbs_tribute")));
             if (factionSystem.PlayerFaction != Faction.TheShadows)
-                specialItems.Add(("J", "bright_yellow", "JoinShadows"));
+                specialItems.Add(("J", "bright_yellow", Loc.Get("dark_alley.bbs_join")));
             if (FactionSystem.Instance?.HasBlackMarketAccess() == true)
-                specialItems.Add(("M", "bright_yellow", "BlackMkt"));
+                specialItems.Add(("M", "bright_yellow", Loc.Get("dark_alley.bbs_black_mkt")));
             if (FactionSystem.Instance?.HasInformationNetwork() == true)
-                specialItems.Add(("I", "bright_yellow", "Informant"));
+                specialItems.Add(("I", "bright_yellow", Loc.Get("dark_alley.bbs_informant")));
             if (specialItems.Count > 0)
                 ShowBBSMenuRow(specialItems.ToArray());
 
-            ShowBBSMenuRow(("E", "red", "EvilDeeds"), ("R", "bright_yellow", "Return"));
+            ShowBBSMenuRow(("E", "red", Loc.Get("dark_alley.bbs_evil")), ("R", "bright_yellow", Loc.Get("dark_alley.bbs_return")));
 
             ShowBBSFooter();
         }
@@ -649,46 +647,46 @@ namespace UsurperRemake.Locations
         private async Task VisitDrugPalace()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE DRUG PALACE", "bright_magenta", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.drug_palace_header"), "bright_magenta", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("You enter a smoky den lined with velvet curtains. A hooded dealer");
-            terminal.WriteLine("spreads an array of colorful vials and packets across the table.");
+            terminal.WriteLine(Loc.Get("dark_alley.drug_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.drug_enter2"));
             terminal.WriteLine("");
 
             if (currentPlayer.OnDrugs)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"You're already under the influence of {currentPlayer.ActiveDrug}!");
-                terminal.WriteLine($"Effects will wear off in {currentPlayer.DrugEffectDays} day(s).");
+                terminal.WriteLine(Loc.Get("dark_alley.drug_under_influence", currentPlayer.ActiveDrug));
+                terminal.WriteLine(Loc.Get("dark_alley.drug_wear_off", currentPlayer.DrugEffectDays));
                 terminal.WriteLine("");
             }
 
             if (currentPlayer.Addict > 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"Addiction Level: {currentPlayer.Addict}/100");
+                terminal.WriteLine(Loc.Get("dark_alley.drug_addiction_level", currentPlayer.Addict));
                 terminal.WriteLine("");
             }
 
             // Drug menu
             terminal.SetColor("yellow");
-            terminal.WriteLine("Available substances:");
+            terminal.WriteLine(Loc.Get("dark_alley.drug_available"));
             terminal.WriteLine("");
 
             var drugs = new (DrugType drug, string name, string desc, long basePrice)[]
             {
-                (DrugType.Steroids, "Steroids", "+STR, +DMG (3 days)", 500),
-                (DrugType.BerserkerRage, "Berserker Rage", "+STR, +ATK, -DEF (1 day)", 300),
-                (DrugType.Haste, "Haste Powder", "+AGI, +Attacks, HP drain (2 days)", 600),
-                (DrugType.QuickSilver, "Quicksilver", "+DEX, +Crit (2 days)", 550),
-                (DrugType.ManaBoost, "Mana Boost", "+Mana, +Spell Power (3 days)", 700),
-                (DrugType.ThirdEye, "Third Eye", "+WIS, +Magic Resist (3 days)", 650),
-                (DrugType.Ironhide, "Ironhide", "+CON, +DEF, -AGI (2 days)", 500),
-                (DrugType.Stoneskin, "Stoneskin", "+Armor, -Speed (2 days)", 450),
-                (DrugType.DarkEssence, "Dark Essence", "+All Stats, HIGH ADDICTION (1 day)", 1500),
-                (DrugType.DemonBlood, "Demon Blood", "+DMG, +Darkness, VERY ADDICTIVE (2 days)", 2000)
+                (DrugType.Steroids, Loc.Get("dark_alley.drug_name_steroids"), Loc.Get("dark_alley.drug_desc_steroids"), 500),
+                (DrugType.BerserkerRage, Loc.Get("dark_alley.drug_name_berserker"), Loc.Get("dark_alley.drug_desc_berserker"), 300),
+                (DrugType.Haste, Loc.Get("dark_alley.drug_name_haste"), Loc.Get("dark_alley.drug_desc_haste"), 600),
+                (DrugType.QuickSilver, Loc.Get("dark_alley.drug_name_quicksilver"), Loc.Get("dark_alley.drug_desc_quicksilver"), 550),
+                (DrugType.ManaBoost, Loc.Get("dark_alley.drug_name_mana_boost"), Loc.Get("dark_alley.drug_desc_mana_boost"), 700),
+                (DrugType.ThirdEye, Loc.Get("dark_alley.drug_name_third_eye"), Loc.Get("dark_alley.drug_desc_third_eye"), 650),
+                (DrugType.Ironhide, Loc.Get("dark_alley.drug_name_ironhide"), Loc.Get("dark_alley.drug_desc_ironhide"), 500),
+                (DrugType.Stoneskin, Loc.Get("dark_alley.drug_name_stoneskin"), Loc.Get("dark_alley.drug_desc_stoneskin"), 450),
+                (DrugType.DarkEssence, Loc.Get("dark_alley.drug_name_dark_essence"), Loc.Get("dark_alley.drug_desc_dark_essence"), 1500),
+                (DrugType.DemonBlood, Loc.Get("dark_alley.drug_name_demon_blood"), Loc.Get("dark_alley.drug_desc_demon_blood"), 2000)
             };
 
             for (int i = 0; i < drugs.Length; i++)
@@ -717,10 +715,10 @@ namespace UsurperRemake.Locations
             }
 
             terminal.WriteLine("");
-            WriteSRMenuOption("0", "Leave");
+            WriteSRMenuOption("0", Loc.Get("ui.leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await GetChoice();
 
             if (!int.TryParse(choice, out int selection) || selection < 1 || selection > drugs.Length)
             {
@@ -732,17 +730,17 @@ namespace UsurperRemake.Locations
 
             if (currentPlayer.Gold < finalPrice)
             {
-                terminal.WriteLine("The dealer laughs. \"Come back when you have real money!\"", "red");
+                terminal.WriteLine(Loc.Get("dark_alley.drug_no_gold"), "red");
                 await Task.Delay(2000);
                 return;
             }
 
-            terminal.WriteLine($"Buy {selected.name} for {finalPrice:N0} gold? (Y/N)", "yellow");
+            terminal.WriteLine(Loc.Get("dark_alley.drug_buy_confirm", selected.name, finalPrice), "yellow");
             var confirm = await terminal.GetInput("> ");
 
             if (confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("You back away from the table.", "gray");
+                terminal.WriteLine(Loc.Get("dark_alley.drug_back_away"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -760,21 +758,21 @@ namespace UsurperRemake.Locations
                 // Show effects based on drug type
                 var effects = GetDrugEffectsForType(selected.drug);
                 terminal.SetColor("cyan");
-                if (effects.StrengthBonus > 0) terminal.WriteLine($"  +{effects.StrengthBonus} Strength");
-                if (effects.DexterityBonus > 0) terminal.WriteLine($"  +{effects.DexterityBonus} Dexterity");
-                if (effects.AgilityBonus > 0) terminal.WriteLine($"  +{effects.AgilityBonus} Agility");
-                if (effects.ConstitutionBonus > 0) terminal.WriteLine($"  +{effects.ConstitutionBonus} Constitution");
-                if (effects.WisdomBonus > 0) terminal.WriteLine($"  +{effects.WisdomBonus} Wisdom");
-                if (effects.ManaBonus > 0) terminal.WriteLine($"  +{effects.ManaBonus} Mana");
-                if (effects.DamageBonus > 0) terminal.WriteLine($"  +{effects.DamageBonus}% Damage");
-                if (effects.DefenseBonus > 0) terminal.WriteLine($"  +{effects.DefenseBonus} Defense");
-                if (effects.ExtraAttacks > 0) terminal.WriteLine($"  +{effects.ExtraAttacks} Extra Attacks");
+                if (effects.StrengthBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_str", effects.StrengthBonus));
+                if (effects.DexterityBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_dex", effects.DexterityBonus));
+                if (effects.AgilityBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_agi", effects.AgilityBonus));
+                if (effects.ConstitutionBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_con", effects.ConstitutionBonus));
+                if (effects.WisdomBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_wis", effects.WisdomBonus));
+                if (effects.ManaBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_mana", effects.ManaBonus));
+                if (effects.DamageBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_dmg", effects.DamageBonus));
+                if (effects.DefenseBonus > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_def", effects.DefenseBonus));
+                if (effects.ExtraAttacks > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_eff_attacks", effects.ExtraAttacks));
 
                 terminal.SetColor("red");
-                if (effects.DefensePenalty > 0) terminal.WriteLine($"  -{effects.DefensePenalty} Defense");
-                if (effects.AgilityPenalty > 0) terminal.WriteLine($"  -{effects.AgilityPenalty} Agility");
-                if (effects.SpeedPenalty > 0) terminal.WriteLine($"  -{effects.SpeedPenalty} Speed");
-                if (effects.HPDrain > 0) terminal.WriteLine($"  -{effects.HPDrain} HP/round drain");
+                if (effects.DefensePenalty > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_pen_def", effects.DefensePenalty));
+                if (effects.AgilityPenalty > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_pen_agi", effects.AgilityPenalty));
+                if (effects.SpeedPenalty > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_pen_speed", effects.SpeedPenalty));
+                if (effects.HPDrain > 0) terminal.WriteLine(Loc.Get("dark_alley.drug_pen_hp_drain", effects.HPDrain));
 
                 currentPlayer.Darkness += 5; // Dark act
                 currentPlayer.Fame = Math.Max(0, currentPlayer.Fame - 3); // Infamy
@@ -782,7 +780,7 @@ namespace UsurperRemake.Locations
                 // Increase Shadows standing for shady dealings
                 FactionSystem.Instance.ModifyReputation(Faction.TheShadows, 5);
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("  The Shadows have noted your... activities. (+5 Shadows standing)");
+                terminal.WriteLine(Loc.Get("dark_alley.drug_shadow_boost"));
             }
             else
             {
@@ -796,28 +794,28 @@ namespace UsurperRemake.Locations
         private async Task VisitSteroidShop()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("A muscular dwarf guards crates of suspicious vials.", "white");
+            terminal.WriteLine(Loc.Get("dark_alley.steroid_enter"), "white");
 
             if (currentPlayer.SteroidShopPurchases >= GameConfig.MaxSteroidShopPurchases)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("The dwarf shakes his head. \"Your body can't handle any more, friend.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.steroid_limit"));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"(Maximum {GameConfig.MaxSteroidShopPurchases} lifetime purchases reached)");
+                terminal.WriteLine(Loc.Get("dark_alley.steroid_max_reached", GameConfig.MaxSteroidShopPurchases));
                 await Task.Delay(2000);
                 return;
             }
 
             long price = GetAdjustedPrice(1000);
-            terminal.WriteLine($"Bulk-up serum costs {price:N0} {GameConfig.MoneyType}.", "cyan");
+            terminal.WriteLine(Loc.Get("dark_alley.steroid_cost", price, GameConfig.MoneyType), "cyan");
             terminal.SetColor("gray");
-            terminal.WriteLine($"(Purchases: {currentPlayer.SteroidShopPurchases}/{GameConfig.MaxSteroidShopPurchases})");
-            var ans = await terminal.GetInput("Inject? (Y/N): ");
+            terminal.WriteLine(Loc.Get("dark_alley.steroid_purchases", currentPlayer.SteroidShopPurchases, GameConfig.MaxSteroidShopPurchases));
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.steroid_inject_prompt"));
             if (ans.ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < price)
             {
-                terminal.WriteLine("You can't afford that!", "red");
+                terminal.WriteLine(Loc.Get("dark_alley.steroid_no_gold"), "red");
                 await Task.Delay(1500);
                 return;
             }
@@ -829,49 +827,49 @@ namespace UsurperRemake.Locations
             currentPlayer.Fame = Math.Max(0, currentPlayer.Fame - 2); // Infamy
             currentPlayer.SteroidShopPurchases++;
 
-            terminal.WriteLine("Your muscles swell unnaturally!", "bright_green");
+            terminal.WriteLine(Loc.Get("dark_alley.steroid_muscles"), "bright_green");
             terminal.SetColor("gray");
-            terminal.WriteLine($"({GameConfig.MaxSteroidShopPurchases - currentPlayer.SteroidShopPurchases} purchases remaining)");
+            terminal.WriteLine(Loc.Get("dark_alley.steroid_remaining", GameConfig.MaxSteroidShopPurchases - currentPlayer.SteroidShopPurchases));
             await Task.Delay(2000);
         }
 
         private async Task VisitOrbsHealthClub()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("A hooded cleric guides you to glowing orbs floating in a pool.", "white");
+            terminal.WriteLine(Loc.Get("dark_alley.orbs_enter"), "white");
             long price = GetAdjustedPrice(currentPlayer.Level * 50 + 100);
-            terminal.WriteLine($"Restoring vitality costs {price:N0} {GameConfig.MoneyType}.", "cyan");
-            var ans = await terminal.GetInput("Pay? (Y/N): ");
+            terminal.WriteLine(Loc.Get("dark_alley.orbs_cost", price, GameConfig.MoneyType), "cyan");
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.orbs_pay_prompt"));
             if (ans.ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < price)
             {
-                terminal.WriteLine("Insufficient gold.", "red");
+                terminal.WriteLine(Loc.Get("dark_alley.orbs_no_gold"), "red");
                 await Task.Delay(1500);
                 return;
             }
 
             currentPlayer.Gold -= price;
             currentPlayer.HP = currentPlayer.MaxHP;
-            terminal.WriteLine("Warm light knits your wounds together – you are fully healed!", "bright_green");
+            terminal.WriteLine(Loc.Get("dark_alley.orbs_healed"), "bright_green");
             await Task.Delay(2000);
         }
 
         private async Task VisitGroggoMagic()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("The infamous gnome Groggo grins widely behind a cluttered desk.", "white");
-            terminal.WriteLine("\"Secrets, charms, and forbidden knowledge! What'll it be?\"", "yellow");
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_enter"), "white");
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_enter2"), "yellow");
             terminal.WriteLine("");
 
-            terminal.WriteLine("Groggo's Services:", "cyan");
-            terminal.WriteLine("  (1) Dungeon Intel - 100 gold (reveals monsters on current floor)");
-            terminal.WriteLine("  (2) Fortune Reading - 250 gold (hints about upcoming events)");
-            terminal.WriteLine("  (3) Blessing of Shadows - 500 gold (temporary stealth bonus)");
-            terminal.WriteLine("  (0) Never mind");
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_menu_header"), "cyan");
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_intel"));
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_fortune"));
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_blessing"));
+            terminal.WriteLine(Loc.Get("dark_alley.groggo_nevermind"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await GetChoice();
 
             switch (choice)
             {
@@ -879,35 +877,35 @@ namespace UsurperRemake.Locations
                     long intelPrice = GetAdjustedPrice(100);
                     if (currentPlayer.Gold < intelPrice)
                     {
-                        terminal.WriteLine("Groggo scoffs. \"Come back with coin!\"", "red");
+                        terminal.WriteLine(Loc.Get("dark_alley.groggo_no_coin"), "red");
                         break;
                     }
                     currentPlayer.Gold -= intelPrice;
                     int dungeonFloor = Math.Max(1, currentPlayer.Level / 3); // Estimate based on player level
                     terminal.WriteLine("");
-                    terminal.WriteLine("Groggo whispers dungeon secrets:", "bright_magenta");
-                    terminal.WriteLine($"  \"For someone of your skill, floor {dungeonFloor} should be manageable...\"", "white");
-                    terminal.WriteLine($"  \"Monsters there are around level {dungeonFloor * 2 + 5}.\"", "white");
-                    terminal.WriteLine($"  \"Bring potions. Many potions.\"", "gray");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_whispers"), "bright_magenta");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_floor_hint", dungeonFloor), "white");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_monster_hint", dungeonFloor * 2 + 5), "white");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_potion_hint"), "gray");
                     break;
 
                 case "2":
                     long fortunePrice = GetAdjustedPrice(250);
                     if (currentPlayer.Gold < fortunePrice)
                     {
-                        terminal.WriteLine("Groggo scoffs. \"The future costs money, friend!\"", "red");
+                        terminal.WriteLine(Loc.Get("dark_alley.groggo_no_fortune"), "red");
                         break;
                     }
                     currentPlayer.Gold -= fortunePrice;
                     terminal.WriteLine("");
-                    terminal.WriteLine("Groggo peers into a murky crystal ball:", "bright_magenta");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_crystal"), "bright_magenta");
                     var fortunes = new[] {
-                        "\"I see gold in your future... but also danger.\"",
-                        "\"A powerful enemy watches you from the shadows.\"",
-                        "\"The deeper you go, the greater the rewards.\"",
-                        "\"Trust not the smiling stranger in the Inn.\"",
-                        "\"Your destiny is intertwined with the Seven Seals.\"",
-                        "\"The old gods stir in their prisons...\""
+                        Loc.Get("dark_alley.fortune_1"),
+                        Loc.Get("dark_alley.fortune_2"),
+                        Loc.Get("dark_alley.fortune_3"),
+                        Loc.Get("dark_alley.fortune_4"),
+                        Loc.Get("dark_alley.fortune_5"),
+                        Loc.Get("dark_alley.fortune_6")
                     };
                     terminal.WriteLine($"  {fortunes[Random.Shared.Next(0, fortunes.Length)]}", "white");
                     break;
@@ -916,27 +914,27 @@ namespace UsurperRemake.Locations
                     long blessPrice = GetAdjustedPrice(500);
                     if (currentPlayer.Gold < blessPrice)
                     {
-                        terminal.WriteLine("Groggo scoffs. \"Shadow magic isn't cheap!\"", "red");
+                        terminal.WriteLine(Loc.Get("dark_alley.groggo_no_shadow"), "red");
                         break;
                     }
                     currentPlayer.Gold -= blessPrice;
                     if (currentPlayer.GroggoShadowBlessingDex > 0)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You already have the Blessing of Shadows active!");
+                        terminal.WriteLine(Loc.Get("dark_alley.groggo_already_blessed"));
                         currentPlayer.Gold += blessPrice; // Refund
                         break;
                     }
                     currentPlayer.GroggoShadowBlessingDex = 3;
                     currentPlayer.Dexterity += 3;
                     terminal.WriteLine("");
-                    terminal.WriteLine("Groggo traces arcane symbols in the air...", "bright_magenta");
-                    terminal.WriteLine("Shadows wrap around you like a cloak!", "white");
-                    terminal.WriteLine("  Dexterity +3 (until next rest)", "bright_green");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_traces"), "bright_magenta");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_shadows_wrap"), "white");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_dex_bonus"), "bright_green");
                     break;
 
                 default:
-                    terminal.WriteLine("\"Come back when you need something.\"", "gray");
+                    terminal.WriteLine(Loc.Get("dark_alley.groggo_comeback"), "gray");
                     break;
             }
 
@@ -946,16 +944,16 @@ namespace UsurperRemake.Locations
         private async Task VisitBeerHut()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Bob hands you a frothy mug that smells vaguely of goblin sweat.", "white");
+            terminal.WriteLine(Loc.Get("dark_alley.bob_mug"), "white");
             long price = GetAdjustedPrice(10);
-            terminal.WriteLine($"\"Just {price} gold for liquid courage!\" Bob grins.", "yellow");
+            terminal.WriteLine(Loc.Get("dark_alley.bob_price", price), "yellow");
 
-            var ans = await terminal.GetInput("Drink? (Y/N): ");
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.bob_drink_prompt"));
             if (ans.ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < price)
             {
-                terminal.WriteLine("Bob laughs, \"Pay first, friend!\"", "red");
+                terminal.WriteLine(Loc.Get("dark_alley.bob_no_gold"), "red");
                 await Task.Delay(1500);
                 return;
             }
@@ -967,17 +965,17 @@ namespace UsurperRemake.Locations
             {
                 case 1:
                     currentPlayer.HP = Math.Min(currentPlayer.MaxHP, currentPlayer.HP + 10);
-                    terminal.WriteLine("The warmth spreads through you. (+10 HP)", "bright_green");
+                    terminal.WriteLine(Loc.Get("dark_alley.bob_warmth"), "bright_green");
                     break;
                 case 2:
-                    terminal.WriteLine("You feel brave! (Nothing happened, but you feel good.)", "bright_green");
+                    terminal.WriteLine(Loc.Get("dark_alley.bob_brave"), "bright_green");
                     break;
                 case 3:
                     currentPlayer.Gold += 5; // Bob gives you some change back
-                    terminal.WriteLine("Bob winks and slides some coins back. \"For a friend.\" (+5 gold)", "bright_green");
+                    terminal.WriteLine(Loc.Get("dark_alley.bob_coins"), "bright_green");
                     break;
                 default:
-                    terminal.WriteLine("It burns going down! You feel... something.", "yellow");
+                    terminal.WriteLine(Loc.Get("dark_alley.bob_burns"), "yellow");
                     break;
             }
             await Task.Delay(1500);
@@ -986,15 +984,15 @@ namespace UsurperRemake.Locations
         private async Task VisitAlchemistHeaven()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Shelves of bubbling concoctions line the walls.", "white");
+            terminal.WriteLine(Loc.Get("dark_alley.alchemist_enter"), "white");
             long price = GetAdjustedPrice(300);
-            terminal.WriteLine($"A random experimental potion costs {price:N0} {GameConfig.MoneyType}.", "cyan");
-            var ans = await terminal.GetInput("Buy? (Y/N): ");
+            terminal.WriteLine(Loc.Get("dark_alley.alchemist_price", price, GameConfig.MoneyType), "cyan");
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.alchemist_buy_prompt"));
             if (ans.ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < price)
             {
-                terminal.WriteLine("The alchemist shakes his head – no credit.", "red");
+                terminal.WriteLine(Loc.Get("dark_alley.alchemist_no_gold"), "red");
                 await Task.Delay(1500);
                 return;
             }
@@ -1006,22 +1004,22 @@ namespace UsurperRemake.Locations
                 case 1:
                     if (currentPlayer.AlchemistINTBoosts >= GameConfig.MaxAlchemistINTBoosts)
                     {
-                        terminal.WriteLine("Your mind has been enhanced to its limit by alchemy.", "yellow");
+                        terminal.WriteLine(Loc.Get("dark_alley.alchemist_limit"), "yellow");
                     }
                     else
                     {
                         currentPlayer.Intelligence += 2;
                         currentPlayer.AlchemistINTBoosts++;
-                        terminal.WriteLine($"Your mind feels sharper! (+2 INT, {GameConfig.MaxAlchemistINTBoosts - currentPlayer.AlchemistINTBoosts} boosts remaining)", "bright_green");
+                        terminal.WriteLine(Loc.Get("dark_alley.alchemist_int_boost", GameConfig.MaxAlchemistINTBoosts - currentPlayer.AlchemistINTBoosts), "bright_green");
                     }
                     break;
                 case 2:
                     currentPlayer.HP = Math.Min(currentPlayer.MaxHP, currentPlayer.HP + 20);
-                    terminal.WriteLine("A warm glow mends some wounds. (+20 HP)", "bright_green");
+                    terminal.WriteLine(Loc.Get("dark_alley.alchemist_heal"), "bright_green");
                     break;
                 default:
                     currentPlayer.Darkness += 2;
-                    terminal.WriteLine("The potion fizzles nastily… you feel uneasy. (+2 Darkness)", "yellow");
+                    terminal.WriteLine(Loc.Get("dark_alley.alchemist_fizzle"), "yellow");
                     break;
             }
             await Task.Delay(2000);
@@ -1061,24 +1059,24 @@ namespace UsurperRemake.Locations
             var factionSystem = FactionSystem.Instance;
 
             terminal.ClearScreen();
-            WriteBoxHeader("THE SHADOWS", "bright_magenta");
+            WriteBoxHeader(Loc.Get("dark_alley.shadows_header"), "bright_magenta");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("You feel eyes on you. The shadows in the corner of the alley seem");
-            terminal.WriteLine("to deepen, to solidify into something almost human...");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_intro1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_intro2"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("white");
-            terminal.WriteLine("A figure emerges. You cannot see their face - it's wrapped in darkness");
-            terminal.WriteLine("that seems to move and shift like smoke. Only their voice is clear.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_figure1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_figure2"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"You've been noticed,\" the voice whispers, neither male nor female.");
-            terminal.WriteLine("\"Not everyone who walks these alleys catches our attention.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_noticed"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_attention"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
@@ -1086,43 +1084,43 @@ namespace UsurperRemake.Locations
             if (factionSystem.PlayerFaction != null)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The faceless figure tilts its head, studying you.");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_study"));
                 terminal.WriteLine("");
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"\"You carry the mark of {FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name}.\"");
-                terminal.WriteLine("\"The Shadows do not share. We do not compete.\"");
-                terminal.WriteLine("\"When you are ready to walk free of chains... find us.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_carry_mark", FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_no_share"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_find_us"));
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("The figure dissolves back into the darkness.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_dissolves"));
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine("The figure beckons you deeper into the shadows.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_beckons"));
             terminal.WriteLine("");
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"The Crown demands obedience. The Faith demands worship.\"");
-            terminal.WriteLine("\"We demand nothing. We offer... opportunity.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_crown"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_demand"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("\"Information is currency. Secrets are power.\"");
-            terminal.WriteLine("\"The Shadows know what the Crown hides. What The Faith fears.\"");
-            terminal.WriteLine("\"We move unseen. We profit while others fight.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_currency"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_know"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_unseen"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             // Show faction benefits
             terminal.SetColor("bright_yellow");
-            WriteSectionHeader("Benefits of The Shadows", "bright_yellow");
+            WriteSectionHeader(Loc.Get("dark_alley.benefits_shadows"), "bright_yellow");
             terminal.SetColor("white");
-            terminal.WriteLine("• 20% better prices when selling items (fence bonus)");
-            terminal.WriteLine("• Access to exclusive black market goods");
-            terminal.WriteLine("• Friendly treatment from thieves and assassin NPCs");
-            terminal.WriteLine("• Information network reveals hidden opportunities");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_benefit1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_benefit2"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_benefit3"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_benefit4"));
             terminal.WriteLine("");
 
             // Check requirements
@@ -1131,41 +1129,41 @@ namespace UsurperRemake.Locations
             if (!canJoin)
             {
                 terminal.SetColor("red");
-                WriteSectionHeader("Requirements Not Met", "red");
+                WriteSectionHeader(Loc.Get("dark_alley.requirements_not_met"), "red");
                 terminal.SetColor("yellow");
                 terminal.WriteLine(reason);
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("The Shadows require:");
-                terminal.WriteLine("• Level 10 or higher");
-                terminal.WriteLine("• Darkness 200+ (or complete a favor for The Shadows)");
-                terminal.WriteLine($"  Your Darkness: {currentPlayer.Darkness}");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_require"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_req_level"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_req_darkness"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_your_darkness", currentPlayer.Darkness));
                 terminal.WriteLine("");
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("\"You walk too much in the light,\" the voice observes.");
-                terminal.WriteLine("\"Embrace the darkness. Do what must be done.\"");
-                terminal.WriteLine("\"Or... prove yourself with a favor. We remember those who help us.\"");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_too_light"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_embrace"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_prove"));
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
             // Can join - offer the choice
             terminal.SetColor("bright_green");
-            WriteSectionHeader("Requirements Met", "bright_green");
+            WriteSectionHeader(Loc.Get("dark_alley.requirements_met"), "bright_green");
             terminal.SetColor("gray");
-            terminal.WriteLine("The faceless figure nods - somehow you can tell, even without seeing.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_nods"));
             terminal.WriteLine("");
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"You understand how the world works. Good.\"");
-            terminal.WriteLine("\"Will you step into the shadows with us?\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_understand"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_step_in"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("WARNING: Joining The Shadows will:");
-            terminal.WriteLine("• Lock you out of The Crown and The Faith");
-            terminal.WriteLine("• Decrease standing with rival factions by 100");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_warning_header"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_warning1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_warning2"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInputAsync("Join The Shadows? (Y/N) ");
+            var choice = await terminal.GetInputAsync(Loc.Get("dark_alley.shadows_join_prompt"));
 
             if (choice.ToUpper() == "Y")
             {
@@ -1175,16 +1173,16 @@ namespace UsurperRemake.Locations
             {
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("The figure shrugs - or seems to.");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_shrug"));
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("\"The offer remains. The shadows are patient.\"");
-                terminal.WriteLine("\"We will be watching.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_patient"));
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_watching"));
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Between one blink and the next, the figure is gone.");
+                terminal.WriteLine(Loc.Get("dark_alley.shadows_gone"));
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         /// <summary>
@@ -1193,69 +1191,69 @@ namespace UsurperRemake.Locations
         private async Task PerformShadowsInitiation(FactionSystem factionSystem)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE INITIATION", "bright_magenta");
+            WriteBoxHeader(Loc.Get("dark_alley.initiation_header"), "bright_magenta");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("The figure leads you deeper into the darkness.");
-            terminal.WriteLine("The alley twists and turns in ways that should be impossible.");
-            terminal.WriteLine("You lose all sense of direction.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual2"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual3"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("white");
-            terminal.WriteLine("Finally, you stand in a chamber of absolute darkness.");
-            terminal.WriteLine("You cannot see the walls. You cannot see the floor.");
-            terminal.WriteLine("You can only see the figure, outlined in shadow.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual4"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual5"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_ritual6"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"There is no oath,\" the voice says. \"No vow. No ritual.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_no_oath"));
             terminal.WriteLine("");
             await Task.Delay(1000);
 
-            terminal.WriteLine("\"There is only understanding.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_understanding"));
             terminal.WriteLine("");
             await Task.Delay(1000);
 
             terminal.SetColor("white");
-            terminal.WriteLine("Something cold touches your hand. A coin, heavier than gold.");
-            terminal.WriteLine("You cannot see its face, but you can feel the symbol carved into it.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_coin1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_coin2"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"Keep this. Show it when you need to.\"");
-            terminal.WriteLine("\"Those who see it will know you walk with us.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_keep"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_know_you"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             // Actually join the faction
             factionSystem.JoinFaction(Faction.TheShadows, currentPlayer);
 
-            WriteBoxHeader("YOU HAVE JOINED THE SHADOWS", "bright_green");
+            WriteBoxHeader(Loc.Get("dark_alley.joined_shadows"), "bright_green");
             terminal.WriteLine("");
 
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("\"Welcome to the darkness. Use it well.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_welcome"));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("As a member of The Shadows, you will receive:");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_receive"));
             terminal.SetColor("bright_green");
-            terminal.WriteLine("• 20% better sell prices at black markets");
-            terminal.WriteLine("• Access to exclusive Shadows-only goods");
-            terminal.WriteLine("• Recognition from thieves and assassins");
-            terminal.WriteLine("• The information network works for you now");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_perk1"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_perk2"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_perk3"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_perk4"));
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("When you blink, you find yourself back in the Dark Alley.");
-            terminal.WriteLine("The figure is gone. But you can feel the shadow coin in your pocket.");
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_back_alley"));
+            terminal.WriteLine(Loc.Get("dark_alley.shadows_coin_pocket"));
 
             // Generate news (anonymously - it's the Shadows after all)
-            NewsSystem.Instance.Newsy(false, $"A new shadow moves through Dorashire...");
+            NewsSystem.Instance.Newsy(false, Loc.Get("dark_alley.news_shadow_joins"));
 
             // Log to debug
             DebugLogger.Instance.LogInfo("FACTION", $"{currentPlayer.Name2} joined The Shadows");
@@ -1273,31 +1271,31 @@ namespace UsurperRemake.Locations
             terminal.ClearScreen();
             terminal.SetColor("dark_magenta");
             terminal.WriteLine("");
-            terminal.WriteLine("You squint into the deepest shadows of the alley...");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_squint"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("gray");
-            terminal.WriteLine("At first, you see nothing but darkness.");
-            terminal.WriteLine("But as your eyes adjust, shapes begin to form...");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_nothing"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_adjust"));
             terminal.WriteLine("");
             await Task.Delay(2000);
 
             terminal.SetColor("white");
-            terminal.WriteLine("Letters. Ancient letters, carved into the very shadows themselves.");
-            terminal.WriteLine("They seem to shift and dance, but you can just make out the words:");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_letters"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_shift"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("   \"The Wave returns to the Ocean.\"");
-            terminal.WriteLine("   \"The Shadow remembers what the Light forgets.\"");
-            terminal.WriteLine("   \"Jakob was here. 1993.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_wave"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_shadow"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_jakob"));
             terminal.WriteLine("");
             await Task.Delay(2000);
 
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("You have discovered something hidden in this dark place!");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_discovered"));
             terminal.WriteLine("");
 
             // Unlock the secret achievement
@@ -1305,12 +1303,12 @@ namespace UsurperRemake.Locations
             await AchievementSystem.ShowPendingNotifications(terminal, currentPlayer);
 
             terminal.SetColor("gray");
-            terminal.WriteLine("The shadows shift, and the words fade from view.");
-            terminal.WriteLine("But you know they are still there, waiting for another");
-            terminal.WriteLine("curious soul to find them in the darkness.");
+            terminal.WriteLine(Loc.Get("dark_alley.easter_fade"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_waiting"));
+            terminal.WriteLine(Loc.Get("dark_alley.easter_curious"));
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         #endregion
@@ -1322,19 +1320,19 @@ namespace UsurperRemake.Locations
             if (FactionSystem.Instance?.HasBlackMarketAccess() != true)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\n  You dont have access to the Black Market.");
-                terminal.WriteLine("  Join the Shadows first.");
+                terminal.WriteLine("\n" + Loc.Get("dark_alley.bm_no_access"));
+                terminal.WriteLine(Loc.Get("dark_alley.bm_join_first"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.ClearScreen();
-            WriteBoxHeader("THE BLACK MARKET", "bright_magenta", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.black_market_header"), "bright_magenta", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("  A hooded figure beckons you behind a false wall.");
-            terminal.WriteLine("  Crates of contraband line the narrow room.");
+            terminal.WriteLine(Loc.Get("dark_alley.bm_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.bm_enter2"));
             terminal.WriteLine("");
 
             float rankDiscount = FactionSystem.Instance?.GetBlackMarketDiscount() ?? 0f;
@@ -1344,31 +1342,31 @@ namespace UsurperRemake.Locations
             long poisonVialPrice = (long)((300 + level * 20) * (1.0f - rankDiscount));
             long smokeBombPrice = (long)((500 + level * 30) * (1.0f - rankDiscount));
 
-            WriteSRMenuOption("1", $"Forged Papers, {forgedPapersPrice:N0}g - Reduce Darkness by 100");
-            WriteSRMenuOption("2", $"Poison Vials (x3), {poisonVialPrice:N0}g - Coat blade in combat");
-            WriteSRMenuOption("3", $"Smoke Bomb, {smokeBombPrice:N0}g - Guaranteed escape (max 3)");
-            WriteSRMenuOption("0", "Leave");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.bm_forged_papers", forgedPapersPrice));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.bm_poison_vials", poisonVialPrice));
+            WriteSRMenuOption("3", Loc.Get("dark_alley.bm_smoke_bomb", smokeBombPrice));
+            WriteSRMenuOption("0", Loc.Get("ui.leave"));
             terminal.WriteLine("");
 
             if (rankDiscount > 0)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine($"  Rank discount: {rankDiscount * 100:F0}% off");
+                terminal.WriteLine(Loc.Get("dark_alley.bm_rank_discount", rankDiscount * 100));
                 terminal.WriteLine("");
             }
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("dark_alley.bm_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
-            var input = await terminal.GetInput("  Purchase? ");
+            var input = await terminal.GetInput(Loc.Get("dark_alley.bm_purchase_prompt"));
             switch (input.Trim())
             {
                 case "1": // Forged Papers
                     if (currentPlayer.Gold < forgedPapersPrice)
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("  Not enough gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_no_gold"));
                     }
                     else
                     {
@@ -1376,7 +1374,7 @@ namespace UsurperRemake.Locations
                         long reduction = Math.Min(100, currentPlayer.Darkness);
                         currentPlayer.Darkness -= (int)reduction;
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  The forger hands you new papers. Darkness reduced by {reduction}.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_forged_result", reduction));
                         currentPlayer.Statistics?.RecordGoldSpent(forgedPapersPrice);
                     }
                     break;
@@ -1385,12 +1383,12 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.PoisonVials >= GameConfig.MaxPoisonVials)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine($"  You can't carry any more vials. ({currentPlayer.PoisonVials}/{GameConfig.MaxPoisonVials})");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_poison_vial_limit", currentPlayer.PoisonVials, GameConfig.MaxPoisonVials));
                     }
                     else if (currentPlayer.Gold < poisonVialPrice)
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("  Not enough gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_no_gold"));
                     }
                     else
                     {
@@ -1398,9 +1396,9 @@ namespace UsurperRemake.Locations
                         int vialsToAdd = 3;
                         currentPlayer.PoisonVials = Math.Min(GameConfig.MaxPoisonVials, currentPlayer.PoisonVials + vialsToAdd);
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  You acquire {vialsToAdd} poison vials. (Total: {currentPlayer.PoisonVials})");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_poison_result", vialsToAdd, currentPlayer.PoisonVials));
                         terminal.SetColor("cyan");
-                        terminal.WriteLine("  Use [B] Coat Blade during combat to apply a poison.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_poison_use"));
                         currentPlayer.Statistics?.RecordGoldSpent(poisonVialPrice);
                     }
                     break;
@@ -1409,19 +1407,19 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.SmokeBombs >= 3)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("  You cant carry any more. Three is the limit.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_poison_limit"));
                     }
                     else if (currentPlayer.Gold < smokeBombPrice)
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("  Not enough gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_no_gold"));
                     }
                     else
                     {
                         currentPlayer.Gold -= smokeBombPrice;
                         currentPlayer.SmokeBombs++;
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  Smoke bomb acquired. You now carry {currentPlayer.SmokeBombs}.");
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_smoke_result", currentPlayer.SmokeBombs));
                         currentPlayer.Statistics?.RecordGoldSpent(smokeBombPrice);
                     }
                     break;
@@ -1438,33 +1436,33 @@ namespace UsurperRemake.Locations
             if (FactionSystem.Instance?.HasInformationNetwork() != true)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\n  You dont have access to the information network.");
-                terminal.WriteLine("  Join the Shadows first.");
+                terminal.WriteLine("\n" + Loc.Get("dark_alley.informant_no_access"));
+                terminal.WriteLine(Loc.Get("dark_alley.informant_join_first"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.ClearScreen();
-            WriteBoxHeader("THE INFORMANT", "bright_magenta", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.informant_header"), "bright_magenta", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("  A wiry figure in a dark corner taps the table impatiently.");
+            terminal.WriteLine(Loc.Get("dark_alley.informant_enter"));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  \"Intel costs {GameConfig.InformantCost} gold. Take it or leave it.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.informant_cost", GameConfig.InformantCost));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("dark_alley.bm_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
-            var input = await terminal.GetInput("  Pay for intel? (Y/N): ");
+            var input = await terminal.GetInput(Loc.Get("dark_alley.informant_pay_prompt"));
             if (input.Trim().ToUpper() != "Y")
                 return;
 
             if (currentPlayer.Gold < GameConfig.InformantCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  \"Come back when you can afford it.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.informant_no_gold"));
                 await Task.Delay(2000);
                 return;
             }
@@ -1476,7 +1474,7 @@ namespace UsurperRemake.Locations
             if (activeNPCs == null || activeNPCs.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  \"Nothing to report. Town's dead quiet.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.informant_quiet"));
                 await Task.Delay(2000);
                 return;
             }
@@ -1484,7 +1482,7 @@ namespace UsurperRemake.Locations
             // Top 5 wealthiest NPCs
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("");
-            WriteSectionHeader("Wealthiest Marks", "bright_yellow");
+            WriteSectionHeader(Loc.Get("dark_alley.wealthiest_marks"), "bright_yellow");
             var wealthiest = activeNPCs
                 .Where(n => !n.IsDead && n.Gold > 0)
                 .OrderByDescending(n => n.Gold)
@@ -1494,21 +1492,21 @@ namespace UsurperRemake.Locations
             if (wealthiest.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Nobody's carrying much right now.");
+                terminal.WriteLine(Loc.Get("dark_alley.informant_nobody_rich"));
             }
             else
             {
                 foreach (var npc in wealthiest)
                 {
                     terminal.SetColor("white");
-                    terminal.WriteLine($"  {npc.Name2,-20} {npc.Gold,8:N0}g  Lvl {npc.Level}");
+                    terminal.WriteLine($"  {npc.Name2,-20} {npc.Gold,8:N0}g  {Loc.Get("dark_alley.lvl_label")} {npc.Level}");
                 }
             }
 
             // Wanted NPCs (high Darkness)
             terminal.SetColor("bright_red");
             terminal.WriteLine("");
-            WriteSectionHeader("Wanted (Darkness > 200)", "bright_red");
+            WriteSectionHeader(Loc.Get("dark_alley.wanted_darkness"), "bright_red");
             var wanted = activeNPCs
                 .Where(n => !n.IsDead && n.Darkness > 200)
                 .OrderByDescending(n => n.Darkness)
@@ -1518,14 +1516,14 @@ namespace UsurperRemake.Locations
             if (wanted.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Nobody on the wanted list right now.");
+                terminal.WriteLine(Loc.Get("dark_alley.informant_no_wanted"));
             }
             else
             {
                 foreach (var npc in wanted)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"  {npc.Name2,-20} Darkness: {npc.Darkness}  Lvl {npc.Level}");
+                    terminal.WriteLine($"  {npc.Name2,-20} {Loc.Get("dark_alley.darkness_label")}: {npc.Darkness}  {Loc.Get("dark_alley.lvl_label")} {npc.Level}");
                 }
             }
 
@@ -1535,7 +1533,7 @@ namespace UsurperRemake.Locations
             {
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine("");
-                WriteSectionHeader("Your Active Targets", "bright_cyan");
+                WriteSectionHeader(Loc.Get("dark_alley.active_targets"), "bright_cyan");
                 foreach (var quest in activeQuests.Take(5))
                 {
                     terminal.SetColor("cyan");
@@ -1558,36 +1556,36 @@ namespace UsurperRemake.Locations
         private async Task VisitGamblingDen()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE GAMBLING DEN", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.gambling_den_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("Smoke curls through the low-ceilinged room. A scarred half-orc");
-            terminal.WriteLine("runs the tables while nervous eyes watch from every corner.");
+            terminal.WriteLine(Loc.Get("dark_alley.gambling_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.gambling_enter2"));
             terminal.WriteLine("");
 
             if (currentPlayer.GamblingRoundsToday >= 10)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("The half-orc waves you off. \"You've had enough action for today.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_limit"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("(10/10 daily rounds used)");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_limit_count"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Rounds remaining today: {10 - currentPlayer.GamblingRoundsToday}/10");
-            terminal.WriteLine($"Gold on hand: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("dark_alley.gambling_rounds", 10 - currentPlayer.GamblingRoundsToday));
+            terminal.WriteLine(Loc.Get("dark_alley.gambling_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
-            WriteSRMenuOption("1", "Loaded Dice - Guess over/under 7. Win = 1.8x bet");
-            WriteSRMenuOption("2", "Three Card Monte - Pick the right card. Win = 2.5x bet");
-            WriteSRMenuOption("3", "Skull & Bones - Choose your risk. 2x/3x/5x payout");
-            WriteSRMenuOption("0", "Leave");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.game_dice"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.game_monte"));
+            WriteSRMenuOption("3", Loc.Get("dark_alley.game_skull"));
+            WriteSRMenuOption("0", Loc.Get("ui.leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your game: ");
+            var choice = await terminal.GetInput(Loc.Get("dark_alley.gambling_your_game"));
             if (choice != "1" && choice != "2" && choice != "3") return;
 
             // Get bet amount
@@ -1596,7 +1594,7 @@ namespace UsurperRemake.Locations
             if (currentPlayer.Gold < minBet)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\"You need at least 10 gold to play, rat.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_min_gold"));
                 await Task.Delay(1500);
                 return;
             }
@@ -1605,26 +1603,26 @@ namespace UsurperRemake.Locations
             while (true)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Place your bet (min {minBet}, max {maxBet:N0}, 0 to leave): ");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_bet_prompt", minBet, maxBet));
                 var betInput = await terminal.GetInput("> ");
                 if (!long.TryParse(betInput, out bet) || bet == 0)
                     return;
                 if (bet < minBet)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\"Minimum wager is {minBet} gold.\"");
+                    terminal.WriteLine(Loc.Get("dark_alley.gambling_min_wager", minBet));
                     continue;
                 }
                 if (bet > maxBet)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"\"Max wager is {maxBet:N0} gold.\"");
+                    terminal.WriteLine(Loc.Get("dark_alley.gambling_max_wager", maxBet));
                     continue;
                 }
                 if (bet > currentPlayer.Gold)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("\"You ain't got that kind of coin.\"");
+                    terminal.WriteLine(Loc.Get("dark_alley.gambling_no_coin"));
                     continue;
                 }
                 break;
@@ -1653,14 +1651,14 @@ namespace UsurperRemake.Locations
             {
                 currentPlayer.Gold += winnings;
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You pocket {winnings:N0} gold!");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_win", winnings));
                 DebugLogger.Instance.LogInfo("GOLD", $"GAMBLING WIN: {currentPlayer.DisplayName} bet {bet:N0}g, won {winnings:N0}g (gold now {currentPlayer.Gold:N0})");
                 currentPlayer.Statistics?.RecordGamblingWin(winnings - bet);
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You lost {bet:N0} gold. The house always wins... eventually.");
+                terminal.WriteLine(Loc.Get("dark_alley.gambling_loss", bet));
                 DebugLogger.Instance.LogInfo("GOLD", $"GAMBLING LOSS: {currentPlayer.DisplayName} lost {bet:N0}g bet (gold now {currentPlayer.Gold:N0})");
                 currentPlayer.Statistics?.RecordGamblingLoss(bet);
             }
@@ -1673,7 +1671,7 @@ namespace UsurperRemake.Locations
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"Rounds remaining: {10 - currentPlayer.GamblingRoundsToday}/10");
+            terminal.WriteLine(Loc.Get("dark_alley.gambling_rounds_left", 10 - currentPlayer.GamblingRoundsToday));
             await Task.Delay(2000);
         }
 
@@ -1684,10 +1682,10 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("white");
             terminal.WriteLine("");
-            terminal.WriteLine("The half-orc rattles two dice in a leather cup.");
+            terminal.WriteLine(Loc.Get("dark_alley.dice_rattles"));
             terminal.WriteLine("");
-            WriteSRMenuOption("1", "Over 7");
-            WriteSRMenuOption("2", "Under 7");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.dice_over"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.dice_under"));
             var guess = await terminal.GetInput("> ");
             bool guessOver = guess != "2"; // Default to over
 
@@ -1697,7 +1695,7 @@ namespace UsurperRemake.Locations
             int total = die1 + die2;
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"The dice tumble... {die1} + {die2} = {total}!");
+            terminal.WriteLine(Loc.Get("dark_alley.dice_result", die1, die2, total));
             await Task.Delay(500);
 
             // ~45% base win + CHA/200 bonus
@@ -1713,12 +1711,12 @@ namespace UsurperRemake.Locations
                 {
                     total = guessOver ? Random.Shared.Next(8, 13) : Random.Shared.Next(2, 7);
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine($"Wait... actually it's {total}!");
+                    terminal.WriteLine(Loc.Get("dark_alley.dice_actually", total));
                 }
                 won = true;
                 winnings = (long)(bet * 1.8);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You called it! The dice favor you.");
+                terminal.WriteLine(Loc.Get("dark_alley.dice_favor"));
             }
             else
             {
@@ -1726,10 +1724,10 @@ namespace UsurperRemake.Locations
                 {
                     total = guessOver ? Random.Shared.Next(2, 8) : Random.Shared.Next(7, 13);
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine($"Wait... actually it's {total}!");
+                    terminal.WriteLine(Loc.Get("dark_alley.dice_actually", total));
                 }
                 terminal.SetColor("red");
-                terminal.WriteLine("The dice betray you.");
+                terminal.WriteLine(Loc.Get("dark_alley.dice_betray"));
             }
 
             return (won, winnings);
@@ -1742,19 +1740,19 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("white");
             terminal.WriteLine("");
-            terminal.WriteLine("Three cards face-down. One is the Queen of Shadows.");
-            terminal.WriteLine("The dealer's hands blur as he shuffles them.");
+            terminal.WriteLine(Loc.Get("dark_alley.cards_intro"));
+            terminal.WriteLine(Loc.Get("dark_alley.cards_shuffle"));
             terminal.WriteLine("");
             await Task.Delay(1000);
 
-            WriteSRMenuOption("1", "Left card");
-            WriteSRMenuOption("2", "Middle card");
-            WriteSRMenuOption("3", "Right card");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.card_left"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.card_middle"));
+            WriteSRMenuOption("3", Loc.Get("dark_alley.card_right"));
             var pick = await terminal.GetInput("> ");
 
             await Task.Delay(1500);
             terminal.SetColor("white");
-            terminal.WriteLine("The dealer flips the cards...");
+            terminal.WriteLine(Loc.Get("dark_alley.cards_flip"));
             await Task.Delay(500);
 
             // 33% base + DEX/500 bonus
@@ -1769,7 +1767,7 @@ namespace UsurperRemake.Locations
                 won = true;
                 winnings = (long)(bet * 2.5);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"The Queen smiles at you from card {queenPosition}. Sharp eyes!");
+                terminal.WriteLine(Loc.Get("dark_alley.cards_queen_win", queenPosition));
             }
             else
             {
@@ -1777,7 +1775,7 @@ namespace UsurperRemake.Locations
                 if (int.TryParse(pick, out int pp) && pp >= 1 && pp <= 3)
                     queenPosition = pp == 1 ? 2 : pp == 2 ? 3 : 1;
                 terminal.SetColor("red");
-                terminal.WriteLine($"The Queen was hiding on card {queenPosition}. Better luck next time.");
+                terminal.WriteLine(Loc.Get("dark_alley.cards_queen_lose", queenPosition));
             }
 
             return (won, winnings);
@@ -1790,11 +1788,11 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("white");
             terminal.WriteLine("");
-            terminal.WriteLine("A grinning skull sits on the table. Choose your risk.");
+            terminal.WriteLine(Loc.Get("dark_alley.skull_intro"));
             terminal.WriteLine("");
-            WriteSRMenuOption("1", "Safe bet - 2x payout (45% win)");
-            WriteSRMenuOption("2", "Risky bet - 3x payout (30% win)");
-            WriteSRMenuOption("3", "All or nothing - 5x payout (15% win)");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.skull_safe"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.skull_risky"));
+            WriteSRMenuOption("3", Loc.Get("dark_alley.skull_all"));
             var riskChoice = await terminal.GetInput("> ");
 
             float winChance;
@@ -1817,7 +1815,7 @@ namespace UsurperRemake.Locations
 
             await Task.Delay(1500);
             terminal.SetColor("white");
-            terminal.WriteLine("The skull's jaw drops open...");
+            terminal.WriteLine(Loc.Get("dark_alley.skull_jaw"));
             await Task.Delay(1000);
 
             float roll = (float)new Random().NextDouble();
@@ -1826,12 +1824,12 @@ namespace UsurperRemake.Locations
                 won = true;
                 winnings = (long)(bet * multiplier);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("A golden tooth gleams inside! Fortune favors the bold!");
+                terminal.WriteLine(Loc.Get("dark_alley.skull_golden"));
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Empty. The skull laughs silently at your misfortune.");
+                terminal.WriteLine(Loc.Get("dark_alley.skull_empty"));
             }
 
             return (won, winnings);
@@ -1844,24 +1842,24 @@ namespace UsurperRemake.Locations
         private async Task VisitPickpocket()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("PICKPOCKETING", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.pickpocketing_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             if (currentPlayer.Thiefs <= 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("You've used up all your thievery attempts for the day.");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_used_up"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("The streets are too hot right now. Come back tomorrow.");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_streets_hot"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine("You pull your hood low and scan the crowd for marks...");
+            terminal.WriteLine(Loc.Get("dark_alley.pick_scan"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Thievery attempts remaining: {currentPlayer.Thiefs}");
+            terminal.WriteLine(Loc.Get("dark_alley.pick_attempts", currentPlayer.Thiefs));
             terminal.WriteLine("");
 
             // Show 3-5 random NPCs as targets
@@ -1874,29 +1872,29 @@ namespace UsurperRemake.Locations
             if (allNPCs == null || allNPCs.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The streets are empty. No marks to be found.");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_empty"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Potential marks:");
+            terminal.WriteLine(Loc.Get("dark_alley.pick_marks"));
             terminal.WriteLine("");
             for (int i = 0; i < allNPCs.Count; i++)
             {
                 var npc = allNPCs[i];
-                string goldHint = npc.Gold > 1000 ? "heavy purse" : npc.Gold > 200 ? "decent coin" : "light pockets";
-                WriteSRMenuOption($"{i + 1}", $"{npc.Name2}, Lvl {npc.Level}, {goldHint}");
+                string goldHint = npc.Gold > 1000 ? Loc.Get("dark_alley.pick_heavy_purse") : npc.Gold > 200 ? Loc.Get("dark_alley.pick_decent_coin") : Loc.Get("dark_alley.pick_light_pockets");
+                WriteSRMenuOption($"{i + 1}", $"{npc.Name2}, {Loc.Get("dark_alley.lvl_label")} {npc.Level}, {goldHint}");
             }
             terminal.WriteLine("");
-            WriteSRMenuOption("0", "Changed my mind");
+            WriteSRMenuOption("0", Loc.Get("dark_alley.changed_mind"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Target: ");
+            var choice = await terminal.GetInput(Loc.Get("dark_alley.pick_target_prompt"));
             if (!int.TryParse(choice, out int sel) || sel < 1 || sel > allNPCs.Count)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You slip back into the shadows.");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_slip_away"));
                 await Task.Delay(1000);
                 return;
             }
@@ -1905,7 +1903,7 @@ namespace UsurperRemake.Locations
             currentPlayer.Thiefs--;
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"You approach {target.Name2} from behind...");
+            terminal.WriteLine(Loc.Get("dark_alley.pick_approach", target.Name2));
             await Task.Delay(1500);
 
             // DEX check
@@ -1918,11 +1916,11 @@ namespace UsurperRemake.Locations
             {
                 // Critical fail — guards catch you
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("\"STOP! THIEF!\"");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_caught"));
                 terminal.WriteLine("");
-                terminal.WriteLine("Guards materialize from every alley. There's no escape.");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_guards"));
                 terminal.SetColor("red");
-                terminal.WriteLine("You are dragged to the prison!");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_prison"));
                 terminal.WriteLine("");
                 currentPlayer.DaysInPrison = 1;
                 currentPlayer.Statistics?.RecordPickpocketAttempt(false);
@@ -1940,11 +1938,11 @@ namespace UsurperRemake.Locations
                 currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 2);
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"Your fingers find the purse... got it!");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_success"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Stolen: {stolen:N0} gold from {target.Name2}");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_stolen", stolen, target.Name2));
                 terminal.SetColor("magenta");
-                terminal.WriteLine("+3 Darkness, +2 Reputation");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_dark_rep"));
 
                 currentPlayer.Statistics?.RecordPickpocketAttempt(true, stolen);
 
@@ -1959,9 +1957,9 @@ namespace UsurperRemake.Locations
             {
                 // Failure — NPC attacks
                 terminal.SetColor("red");
-                terminal.WriteLine($"{target.Name2} catches your hand!");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_catches", target.Name2));
                 terminal.SetColor("white");
-                terminal.WriteLine($"\"You think you can rob ME?!\"");
+                terminal.WriteLine(Loc.Get("dark_alley.pick_rob_me"));
                 terminal.WriteLine("");
                 await Task.Delay(1500);
 
@@ -1974,7 +1972,7 @@ namespace UsurperRemake.Locations
                 if (!currentPlayer.IsAlive)
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"{target.Name2} leaves you bleeding in the gutter.");
+                    terminal.WriteLine(Loc.Get("dark_alley.pick_gutter", target.Name2));
                     await Task.Delay(2000);
                 }
             }
@@ -1989,36 +1987,36 @@ namespace UsurperRemake.Locations
         private async Task VisitThePit()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE PIT", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.pit_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("A roaring crowd surrounds a blood-stained fighting pit.");
-            terminal.WriteLine("The air reeks of sweat, ale, and desperation.");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.pit_enter2"));
             terminal.WriteLine("");
 
             if (currentPlayer.PitFightsToday >= 3)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("The pit boss shakes his head. \"Three fights is the limit. Rules are rules.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.pit_limit"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("(3/3 daily fights used)");
+                terminal.WriteLine(Loc.Get("dark_alley.pit_limit_count"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Fights remaining today: {3 - currentPlayer.PitFightsToday}/3");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_fights_remaining", 3 - currentPlayer.PitFightsToday));
             terminal.SetColor("gray");
-            terminal.WriteLine("All pit fights are bare-knuckle — no armor allowed!");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_bare"));
             terminal.WriteLine("");
 
-            WriteSRMenuOption("1", "Fight a monster (generated at your level, 2x gold)");
-            WriteSRMenuOption("2", "Fight an NPC (winner takes 20% of loser's gold)");
-            WriteSRMenuOption("0", "Leave the pit");
+            WriteSRMenuOption("1", Loc.Get("dark_alley.pit_monster"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.pit_npc"));
+            WriteSRMenuOption("0", Loc.Get("dark_alley.leave_pit"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await GetChoice();
 
             if (choice == "1")
             {
@@ -2042,9 +2040,9 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("bright_red");
             terminal.WriteLine("");
-            terminal.WriteLine($"A {monster.Name} is released into the pit!");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_released", monster.Name));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Level {monster.Level} — HP: {monster.HP}");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_monster_stats", monster.Level, monster.HP));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
@@ -2064,7 +2062,7 @@ namespace UsurperRemake.Locations
                 if (result.Outcome == CombatOutcome.Victory)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("The crowd roars! You are victorious!");
+                    terminal.WriteLine(Loc.Get("dark_alley.pit_victory"));
 
                     // Handle spectator bet win
                     if (spectatorBet > 0)
@@ -2072,7 +2070,7 @@ namespace UsurperRemake.Locations
                         long betWinnings = (long)(spectatorBet * betMultiplier);
                         currentPlayer.Gold += betWinnings;
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"Spectator bet pays out: +{betWinnings:N0} gold!");
+                        terminal.WriteLine(Loc.Get("dark_alley.pit_bet_payout", betWinnings));
                     }
 
                     LogPitFightBetResult(spectatorBet, betMultiplier, true);
@@ -2087,12 +2085,12 @@ namespace UsurperRemake.Locations
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("You fall to the dirt. The crowd jeers.");
+                    terminal.WriteLine(Loc.Get("dark_alley.pit_defeat"));
 
                     if (spectatorBet > 0)
                     {
                         terminal.SetColor("dark_red");
-                        terminal.WriteLine($"Lost your spectator bet of {spectatorBet:N0} gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.pit_bet_lost", spectatorBet));
                     }
 
                     LogPitFightBetResult(spectatorBet, betMultiplier, false);
@@ -2121,24 +2119,24 @@ namespace UsurperRemake.Locations
             if (candidates == null || candidates.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("No fighters are stepping up to the pit tonight.");
+                terminal.WriteLine(Loc.Get("dark_alley.pit_no_fighters"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Fighters in the pit tonight:");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_fighters"));
             terminal.WriteLine("");
             for (int i = 0; i < candidates.Count; i++)
             {
                 var npc = candidates[i];
-                WriteSRMenuOption($"{i + 1}", $"{npc.Name2}, Lvl {npc.Level}, Gold: {npc.Gold:N0}");
+                WriteSRMenuOption($"{i + 1}", $"{npc.Name2}, {Loc.Get("dark_alley.lvl_label")} {npc.Level}, {Loc.Get("ui.gold")}: {npc.Gold:N0}");
             }
             terminal.WriteLine("");
-            WriteSRMenuOption("0", "Back out");
+            WriteSRMenuOption("0", Loc.Get("dark_alley.back_out"));
             terminal.WriteLine("");
 
-            var pick = await terminal.GetInput("Challenge: ");
+            var pick = await terminal.GetInput(Loc.Get("dark_alley.pit_challenge_prompt"));
             if (!int.TryParse(pick, out int sel) || sel < 1 || sel > candidates.Count)
                 return;
 
@@ -2149,9 +2147,9 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("bright_red");
             terminal.WriteLine("");
-            terminal.WriteLine($"You square off against {opponent.Name2}!");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_square_off", opponent.Name2));
             terminal.SetColor("gray");
-            terminal.WriteLine("No armor. No mercy.");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_no_mercy"));
             terminal.WriteLine("");
             await Task.Delay(1500);
 
@@ -2177,14 +2175,14 @@ namespace UsurperRemake.Locations
                     currentPlayer.Gold += goldTaken;
 
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"The crowd goes wild! You claim {goldTaken:N0} gold from {opponent.Name2}!");
+                    terminal.WriteLine(Loc.Get("dark_alley.pit_crowd_wild", goldTaken, opponent.Name2));
 
                     if (spectatorBet > 0)
                     {
                         long betWinnings = (long)(spectatorBet * betMultiplier);
                         currentPlayer.Gold += betWinnings;
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"Spectator bet pays out: +{betWinnings:N0} gold!");
+                        terminal.WriteLine(Loc.Get("dark_alley.pit_bet_payout", betWinnings));
                     }
 
                     DebugLogger.Instance.LogInfo("GOLD", $"PIT NPC WIN: {currentPlayer.DisplayName} took {goldTaken:N0}g from {opponent.Name2} (gold now {currentPlayer.Gold:N0})");
@@ -2204,12 +2202,12 @@ namespace UsurperRemake.Locations
                     opponent.Gold += goldLost;
 
                     terminal.SetColor("red");
-                    terminal.WriteLine($"You stumble out of the pit, {goldLost:N0} gold poorer.");
+                    terminal.WriteLine(Loc.Get("dark_alley.pit_stumble_out", goldLost));
 
                     if (spectatorBet > 0)
                     {
                         terminal.SetColor("dark_red");
-                        terminal.WriteLine($"Lost your spectator bet of {spectatorBet:N0} gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.pit_bet_lost", spectatorBet));
                     }
 
                     DebugLogger.Instance.LogInfo("GOLD", $"PIT NPC LOSS: {currentPlayer.DisplayName} lost {goldLost:N0}g to {opponent.Name2} (gold now {currentPlayer.Gold:N0})");
@@ -2238,11 +2236,11 @@ namespace UsurperRemake.Locations
             long maxBet = Math.Min(currentPlayer.Gold, (long)currentPlayer.Level * 500);
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("Place a side bet on the fight?");
-            WriteSRMenuOption("1", "1.5x (safe)");
-            WriteSRMenuOption("2", "2x (risky)");
-            WriteSRMenuOption("3", "3x (reckless)");
-            WriteSRMenuOption("0", "No bet");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_side_bet"));
+            WriteSRMenuOption("1", Loc.Get("dark_alley.bet_safe"));
+            WriteSRMenuOption("2", Loc.Get("dark_alley.bet_risky"));
+            WriteSRMenuOption("3", Loc.Get("dark_alley.bet_reckless"));
+            WriteSRMenuOption("0", Loc.Get("dark_alley.no_bet"));
             var betChoice = await terminal.GetInput("> ");
 
             if (betChoice != "1" && betChoice != "2" && betChoice != "3") return (0, 1.0f);
@@ -2250,14 +2248,14 @@ namespace UsurperRemake.Locations
             multiplier = betChoice == "1" ? 1.5f : betChoice == "2" ? 2.0f : 3.0f;
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"How much to wager? (max {maxBet:N0}): ");
+            terminal.WriteLine(Loc.Get("dark_alley.pit_wager_prompt", maxBet));
             var amountStr = await terminal.GetInput("> ");
             if (long.TryParse(amountStr, out long amt) && amt > 0 && amt <= maxBet)
             {
                 betAmount = amt;
                 currentPlayer.Gold -= amt;
                 terminal.SetColor("magenta");
-                terminal.WriteLine($"Bet placed: {amt:N0} gold at {multiplier}x");
+                terminal.WriteLine(Loc.Get("dark_alley.pit_bet_placed", amt, multiplier));
             }
 
             return (betAmount, multiplier);
@@ -2284,12 +2282,12 @@ namespace UsurperRemake.Locations
         private async Task VisitLoanShark()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE LOAN SHARK", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.loan_shark_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("A gaunt man with golden teeth sits behind a reinforced desk.");
-            terminal.WriteLine("Two massive enforcers flank the doorway.");
+            terminal.WriteLine(Loc.Get("dark_alley.loan_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.loan_enter2"));
             terminal.WriteLine("");
 
             if (currentPlayer.LoanAmount > 0)
@@ -2297,32 +2295,32 @@ namespace UsurperRemake.Locations
                 // Active loan — show balance and repayment options
                 long totalOwed = currentPlayer.LoanAmount + currentPlayer.LoanInterestAccrued;
                 terminal.SetColor("yellow");
-                WriteSectionHeader("Outstanding Loan", "yellow");
+                WriteSectionHeader(Loc.Get("dark_alley.outstanding_loan"), "yellow");
                 terminal.SetColor("white");
-                terminal.WriteLine($"  Principal:  {currentPlayer.LoanAmount:N0} gold");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_principal", currentPlayer.LoanAmount));
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Interest:   {currentPlayer.LoanInterestAccrued:N0} gold");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_interest_amt", currentPlayer.LoanInterestAccrued));
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  Total owed: {totalOwed:N0} gold");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_total", totalOwed));
                 terminal.SetColor(currentPlayer.LoanDaysRemaining > 0 ? "yellow" : "bright_red");
-                terminal.WriteLine($"  Days remaining: {currentPlayer.LoanDaysRemaining}");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_days", currentPlayer.LoanDaysRemaining));
                 if (currentPlayer.LoanDaysRemaining <= 0)
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("  ** OVERDUE — Enforcers are looking for you! **");
+                    terminal.WriteLine(Loc.Get("dark_alley.loan_overdue"));
                 }
                 terminal.WriteLine("");
 
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Gold on hand: {currentPlayer.Gold:N0}");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_gold_hand", currentPlayer.Gold));
                 terminal.WriteLine("");
 
-                WriteSRMenuOption("1", $"Repay in full ({totalOwed:N0} gold)");
-                WriteSRMenuOption("2", "Make partial payment");
-                WriteSRMenuOption("0", "Leave");
+                WriteSRMenuOption("1", Loc.Get("dark_alley.loan_repay_full", totalOwed));
+                WriteSRMenuOption("2", Loc.Get("dark_alley.partial_payment"));
+                WriteSRMenuOption("0", Loc.Get("ui.leave"));
                 terminal.WriteLine("");
 
-                var choice = await terminal.GetInput("Your choice: ");
+                var choice = await GetChoice();
 
                 if (choice == "1")
                 {
@@ -2335,8 +2333,8 @@ namespace UsurperRemake.Locations
                         currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 3);
 
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine("The loan shark counts the gold and nods.");
-                        terminal.WriteLine("\"Pleasure doing business. You're clean.\"");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_paid"));
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_clean"));
                         currentPlayer.Statistics?.RecordGoldSpent(totalOwed);
 
                         AchievementSystem.TryUnlock(currentPlayer, "dark_alley_debt_free");
@@ -2345,13 +2343,13 @@ namespace UsurperRemake.Locations
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine("\"You don't have enough. Don't waste my time.\"");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_not_enough"));
                     }
                 }
                 else if (choice == "2")
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"How much? (max {Math.Min(currentPlayer.Gold, totalOwed):N0}): ");
+                    terminal.WriteLine(Loc.Get("dark_alley.loan_partial_how", Math.Min(currentPlayer.Gold, totalOwed)));
                     var amtStr = await terminal.GetInput("> ");
                     if (long.TryParse(amtStr, out long payment) && payment > 0 && payment <= currentPlayer.Gold)
                     {
@@ -2378,7 +2376,7 @@ namespace UsurperRemake.Locations
                             currentPlayer.LoanInterestAccrued = 0;
                             currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 3);
                             terminal.SetColor("bright_green");
-                            terminal.WriteLine("Debt fully paid! \"You're clean.\"");
+                            terminal.WriteLine(Loc.Get("dark_alley.loan_fully_paid"));
 
                             AchievementSystem.TryUnlock(currentPlayer, "dark_alley_debt_free");
                             await AchievementSystem.ShowPendingNotifications(terminal, currentPlayer);
@@ -2386,13 +2384,13 @@ namespace UsurperRemake.Locations
                         else
                         {
                             terminal.SetColor("yellow");
-                            terminal.WriteLine($"Payment accepted. Remaining: {currentPlayer.LoanAmount + currentPlayer.LoanInterestAccrued:N0} gold.");
+                            terminal.WriteLine(Loc.Get("dark_alley.loan_payment_accepted", currentPlayer.LoanAmount + currentPlayer.LoanInterestAccrued));
                         }
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("\"Changed your mind? Don't keep me waiting too long.\"");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_changed_mind"));
                     }
                 }
             }
@@ -2401,24 +2399,24 @@ namespace UsurperRemake.Locations
                 // No active loan — offer new loan
                 long maxLoan = currentPlayer.Level * 500;
                 terminal.SetColor("white");
-                terminal.WriteLine("The loan shark leans forward with a predatory grin.");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_forward"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"\"Need some coin? I can offer up to {maxLoan:N0} gold.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_offer", maxLoan));
                 terminal.SetColor("gray");
-                terminal.WriteLine("\"Five days to pay it back. Interest accrues daily.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_five_days"));
                 terminal.SetColor("red");
-                terminal.WriteLine("\"Miss the deadline... and my boys will collect in other ways.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.loan_deadline"));
                 terminal.WriteLine("");
 
-                WriteSRMenuOption("1", "Take out a loan");
-                WriteSRMenuOption("0", "Leave");
+                WriteSRMenuOption("1", Loc.Get("dark_alley.take_loan"));
+                WriteSRMenuOption("0", Loc.Get("ui.leave"));
                 terminal.WriteLine("");
 
-                var choice = await terminal.GetInput("Your choice: ");
+                var choice = await GetChoice();
                 if (choice == "1")
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"How much? (max {maxLoan:N0}): ");
+                    terminal.WriteLine(Loc.Get("dark_alley.loan_how_much", maxLoan));
                     var amtStr = await terminal.GetInput("> ");
                     if (long.TryParse(amtStr, out long amount) && amount > 0 && amount <= maxLoan)
                     {
@@ -2429,16 +2427,16 @@ namespace UsurperRemake.Locations
                         DebugLogger.Instance.LogInfo("GOLD", $"DARK ALLEY LOAN: {currentPlayer.DisplayName} took {amount:N0}g loan (gold now {currentPlayer.Gold:N0})");
 
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"The loan shark counts out {amount:N0} gold.");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_count_out", amount));
                         terminal.SetColor("red");
-                        terminal.WriteLine($"\"Five days. Don't forget.\"");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_dont_forget"));
                         terminal.SetColor("gray");
-                        terminal.WriteLine("(Interest accrues 10% daily. Repay at the Loan Shark.)");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_interest"));
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("\"Wasting my time? Get out.\"");
+                        terminal.WriteLine(Loc.Get("dark_alley.loan_wasting"));
                     }
                 }
             }
@@ -2453,12 +2451,12 @@ namespace UsurperRemake.Locations
         private async Task VisitFence()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("FENCE STOLEN GOODS", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.fence_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("A weasel-faced man examines goods through a cracked magnifying glass.");
-            terminal.WriteLine("\"I buy anything. No questions asked.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.fence_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.fence_enter2"));
             terminal.WriteLine("");
 
             bool isShadows = FactionSystem.Instance?.PlayerFaction == Faction.TheShadows;
@@ -2466,7 +2464,7 @@ namespace UsurperRemake.Locations
             if (isShadows)
             {
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("(Shadows member: 80% value instead of 70%)");
+                terminal.WriteLine(Loc.Get("dark_alley.fence_shadow_bonus"));
                 terminal.WriteLine("");
             }
 
@@ -2489,31 +2487,31 @@ namespace UsurperRemake.Locations
             if (itemsForSale.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("\"You got nothing worth my time. Beat it.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.fence_nothing"));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Items you can fence:");
+            terminal.WriteLine(Loc.Get("dark_alley.fence_items"));
             terminal.WriteLine("");
             for (int i = 0; i < itemsForSale.Count; i++)
             {
                 var (_, name, value, cursed) = itemsForSale[i];
-                string cursedTag = cursed ? " (CURSED)" : "";
+                string cursedTag = cursed ? Loc.Get("dark_alley.fence_cursed_tag") : "";
                 WriteSRMenuOption($"{i + 1}", $"{name}, {value:N0}g{cursedTag}");
             }
             terminal.WriteLine("");
-            WriteSRMenuOption("0", "Leave");
+            WriteSRMenuOption("0", Loc.Get("ui.leave"));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Sell which item? ");
+            var choice = await terminal.GetInput(Loc.Get("dark_alley.fence_sell_prompt"));
             if (!int.TryParse(choice, out int sel) || sel < 1 || sel > itemsForSale.Count)
                 return;
 
             var selected = itemsForSale[sel - 1];
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Sell {selected.name} for {selected.value:N0} gold? (Y/N)");
+            terminal.WriteLine(Loc.Get("dark_alley.fence_confirm", selected.name, selected.value));
             var confirm = await terminal.GetInput("> ");
             if (confirm.ToUpper() != "Y") return;
 
@@ -2524,11 +2522,11 @@ namespace UsurperRemake.Locations
             currentPlayer.Statistics?.RecordSale(selected.value);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"The fence pockets {selected.name} and slides you {selected.value:N0} gold.");
+            terminal.WriteLine(Loc.Get("dark_alley.fence_sold", selected.name, selected.value));
             if (selected.cursed)
             {
                 terminal.SetColor("magenta");
-                terminal.WriteLine("\"Cursed, eh? I know a buyer for everything.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.fence_cursed"));
             }
 
             await Task.Delay(2000);
@@ -2541,42 +2539,42 @@ namespace UsurperRemake.Locations
         private async Task VisitSafeHouse()
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE SAFE HOUSE", "dark_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.safe_house_header"), "dark_red", 66);
             terminal.WriteLine("");
 
             if (currentPlayer.Darkness < 50)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("A heavy door blocks your way. A slot opens and eyes peer out.");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_locked"));
                 terminal.SetColor("red");
-                terminal.WriteLine("\"You don't belong here, clean-skin. Come back when you've");
-                terminal.WriteLine(" got some real darkness in your soul.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_locked2"));
+                terminal.WriteLine(Loc.Get("dark_alley.safe_locked3"));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"(Requires Darkness 50+. Yours: {currentPlayer.Darkness})");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_darkness_req", currentPlayer.Darkness));
                 await Task.Delay(2000);
                 return;
             }
 
             long cost = 50;
             terminal.SetColor("gray");
-            terminal.WriteLine("A cramped room with a filthy cot and a locked door.");
-            terminal.WriteLine("At least nobody will find you here... probably.");
+            terminal.WriteLine(Loc.Get("dark_alley.safe_enter"));
+            terminal.WriteLine(Loc.Get("dark_alley.safe_enter2"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Rest here for {cost} gold? (restores 50% HP)");
+            terminal.WriteLine(Loc.Get("dark_alley.safe_rest_cost", cost));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Current HP: {currentPlayer.HP}/{currentPlayer.MaxHP}");
+            terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP}");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine($"{Loc.Get("ui.gold")}: {currentPlayer.Gold:N0}");
             terminal.WriteLine("");
 
-            var ans = await terminal.GetInput("Rest? (Y/N): ");
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.safe_rest_prompt"));
             if (ans.ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\"No gold, no bed. Sleep in the gutter.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_no_gold"));
                 await Task.Delay(1500);
                 return;
             }
@@ -2589,9 +2587,9 @@ namespace UsurperRemake.Locations
             currentPlayer.HP = Math.Min(currentPlayer.MaxHP, currentPlayer.HP + healAmount);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"You catch some rest. (+{healAmount} HP)");
+            terminal.WriteLine(Loc.Get("dark_alley.safe_healed", healAmount));
             terminal.SetColor("gray");
-            terminal.WriteLine($"HP: {currentPlayer.HP}/{currentPlayer.MaxHP}");
+            terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP}");
 
             currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 1);
 
@@ -2605,14 +2603,14 @@ namespace UsurperRemake.Locations
 
                 terminal.SetColor("red");
                 terminal.WriteLine("");
-                terminal.WriteLine($"You wake to find your purse lighter. Someone picked your pocket!");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_robbed"));
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"Lost {goldLost:N0} gold while sleeping.");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_gold_lost", goldLost));
             }
             else if (isShadows)
             {
                 terminal.SetColor("magenta");
-                terminal.WriteLine("Your Shadow coin keeps the thieves at bay.");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_shadow_coin"));
             }
 
             // Shadows members who rest here are hidden from PvP attacks while offline
@@ -2621,7 +2619,7 @@ namespace UsurperRemake.Locations
                 currentPlayer.SafeHouseResting = true;
                 terminal.SetColor("dark_magenta");
                 terminal.WriteLine("");
-                terminal.WriteLine("The Shadows watch over you. No one will find you here.");
+                terminal.WriteLine(Loc.Get("dark_alley.safe_shadow_watch"));
             }
 
             await Task.Delay(2000);
@@ -2638,13 +2636,13 @@ namespace UsurperRemake.Locations
             var standing = factionSystem?.FactionStanding[Faction.TheShadows] ?? 0;
 
             terminal.ClearScreen();
-            WriteBoxHeader("PAY TRIBUTE", "dark_magenta", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.tribute_header"), "dark_magenta", 66);
             terminal.WriteLine("");
 
             if (standing >= 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("The Shadows already tolerate you. No tribute needed.");
+                terminal.WriteLine(Loc.Get("dark_alley.tribute_already"));
                 await terminal.PressAnyKey();
                 return;
             }
@@ -2656,32 +2654,32 @@ namespace UsurperRemake.Locations
             int standingGain = 50;
 
             terminal.SetColor("gray");
-            terminal.WriteLine("A cloaked figure emerges from the shadows.");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_figure"));
             terminal.SetColor("dark_red");
             terminal.WriteLine("");
-            terminal.WriteLine("\"Word is you want back in our good graces. That can be arranged...\"");
-            terminal.WriteLine("\"...for the right price.\"");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_back"));
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_price"));
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Current Shadows standing: {standing:N0}");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_standing", standing));
             terminal.SetColor("white");
-            terminal.WriteLine($"  Tribute cost: {tributeCost:N0} gold  (+{standingGain} standing)");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_cost", tributeCost, standingGain));
             terminal.SetColor("gray");
             int tributesNeeded = standing < -50 ? (int)Math.Ceiling((-50.0 - standing) / standingGain) : 0;
             if (tributesNeeded > 0)
-                terminal.WriteLine($"  ~{tributesNeeded} tributes to unlock underground services");
+                terminal.WriteLine(Loc.Get("dark_alley.tribute_needed", tributesNeeded));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Your gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_your_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
-            var ans = await terminal.GetInput("Pay tribute? (Y/N): ");
+            var ans = await terminal.GetInput(Loc.Get("dark_alley.tribute_pay_prompt"));
             if (ans?.Trim().ToUpper() != "Y") return;
 
             if (currentPlayer.Gold < tributeCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("\"Come back when you can afford it. We don't do charity.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.tribute_no_gold"));
                 await Task.Delay(1500);
                 return;
             }
@@ -2694,15 +2692,15 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine($"The figure pockets your gold and nods.");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_accepted"));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Shadows standing: {standing:N0} → {newStanding:N0} (+{standingGain})");
+            terminal.WriteLine(Loc.Get("dark_alley.tribute_standing_change", standing, newStanding, standingGain));
 
             if (newStanding >= -50 && standing < -50)
             {
                 terminal.SetColor("bright_magenta");
                 terminal.WriteLine("");
-                terminal.WriteLine("  \"The underground is open to you again. Don't make us regret it.\"");
+                terminal.WriteLine(Loc.Get("dark_alley.tribute_open"));
             }
 
             currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 5);
@@ -2743,39 +2741,26 @@ namespace UsurperRemake.Locations
                 // Mugger (30%)
                 term.SetColor("bright_red");
                 term.WriteLine("");
-                term.WriteLine("A figure steps from the shadows, blade gleaming!");
+                term.WriteLine(Loc.Get("dark_alley.enc_mugger_appear"));
                 term.SetColor("red");
-                term.WriteLine("\"Hand over 50 gold or I'll gut you like a fish!\"");
+                term.WriteLine(Loc.Get("dark_alley.enc_mugger_demand"));
                 term.WriteLine("");
-                term.SetColor("darkgray");
-                term.Write("[");
-                term.SetColor("bright_yellow");
-                term.Write("1");
-                term.SetColor("darkgray");
-                term.Write("]");
-                term.SetColor("yellow");
-                term.Write(" Pay 50 gold    ");
-                term.SetColor("darkgray");
-                term.Write("[");
-                term.SetColor("bright_yellow");
-                term.Write("2");
-                term.SetColor("darkgray");
-                term.Write("]");
-                term.SetColor("yellow");
-                term.WriteLine(" Fight!");
+                WriteSRMenuOption("1", Loc.Get("dark_alley.enc_mugger_pay"));
+                term.Write("    ");
+                WriteSRMenuOption("2", Loc.Get("dark_alley.enc_mugger_fight"));
                 var choice = await term.GetInput("> ");
 
                 if (choice == "1" && player.Gold >= 50)
                 {
                     player.Gold -= 50;
                     term.SetColor("gray");
-                    term.WriteLine("You hand over the gold. The mugger vanishes into the dark.");
+                    term.WriteLine(Loc.Get("dark_alley.enc_mugger_vanish"));
                     player.Statistics?.RecordGoldSpent(50);
                 }
                 else
                 {
                     term.SetColor("bright_red");
-                    term.WriteLine("\"Wrong answer!\"");
+                    term.WriteLine(Loc.Get("dark_alley.enc_mugger_wrong"));
                     term.WriteLine("");
                     await Task.Delay(1000);
 
@@ -2792,21 +2777,21 @@ namespace UsurperRemake.Locations
                 // Beggar tip (30%)
                 term.SetColor("gray");
                 term.WriteLine("");
-                term.WriteLine("A ragged beggar tugs at your sleeve.");
+                term.WriteLine(Loc.Get("dark_alley.enc_beggar_tug"));
                 term.SetColor("yellow");
 
                 var tips = new[]
                 {
-                    "\"The monsters on the deeper floors carry enchanted weapons, they do...\"",
-                    "\"Watch out for the loan shark's enforcers. They break kneecaps for fun.\"",
-                    "\"I heard the guards are planning a raid on the alley tomorrow...\"",
-                    "\"There's a secret path in the dungeon. Look for the cracked wall.\"",
-                    "\"The fence pays more for cursed items than regular ones, if you know how to ask.\"",
-                    "\"The pit fights are rigged, but if yer strong enough it don't matter.\"",
+                    Loc.Get("dark_alley.enc_beggar_tip1"),
+                    Loc.Get("dark_alley.enc_beggar_tip2"),
+                    Loc.Get("dark_alley.enc_beggar_tip3"),
+                    Loc.Get("dark_alley.enc_beggar_tip4"),
+                    Loc.Get("dark_alley.enc_beggar_tip5"),
+                    Loc.Get("dark_alley.enc_beggar_tip6"),
                 };
                 term.WriteLine(tips[Random.Shared.Next(0, tips.Length)]);
                 term.SetColor("gray");
-                term.WriteLine("The beggar shuffles away.");
+                term.WriteLine(Loc.Get("dark_alley.enc_beggar_away"));
             }
             else if (encounterType <= 80)
             {
@@ -2818,11 +2803,11 @@ namespace UsurperRemake.Locations
                     {
                         term.SetColor("bright_red");
                         term.WriteLine("");
-                        term.WriteLine("\"HALT! City Watch! You're under arrest!\"");
+                        term.WriteLine(Loc.Get("dark_alley.enc_guard_halt"));
                         term.SetColor("red");
-                        term.WriteLine("An undercover guard reveals a badge. More guards swarm in.");
+                        term.WriteLine(Loc.Get("dark_alley.enc_guard_badge"));
                         term.SetColor("bright_red");
-                        term.WriteLine("You are dragged to the prison!");
+                        term.WriteLine(Loc.Get("dark_alley.enc_guard_prison"));
                         player.DaysInPrison = 1;
                         await Task.Delay(2500);
                         throw new LocationExitException(GameLocation.Prison);
@@ -2831,17 +2816,17 @@ namespace UsurperRemake.Locations
                     {
                         term.SetColor("yellow");
                         term.WriteLine("");
-                        term.WriteLine("You notice someone watching you a bit too intently...");
+                        term.WriteLine(Loc.Get("dark_alley.enc_guard_watching"));
                         term.SetColor("gray");
-                        term.WriteLine("Undercover guard? You slip away before they can act.");
+                        term.WriteLine(Loc.Get("dark_alley.enc_guard_slip"));
                     }
                 }
                 else
                 {
                     term.SetColor("gray");
                     term.WriteLine("");
-                    term.WriteLine("A well-dressed man bumps into you, mutters an apology, and moves on.");
-                    term.WriteLine("Something about him seemed... official.");
+                    term.WriteLine(Loc.Get("dark_alley.enc_guard_bump"));
+                    term.WriteLine(Loc.Get("dark_alley.enc_guard_official"));
                 }
             }
             else
@@ -2849,7 +2834,7 @@ namespace UsurperRemake.Locations
                 // Shady merchant (20%)
                 term.SetColor("magenta");
                 term.WriteLine("");
-                term.WriteLine("A cloaked figure sidles up to you.");
+                term.WriteLine(Loc.Get("dark_alley.enc_merchant_sidle"));
                 term.SetColor("yellow");
 
                 int offer = Random.Shared.Next(1, 3);
@@ -2857,58 +2842,34 @@ namespace UsurperRemake.Locations
                 {
                     // Healing potion at half price
                     long potionPrice = GetAdjustedPrice(50);
-                    term.WriteLine($"\"Psst... healing potion. Real good stuff. Only {potionPrice} gold.\"");
-                    term.SetColor("darkgray");
-                    term.Write("[");
-                    term.SetColor("bright_yellow");
-                    term.Write("Y");
-                    term.SetColor("darkgray");
-                    term.Write("]");
-                    term.SetColor("cyan");
-                    term.Write(" Buy    ");
-                    term.SetColor("darkgray");
-                    term.Write("[");
-                    term.SetColor("bright_yellow");
-                    term.Write("N");
-                    term.SetColor("darkgray");
-                    term.Write("]");
-                    term.SetColor("cyan");
-                    term.WriteLine(" Pass");
+                    term.WriteLine(Loc.Get("dark_alley.enc_merchant_potion", potionPrice));
+                    WriteSRMenuOption("Y", Loc.Get("dark_alley.enc_merchant_buy"));
+                    term.Write("    ");
+                    WriteSRMenuOption("N", Loc.Get("dark_alley.enc_merchant_pass"));
+                    term.WriteLine("");
                     var ans = await term.GetInput("> ");
                     if (ans.ToUpper() == "Y" && player.Gold >= potionPrice)
                     {
                         player.Gold -= potionPrice;
                         player.Healing = Math.Min(player.MaxPotions, player.Healing + 1);
                         term.SetColor("bright_green");
-                        term.WriteLine("You pocket the potion. It smells alright... probably.");
+                        term.WriteLine(Loc.Get("dark_alley.enc_merchant_pocket"));
                     }
                     else if (ans.ToUpper() == "Y")
                     {
                         term.SetColor("red");
-                        term.WriteLine("\"No gold? Scram.\"");
+                        term.WriteLine(Loc.Get("dark_alley.enc_merchant_no_gold"));
                     }
                 }
                 else
                 {
                     // Random stat boost (small)
                     long price = GetAdjustedPrice(100);
-                    term.WriteLine($"\"Special elixir. Makes you... better. {price} gold.\"");
-                    term.SetColor("darkgray");
-                    term.Write("[");
-                    term.SetColor("bright_yellow");
-                    term.Write("Y");
-                    term.SetColor("darkgray");
-                    term.Write("]");
-                    term.SetColor("cyan");
-                    term.Write(" Buy    ");
-                    term.SetColor("darkgray");
-                    term.Write("[");
-                    term.SetColor("bright_yellow");
-                    term.Write("N");
-                    term.SetColor("darkgray");
-                    term.Write("]");
-                    term.SetColor("cyan");
-                    term.WriteLine(" Pass");
+                    term.WriteLine(Loc.Get("dark_alley.enc_merchant_elixir", price));
+                    WriteSRMenuOption("Y", Loc.Get("dark_alley.enc_merchant_buy"));
+                    term.Write("    ");
+                    WriteSRMenuOption("N", Loc.Get("dark_alley.enc_merchant_pass"));
+                    term.WriteLine("");
                     var ans = await term.GetInput("> ");
                     if (ans.ToUpper() == "Y" && player.Gold >= price)
                     {
@@ -2919,24 +2880,24 @@ namespace UsurperRemake.Locations
                             case 1:
                                 player.Strength += 1;
                                 term.SetColor("bright_green");
-                                term.WriteLine("A warm rush of power. (+1 STR)");
+                                term.WriteLine(Loc.Get("dark_alley.enc_merchant_str"));
                                 break;
                             case 2:
                                 player.Dexterity += 1;
                                 term.SetColor("bright_green");
-                                term.WriteLine("Your fingers feel nimbler. (+1 DEX)");
+                                term.WriteLine(Loc.Get("dark_alley.enc_merchant_dex"));
                                 break;
                             default:
                                 player.Constitution += 1;
                                 term.SetColor("bright_green");
-                                term.WriteLine("You feel hardier. (+1 CON)");
+                                term.WriteLine(Loc.Get("dark_alley.enc_merchant_con"));
                                 break;
                         }
                     }
                     else if (ans.ToUpper() == "Y")
                     {
                         term.SetColor("red");
-                        term.WriteLine("\"No gold? Don't waste my time.\"");
+                        term.WriteLine(Loc.Get("dark_alley.enc_merchant_no_gold2"));
                     }
                 }
             }
@@ -2952,12 +2913,12 @@ namespace UsurperRemake.Locations
         private async Task HandleEnforcerEncounter(Character player, TerminalEmulator term)
         {
             term.WriteLine("");
-            WriteBoxHeader("THE ENFORCER HAS FOUND YOU", "bright_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.enforcer_header"), "bright_red", 66);
             term.WriteLine("");
             term.SetColor("red");
-            term.WriteLine("A massive figure blocks your path. Scarred knuckles crack.");
+            term.WriteLine(Loc.Get("dark_alley.enforcer_appear"));
             term.SetColor("bright_red");
-            term.WriteLine("\"You owe the boss. Time to pay up... one way or another.\"");
+            term.WriteLine(Loc.Get("dark_alley.enforcer_demand"));
             term.WriteLine("");
             await Task.Delay(2000);
 
@@ -2978,11 +2939,11 @@ namespace UsurperRemake.Locations
 
                 term.SetColor("bright_green");
                 term.WriteLine("");
-                term.WriteLine("The enforcer crumples to the ground.");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_crumple"));
                 term.SetColor("yellow");
-                term.WriteLine("Word on the street is the loan shark considers the debt settled.");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_settled"));
                 term.SetColor("bright_green");
-                term.WriteLine("Your loan has been forgiven!");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_forgiven"));
             }
             else if (player.IsAlive)
             {
@@ -2995,11 +2956,11 @@ namespace UsurperRemake.Locations
 
                 term.SetColor("bright_red");
                 term.WriteLine("");
-                term.WriteLine("The enforcer beats you senseless and takes everything.");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_beaten"));
                 term.SetColor("red");
-                term.WriteLine($"Lost all gold ({goldTaken:N0}). Took {hpDamage} HP damage.");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_lost", goldTaken, hpDamage));
                 term.SetColor("yellow");
-                term.WriteLine("\"The boss is giving you 3 more days. Don't waste them.\"");
+                term.WriteLine(Loc.Get("dark_alley.enforcer_extension"));
             }
 
             term.WriteLine("");
@@ -3142,16 +3103,16 @@ namespace UsurperRemake.Locations
             terminal.ClearScreen();
 
             // Header
-            WriteBoxHeader("EVIL DEEDS", "bright_red", 66);
+            WriteBoxHeader(Loc.Get("dark_alley.evil_deeds_header"), "bright_red", 66);
             terminal.WriteLine("");
 
             // Stats
             terminal.SetColor("gray");
-            terminal.Write("  Darkness: ");
+            terminal.Write(Loc.Get("dark_alley.evil_darkness"));
             terminal.SetColor("red");
             terminal.Write($"{currentPlayer.Darkness}");
             terminal.SetColor("gray");
-            terminal.Write("    Dark deeds remaining: ");
+            terminal.Write(Loc.Get("dark_alley.evil_deeds_remaining"));
             terminal.SetColor(currentPlayer.DarkNr > 0 ? "bright_yellow" : "red");
             terminal.WriteLine($"{currentPlayer.DarkNr}");
             terminal.WriteLine("");
@@ -3159,8 +3120,8 @@ namespace UsurperRemake.Locations
             if (currentPlayer.DarkNr <= 0)
             {
                 terminal.SetColor("dark_red");
-                terminal.WriteLine("  The darkness has had its fill of you today.");
-                terminal.WriteLine("  Return tomorrow to continue your dark work.");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_filled"));
+                terminal.WriteLine(Loc.Get("dark_alley.evil_return"));
                 terminal.WriteLine("");
                 await terminal.PressAnyKey();
                 return;
@@ -3180,9 +3141,9 @@ namespace UsurperRemake.Locations
 
                 var (tierName, tierColor, tierReq) = tier switch
                 {
-                    DeedTier.Petty => ("Petty Crimes", "yellow", ""),
-                    DeedTier.Serious => ("Serious Crimes", "bright_red", $"  (Lv{GameConfig.EvilDeedSeriousMinLevel}+, Dark {GameConfig.EvilDeedSeriousMinDarkness}+)"),
-                    DeedTier.Dark => ("Dark Rituals", "bright_magenta", $"  (Lv{GameConfig.EvilDeedDarkMinLevel}+, Dark {GameConfig.EvilDeedDarkMinDarkness}+)"),
+                    DeedTier.Petty => (Loc.Get("dark_alley.evil_tier_petty"), "yellow", ""),
+                    DeedTier.Serious => (Loc.Get("dark_alley.evil_tier_serious"), "bright_red", Loc.Get("dark_alley.evil_tier_serious_req", GameConfig.EvilDeedSeriousMinLevel, GameConfig.EvilDeedSeriousMinDarkness)),
+                    DeedTier.Dark => (Loc.Get("dark_alley.evil_tier_dark"), "bright_magenta", Loc.Get("dark_alley.evil_tier_dark_req", GameConfig.EvilDeedDarkMinLevel, GameConfig.EvilDeedDarkMinDarkness)),
                     _ => ("", "white", "")
                 };
 
@@ -3206,7 +3167,8 @@ namespace UsurperRemake.Locations
                     indexMap[num] = deed;
                     if (IsScreenReader)
                     {
-                        var parts = new List<string> { deed.Name, $"+{deed.DarknessGain} Dark" };
+                        var deedName = Loc.Get($"dark_alley.deed_{deed.Id}_name");
+                        var parts = new List<string> { deedName, $"+{deed.DarknessGain} Dark" };
                         if (deed.XPReward > 0) parts.Add($"+{deed.XPReward}XP");
                         if (deed.GoldRewardBase > 0) parts.Add("+gold");
                         if (deed.GoldCost > 0) parts.Add($"-{deed.GoldCost}g");
@@ -3218,7 +3180,7 @@ namespace UsurperRemake.Locations
                         terminal.SetColor("darkgray");
                         terminal.Write($"  [{num,2}] ");
                         terminal.SetColor("white");
-                        terminal.Write(deed.Name.PadRight(28));
+                        terminal.Write(Loc.Get($"dark_alley.deed_{deed.Id}_name").PadRight(28));
                         terminal.SetColor("red");
                         terminal.Write($"+{deed.DarknessGain} Dark ");
                         if (deed.XPReward > 0) { terminal.SetColor("cyan"); terminal.Write($"+{deed.XPReward}XP "); }
@@ -3233,7 +3195,7 @@ namespace UsurperRemake.Locations
             }
 
             terminal.SetColor("gray");
-            var input = await terminal.GetInput("Choose a deed (0 to cancel): ");
+            var input = await terminal.GetInput(Loc.Get("dark_alley.evil_choose_deed"));
             if (!int.TryParse(input, out int choice) || choice == 0 || !indexMap.ContainsKey(choice))
                 return;
 
@@ -3246,13 +3208,14 @@ namespace UsurperRemake.Locations
 
             // Show atmospheric description
             terminal.SetColor("bright_red");
+            var localDeedName = Loc.Get($"dark_alley.deed_{deed.Id}_name");
             if (IsScreenReader)
-                terminal.WriteLine(deed.Name);
+                terminal.WriteLine(localDeedName);
             else
-                terminal.WriteLine($"── {deed.Name} ──");
+                terminal.WriteLine($"── {localDeedName} ──");
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine(deed.Description);
+            terminal.WriteLine(Loc.Get($"dark_alley.deed_{deed.Id}_desc"));
             terminal.WriteLine("");
 
             // Show costs/risks
@@ -3261,27 +3224,27 @@ namespace UsurperRemake.Locations
                 if (currentPlayer.Gold < deed.GoldCost)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"You need {deed.GoldCost} gold. You only have {currentPlayer.Gold:N0}.");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_need_gold", deed.GoldCost, currentPlayer.Gold));
                     await terminal.PressAnyKey();
                     return;
                 }
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  Cost: {deed.GoldCost} gold");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_cost", deed.GoldCost));
             }
             if (deed.SpecialEffect == "blood_price")
             {
                 int hpCost = (int)(currentPlayer.MaxHP * 0.15f);
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Blood price: ~{hpCost} HP");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_blood_price", hpCost));
             }
             if (deed.FailChance > 0)
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine($"  Risk of failure: {(int)(deed.FailChance * 100)}%");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_risk", (int)(deed.FailChance * 100)));
             }
             terminal.WriteLine("");
 
-            var confirm = await terminal.GetInput("Commit this deed? (Y/N): ");
+            var confirm = await terminal.GetInput(Loc.Get("dark_alley.evil_commit_prompt"));
             if (!confirm.Equals("Y", StringComparison.OrdinalIgnoreCase))
                 return;
 
@@ -3300,7 +3263,7 @@ namespace UsurperRemake.Locations
                 int hpCost = (int)(currentPlayer.MaxHP * 0.15f);
                 currentPlayer.HP = Math.Max(1, currentPlayer.HP - hpCost);
                 terminal.SetColor("dark_red");
-                terminal.WriteLine($"The blade bites deep. You lose {hpCost} HP as blood spills across the altar.");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_blood_cut", hpCost));
             }
 
             // Roll for failure
@@ -3323,7 +3286,7 @@ namespace UsurperRemake.Locations
             {
                 // ── FAILURE ──
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("  *** CAUGHT! ***");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_caught"));
                 terminal.WriteLine("");
 
                 // Partial darkness (you tried)
@@ -3334,30 +3297,30 @@ namespace UsurperRemake.Locations
                     int dmg = (int)(currentPlayer.MaxHP * deed.FailDamagePct / 100f);
                     currentPlayer.HP = Math.Max(1, currentPlayer.HP - dmg);
                     terminal.SetColor("red");
-                    terminal.WriteLine($"  You take {dmg} damage!");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_damage", dmg));
                 }
                 if (deed.FailGoldLoss > 0)
                 {
                     long loss = Math.Min(currentPlayer.Gold, deed.FailGoldLoss);
                     currentPlayer.Gold -= loss;
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  You lose {loss:N0} gold!");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_gold_loss", loss));
                 }
 
                 terminal.SetColor("gray");
-                terminal.WriteLine("  You slink back into the shadows, licking your wounds.");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_slink"));
             }
             else
             {
                 // ── SUCCESS ──
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("  The deed is done.");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_done"));
                 terminal.WriteLine("");
 
                 // Darkness gain
                 currentPlayer.Darkness += deed.DarknessGain;
                 terminal.SetColor("red");
-                terminal.WriteLine($"  Darkness +{deed.DarknessGain}");
+                terminal.WriteLine(Loc.Get("dark_alley.evil_darkness_gain", deed.DarknessGain));
 
                 // Gold reward (level-scaled)
                 if (deed.GoldRewardBase > 0)
@@ -3365,7 +3328,7 @@ namespace UsurperRemake.Locations
                     long gold = deed.GoldRewardBase + _deedRng.Next(deed.GoldRewardScale) + (currentPlayer.Level * 2);
                     currentPlayer.Gold += gold;
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"  Gold +{gold:N0}");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_gold_gain", gold));
                 }
 
                 // XP
@@ -3374,7 +3337,7 @@ namespace UsurperRemake.Locations
                     long xp = deed.XPReward + (currentPlayer.Level * 3);
                     currentPlayer.Experience += xp;
                     terminal.SetColor("cyan");
-                    terminal.WriteLine($"  Experience +{xp:N0}");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_xp_gain", xp));
                 }
 
                 // Faction changes
@@ -3386,13 +3349,13 @@ namespace UsurperRemake.Locations
                         shadowsGain *= 2;
                     FactionSystem.Instance?.ModifyReputation(Faction.TheShadows, shadowsGain);
                     terminal.SetColor("bright_magenta");
-                    terminal.WriteLine($"  Shadows standing {(shadowsGain > 0 ? "+" : "")}{shadowsGain}");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_shadows_gain", $"{(shadowsGain > 0 ? "+" : "")}{shadowsGain}"));
                 }
                 if (deed.CrownFaction != 0)
                 {
                     FactionSystem.Instance?.ModifyReputation(Faction.TheCrown, deed.CrownFaction);
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"  Crown standing {deed.CrownFaction}");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_crown_gain", deed.CrownFaction));
                 }
 
                 // Chivalry loss from shrine vandalism
@@ -3400,7 +3363,7 @@ namespace UsurperRemake.Locations
                 {
                     currentPlayer.Chivalry = Math.Max(0, currentPlayer.Chivalry - 5);
                     terminal.SetColor("white");
-                    terminal.WriteLine("  Chivalry -5");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_chiv_loss"));
                 }
 
                 // Dark Pact combat buff
@@ -3409,7 +3372,7 @@ namespace UsurperRemake.Locations
                     currentPlayer.DarkPactCombats = GameConfig.DarkPactDuration;
                     currentPlayer.DarkPactDamageBonus = GameConfig.DarkPactDamageBonus;
                     terminal.SetColor("bright_magenta");
-                    terminal.WriteLine($"  Dark Pact active: +{(int)(GameConfig.DarkPactDamageBonus * 100)}% damage for {GameConfig.DarkPactDuration} combats!");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_dark_pact", (int)(GameConfig.DarkPactDamageBonus * 100), GameConfig.DarkPactDuration));
                 }
 
                 // Maelketh — reduced effect if defeated
@@ -3419,8 +3382,8 @@ namespace UsurperRemake.Locations
                     if (story.OldGodStates.TryGetValue(OldGodType.Maelketh, out var ms) && ms.Status == GodStatus.Defeated)
                     {
                         terminal.SetColor("darkgray");
-                        terminal.WriteLine("  The altar is cold. The Broken Blade is shattered.");
-                        terminal.WriteLine("  But darkness still lingers, and your blood still has power.");
+                        terminal.WriteLine(Loc.Get("dark_alley.evil_altar_cold"));
+                        terminal.WriteLine(Loc.Get("dark_alley.evil_altar_linger"));
                         // Already gave full rewards via the normal path — flavor only
                     }
                 }
@@ -3431,8 +3394,8 @@ namespace UsurperRemake.Locations
                     currentPlayer.HasTouchedTheVoid = true;
                     OceanPhilosophySystem.Instance?.GainInsight(10);
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine("  The Void whispers back. You glimpse something vast beneath reality.");
-                    terminal.WriteLine("  +Awakening insight");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_void_whisper"));
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_awakening"));
                 }
 
                 // Seal fragment — once per cycle
@@ -3440,7 +3403,7 @@ namespace UsurperRemake.Locations
                 {
                     currentPlayer.HasShatteredSealFragment = true;
                     terminal.SetColor("bright_magenta");
-                    terminal.WriteLine("  Ancient energy courses through you. The seal's echo shatters.");
+                    terminal.WriteLine(Loc.Get("dark_alley.evil_seal_echo"));
                 }
 
                 // News event

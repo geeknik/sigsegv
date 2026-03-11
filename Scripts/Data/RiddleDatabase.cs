@@ -208,7 +208,7 @@ namespace UsurperRemake.Data
                 OceanPhilosophySystem.Instance.CollectFragment(WaveFragment.TheCycle);
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task DisplayFailure(Riddle riddle, Character player, TerminalEmulator terminal)
@@ -227,7 +227,7 @@ namespace UsurperRemake.Data
             terminal.WriteLine("");
             terminal.WriteLine($"The answer was: {riddle.Answer}", "gray");
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task ApplyFleeConsequence(Riddle riddle, Character player, TerminalEmulator terminal)

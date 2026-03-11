@@ -110,37 +110,37 @@ public class LevelMasterLocation : BaseLocation
     {
         terminal.ClearScreen();
 
-        terminal.WriteLine("Level Master's Sanctum", "bright_cyan");
-        terminal.WriteLine($"Master: {currentMaster.Name}", currentMaster.Color);
+        terminal.WriteLine(Loc.Get("level_master.header"), "bright_cyan");
+        terminal.WriteLine(Loc.Get("level_master.master_label", currentMaster.Name), currentMaster.Color);
         terminal.WriteLine("");
 
         // XP status
-        terminal.WriteLine($"Experience: {currentPlayer.Experience:N0}", "cyan");
+        terminal.WriteLine(Loc.Get("level_master.your_xp", $"{currentPlayer.Experience:N0}"), "cyan");
         if (currentPlayer.Level >= GameConfig.MaxLevel)
         {
-            terminal.WriteLine("You have reached the pinnacle of mortal power!", "bright_magenta");
+            terminal.WriteLine(Loc.Get("level_master.max_level"), "bright_magenta");
         }
         else
         {
             long nextLevelXP = GetExperienceForLevel(currentPlayer.Level + 1);
             long xpNeeded = nextLevelXP - currentPlayer.Experience;
             if (xpNeeded <= 0)
-                terminal.WriteLine($"Ready to advance to level {currentPlayer.Level + 1}!", "bright_green");
+                terminal.WriteLine(Loc.Get("level_master.ready_advance", (currentPlayer.Level + 1).ToString()), "bright_green");
             else
-                terminal.WriteLine($"Need {xpNeeded:N0} XP for level {currentPlayer.Level + 1}", "white");
+                terminal.WriteLine(Loc.Get("level_master.need_xp", $"{xpNeeded:N0}", (currentPlayer.Level + 1).ToString()), "white");
         }
-        terminal.WriteLine($"Training Points: {currentPlayer.TrainingPoints}", "bright_magenta");
+        terminal.WriteLine(Loc.Get("level_master.training_points", currentPlayer.TrainingPoints.ToString()), "bright_magenta");
         terminal.WriteLine("");
 
-        terminal.WriteLine("Services:", "cyan");
-        WriteSRMenuOption("L", "Level Raise");
-        WriteSRMenuOption("A", "Abilities - combat abilities or spells");
-        WriteSRMenuOption("T", $"Training - improve skills ({currentPlayer.TrainingPoints} points)");
-        WriteSRMenuOption("C", "Crystal Ball - scry other characters");
-        WriteSRMenuOption("H", "Help Team Member - assist a teammate");
-        WriteSRMenuOption("S", "Status - view your statistics");
+        terminal.WriteLine(Loc.Get("level_master.services"), "cyan");
+        WriteSRMenuOption("L", Loc.Get("level_master.level_raise"));
+        WriteSRMenuOption("A", $"{Loc.Get("level_master.abilities")} - {Loc.Get("level_master.abilities_desc")}");
+        WriteSRMenuOption("T", $"{Loc.Get("level_master.training")} - {Loc.Get("level_master.training_desc", currentPlayer.TrainingPoints.ToString())}");
+        WriteSRMenuOption("C", $"{Loc.Get("level_master.crystal_ball")} - {Loc.Get("level_master.crystal_desc")}");
+        WriteSRMenuOption("H", $"{Loc.Get("level_master.help_team")} - {Loc.Get("level_master.help_desc")}");
+        WriteSRMenuOption("S", Loc.Get("level_master.sr_status_desc"));
         terminal.WriteLine("");
-        WriteSRMenuOption("R", "Return to Main Street");
+        WriteSRMenuOption("R", Loc.Get("shop.return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -163,10 +163,10 @@ public class LevelMasterLocation : BaseLocation
         }
 
         // Header - standardized format
-        WriteBoxHeader("LEVEL MASTER'S SANCTUM", "bright_cyan");
+        WriteBoxHeader(Loc.Get("level_master.header"), "bright_cyan");
         terminal.WriteLine("");
         terminal.SetColor(currentMaster.Color);
-        terminal.WriteLine($"Master: {currentMaster.Name}");
+        terminal.WriteLine(Loc.Get("level_master.master_label", currentMaster.Name));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -178,13 +178,13 @@ public class LevelMasterLocation : BaseLocation
         switch (playerAlignment)
         {
             case PlayerAlignment.Good:
-                terminal.WriteLine($"\"Welcome, noble {currentPlayer.DisplayName}. Your light shines brightly.\"");
+                terminal.WriteLine(Loc.Get("level_master.greet_good", currentPlayer.DisplayName));
                 break;
             case PlayerAlignment.Evil:
-                terminal.WriteLine($"\"Ah, {currentPlayer.DisplayName}... The darkness within you grows stronger.\"");
+                terminal.WriteLine(Loc.Get("level_master.greet_evil", currentPlayer.DisplayName));
                 break;
             default:
-                terminal.WriteLine($"\"Greetings, seeker of balance. What brings you here, {currentPlayer.DisplayName}?\"");
+                terminal.WriteLine(Loc.Get("level_master.greet_neutral", currentPlayer.DisplayName));
                 break;
         }
         terminal.WriteLine("");
@@ -195,10 +195,10 @@ public class LevelMasterLocation : BaseLocation
         DisplayExperienceStatus();
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Services:");
+        terminal.WriteLine(Loc.Get("level_master.services"));
         terminal.WriteLine("");
 
-        // Row 1
+        // Row 1 - Level Raise
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -206,9 +206,9 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("evel Raise – advance if you have earned enough experience");
+        terminal.WriteLine(Loc.Get("level_master.menu_level_raise"));
 
-        // Row 2
+        // Row 2 - Abilities
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -216,9 +216,9 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("bilities – view and learn combat abilities or spells");
+        terminal.WriteLine(Loc.Get("level_master.menu_abilities", Loc.Get("level_master.abilities_desc")));
 
-        // Row 3
+        // Row 3 - Training
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -226,9 +226,9 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine($"raining – improve your skills (Points: {currentPlayer.TrainingPoints})");
+        terminal.WriteLine(Loc.Get("level_master.menu_training", Loc.Get("level_master.training_desc", currentPlayer.TrainingPoints.ToString())));
 
-        // Row 4
+        // Row 4 - Crystal Ball
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -236,9 +236,9 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("rystal Ball – scry information about other characters");
+        terminal.WriteLine(Loc.Get("level_master.menu_crystal", Loc.Get("level_master.crystal_desc")));
 
-        // Row 5
+        // Row 5 - Help Team
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -246,9 +246,9 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("elp Team Member – assist a teammate in levelling");
+        terminal.WriteLine(Loc.Get("level_master.menu_help_team", Loc.Get("level_master.help_desc")));
 
-        // Row 6
+        // Row 6 - Status
         terminal.SetColor("darkgray");
         terminal.Write(" [");
         terminal.SetColor("bright_yellow");
@@ -256,7 +256,7 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("tatus – view your statistics");
+        terminal.WriteLine(Loc.Get("level_master.menu_status"));
 
         terminal.WriteLine("");
 
@@ -268,7 +268,7 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine("eturn to Main Street");
+        terminal.WriteLine(Loc.Get("level_master.menu_return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -280,12 +280,12 @@ public class LevelMasterLocation : BaseLocation
     private void DisplayExperienceStatus()
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Your Experience: {currentPlayer.Experience:N0}");
+        terminal.WriteLine(Loc.Get("level_master.your_xp", $"{currentPlayer.Experience:N0}"));
 
         if (currentPlayer.Level >= GameConfig.MaxLevel)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("You have reached the pinnacle of mortal power!");
+            terminal.WriteLine(Loc.Get("level_master.max_level"));
         }
         else
         {
@@ -295,12 +295,12 @@ public class LevelMasterLocation : BaseLocation
             if (xpNeeded <= 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"* You are ready to advance to level {currentPlayer.Level + 1}! *");
+                terminal.WriteLine($"* {Loc.Get("level_master.ready_advance", (currentPlayer.Level + 1).ToString())} *");
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"Experience needed for level {currentPlayer.Level + 1}: {xpNeeded:N0}");
+                terminal.WriteLine(Loc.Get("level_master.xp_needed", (currentPlayer.Level + 1).ToString(), $"{xpNeeded:N0}"));
             }
         }
         terminal.WriteLine("");
@@ -311,7 +311,7 @@ public class LevelMasterLocation : BaseLocation
     /// </summary>
     private void DisplayLocationBBS()
     {
-        ShowBBSHeader("LEVEL MASTER'S SANCTUM");
+        ShowBBSHeader(Loc.Get("level_master.header"));
         // 1-line master + XP status
         terminal.SetColor(currentMaster.Color);
         terminal.Write($" {currentMaster.Name}");
@@ -322,7 +322,7 @@ public class LevelMasterLocation : BaseLocation
         if (currentPlayer.Level >= GameConfig.MaxLevel)
         {
             terminal.SetColor("bright_magenta");
-            terminal.Write(" MAX LEVEL!");
+            terminal.Write(Loc.Get("level_master.bbs_max_level"));
         }
         else
         {
@@ -331,24 +331,24 @@ public class LevelMasterLocation : BaseLocation
             if (xpNeeded <= 0)
             {
                 terminal.SetColor("bright_green");
-                terminal.Write(" *READY TO ADVANCE!*");
+                terminal.Write(Loc.Get("level_master.bbs_ready"));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.Write($"  Need:");
+                terminal.Write(Loc.Get("level_master.bbs_need"));
                 terminal.SetColor("white");
                 terminal.Write($"{xpNeeded:N0}");
             }
         }
-        terminal.Write($"  Train:");
+        terminal.Write(Loc.Get("level_master.bbs_train"));
         terminal.SetColor("yellow");
-        terminal.Write($"{currentPlayer.TrainingPoints}pts");
+        terminal.Write(Loc.Get("level_master.bbs_pts", currentPlayer.TrainingPoints));
         terminal.WriteLine("");
         ShowBBSNPCs();
         // Menu rows
-        ShowBBSMenuRow(("L", "bright_yellow", "Level Raise"), ("A", "bright_yellow", "Abilities"), ("T", "bright_yellow", "Training"));
-        ShowBBSMenuRow(("C", "bright_yellow", "Crystal Ball"), ("H", "bright_yellow", "Help Team"), ("R", "bright_yellow", "Return"));
+        ShowBBSMenuRow(("L", "bright_yellow", Loc.Get("level_master.bbs_level_raise")), ("A", "bright_yellow", Loc.Get("level_master.bbs_abilities")), ("T", "bright_yellow", Loc.Get("level_master.bbs_training")));
+        ShowBBSMenuRow(("C", "bright_yellow", Loc.Get("level_master.bbs_crystal_ball")), ("H", "bright_yellow", Loc.Get("level_master.bbs_help_team")), ("R", "bright_yellow", Loc.Get("level_master.bbs_return")));
         ShowBBSFooter();
     }
 
@@ -394,20 +394,20 @@ public class LevelMasterLocation : BaseLocation
         if (ClassAbilitySystem.IsSpellcaster(currentPlayer.Class) || SpellSystem.HasSpells(currentPlayer))
         {
             // Prestige hybrid — both abilities and spells
-            terminal.WriteLine($"\"{currentPlayer.DisplayName}, your power spans both martial and arcane arts...\"");
+            terminal.WriteLine(Loc.Get("level_master.hybrid_intro", currentPlayer.DisplayName));
             terminal.WriteLine("");
             if (IsScreenReader)
             {
-                WriteSRMenuOption("A", "Combat Abilities");
-                WriteSRMenuOption("S", "Spell Library");
+                WriteSRMenuOption("A", Loc.Get("level_master.combat_abilities"));
+                WriteSRMenuOption("S", Loc.Get("level_master.spell_library"));
             }
             else
             {
-                terminal.WriteLine("  [A] Combat Abilities", "bright_yellow");
-                terminal.WriteLine("  [S] Spell Library", "bright_cyan");
+                terminal.WriteLine(Loc.Get("level_master.visual_combat_abilities"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("level_master.visual_spell_library"), "bright_cyan");
             }
             terminal.WriteLine("");
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await GetChoice();
             if (choice.Equals("S", StringComparison.OrdinalIgnoreCase))
             {
                 await SpellLearningSystem.ShowSpellLearningMenu(currentPlayer, terminal);
@@ -420,7 +420,7 @@ public class LevelMasterLocation : BaseLocation
         else
         {
             // Pure ability user — ability menu only
-            terminal.WriteLine($"\"Come, {currentPlayer.DisplayName}. Let me show you the way of the {currentPlayer.Class.ToString().ToLower()}...\"");
+            terminal.WriteLine(Loc.Get("level_master.ability_intro", currentPlayer.DisplayName, currentPlayer.Class.ToString().ToLower()));
             await Task.Delay(800);
             await ClassAbilitySystem.ShowAbilityLearningMenu(currentPlayer, terminal);
         }
@@ -432,7 +432,7 @@ public class LevelMasterLocation : BaseLocation
     private async Task ShowTrainingMenu()
     {
         terminal.SetColor(currentMaster.Color);
-        terminal.WriteLine($"\"Practice makes perfect, {currentPlayer.DisplayName}. Let us hone your skills...\"");
+        terminal.WriteLine(Loc.Get("level_master.training_intro", currentPlayer.DisplayName));
         await Task.Delay(800);
         await TrainingSystem.ShowTrainingMenu(currentPlayer, terminal);
     }
@@ -471,7 +471,7 @@ public class LevelMasterLocation : BaseLocation
         {
             long needed = GetExperienceForLevel(currentPlayer.Level + 1) - currentPlayer.Experience;
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You still need {needed:N0} experience to reach level {currentPlayer.Level + 1}.");
+            terminal.WriteLine(Loc.Get("level_master.need_xp_remaining", $"{needed:N0}", currentPlayer.Level + 1));
             await Task.Delay(2000);
         }
         else
@@ -516,7 +516,7 @@ public class LevelMasterLocation : BaseLocation
                 var displayName = currentPlayer.Name2 ?? currentPlayer.Name1;
                 if (currentPlayer.Level % 5 == 0 || currentPlayer.Level <= 3)
                     _ = UsurperRemake.Systems.OnlineStateManager.Instance!.AddNews(
-                        $"{displayName} has reached level {currentPlayer.Level}!", "combat");
+                        Loc.Get("level_master.reached_level_news", displayName, currentPlayer.Level), "combat");
             }
 
             // Auto-add newly unlocked spells/abilities to empty quickbar slots
@@ -542,7 +542,7 @@ public class LevelMasterLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  LEVEL UP!");
+            terminal.WriteLine(Loc.Get("level_master.level_up_title"));
             terminal.WriteLine("");
         }
         else
@@ -554,11 +554,11 @@ public class LevelMasterLocation : BaseLocation
         terminal.SetColor("bright_green");
         if (levelsRaised == 1)
         {
-            terminal.WriteLine($"  You have advanced to level {currentPlayer.Level}!");
+            terminal.WriteLine(Loc.Get("level_master.advanced_to", currentPlayer.Level));
         }
         else
         {
-            terminal.WriteLine($"  You have advanced {levelsRaised} levels! ({startLevel} -> {currentPlayer.Level})");
+            terminal.WriteLine(Loc.Get("level_master.advanced_multi", levelsRaised, startLevel, currentPlayer.Level));
         }
         terminal.WriteLine("");
 
@@ -569,31 +569,31 @@ public class LevelMasterLocation : BaseLocation
         switch (playerAlignment)
         {
             case PlayerAlignment.Good:
-                terminal.WriteLine($"  {currentMaster.Name} places a gentle hand on your shoulder:");
-                terminal.WriteLine("  \"The light within you grows ever stronger. Use it wisely.\"");
+                terminal.WriteLine(Loc.Get("level_master.celeb_good_touch", currentMaster.Name));
+                terminal.WriteLine(Loc.Get("level_master.celeb_good_quote"));
                 break;
             case PlayerAlignment.Evil:
-                terminal.WriteLine($"  {currentMaster.Name}'s eyes gleam with dark approval:");
-                terminal.WriteLine("  \"Yes... embrace your power. The weak will tremble before you.\"");
+                terminal.WriteLine(Loc.Get("level_master.celeb_evil_eyes", currentMaster.Name));
+                terminal.WriteLine(Loc.Get("level_master.celeb_evil_quote"));
                 break;
             default:
-                terminal.WriteLine($"  {currentMaster.Name} nods with quiet respect:");
-                terminal.WriteLine("  \"Balance in all things. You walk the true path.\"");
+                terminal.WriteLine(Loc.Get("level_master.celeb_neutral_nod", currentMaster.Name));
+                terminal.WriteLine(Loc.Get("level_master.celeb_neutral_quote"));
                 break;
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("  Your body and mind surge with newfound power!");
-        terminal.WriteLine("  Your health and mana have been fully restored.");
+        terminal.WriteLine(Loc.Get("level_master.power_surge"));
+        terminal.WriteLine(Loc.Get("level_master.hp_mana_restored"));
         terminal.WriteLine("");
 
         // Show training points earned
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"  +{trainingPointsEarned} Training Points earned!");
-        terminal.WriteLine($"  Total Training Points: {currentPlayer.TrainingPoints}");
+        terminal.WriteLine(Loc.Get("level_master.training_earned", trainingPointsEarned));
+        terminal.WriteLine(Loc.Get("level_master.training_total", currentPlayer.TrainingPoints));
         terminal.SetColor("gray");
-        terminal.WriteLine("  (Use (T)raining at the Level Master to improve your skills)");
+        terminal.WriteLine(Loc.Get("level_master.training_hint"));
         terminal.WriteLine("");
 
         await terminal.PressAnyKey("  Press Enter to continue...");
@@ -605,31 +605,31 @@ public class LevelMasterLocation : BaseLocation
     private async Task CheckMilestoneBonuses(int startLevel, int endLevel)
     {
         // Milestone levels and their bonuses
-        var milestones = new (int level, string title, string hint, long goldBonus, int potionBonus)[]
+        var milestones = new (int level, string titleKey, string hintKey, long goldBonus, int potionBonus)[]
         {
-            (5, "Adventurer", "You can now venture deeper into the dungeons!", 500, 3),
-            (10, "Veteran", "The Seven Seals await you on floors 15, 30, 45, 60, 80, 99, and 100!", 1000, 5),
-            (25, "Champion", "Monsters now fear your name!", 5000, 10),
-            (50, "Hero", "You are ready to face the Old Gods!", 25000, 20),
-            (75, "Legend", "Your power rivals the ancient heroes!", 75000, 30),
-            (100, "GODSLAYER", "You have reached the pinnacle of mortal power!", 250000, 50)
+            (5, "level_master.milestone_adventurer", "level_master.milestone_adventurer_hint", 500, 3),
+            (10, "level_master.milestone_veteran", "level_master.milestone_veteran_hint", 1000, 5),
+            (25, "level_master.milestone_champion", "level_master.milestone_champion_hint", 5000, 10),
+            (50, "level_master.milestone_hero", "level_master.milestone_hero_hint", 25000, 20),
+            (75, "level_master.milestone_legend", "level_master.milestone_legend_hint", 75000, 30),
+            (100, "level_master.milestone_godslayer", "level_master.milestone_godslayer_hint", 250000, 50)
         };
 
-        foreach (var (level, title, hint, goldBonus, potionBonus) in milestones)
+        foreach (var (level, titleKey, hintKey, goldBonus, potionBonus) in milestones)
         {
             // Check if we crossed this milestone
             if (startLevel < level && endLevel >= level)
             {
                 terminal.WriteLine("");
-                WriteBoxHeader($"* MILESTONE REACHED: Level {level} *", "bright_yellow");
+                WriteBoxHeader(Loc.Get("level_master.milestone", level), "bright_yellow");
                 terminal.WriteLine("");
 
                 terminal.SetColor("bright_white");
-                terminal.WriteLine($"  You have earned the title: {title}!");
+                terminal.WriteLine(Loc.Get("level_master.milestone_title_earned", Loc.Get(titleKey)));
                 terminal.WriteLine("");
 
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"  {hint}");
+                terminal.WriteLine($"  {Loc.Get(hintKey)}");
                 terminal.WriteLine("");
 
                 // Award bonuses
@@ -637,8 +637,8 @@ public class LevelMasterLocation : BaseLocation
                 currentPlayer.Healing = Math.Min(currentPlayer.MaxPotions, currentPlayer.Healing + potionBonus);
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  BONUS: +{goldBonus:N0} Gold!");
-                terminal.WriteLine($"  BONUS: +{potionBonus} Healing Potions!");
+                terminal.WriteLine(Loc.Get("level_master.milestone_gold", $"{goldBonus:N0}"));
+                terminal.WriteLine(Loc.Get("level_master.milestone_potions", potionBonus));
                 terminal.WriteLine("");
 
                 await Task.Delay(1000);
@@ -991,7 +991,7 @@ public class LevelMasterLocation : BaseLocation
         {
             terminal.ClearScreen();
             terminal.SetColor("gray");
-            terminal.WriteLine("The crystal ball shows only swirling mists... No souls to scry.");
+            terminal.WriteLine(Loc.Get("level_master.crystal_empty"));
             await terminal.PressAnyKey();
             return;
         }
@@ -1003,15 +1003,15 @@ public class LevelMasterLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE CRYSTAL BALL", currentMaster.Color);
+            WriteBoxHeader(Loc.Get("level_master.crystal_ball"), currentMaster.Color);
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine($"\"{currentMaster.Name}\" gestures to a glowing crystal orb...");
+            terminal.WriteLine(Loc.Get("level_master.crystal_gesture", currentMaster.Name));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Who do you wish to scry? (Page {currentPage + 1} of {totalPages})");
+            terminal.WriteLine(Loc.Get("level_master.crystal_who_scry", currentPage + 1, totalPages));
             terminal.WriteLine("");
 
             // Show numbered list of NPCs for current page
@@ -1021,22 +1021,22 @@ public class LevelMasterLocation : BaseLocation
             for (int i = startIndex; i < endIndex; i++)
             {
                 var npc = npcs[i];
-                string status = npc.IsDead ? " [DEAD]" : "";
-                terminal.WriteLine($"{i + 1,3}. {npc.Name} - Level {npc.Level} {npc.Class}{status}");
+                string status = npc.IsDead ? Loc.Get("level_master.crystal_dead_tag") : "";
+                terminal.WriteLine(Loc.Get("level_master.crystal_npc_entry", i + 1, npc.Name, npc.Level, npc.Class, status));
             }
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine($"Showing {startIndex + 1}-{endIndex} of {npcs.Count} souls");
+            terminal.WriteLine(Loc.Get("level_master.crystal_showing", startIndex + 1, endIndex, npcs.Count));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
             string navOptions = "";
             if (currentPage > 0) navOptions += "[P]rev  ";
             if (currentPage < totalPages - 1) navOptions += "[N]ext  ";
-            terminal.WriteLine($"{navOptions}[#] Select by number  [Q]uit");
+            terminal.WriteLine(Loc.Get("level_master.crystal_nav", navOptions));
             terminal.WriteLine("");
-            terminal.Write("Choice: ");
+            terminal.Write(Loc.Get("ui.choice"));
             terminal.SetColor("white");
 
             string input = await terminal.ReadLineAsync();
@@ -1045,7 +1045,7 @@ public class LevelMasterLocation : BaseLocation
             if (input == "Q" || input == "0" || string.IsNullOrEmpty(input))
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The mists close around the ball once more...");
+                terminal.WriteLine(Loc.Get("level_master.crystal_close"));
                 await terminal.PressAnyKey();
                 return;
             }
@@ -1071,7 +1071,7 @@ public class LevelMasterLocation : BaseLocation
             }
 
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid choice. Try again.");
+            terminal.WriteLine(Loc.Get("level_master.crystal_invalid"));
             await Task.Delay(1000);
         }
     }
@@ -1082,47 +1082,47 @@ public class LevelMasterLocation : BaseLocation
     private async Task DisplayScryingResult(NPC target)
     {
         terminal.ClearScreen();
-        WriteBoxHeader("VISIONS IN THE CRYSTAL", "bright_magenta");
+        WriteBoxHeader(Loc.Get("level_master.visions"), "bright_magenta");
         terminal.WriteLine("");
 
         await Task.Delay(500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"The mists part to reveal: {target.Name}");
+        terminal.WriteLine(Loc.Get("level_master.crystal_reveal", target.Name));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"  Class: {target.Class}");
-        terminal.WriteLine($"  Level: {target.Level}");
-        terminal.WriteLine($"  Status: {(target.IsAlive ? "Alive" : "Dead")}");
-        terminal.WriteLine($"  Location: {target.CurrentLocation}");
+        terminal.WriteLine(Loc.Get("level_master.crystal_class", target.Class));
+        terminal.WriteLine(Loc.Get("level_master.crystal_level", target.Level));
+        terminal.WriteLine(Loc.Get("level_master.crystal_status", target.IsAlive ? Loc.Get("level_master.crystal_alive") : Loc.Get("level_master.crystal_dead")));
+        terminal.WriteLine(Loc.Get("level_master.crystal_location", target.CurrentLocation));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("  Combat Stats:");
+        terminal.WriteLine(Loc.Get("level_master.crystal_combat_stats"));
         terminal.SetColor("white");
-        terminal.WriteLine($"    Strength: {target.Strength}   Defence: {target.Defence}");
-        terminal.WriteLine($"    Agility: {target.Agility}    Dexterity: {target.Dexterity}");
-        terminal.WriteLine($"    HP: {target.HP}/{target.MaxHP}  Mana: {target.Mana}/{target.MaxMana}");
+        terminal.WriteLine(Loc.Get("level_master.crystal_str_def", target.Strength, target.Defence));
+        terminal.WriteLine(Loc.Get("level_master.crystal_agi_dex", target.Agility, target.Dexterity));
+        terminal.WriteLine(Loc.Get("level_master.crystal_hp_mana", target.HP, target.MaxHP, target.Mana, target.MaxMana));
         terminal.WriteLine("");
 
         terminal.SetColor("green");
-        terminal.WriteLine("  Wealth & Status:");
+        terminal.WriteLine($"  {Loc.Get("ui.wealth_status")}");
         terminal.SetColor("white");
-        terminal.WriteLine($"    Gold: {target.Gold:N0}");
-        terminal.WriteLine($"    Team: {(string.IsNullOrEmpty(target.Team) ? "None" : target.Team)}");
-        terminal.WriteLine($"    Alignment: {(target.Chivalry > target.Darkness ? "Good" : target.Darkness > target.Chivalry ? "Evil" : "Neutral")}");
+        terminal.WriteLine($"    {Loc.Get("ui.gold")}: {target.Gold:N0}");
+        terminal.WriteLine($"    {Loc.Get("ui.team")}: {(string.IsNullOrEmpty(target.Team) ? Loc.Get("ui.none") : target.Team)}");
+        terminal.WriteLine($"    {Loc.Get("ui.alignment")}: {(target.Chivalry > target.Darkness ? Loc.Get("ui.good") : target.Darkness > target.Chivalry ? Loc.Get("ui.evil") : Loc.Get("ui.neutral"))}");
 
         if (target.Brain != null)
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  Personality: {target.Brain.Personality}");
+            terminal.WriteLine(Loc.Get("level_master.crystal_personality", target.Brain.Personality));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("The vision fades as the mists return...");
+        terminal.WriteLine(Loc.Get("level_master.crystal_fade"));
         await terminal.PressAnyKey();
     }
 
@@ -1132,7 +1132,7 @@ public class LevelMasterLocation : BaseLocation
     private async Task HelpTeamMember()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("HELP ALLY", currentMaster.Color);
+        WriteBoxHeader(Loc.Get("level_master.help_ally"), currentMaster.Color);
         terminal.WriteLine("");
 
         // Find NPC teammates (only if player is on a team)
@@ -1183,44 +1183,44 @@ public class LevelMasterLocation : BaseLocation
         if (shareableAllies.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\"{currentMaster.Name}\" looks into the distance...");
+            terminal.WriteLine(Loc.Get("level_master.help_master_looks", currentMaster.Name));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("\"You have no allies to assist. Recruit companions or join a team first.\"");
+            terminal.WriteLine(Loc.Get("level_master.help_no_allies"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"\"{currentMaster.Name}\" nods approvingly...");
+        terminal.WriteLine(Loc.Get("level_master.help_nods", currentMaster.Name));
         terminal.WriteLine("");
-        terminal.WriteLine("\"Helping your allies grow stronger is a noble pursuit.\"");
-        terminal.WriteLine("\"You may share your wisdom (experience) to help them advance.\"");
+        terminal.WriteLine(Loc.Get("level_master.help_noble_pursuit"));
+        terminal.WriteLine(Loc.Get("level_master.help_share_wisdom"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("Select an ally to help:");
+        terminal.WriteLine(Loc.Get("level_master.help_select_ally"));
         terminal.WriteLine("");
 
         for (int i = 0; i < shareableAllies.Count; i++)
         {
             var ally = shareableAllies[i];
             long xpToNext = GetExperienceForLevel(ally.Level + 1) - ally.Experience;
-            string allyType = ally.IsCompanion ? " [Companion]"
-                : (spouseNpc != null && ally.Name == spouseNpc.Name) ? " [Spouse]" : "";
-            terminal.WriteLine($"{i + 1}. {ally.Name}{allyType} - Level {ally.Level} ({xpToNext:N0} XP to next level)");
+            string allyType = ally.IsCompanion ? Loc.Get("level_master.help_companion_tag")
+                : (spouseNpc != null && ally.Name == spouseNpc.Name) ? Loc.Get("level_master.help_spouse_tag") : "";
+            terminal.WriteLine(Loc.Get("level_master.help_ally_entry", i + 1, ally.Name, allyType, ally.Level, $"{xpToNext:N0}"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select ally (0 to cancel): ");
+        terminal.Write(Loc.Get("level_master.help_select_prompt"));
         terminal.SetColor("white");
 
         string input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > shareableAllies.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You decide to keep your wisdom for yourself...");
+            terminal.WriteLine(Loc.Get("level_master.help_keep_wisdom"));
             await terminal.PressAnyKey();
             return;
         }
@@ -1230,8 +1230,8 @@ public class LevelMasterLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"{selectedAlly.Name} needs {xpNeeded:N0} experience to reach level {selectedAlly.Level + 1}.");
-        terminal.WriteLine($"You have {currentPlayer.Experience:N0} experience.");
+        terminal.WriteLine(Loc.Get("level_master.help_needs_xp", selectedAlly.Name, $"{xpNeeded:N0}", selectedAlly.Level + 1));
+        terminal.WriteLine(Loc.Get("level_master.help_you_have_xp", $"{currentPlayer.Experience:N0}"));
         terminal.WriteLine("");
 
         // Calculate max they can give (half their XP, but not more than they have)
@@ -1239,20 +1239,20 @@ public class LevelMasterLocation : BaseLocation
         if (maxGive < 1)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You don't have enough experience to share!");
+            terminal.WriteLine(Loc.Get("level_master.help_not_enough_xp"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write($"How much XP to share (max {maxGive:N0}): ");
+        terminal.Write(Loc.Get("level_master.help_how_much", $"{maxGive:N0}"));
         terminal.SetColor("white");
 
         string xpInput = await terminal.ReadLineAsync();
         if (!long.TryParse(xpInput, out long xpToGive) || xpToGive < 1 || xpToGive > maxGive)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Invalid amount. No experience shared.");
+            terminal.WriteLine(Loc.Get("level_master.help_invalid_amount"));
             await terminal.PressAnyKey();
             return;
         }
@@ -1262,7 +1262,7 @@ public class LevelMasterLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"You share {xpToGive:N0} experience with {selectedAlly.Name}!");
+        terminal.WriteLine(Loc.Get("level_master.help_shared", $"{xpToGive:N0}", selectedAlly.Name));
 
         // Handle leveling up based on ally type
         int levelsGained = 0;
@@ -1293,9 +1293,9 @@ public class LevelMasterLocation : BaseLocation
             if (levelsGained > 0)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"{companion.Name} has grown to level {companion.Level}!");
-                terminal.WriteLine($"HP: {companion.BaseStats.HP} | ATK: {companion.BaseStats.Attack} | DEF: {companion.BaseStats.Defense}");
-                terminal.WriteLine("Their combat effectiveness has increased!");
+                terminal.WriteLine(Loc.Get("level_master.help_companion_grown", companion.Name, companion.Level));
+                terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {companion.BaseStats.HP} | {Loc.Get("combat.bar_atk")}: {companion.BaseStats.Attack} | {Loc.Get("combat.bar_def")}: {companion.BaseStats.Defense}");
+                terminal.WriteLine(Loc.Get("level_master.help_effectiveness"));
             }
         }
         else
@@ -1328,21 +1328,21 @@ public class LevelMasterLocation : BaseLocation
                 terminal.SetColor("bright_yellow");
                 if (levelsGained == 1)
                 {
-                    terminal.WriteLine($"{recipient.Name} has reached level {recipient.Level}!");
+                    terminal.WriteLine(Loc.Get("level_master.help_npc_level", recipient.Name, recipient.Level));
                 }
                 else
                 {
-                    terminal.WriteLine($"{recipient.Name} has gained {levelsGained} levels! ({startLevel} -> {recipient.Level})");
+                    terminal.WriteLine(Loc.Get("level_master.help_npc_multi", recipient.Name, levelsGained, startLevel, recipient.Level));
                 }
-                NewsSystem.Instance?.Newsy(true, $"{recipient.Name} advanced to level {recipient.Level} with help from {currentPlayer.Name2}!");
+                NewsSystem.Instance?.Newsy(true, Loc.Get("level_master.advanced_level_news", recipient.Name, recipient.Level, currentPlayer.Name2));
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"\"{currentMaster.Name}\" smiles warmly...");
+        terminal.WriteLine(Loc.Get("level_master.help_smiles", currentMaster.Name));
         terminal.SetColor("white");
-        terminal.WriteLine("\"True strength is found in lifting others.\"");
+        terminal.WriteLine(Loc.Get("level_master.help_true_strength"));
 
         await terminal.PressAnyKey();
     }

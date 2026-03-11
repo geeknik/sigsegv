@@ -108,37 +108,37 @@ public class LoveStreetLocation : BaseLocation
     private void DisplayLocationSR()
     {
         terminal.ClearScreen();
-        terminal.WriteLine("Love Street");
+        terminal.WriteLine(Loc.Get("love_street.sr_title"));
         terminal.WriteLine("");
-        terminal.WriteLine("The air is thick with perfume and promise. Beautiful creatures beckon from doorways.");
+        terminal.WriteLine(Loc.Get("love_street.sr_desc"));
         terminal.WriteLine("");
 
         ShowNPCsInLocation();
 
-        terminal.WriteLine("Pleasure Houses:");
-        WriteSRMenuOption("1", "Beauty Nest");
-        WriteSRMenuOption("2", "Hall of Dreams");
+        terminal.WriteLine(Loc.Get("love_street.sr_pleasure"));
+        WriteSRMenuOption("1", Loc.Get("love_street.beauty_nest"));
+        WriteSRMenuOption("2", Loc.Get("love_street.hall_dreams"));
         terminal.WriteLine("");
 
-        terminal.WriteLine("Social:");
-        WriteSRMenuOption("M", "Mingle");
-        WriteSRMenuOption("D", "Take on a Date");
-        WriteSRMenuOption("G", "Gift Shop");
-        WriteSRMenuOption("V", "Gossip");
-        WriteSRMenuOption("L", "Love Potions");
+        terminal.WriteLine(Loc.Get("love_street.sr_social"));
+        WriteSRMenuOption("M", Loc.Get("love_street.mingle"));
+        WriteSRMenuOption("D", Loc.Get("love_street.date"));
+        WriteSRMenuOption("G", Loc.Get("love_street.gift_shop"));
+        WriteSRMenuOption("V", Loc.Get("love_street.gossip"));
+        WriteSRMenuOption("L", Loc.Get("love_street.love_potions"));
         terminal.WriteLine("");
 
-        WriteSRMenuOption("R", "Return to Main Street");
+        WriteSRMenuOption("R", Loc.Get("love_street.return"));
         terminal.WriteLine("");
 
-        terminal.WriteLine($"Gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine($"{Loc.Get("ui.gold")}: {currentPlayer.Gold:N0}");
         if (_charmActive || _allureActive || _passionActive)
         {
             var potions = new List<string>();
-            if (_charmActive) potions.Add("Charm");
-            if (_allureActive) potions.Add("Allure");
-            if (_passionActive) potions.Add("Passion");
-            terminal.WriteLine($"Active Potions: {string.Join(", ", potions)}");
+            if (_charmActive) potions.Add(Loc.Get("love_street.potion_charm"));
+            if (_allureActive) potions.Add(Loc.Get("love_street.potion_allure"));
+            if (_passionActive) potions.Add(Loc.Get("love_street.potion_passion"));
+            terminal.WriteLine(Loc.Get("love_street.active_potions", string.Join(", ", potions)));
         }
         terminal.WriteLine("");
     }
@@ -150,19 +150,19 @@ public class LoveStreetLocation : BaseLocation
 
         terminal.ClearScreen();
 
-        WriteBoxHeader("<3 LOVE STREET <3", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.header_visual"), "bright_magenta", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("The air is thick with perfume and promise. Lanterns cast a warm, inviting glow");
-        terminal.WriteLine("over the cobblestones. Beautiful creatures of all races beckon from doorways,");
-        terminal.WriteLine("while well-dressed patrons move between the various establishments.");
+        terminal.WriteLine(Loc.Get("love_street.desc1"));
+        terminal.WriteLine(Loc.Get("love_street.desc2"));
+        terminal.WriteLine(Loc.Get("love_street.desc3"));
         terminal.WriteLine("");
 
         // Show NPCs present
         ShowNPCsInLocation();
 
-        WriteBoxHeader("-= PLEASURE AWAITS =-", "bright_cyan", 77);
+        WriteBoxHeader(Loc.Get("love_street.pleasure"), "bright_cyan", 77);
         terminal.WriteLine("");
 
         // Pleasure Houses
@@ -173,7 +173,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write(" Beauty Nest     ");
+        terminal.Write(Loc.Get("love_street.menu_beauty"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -182,7 +182,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Hall of Dreams");
+        terminal.WriteLine(Loc.Get("love_street.menu_hall"));
 
         terminal.WriteLine("");
 
@@ -194,7 +194,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write(" Mingle          ");
+        terminal.Write(Loc.Get("love_street.menu_mingle"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -203,7 +203,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Take on a Date");
+        terminal.WriteLine(Loc.Get("love_street.menu_date"));
 
         terminal.SetColor("darkgray");
         terminal.Write(" [");
@@ -212,7 +212,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write(" Gift Shop       ");
+        terminal.Write(Loc.Get("love_street.menu_gift"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -221,7 +221,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Gossip");
+        terminal.WriteLine(Loc.Get("love_street.menu_gossip"));
 
         terminal.WriteLine("");
 
@@ -233,7 +233,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.Write(" Love Potions    ");
+        terminal.Write(Loc.Get("love_street.menu_potions"));
 
         terminal.SetColor("darkgray");
         terminal.Write("[");
@@ -242,7 +242,7 @@ public class LoveStreetLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("]");
         terminal.SetColor("white");
-        terminal.WriteLine(" Return to Main Street");
+        terminal.WriteLine(Loc.Get("love_street.menu_return"));
 
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
@@ -251,14 +251,14 @@ public class LoveStreetLocation : BaseLocation
 
         // Show gold + active potions
         terminal.SetColor("yellow");
-        terminal.Write($" Gold: {currentPlayer.Gold:N0}");
+        terminal.Write($" {Loc.Get("ui.gold")}: {currentPlayer.Gold:N0}");
         if (_charmActive || _allureActive || _passionActive)
         {
             terminal.SetColor("magenta");
-            terminal.Write("  Potions:");
-            if (_charmActive) terminal.Write(" [Charm]");
-            if (_allureActive) terminal.Write(" [Allure]");
-            if (_passionActive) terminal.Write(" [Passion]");
+            terminal.Write(Loc.Get("love_street.potions_label"));
+            if (_charmActive) terminal.Write(Loc.Get("love_street.potion_charm_tag"));
+            if (_allureActive) terminal.Write(Loc.Get("love_street.potion_allure_tag"));
+            if (_passionActive) terminal.Write(Loc.Get("love_street.potion_passion_tag"));
         }
         terminal.WriteLine("");
         terminal.WriteLine("");
@@ -270,11 +270,11 @@ public class LoveStreetLocation : BaseLocation
     private void DisplayLocationBBS()
     {
         terminal.ClearScreen();
-        ShowBBSHeader("LOVE STREET");
+        ShowBBSHeader(Loc.Get("love_street.header"));
 
         // 1-line description
         terminal.SetColor("magenta");
-        terminal.WriteLine(" Perfume and promise fill the air. Beautiful creatures beckon from doorways.");
+        terminal.WriteLine(Loc.Get("love_street.bbs_desc"));
 
         ShowBBSNPCs();
         terminal.WriteLine("");
@@ -285,15 +285,15 @@ public class LoveStreetLocation : BaseLocation
 
         // Gold + active potions
         terminal.SetColor("gray");
-        terminal.Write(" Gold:");
+        terminal.Write($" {Loc.Get("ui.gold")}:");
         terminal.SetColor("yellow");
         terminal.Write($"{currentPlayer.Gold:N0}");
         if (_charmActive || _allureActive || _passionActive)
         {
             terminal.SetColor("magenta");
-            if (_charmActive) terminal.Write(" [Charm]");
-            if (_allureActive) terminal.Write(" [Allure]");
-            if (_passionActive) terminal.Write(" [Passion]");
+            if (_charmActive) terminal.Write(Loc.Get("love_street.potion_charm_tag"));
+            if (_allureActive) terminal.Write(Loc.Get("love_street.potion_allure_tag"));
+            if (_passionActive) terminal.Write(Loc.Get("love_street.potion_passion_tag"));
         }
         terminal.WriteLine("");
 
@@ -355,21 +355,21 @@ public class LoveStreetLocation : BaseLocation
     private async Task VisitBeautyNest()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE BEAUTY NEST", "bright_red", 77);
+        WriteBoxHeader(Loc.Get("love_street.beauty_nest_header"), "bright_red", 77);
         terminal.SetColor("bright_red");
-        terminal.WriteLine("  Driven by Clarissa the Half-Elf");
+        terminal.WriteLine(Loc.Get("love_street.beauty_run_by"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("As you enter the worn-down old establishment at the end of Love Street,");
-        terminal.WriteLine("you notice creatures of all kinds moving up and down the stairs,");
-        terminal.WriteLine("each in the company of beautiful companions.");
+        terminal.WriteLine(Loc.Get("love_street.beauty_desc1"));
+        terminal.WriteLine(Loc.Get("love_street.beauty_desc2"));
+        terminal.WriteLine(Loc.Get("love_street.beauty_desc3"));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("A fat, ugly troll woman appears - Clarissa, the madam.");
+        terminal.WriteLine(Loc.Get("love_street.beauty_madam"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"Looking for some pleasure, handsome?\"");
+        terminal.WriteLine(Loc.Get("love_street.beauty_looking"));
         terminal.WriteLine("");
 
         await ShowCourtesanMenu();
@@ -378,7 +378,7 @@ public class LoveStreetLocation : BaseLocation
     private async Task ShowCourtesanMenu()
     {
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Clarissa introduces you to the courtesans:");
+        terminal.WriteLine(Loc.Get("love_street.beauty_introduces"));
         terminal.WriteLine("");
 
         for (int i = 0; i < Courtesans.Count; i++)
@@ -398,11 +398,11 @@ public class LoveStreetLocation : BaseLocation
                 terminal.SetColor("gray");
                 terminal.Write($" ({c.Race}) - ");
                 terminal.SetColor("yellow");
-                terminal.Write($"{c.Price:N0} gold");
+                terminal.Write($"{c.Price:N0} {Loc.Get("ui.gold_word")}");
 
                 // Disease risk indicator
                 terminal.SetColor("darkgray");
-                terminal.Write(" [Risk: ");
+                terminal.Write($" [{Loc.Get("love_street.risk")}: ");
                 if (c.DiseaseChance >= 0.30f)
                     terminal.SetColor("red");
                 else if (c.DiseaseChance >= 0.15f)
@@ -419,10 +419,10 @@ public class LoveStreetLocation : BaseLocation
             terminal.WriteLine("");
         }
 
-        WriteSRMenuOption("0", "Return");
+        WriteSRMenuOption("0", Loc.Get("love_street.return"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("Choose a companion (1-9, 0 to leave): ");
+        var input = await terminal.GetInput(Loc.Get("love_street.choose_companion"));
         if (int.TryParse(input, out int choice) && choice >= 1 && choice <= Courtesans.Count)
         {
             await EngageWithCourtesan(Courtesans[choice - 1]);
@@ -441,14 +441,14 @@ public class LoveStreetLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\"{courtesan.Name} wants to see {courtesan.Price:N0} gold before you can proceed.\"");
+        terminal.WriteLine(Loc.Get("love_street.courtesan_wants_gold", courtesan.Name, $"{courtesan.Price:N0}"));
         terminal.WriteLine("");
 
-        var confirm = await terminal.GetInput($"Pay {courtesan.Name} {courtesan.Price:N0} gold? (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("love_street.pay_confirm", courtesan.Name, $"{courtesan.Price:N0}"));
         if (string.IsNullOrEmpty(confirm) || confirm.ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine($"\"{courtesan.Name} shrugs. \"Your loss, honey.\"");
+            terminal.WriteLine(Loc.Get("love_street.shrug_loss", courtesan.Name));
             await terminal.WaitForKey();
             return;
         }
@@ -456,10 +456,10 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < courtesan.Price)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\"You don't have enough gold!\" {courtesan.Name} laughs cruelly.");
-            terminal.WriteLine("\"Come back when you can actually afford me, peasant!\"");
+            terminal.WriteLine(Loc.Get("ui.not_enough_gold_courtesan", courtesan.Name));
+            terminal.WriteLine(Loc.Get("love_street.cant_afford_courtesan"));
             terminal.WriteLine("");
-            terminal.WriteLine("You slink away in embarrassment...");
+            terminal.WriteLine(Loc.Get("love_street.slink_away"));
             await terminal.WaitForKey();
             return;
         }
@@ -479,21 +479,21 @@ public class LoveStreetLocation : BaseLocation
     private async Task VisitHallOfDreams()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("HALL OF DREAMS", "bright_blue", 77);
+        WriteBoxHeader(Loc.Get("love_street.hall_dreams_header"), "bright_blue", 77);
         terminal.SetColor("bright_blue");
-        terminal.WriteLine("  Supervised by Giovanni the Gnome");
+        terminal.WriteLine(Loc.Get("love_street.hall_run_by"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("You enter the lobby of this grand and fashionable establishment.");
-        terminal.WriteLine("The furnishings are expensive, giving you the feeling of a luxury hotel.");
-        terminal.WriteLine("Subdued music adds to the pleasant atmosphere.");
+        terminal.WriteLine(Loc.Get("love_street.hall_desc1"));
+        terminal.WriteLine(Loc.Get("love_street.hall_desc2"));
+        terminal.WriteLine(Loc.Get("love_street.hall_desc3"));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("A slim man dressed in black approaches.");
+        terminal.WriteLine(Loc.Get("love_street.hall_giovanni"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"Hello, I am Giovanni. What can I do for you today?\"");
+        terminal.WriteLine(Loc.Get("love_street.hall_hello"));
         terminal.WriteLine("");
 
         await ShowGigoloMenu();
@@ -502,7 +502,7 @@ public class LoveStreetLocation : BaseLocation
     private async Task ShowGigoloMenu()
     {
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Giovanni introduces you to the gigolos:");
+        terminal.WriteLine(Loc.Get("love_street.hall_introduces"));
         terminal.WriteLine("");
 
         for (int i = 0; i < Gigolos.Count; i++)
@@ -522,11 +522,11 @@ public class LoveStreetLocation : BaseLocation
                 terminal.SetColor("gray");
                 terminal.Write($" ({g.Race}) - ");
                 terminal.SetColor("yellow");
-                terminal.Write($"{g.Price:N0} gold");
+                terminal.Write($"{g.Price:N0} {Loc.Get("ui.gold_word")}");
 
                 // Disease risk indicator
                 terminal.SetColor("darkgray");
-                terminal.Write(" [Risk: ");
+                terminal.Write($" [{Loc.Get("love_street.risk")}: ");
                 if (g.DiseaseChance >= 0.30f)
                     terminal.SetColor("red");
                 else if (g.DiseaseChance >= 0.15f)
@@ -543,10 +543,10 @@ public class LoveStreetLocation : BaseLocation
             terminal.WriteLine("");
         }
 
-        WriteSRMenuOption("0", "Return");
+        WriteSRMenuOption("0", Loc.Get("love_street.return"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("Choose a companion (1-9, 0 to leave): ");
+        var input = await terminal.GetInput(Loc.Get("love_street.choose_companion"));
         if (int.TryParse(input, out int choice) && choice >= 1 && choice <= Gigolos.Count)
         {
             await EngageWithGigolo(Gigolos[choice - 1]);
@@ -565,14 +565,14 @@ public class LoveStreetLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\"{gigolo.Name} requires {gigolo.Price:N0} gold for his services.\"");
+        terminal.WriteLine(Loc.Get("love_street.gigolo_wants_gold", gigolo.Name, $"{gigolo.Price:N0}"));
         terminal.WriteLine("");
 
-        var confirm = await terminal.GetInput($"Pay {gigolo.Name} {gigolo.Price:N0} gold? (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("love_street.pay_confirm", gigolo.Name, $"{gigolo.Price:N0}"));
         if (string.IsNullOrEmpty(confirm) || confirm.ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine($"\"{gigolo.Name} bows politely. \"Perhaps another time.\"");
+            terminal.WriteLine(Loc.Get("love_street.gigolo_bow", gigolo.Name));
             await terminal.WaitForKey();
             return;
         }
@@ -580,10 +580,10 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < gigolo.Price)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\"I'm afraid you lack the funds,\" {gigolo.Name} says with a sigh.");
-            terminal.WriteLine("\"Return when your purse is heavier.\"");
+            terminal.WriteLine(Loc.Get("love_street.gigolo_lack_funds", gigolo.Name));
+            terminal.WriteLine(Loc.Get("love_street.gigolo_heavier"));
             terminal.WriteLine("");
-            terminal.WriteLine("You leave, disappointed...");
+            terminal.WriteLine(Loc.Get("love_street.leave_disappointed"));
             await terminal.WaitForKey();
             return;
         }
@@ -604,7 +604,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("A NIGHT OF PASSION", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.night_passion"), "bright_magenta", 77);
         terminal.WriteLine("");
 
         // Generate encounter based on price tier
@@ -631,12 +631,12 @@ public class LoveStreetLocation : BaseLocation
         };
 
         terminal.WriteLine("");
-        WriteSectionHeader($"Night of Pleasure with {partnerName}", "bright_yellow");
+        WriteSectionHeader(Loc.Get("love_street.night_pleasure_with", partnerName), "bright_yellow");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine($" Experience gained: {xpGained:N0}");
+        terminal.WriteLine(Loc.Get("love_street.xp_gained", $"{xpGained:N0}"));
         terminal.SetColor("red");
-        terminal.WriteLine($" Darkness points: +{darkPoints}");
+        terminal.WriteLine(Loc.Get("love_street.dark_points", darkPoints));
 
         currentPlayer.Experience += xpGained;
         GiveDarkness(currentPlayer, darkPoints);
@@ -848,22 +848,22 @@ public class LoveStreetLocation : BaseLocation
         if (roll < diseaseChance)
         {
             terminal.WriteLine("");
-            WriteBoxHeader("SOMETHING IS WRONG!", "red", 77);
+            WriteBoxHeader(Loc.Get("love_street.something_wrong"), "red", 77);
             terminal.WriteLine("");
-            terminal.WriteLine("As you leave, you start to feel pain in your nether regions!");
-            terminal.WriteLine("By the gods! You've been infected with a venereal disease!");
+            terminal.WriteLine(Loc.Get("love_street.disease_pain"));
+            terminal.WriteLine(Loc.Get("love_street.disease_infected"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("You rush to the Healer, crying for help...");
-            terminal.WriteLine("The monks give you foul-smelling potions and painful treatments.");
+            terminal.WriteLine(Loc.Get("love_street.disease_rush"));
+            terminal.WriteLine(Loc.Get("love_street.disease_treatments"));
             terminal.WriteLine("");
 
             currentPlayer.HP = Math.Max(1, currentPlayer.HP / 2);
             currentPlayer.LoversBane = true;
 
             terminal.SetColor("bright_red");
-            terminal.WriteLine("You've contracted 'Lover's Bane'!");
-            terminal.WriteLine("Your HP has been halved! Visit the Healer to cure this affliction.");
+            terminal.WriteLine(Loc.Get("love_street.disease_contracted"));
+            terminal.WriteLine(Loc.Get("love_street.disease_hp_halved"));
             terminal.WriteLine("");
 
             NewsSystem.Instance.Newsy(true,
@@ -917,7 +917,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("MINGLE", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.mingle_header"), "bright_magenta", 77);
         terminal.WriteLine("");
 
         // Get NPCs at Love Street first
@@ -947,8 +947,8 @@ public class LoveStreetLocation : BaseLocation
         if (allNPCs.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("There's no one around to mingle with right now.");
-            terminal.WriteLine("Try coming back later.");
+            terminal.WriteLine(Loc.Get("love_street.mingle_nobody"));
+            terminal.WriteLine(Loc.Get("love_street.mingle_try_later"));
             await terminal.WaitForKey();
             return;
         }
@@ -957,7 +957,7 @@ public class LoveStreetLocation : BaseLocation
         if (npcsHere.Count > 0)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("People at Love Street:\n");
+            terminal.WriteLine(Loc.Get("love_street.mingle_people"));
         }
 
         for (int i = 0; i < allNPCs.Count; i++)
@@ -967,7 +967,7 @@ public class LoveStreetLocation : BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Others around town:\n");
+                terminal.WriteLine(Loc.Get("love_street.mingle_others"));
             }
 
             var romanceType = RomanceTracker.Instance.GetRelationType(npc.ID);
@@ -977,10 +977,10 @@ public class LoveStreetLocation : BaseLocation
             {
                 string tag = romanceType switch
                 {
-                    RomanceRelationType.Spouse => " (Spouse)",
-                    RomanceRelationType.Lover => " (Lover)",
-                    RomanceRelationType.FWB => " (FWB)",
-                    _ => relationLevel <= 40 ? " (Friend)" : relationLevel <= 70 ? "" : " (Wary)"
+                    RomanceRelationType.Spouse => $" ({Loc.Get("love_street.tag_spouse")})",
+                    RomanceRelationType.Lover => $" ({Loc.Get("love_street.tag_lover")})",
+                    RomanceRelationType.FWB => $" ({Loc.Get("love_street.tag_fwb")})",
+                    _ => relationLevel <= 40 ? $" ({Loc.Get("love_street.tag_friend")})" : relationLevel <= 70 ? "" : $" ({Loc.Get("love_street.tag_wary")})"
                 };
                 var profile = npc.Brain?.Personality;
                 string hint = profile != null ? $", {GetPersonalityHint(profile)}" : "";
@@ -998,10 +998,10 @@ public class LoveStreetLocation : BaseLocation
                 // Relationship tag
                 string tag = romanceType switch
                 {
-                    RomanceRelationType.Spouse => " [Spouse]",
-                    RomanceRelationType.Lover => " [Lover]",
-                    RomanceRelationType.FWB => " [FWB]",
-                    _ => relationLevel <= 40 ? " [Friend]" : relationLevel <= 70 ? "" : " [Wary]"
+                    RomanceRelationType.Spouse => $" [{Loc.Get("love_street.tag_spouse")}]",
+                    RomanceRelationType.Lover => $" [{Loc.Get("love_street.tag_lover")}]",
+                    RomanceRelationType.FWB => $" [{Loc.Get("love_street.tag_fwb")}]",
+                    _ => relationLevel <= 40 ? $" [{Loc.Get("love_street.tag_friend")}]" : relationLevel <= 70 ? "" : $" [{Loc.Get("love_street.tag_wary")}]"
                 };
                 if (!string.IsNullOrEmpty(tag))
                 {
@@ -1025,10 +1025,10 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        WriteSRMenuOption("0", "Return");
+        WriteSRMenuOption("0", Loc.Get("love_street.return"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("Who catches your eye? ");
+        var input = await terminal.GetInput(Loc.Get("love_street.who_catches_eye"));
         if (int.TryParse(input, out int choice) && choice >= 1 && choice <= allNPCs.Count)
         {
             await MingleWithNPC(allNPCs[choice - 1]);
@@ -1045,7 +1045,7 @@ public class LoveStreetLocation : BaseLocation
         {
             terminal.ClearScreen();
             terminal.WriteLine("");
-            WriteBoxHeader($"Spending time with {npc.Name}", "bright_magenta", 77);
+            WriteBoxHeader(Loc.Get("love_street.spending_time", npc.Name), "bright_magenta", 77);
             terminal.WriteLine("");
 
             // Show NPC details
@@ -1055,10 +1055,10 @@ public class LoveStreetLocation : BaseLocation
             terminal.SetColor("white");
             terminal.Write($" {npc.Name}");
             terminal.SetColor("gray");
-            terminal.WriteLine($" - Level {npc.Level} {npc.Race} {npc.Class}, Age {npc.Age}");
+            terminal.WriteLine($" - {Loc.Get("love_street.level_info", npc.Level, npc.Race, npc.Class, npc.Age)}");
 
             terminal.SetColor("white");
-            terminal.Write(" Relationship: ");
+            terminal.Write($" {Loc.Get("love_street.relationship")}: ");
             terminal.SetColor(relationLevel <= 20 ? "bright_magenta" : relationLevel <= 50 ? "bright_green" : relationLevel <= 70 ? "yellow" : "red");
             terminal.WriteLine(GetRelationDescription(relationLevel));
 
@@ -1066,7 +1066,7 @@ public class LoveStreetLocation : BaseLocation
             if (_revealedTraits.TryGetValue(npc.ID, out var traits) && traits.Count > 0)
             {
                 terminal.SetColor("cyan");
-                terminal.Write(" Traits: ");
+                terminal.Write($" {Loc.Get("love_street.traits")}: ");
                 terminal.SetColor("white");
                 terminal.WriteLine(string.Join(", ", traits));
             }
@@ -1074,16 +1074,16 @@ public class LoveStreetLocation : BaseLocation
             bool alreadyFlirted = _flirtedThisVisit.Contains(npc.ID);
 
             terminal.WriteLine("");
-            WriteSRMenuOption("F", alreadyFlirted ? "Flirt (already tried)" : "Flirt");
-            WriteSRMenuOption("C", "Compliment");
-            WriteSRMenuOption("B", $"Buy a Drink ({GameConfig.LoveStreetDrinkCost}g)");
-            WriteSRMenuOption("D", "Ask on a Date");
-            WriteSRMenuOption("T", "Talk");
-            WriteSRMenuOption("0", "Back");
+            WriteSRMenuOption("F", alreadyFlirted ? Loc.Get("love_street.flirt_tried") : Loc.Get("love_street.flirt"));
+            WriteSRMenuOption("C", Loc.Get("love_street.compliment"));
+            WriteSRMenuOption("B", Loc.Get("love_street.buy_drink", GameConfig.LoveStreetDrinkCost));
+            WriteSRMenuOption("D", Loc.Get("love_street.ask_date"));
+            WriteSRMenuOption("T", Loc.Get("love_street.talk"));
+            WriteSRMenuOption("0", Loc.Get("ui.cancel"));
 
             terminal.WriteLine("");
 
-            var action = await terminal.GetInput("What do you do? ");
+            var action = await terminal.GetInput(Loc.Get("love_street.what_do"));
             switch (action?.ToUpper())
             {
                 case "F":
@@ -1117,7 +1117,7 @@ public class LoveStreetLocation : BaseLocation
         if (_flirtedThisVisit.Contains(npc.ID))
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\nYou've already tried flirting with them this visit.");
+            terminal.WriteLine(Loc.Get("love_street.mingle_already_flirted"));
             await terminal.WaitForKey();
             return;
         }
@@ -1150,7 +1150,7 @@ public class LoveStreetLocation : BaseLocation
             {
                 _allureActive = false;
                 terminal.SetColor("magenta");
-                terminal.WriteLine("The Elixir of Allure surges through you...");
+                terminal.WriteLine(Loc.Get("love_street.allure_surges"));
             }
 
             RelationshipSystem.UpdateRelationship(currentPlayer, npc, 1, boost, false, true);
@@ -1168,7 +1168,7 @@ public class LoveStreetLocation : BaseLocation
             terminal.SetColor("bright_green");
             terminal.WriteLine(flirtResponses[random.Next(flirtResponses.Length)]);
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"Your relationship with {npc.Name} has improved!");
+            terminal.WriteLine(Loc.Get("love_street.relation_improved", npc.Name));
         }
         else
         {
@@ -1241,7 +1241,7 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < GameConfig.LoveStreetDrinkCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\nYou need {GameConfig.LoveStreetDrinkCost} gold to buy a drink.");
+            terminal.WriteLine(Loc.Get("love_street.need_drink_gold", GameConfig.LoveStreetDrinkCost));
             await terminal.WaitForKey();
             return;
         }
@@ -1251,13 +1251,13 @@ public class LoveStreetLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"You signal the barkeep and two drinks appear. {npc.Name} accepts gratefully.");
+        terminal.WriteLine(Loc.Get("love_street.buy_drinks", npc.Name));
         terminal.WriteLine("");
 
         RelationshipSystem.UpdateRelationship(currentPlayer, npc, 1, GameConfig.LoveStreetDrinkBoost, false, true);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Your relationship with {npc.Name} has improved!");
+        terminal.WriteLine(Loc.Get("love_street.relation_improved", npc.Name));
 
         // Reveal a personality trait
         var profile = npc.Brain?.Personality;
@@ -1286,7 +1286,7 @@ public class LoveStreetLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"Over drinks, you learn that {npc.Name} is {reveal.text}.");
+                terminal.WriteLine(Loc.Get("love_street.over_drinks", npc.Name, reveal.text));
             }
         }
 
@@ -1301,7 +1301,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("TAKE SOMEONE ON A DATE", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.take_date_header"), "bright_magenta", 77);
         terminal.WriteLine("");
 
         // Get potential dates (lovers, spouses, or NPCs with good relations)
@@ -1337,14 +1337,14 @@ public class LoveStreetLocation : BaseLocation
         if (potentialDates.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You don't have anyone to take on a date.");
-            terminal.WriteLine("Try mingling and improving your relationships first!");
+            terminal.WriteLine(Loc.Get("love_street.no_date_partner"));
+            terminal.WriteLine(Loc.Get("love_street.no_date_hint"));
             await terminal.WaitForKey();
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("Who would you like to take on a date?\n");
+        terminal.WriteLine(Loc.Get("love_street.who_date"));
 
         for (int i = 0; i < potentialDates.Count; i++)
         {
@@ -1353,10 +1353,10 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        WriteSRMenuOption("0", "Cancel");
+        WriteSRMenuOption("0", Loc.Get("ui.cancel"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("Choose: ");
+        var input = await terminal.GetInput(Loc.Get("ui.choice"));
         if (int.TryParse(input, out int choice) && choice >= 1 && choice <= potentialDates.Count)
         {
             var selected = potentialDates[choice - 1];
@@ -1374,7 +1374,7 @@ public class LoveStreetLocation : BaseLocation
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"Could not find {selected.name} in town. They may have left.");
+                terminal.WriteLine(Loc.Get("love_street.could_not_find", selected.name));
                 await terminal.WaitForKey();
             }
         }
@@ -1384,25 +1384,25 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader($"A Date with {partner.Name}", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.date_with", partner.Name), "bright_magenta", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("Where would you like to take them?");
+        terminal.WriteLine(Loc.Get("love_street.where_take"));
         terminal.WriteLine("");
 
-        WriteSRMenuOption("1", "Romantic Dinner (500g) - Fine dining and conversation");
-        WriteSRMenuOption("2", "Moonlit Walk (free) - Stroll together and hold hands");
-        WriteSRMenuOption("3", "Theater Performance (1000g) - Watch a show together");
-        WriteSRMenuOption("4", "Picnic by the Lake (200g) - Quiet time in nature");
-        WriteSRMenuOption("5", "Dancing at the Inn (300g) - Dance the night away");
-        WriteSRMenuOption("0", "Cancel");
+        WriteSRMenuOption("1", Loc.Get("love_street.date_dinner"));
+        WriteSRMenuOption("2", Loc.Get("love_street.date_walk"));
+        WriteSRMenuOption("3", Loc.Get("love_street.date_theater"));
+        WriteSRMenuOption("4", Loc.Get("love_street.date_picnic"));
+        WriteSRMenuOption("5", Loc.Get("love_street.date_dancing"));
+        WriteSRMenuOption("0", Loc.Get("ui.cancel"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("Choose your date activity: ");
+        var input = await terminal.GetInput(Loc.Get("love_street.choose_date_activity"));
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > 5)
         {
-            terminal.WriteLine("Maybe another time...", "gray");
+            terminal.WriteLine(Loc.Get("love_street.maybe_another_time"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1411,7 +1411,7 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < cost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You need {cost} gold for this date activity!");
+            terminal.WriteLine(Loc.Get("love_street.need_date_gold", cost));
             await terminal.WaitForKey();
             return;
         }
@@ -1430,7 +1430,7 @@ public class LoveStreetLocation : BaseLocation
         switch (activity)
         {
             case 1:
-                terminal.WriteLine("\n                         * Romantic Dinner *\n");
+                terminal.WriteLine($"\n                         {Loc.Get("love_street.date_dinner_title")}\n");
                 terminal.SetColor("white");
                 terminal.WriteLine($"You take {partner.Name} to the finest restaurant in town.");
                 terminal.WriteLine("Candlelight flickers across the table as you share stories.");
@@ -1442,7 +1442,7 @@ public class LoveStreetLocation : BaseLocation
                 break;
 
             case 2:
-                terminal.WriteLine("\n                         * Moonlit Walk *\n");
+                terminal.WriteLine($"\n                         {Loc.Get("love_street.date_walk_title")}\n");
                 terminal.SetColor("white");
                 terminal.WriteLine($"Hand in hand, you and {partner.Name} stroll through the quiet streets.");
                 terminal.WriteLine("The moon casts silver light on everything, making the world magical.");
@@ -1454,7 +1454,7 @@ public class LoveStreetLocation : BaseLocation
                 break;
 
             case 3:
-                terminal.WriteLine("\n                         * Theater Performance *\n");
+                terminal.WriteLine($"\n                         {Loc.Get("love_street.date_theater_title")}\n");
                 terminal.SetColor("white");
                 terminal.WriteLine($"You and {partner.Name} watch an enchanting performance.");
                 terminal.WriteLine("During the emotional scenes, you feel their hand squeeze yours.");
@@ -1466,7 +1466,7 @@ public class LoveStreetLocation : BaseLocation
                 break;
 
             case 4:
-                terminal.WriteLine("\n                         * Picnic by the Lake *\n");
+                terminal.WriteLine($"\n                         {Loc.Get("love_street.date_picnic_title")}\n");
                 terminal.SetColor("white");
                 terminal.WriteLine($"You spread a blanket by the water's edge with {partner.Name}.");
                 terminal.WriteLine("The sun sets beautifully as you share food and wine.");
@@ -1478,7 +1478,7 @@ public class LoveStreetLocation : BaseLocation
                 break;
 
             case 5:
-                terminal.WriteLine("\n                         * Dancing at the Inn *\n");
+                terminal.WriteLine($"\n                         {Loc.Get("love_street.date_dancing_title")}\n");
                 terminal.SetColor("white");
                 terminal.WriteLine($"You lead {partner.Name} onto the dance floor at the Inn.");
                 terminal.WriteLine("The music is lively, and you spin together, laughing.");
@@ -1492,7 +1492,7 @@ public class LoveStreetLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Your relationship with {partner.Name} has improved!");
+        terminal.WriteLine(Loc.Get("love_street.date_relation_improved", partner.Name));
         terminal.WriteLine("");
 
         // Chance for a kiss at the end
@@ -1500,8 +1500,8 @@ public class LoveStreetLocation : BaseLocation
         if (random.NextDouble() < kissChance)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"As the date ends, {partner.Name} leans in for a tender kiss.");
-            terminal.WriteLine("The moment is magical...");
+            terminal.WriteLine(Loc.Get("love_street.date_kiss", partner.Name));
+            terminal.WriteLine(Loc.Get("love_street.date_magical"));
             RelationshipSystem.UpdateRelationship(currentPlayer, partner, 1, 2, false, true);
         }
 
@@ -1524,21 +1524,21 @@ public class LoveStreetLocation : BaseLocation
                 _passionActive = false;
                 terminal.ClearScreen();
                 terminal.SetColor("magenta");
-                terminal.WriteLine("\nThe Passion Potion's warmth spreads through you both...");
+                terminal.WriteLine(Loc.Get("love_street.passion_warmth"));
                 terminal.WriteLine("");
             }
 
             terminal.ClearScreen();
             terminal.SetColor("bright_magenta");
             terminal.WriteLine("");
-            terminal.WriteLine($"{partner.Name} gazes at you meaningfully...");
+            terminal.WriteLine(Loc.Get("love_street.gaze_meaningful", partner.Name));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\"Would you like to... continue this somewhere more private?\"");
+            terminal.WriteLine(Loc.Get("love_street.continue_private"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("(Y) Accept their invitation");
-            terminal.WriteLine("(N) Perhaps another time");
+            terminal.WriteLine(Loc.Get("love_street.accept_invitation"));
+            terminal.WriteLine(Loc.Get("love_street.perhaps_another"));
             terminal.WriteLine("");
 
             var response = await terminal.GetKeyInput();
@@ -1553,7 +1553,7 @@ public class LoveStreetLocation : BaseLocation
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"\n{partner.Name} smiles understandingly. \"Another time, then.\"");
+                terminal.WriteLine($"\n{Loc.Get("love_street.another_time", partner.Name)}");
                 await terminal.WaitForKey();
             }
         }
@@ -1567,11 +1567,11 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("LOVE STREET GIFT SHOP", "bright_yellow", 77);
+        WriteBoxHeader(Loc.Get("love_street.gift_shop"), "bright_yellow", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("\"Welcome, welcome! Looking for something special for someone special?\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gift_welcome"));
 
         var gifts = new (string name, long cost, int boost)[]
         {
@@ -1595,17 +1595,17 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        WriteSRMenuOption("0", "Leave shop");
+        WriteSRMenuOption("0", Loc.Get("ui.leave_shop"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($" Your gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("love_street.gift_your_gold", $"{currentPlayer.Gold:N0}"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("What would you like to buy? ");
+        var input = await terminal.GetInput(Loc.Get("love_street.what_buy"));
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > gifts.Length)
         {
-            terminal.WriteLine("\"Come back when you're ready to shop!\"", "gray");
+            terminal.WriteLine(Loc.Get("love_street.come_back_shop"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1615,7 +1615,7 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < giftCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\"That costs {giftCost:N0} gold! You don't have enough.\"");
+            terminal.WriteLine(Loc.Get("love_street.gift_too_expensive", $"{giftCost:N0}"));
             await terminal.WaitForKey();
             return;
         }
@@ -1623,7 +1623,7 @@ public class LoveStreetLocation : BaseLocation
         // Show numbered list of NPCs to give to
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine($"Who should receive the {giftName}?\n");
+        terminal.WriteLine(Loc.Get("love_street.gift_who_receive", giftName));
 
         var knownNPCs = (NPCSpawnSystem.Instance?.ActiveNPCs ?? new List<NPC>())
             .Where(n => n.IsAlive && !n.IsDead)
@@ -1635,8 +1635,8 @@ public class LoveStreetLocation : BaseLocation
         if (knownNPCs.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You don't know anyone well enough to give gifts to.");
-            terminal.WriteLine("Try meeting and talking to people first!");
+            terminal.WriteLine(Loc.Get("love_street.gift_no_one"));
+            terminal.WriteLine(Loc.Get("love_street.gift_meet_people"));
             await terminal.WaitForKey();
             return;
         }
@@ -1657,13 +1657,13 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        WriteSRMenuOption("0", "Cancel");
+        WriteSRMenuOption("0", Loc.Get("ui.cancel"));
         terminal.WriteLine("");
 
-        var recipientInput = await terminal.GetInput("Give to: ");
+        var recipientInput = await terminal.GetInput(Loc.Get("love_street.give_to"));
         if (!int.TryParse(recipientInput, out int recipChoice) || recipChoice < 1 || recipChoice > knownNPCs.Count)
         {
-            terminal.WriteLine("\"Changed your mind? No problem.\"", "gray");
+            terminal.WriteLine(Loc.Get("love_street.changed_mind"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1678,19 +1678,19 @@ public class LoveStreetLocation : BaseLocation
         terminal.WriteLine("");
         terminal.SetColor("gray");
         if (isAttracted && currentRelation <= 40)
-            terminal.WriteLine($"  (You think {recipient.Name} would love this!)");
+            terminal.WriteLine(Loc.Get("love_street.gift_would_love", recipient.Name));
         else if (isAttracted && currentRelation <= 60)
-            terminal.WriteLine($"  (You think {recipient.Name} would appreciate this.)");
+            terminal.WriteLine(Loc.Get("love_street.gift_appreciate", recipient.Name));
         else if (!isAttracted)
-            terminal.WriteLine($"  ({recipient.Name} might not see this as romantic...)");
+            terminal.WriteLine(Loc.Get("love_street.gift_not_romantic", recipient.Name));
         else
-            terminal.WriteLine($"  ({recipient.Name} might not accept this from you...)");
+            terminal.WriteLine(Loc.Get("love_street.gift_not_accept", recipient.Name));
 
         terminal.WriteLine("");
-        var confirm = await terminal.GetInput($"Buy {giftName} for {recipient.Name}? ({giftCost:N0}g) (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("love_street.gift_buy_confirm", giftName, recipient.Name, $"{giftCost:N0}"));
         if (string.IsNullOrEmpty(confirm) || confirm.ToUpper() != "Y")
         {
-            terminal.WriteLine("\"Maybe next time!\"", "gray");
+            terminal.WriteLine(Loc.Get("love_street.maybe_next_time"), "gray");
             await terminal.WaitForKey();
             return;
         }
@@ -1700,29 +1700,29 @@ public class LoveStreetLocation : BaseLocation
         currentPlayer.Statistics?.RecordGoldSpent(giftCost);
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"\nYou purchase {giftName} and present it to {recipient.Name}.");
+        terminal.WriteLine(Loc.Get("love_street.gift_purchase", giftName, recipient.Name));
         terminal.WriteLine("");
 
         if (isAttracted && currentRelation <= 60)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{recipient.Name}'s eyes light up with joy!");
-            terminal.WriteLine($"\"Oh, {giftName}! How thoughtful of you!\"");
+            terminal.WriteLine(Loc.Get("love_street.gift_eyes_light", recipient.Name));
+            terminal.WriteLine(Loc.Get("love_street.gift_reaction_love", giftName));
             RelationshipSystem.UpdateRelationship(currentPlayer, recipient, 1, relationBoost, false, true);
         }
         else if (currentRelation <= 80)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{recipient.Name} accepts the gift politely.");
-            terminal.WriteLine($"\"Thank you, that's... nice of you.\"");
+            terminal.WriteLine(Loc.Get("love_street.gift_accepts_politely", recipient.Name));
+            terminal.WriteLine(Loc.Get("love_street.gift_reaction_polite"));
             RelationshipSystem.UpdateRelationship(currentPlayer, recipient, 1, relationBoost / 2, false, false);
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"{recipient.Name} looks uncomfortable.");
-            terminal.WriteLine($"\"I... can't accept this from you.\"");
-            terminal.WriteLine("They walk away, leaving the gift behind.");
+            terminal.WriteLine(Loc.Get("love_street.gift_uncomfortable", recipient.Name));
+            terminal.WriteLine(Loc.Get("love_street.gift_reaction_reject"));
+            terminal.WriteLine(Loc.Get("love_street.gift_walks_away"));
         }
 
         await terminal.WaitForKey();
@@ -1736,23 +1736,23 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("MADAME WHISPERS' GOSSIP", "magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.gossip_header"), "magenta", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("An ancient crone beckons you into a shadowy alcove.");
+        terminal.WriteLine(Loc.Get("love_street.gossip_crone"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"Come, come... Madame Whispers knows all the secrets of the heart.\"");
+        terminal.WriteLine(Loc.Get("love_street.gossip_welcome"));
         terminal.WriteLine("");
 
-        WriteSRMenuOption("1", $"Who's Together ({GameConfig.LoveStreetGossipCostBasic}g) - All the couples");
-        WriteSRMenuOption("2", $"Juicy Scandals ({GameConfig.LoveStreetGossipCostScandals}g) - Affairs and intrigue");
-        WriteSRMenuOption("3", $"Who's Available ({GameConfig.LoveStreetGossipCostBasic}g) - Singles looking for love");
-        WriteSRMenuOption("4", $"Investigate Someone ({GameConfig.LoveStreetGossipCostInvestigate}g) - Deep secrets");
-        WriteSRMenuOption("0", "Leave");
+        WriteSRMenuOption("1", Loc.Get("love_street.gossip_menu_together", GameConfig.LoveStreetGossipCostBasic));
+        WriteSRMenuOption("2", Loc.Get("love_street.gossip_menu_scandals", GameConfig.LoveStreetGossipCostScandals));
+        WriteSRMenuOption("3", Loc.Get("love_street.gossip_menu_available", GameConfig.LoveStreetGossipCostBasic));
+        WriteSRMenuOption("4", Loc.Get("love_street.gossip_menu_investigate", GameConfig.LoveStreetGossipCostInvestigate));
+        WriteSRMenuOption("0", Loc.Get("ui.leave"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("What secrets do you seek? ");
+        var input = await terminal.GetInput(Loc.Get("love_street.gossip_seek"));
 
         switch (input)
         {
@@ -1786,7 +1786,7 @@ public class LoveStreetLocation : BaseLocation
             return true;
         }
         terminal.SetColor("red");
-        terminal.WriteLine("\"No gold, no gossip!\" Madame Whispers cackles.");
+        terminal.WriteLine(Loc.Get("love_street.gossip_no_gold"));
         return false;
     }
 
@@ -1794,7 +1794,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("magenta");
-        terminal.WriteLine("\n\"Ah, the tangled webs of love...\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gossip_tangled"));
 
         int count = 0;
 
@@ -1803,7 +1803,7 @@ public class LoveStreetLocation : BaseLocation
         if (playerRomance.Spouses.Count > 0)
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine("Your marriages:");
+            terminal.WriteLine(Loc.Get("love_street.gossip_marriages"));
             terminal.SetColor("white");
             foreach (var spouse in playerRomance.Spouses)
             {
@@ -1812,7 +1812,7 @@ public class LoveStreetLocation : BaseLocation
                 var days = spouse.MarriedGameDay > 0
                     ? Math.Max(0, DailySystemManager.Instance.CurrentDay - spouse.MarriedGameDay)
                     : (DateTime.Now - spouse.MarriedDate).Days; // Fallback for old saves
-                terminal.WriteLine($" <3 {currentPlayer.Name2} & {name} ({days} days, {spouse.Children} children)");
+                terminal.WriteLine(Loc.Get("love_street.gossip_marriage_line", currentPlayer.Name2, name, days, spouse.Children));
                 count++;
             }
             terminal.WriteLine("");
@@ -1823,7 +1823,7 @@ public class LoveStreetLocation : BaseLocation
         if (marriages.Count > 0)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("NPC couples:");
+            terminal.WriteLine(Loc.Get("love_street.gossip_npc_couples"));
             terminal.SetColor("white");
             foreach (var marriage in marriages.Take(15))
             {
@@ -1831,7 +1831,7 @@ public class LoveStreetLocation : BaseLocation
                 var npc2 = NPCSpawnSystem.Instance?.ActiveNPCs?.FirstOrDefault(n => n.ID == marriage.Npc2Id);
                 string name1 = npc1?.Name ?? marriage.Npc1Id;
                 string name2 = npc2?.Name ?? marriage.Npc2Id;
-                terminal.WriteLine($" <3 {name1} & {name2}");
+                terminal.WriteLine(Loc.Get("love_street.gossip_npc_couple", name1, name2));
                 count++;
             }
         }
@@ -1839,7 +1839,7 @@ public class LoveStreetLocation : BaseLocation
         if (count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\"Not many couples in the realm at the moment... how sad!\"");
+            terminal.WriteLine(Loc.Get("love_street.gossip_no_couples"));
         }
     }
 
@@ -1847,7 +1847,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("red");
-        terminal.WriteLine("\n\"Oh, you want the JUICY stuff...\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gossip_juicy"));
 
         var allAffairs = NPCMarriageRegistry.Instance?.GetAllAffairs() ?? new List<AffairState>();
         var juicy = allAffairs.Where(a => a.SpouseSuspicion > 0 || a.IsActive).ToList();
@@ -1872,23 +1872,23 @@ public class LoveStreetLocation : BaseLocation
                 terminal.SetColor("bright_red");
                 terminal.Write(" ! ");
                 terminal.SetColor("white");
-                terminal.WriteLine($"Word is {marriedName} has been seen with {seducerName}");
+                terminal.WriteLine(Loc.Get("love_street.gossip_affair", marriedName, seducerName));
                 terminal.SetColor("gray");
-                terminal.Write("   behind ");
+                terminal.Write($"   {Loc.Get("love_street.gossip_behind")} ");
                 terminal.SetColor("yellow");
                 terminal.Write(spouseName);
                 terminal.SetColor("gray");
-                terminal.Write("'s back!");
+                terminal.Write(Loc.Get("love_street.gossip_back"));
 
                 if (affair.SpouseSuspicion > 60)
                 {
                     terminal.SetColor("red");
-                    terminal.Write(" The spouse is getting suspicious...");
+                    terminal.Write($" {Loc.Get("love_street.gossip_suspicious")}");
                 }
                 if (affair.IsActive)
                 {
                     terminal.SetColor("bright_red");
-                    terminal.Write(" Full-blown affair!");
+                    terminal.Write($" {Loc.Get("love_street.gossip_full_affair")}");
                 }
                 terminal.WriteLine("");
                 terminal.WriteLine("");
@@ -1905,7 +1905,7 @@ public class LoveStreetLocation : BaseLocation
         if (scandalous.Count > 0)
         {
             terminal.SetColor("magenta");
-            terminal.WriteLine("Recent rumors:");
+            terminal.WriteLine(Loc.Get("love_street.gossip_recent"));
             terminal.SetColor("gray");
             foreach (var news in scandalous)
             {
@@ -1917,7 +1917,7 @@ public class LoveStreetLocation : BaseLocation
         if (count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\"Everyone's been remarkably well-behaved lately... how boring!\"");
+            terminal.WriteLine(Loc.Get("love_street.gossip_no_scandals"));
         }
     }
 
@@ -1925,7 +1925,7 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("\n\"Looking for love? Let me see who's available...\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gossip_available"));
 
         var playerGender = currentPlayer.Sex == CharacterSex.Female ? GenderIdentity.Female : GenderIdentity.Male;
 
@@ -1941,7 +1941,7 @@ public class LoveStreetLocation : BaseLocation
         if (singles.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\"Slim pickings right now, I'm afraid. Everyone's taken!\"");
+            terminal.WriteLine(Loc.Get("love_street.gossip_no_singles"));
             return;
         }
 
@@ -1970,14 +1970,14 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"\n\"That's {singles.Count} eligible soul{(singles.Count != 1 ? "s" : "")} for you, dearie!\"");
+        terminal.WriteLine($"\n{Loc.Get("love_street.gossip_eligible_count", singles.Count)}");
     }
 
     private async Task GossipInvestigate()
     {
         terminal.ClearScreen();
         terminal.SetColor("magenta");
-        terminal.WriteLine("\n\"Who do you want me to look into?\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gossip_who_investigate"));
 
         var npcs = (NPCSpawnSystem.Instance?.ActiveNPCs ?? new List<NPC>())
             .Where(n => n.IsAlive && !n.IsDead)
@@ -1987,7 +1987,7 @@ public class LoveStreetLocation : BaseLocation
         if (npcs.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\"Nobody to investigate right now...\"");
+            terminal.WriteLine(Loc.Get("love_street.gossip_nobody"));
             return;
         }
 
@@ -1997,84 +1997,84 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        var input = await terminal.GetInput("Investigate who? ");
+        var input = await terminal.GetInput(Loc.Get("love_street.investigate_who"));
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > npcs.Count)
             return;
 
         var npc = npcs[choice - 1];
         terminal.ClearScreen();
         terminal.SetColor("magenta");
-        terminal.WriteLine($"\n\"Ah, {npc.Name}... let me dig up what I know...\"\n");
+        terminal.WriteLine(Loc.Get("love_street.gossip_dig_up", npc.Name));
 
         terminal.SetColor("white");
-        terminal.WriteLine($" Name: {npc.Name}");
-        terminal.WriteLine($" Level {npc.Level} {npc.Race} {npc.Class}, Age {npc.Age}");
+        terminal.WriteLine(Loc.Get("love_street.gossip_name", npc.Name));
+        terminal.WriteLine(Loc.Get("love_street.gossip_level_info", npc.Level, npc.Race, npc.Class, npc.Age));
         terminal.WriteLine("");
 
         var profile = npc.Brain?.Personality;
         if (profile != null)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine(" Personality Secrets:");
+            terminal.WriteLine(Loc.Get("love_street.gossip_personality"));
             terminal.SetColor("white");
 
             // Orientation
-            terminal.Write("   Orientation: ");
+            terminal.Write($"   {Loc.Get("love_street.label_orientation")}: ");
             terminal.SetColor("bright_magenta");
             terminal.WriteLine(GetOrientationDescription(profile));
 
             // Romanticism
             terminal.SetColor("white");
-            terminal.Write("   Romance: ");
+            terminal.Write($"   {Loc.Get("love_street.label_romance")}: ");
             terminal.SetColor(profile.Romanticism > 0.6f ? "bright_magenta" : "gray");
-            terminal.WriteLine(profile.Romanticism > 0.7f ? "Hopeless romantic" :
-                              profile.Romanticism > 0.4f ? "Enjoys romance" : "Pragmatic about love");
+            terminal.WriteLine(profile.Romanticism > 0.7f ? Loc.Get("love_street.trait_hopeless_romantic") :
+                              profile.Romanticism > 0.4f ? Loc.Get("love_street.trait_enjoys_romance") : Loc.Get("love_street.trait_pragmatic"));
 
             // Commitment
             terminal.SetColor("white");
-            terminal.Write("   Commitment: ");
+            terminal.Write($"   {Loc.Get("love_street.label_commitment")}: ");
             terminal.SetColor(profile.Commitment > 0.6f ? "bright_green" : "yellow");
-            terminal.WriteLine(profile.Commitment > 0.7f ? "Deeply loyal" :
-                              profile.Commitment > 0.4f ? "Open to commitment" : "Values freedom");
+            terminal.WriteLine(profile.Commitment > 0.7f ? Loc.Get("love_street.trait_deeply_loyal") :
+                              profile.Commitment > 0.4f ? Loc.Get("love_street.trait_open_commitment") : Loc.Get("love_street.trait_values_freedom"));
 
             // Sensuality
             terminal.SetColor("white");
-            terminal.Write("   Passion: ");
+            terminal.Write($"   {Loc.Get("love_street.label_passion")}: ");
             terminal.SetColor(profile.Sensuality > 0.6f ? "bright_red" : "gray");
-            terminal.WriteLine(profile.Sensuality > 0.7f ? "Intensely passionate" :
-                              profile.Sensuality > 0.4f ? "Warm and affectionate" : "Reserved");
+            terminal.WriteLine(profile.Sensuality > 0.7f ? Loc.Get("love_street.trait_intensely_passionate") :
+                              profile.Sensuality > 0.4f ? Loc.Get("love_street.trait_warm_affectionate") : Loc.Get("love_street.trait_reserved"));
 
             // Flirtatiousness
             terminal.SetColor("white");
-            terminal.Write("   Flirtiness: ");
+            terminal.Write($"   {Loc.Get("love_street.label_flirtiness")}: ");
             terminal.SetColor(profile.Flirtatiousness > 0.6f ? "bright_yellow" : "gray");
-            terminal.WriteLine(profile.Flirtatiousness > 0.7f ? "Very flirtatious" :
-                              profile.Flirtatiousness > 0.4f ? "Somewhat coy" : "Shy");
+            terminal.WriteLine(profile.Flirtatiousness > 0.7f ? Loc.Get("love_street.trait_very_flirtatious") :
+                              profile.Flirtatiousness > 0.4f ? Loc.Get("love_street.trait_somewhat_coy") : Loc.Get("love_street.trait_shy"));
         }
 
         terminal.WriteLine("");
 
         // Relationship status
         terminal.SetColor("white");
-        terminal.Write(" Status: ");
+        terminal.Write($" {Loc.Get("love_street.label_status")}: ");
         bool isMarried = NPCMarriageRegistry.Instance?.IsMarriedToNPC(npc.ID) == true;
         if (isMarried)
         {
             var spouseId = NPCMarriageRegistry.Instance?.GetSpouseId(npc.ID);
             var spouse = NPCSpawnSystem.Instance?.ActiveNPCs?.FirstOrDefault(n => n.ID == spouseId);
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"Married to {spouse?.Name ?? "someone"}");
+            terminal.WriteLine(Loc.Get("love_street.gossip_married_to", spouse?.Name ?? "someone"));
         }
         else
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Single");
+            terminal.WriteLine(Loc.Get("love_street.gossip_single"));
         }
 
         // Their opinion of player
         int relation = RelationshipSystem.GetRelationshipStatus(currentPlayer, npc);
         terminal.SetColor("white");
-        terminal.Write(" Thinks of you: ");
+        terminal.Write($" {Loc.Get("love_street.label_thinks_of_you")}: ");
         terminal.SetColor(relation <= 20 ? "bright_magenta" : relation <= 50 ? "bright_green" : relation <= 70 ? "yellow" : "red");
         terminal.WriteLine(GetRelationDescription(relation));
 
@@ -2084,26 +2084,26 @@ public class LoveStreetLocation : BaseLocation
             var playerGender = currentPlayer.Sex == CharacterSex.Female ? GenderIdentity.Female : GenderIdentity.Male;
             bool attracted = profile.IsAttractedTo(playerGender);
             terminal.SetColor("white");
-            terminal.Write(" Compatibility: ");
+            terminal.Write($" {Loc.Get("love_street.label_compatibility")}: ");
             if (!attracted)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Not interested in your type");
+                terminal.WriteLine(Loc.Get("love_street.gossip_not_interested"));
             }
             else if (relation <= 30)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Excellent match!");
+                terminal.WriteLine(Loc.Get("love_street.gossip_excellent"));
             }
             else if (relation <= 50)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine("Good potential");
+                terminal.WriteLine(Loc.Get("love_street.gossip_good"));
             }
             else
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("Needs work");
+                terminal.WriteLine(Loc.Get("love_street.gossip_needs_work"));
             }
         }
     }
@@ -2116,28 +2116,28 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("MADAME ZARA'S LOVE POTIONS", "magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.potions_header"), "magenta", 77);
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("An old witch cackles as you approach her bubbling cauldron.");
+        terminal.WriteLine(Loc.Get("love_street.potion_crone"));
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"Looking for a little... magical assistance in matters of the heart?\"");
+        terminal.WriteLine(Loc.Get("love_street.potion_welcome"));
         terminal.WriteLine("");
 
-        WriteSRMenuOption("1", $"Philter of Charm ({GameConfig.LoveStreetCharmPotionCost}g) - +{GameConfig.LoveStreetCharmBonus} CHA for this visit{(_charmActive ? " (ACTIVE)" : "")}");
-        WriteSRMenuOption("2", $"Elixir of Allure ({GameConfig.LoveStreetAllurePotionCost}g) - Next flirt auto-succeeds{(_allureActive ? " (ACTIVE)" : "")}");
-        WriteSRMenuOption("3", $"Draught of Forgetting ({GameConfig.LoveStreetForgetPotionCost}g) - Reduce partner jealousy by {GameConfig.LoveStreetJealousyReduction}");
-        WriteSRMenuOption("4", $"Passion Potion ({GameConfig.LoveStreetPassionPotionCost}g) - Next date guarantees intimacy{(_passionActive ? " (ACTIVE)" : "")}");
-        WriteSRMenuOption("5", "My Romance Stats - View your romantic history");
-        WriteSRMenuOption("0", "Leave");
+        WriteSRMenuOption("1", Loc.Get("love_street.potion_menu_charm", GameConfig.LoveStreetCharmPotionCost, GameConfig.LoveStreetCharmBonus) + (_charmActive ? $" ({Loc.Get("love_street.active")})" : ""));
+        WriteSRMenuOption("2", Loc.Get("love_street.potion_menu_allure", GameConfig.LoveStreetAllurePotionCost) + (_allureActive ? $" ({Loc.Get("love_street.active")})" : ""));
+        WriteSRMenuOption("3", Loc.Get("love_street.potion_menu_forget", GameConfig.LoveStreetForgetPotionCost, GameConfig.LoveStreetJealousyReduction));
+        WriteSRMenuOption("4", Loc.Get("love_street.potion_menu_passion", GameConfig.LoveStreetPassionPotionCost) + (_passionActive ? $" ({Loc.Get("love_street.active")})" : ""));
+        WriteSRMenuOption("5", Loc.Get("love_street.romance_stats"));
+        WriteSRMenuOption("0", Loc.Get("ui.leave"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($" Your gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("love_street.potion_your_gold", $"{currentPlayer.Gold:N0}"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("What catches your eye? ");
+        var input = await terminal.GetInput(Loc.Get("love_street.what_catches_eye"));
         switch (input)
         {
             case "1":
@@ -2163,14 +2163,14 @@ public class LoveStreetLocation : BaseLocation
         if (_charmActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("\n\"You already have the charm flowing through you, dear!\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_already_charm"));
             await terminal.WaitForKey();
             return;
         }
         if (currentPlayer.Gold < GameConfig.LoveStreetCharmPotionCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n\"That costs {GameConfig.LoveStreetCharmPotionCost} gold, dear.\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_charm_cost", GameConfig.LoveStreetCharmPotionCost));
             await terminal.WaitForKey();
             return;
         }
@@ -2180,8 +2180,8 @@ public class LoveStreetLocation : BaseLocation
         _charmActive = true;
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("\nYou drink the shimmering pink liquid. Warmth spreads through you.");
-        terminal.WriteLine($"You feel irresistibly charming! (+{GameConfig.LoveStreetCharmBonus} CHA for this visit)");
+        terminal.WriteLine(Loc.Get("love_street.potion_charm_drink"));
+        terminal.WriteLine(Loc.Get("love_street.potion_charm_effect", GameConfig.LoveStreetCharmBonus));
         await terminal.WaitForKey();
     }
 
@@ -2190,14 +2190,14 @@ public class LoveStreetLocation : BaseLocation
         if (_allureActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("\n\"You already have allure magic ready, dear!\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_already_allure"));
             await terminal.WaitForKey();
             return;
         }
         if (currentPlayer.Gold < GameConfig.LoveStreetAllurePotionCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n\"That costs {GameConfig.LoveStreetAllurePotionCost} gold, dear.\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_allure_cost", GameConfig.LoveStreetAllurePotionCost));
             await terminal.WaitForKey();
             return;
         }
@@ -2207,8 +2207,8 @@ public class LoveStreetLocation : BaseLocation
         _allureActive = true;
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("\nYou drink the golden elixir. Your eyes seem to sparkle with magic.");
-        terminal.WriteLine("Your next flirt will be absolutely irresistible!");
+        terminal.WriteLine(Loc.Get("love_street.potion_allure_drink"));
+        terminal.WriteLine(Loc.Get("love_street.potion_allure_effect"));
         await terminal.WaitForKey();
     }
 
@@ -2217,7 +2217,7 @@ public class LoveStreetLocation : BaseLocation
         if (currentPlayer.Gold < GameConfig.LoveStreetForgetPotionCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n\"That costs {GameConfig.LoveStreetForgetPotionCost} gold, dear.\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_forget_cost", GameConfig.LoveStreetForgetPotionCost));
             await terminal.WaitForKey();
             return;
         }
@@ -2238,16 +2238,16 @@ public class LoveStreetLocation : BaseLocation
         }
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("\nYou pour the misty blue liquid into your partners' drinks.");
+        terminal.WriteLine(Loc.Get("love_street.potion_forget_drink"));
         if (reduced > 0)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"The jealousy of {reduced} partner{(reduced > 1 ? "s" : "")} has been soothed!");
+            terminal.WriteLine(Loc.Get("love_street.potion_forget_effect", reduced, reduced > 1 ? "s" : ""));
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("None of your partners were jealous. The potion was wasted.");
+            terminal.WriteLine(Loc.Get("love_street.potion_forget_wasted"));
         }
         await terminal.WaitForKey();
     }
@@ -2257,14 +2257,14 @@ public class LoveStreetLocation : BaseLocation
         if (_passionActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("\n\"You already have passion magic ready, dear!\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_already_passion"));
             await terminal.WaitForKey();
             return;
         }
         if (currentPlayer.Gold < GameConfig.LoveStreetPassionPotionCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n\"That costs {GameConfig.LoveStreetPassionPotionCost} gold, dear.\"");
+            terminal.WriteLine(Loc.Get("love_street.potion_passion_cost", GameConfig.LoveStreetPassionPotionCost));
             await terminal.WaitForKey();
             return;
         }
@@ -2274,8 +2274,8 @@ public class LoveStreetLocation : BaseLocation
         _passionActive = true;
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("\nYou drink the deep red potion. Fire courses through your veins.");
-        terminal.WriteLine("Your next date will end with a guaranteed invitation to intimacy!");
+        terminal.WriteLine(Loc.Get("love_street.potion_passion_drink"));
+        terminal.WriteLine(Loc.Get("love_street.potion_passion_effect"));
         await terminal.WaitForKey();
     }
 
@@ -2283,14 +2283,14 @@ public class LoveStreetLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteBoxHeader("YOUR ROMANTIC LIFE", "bright_magenta", 77);
+        WriteBoxHeader(Loc.Get("love_street.romantic_life"), "bright_magenta", 77);
         terminal.WriteLine("");
 
         var romance = RomanceTracker.Instance;
 
         // Spouses
         terminal.SetColor("bright_red");
-        terminal.WriteLine($" <3 SPOUSES: {romance.Spouses.Count}");
+        terminal.WriteLine(Loc.Get("love_street.summary_spouses", romance.Spouses.Count));
         if (romance.Spouses.Count > 0)
         {
             terminal.SetColor("white");
@@ -2301,14 +2301,14 @@ public class LoveStreetLocation : BaseLocation
                 var days = spouse.MarriedGameDay > 0
                     ? Math.Max(0, DailySystemManager.Instance.CurrentDay - spouse.MarriedGameDay)
                     : (DateTime.Now - spouse.MarriedDate).Days; // Fallback for old saves
-                terminal.WriteLine($"   - {name} (married {days} days, {spouse.Children} children)");
+                terminal.WriteLine(Loc.Get("love_street.summary_spouse_line", name, days, spouse.Children));
             }
         }
         terminal.WriteLine("");
 
         // Lovers
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($" <3 LOVERS: {romance.CurrentLovers.Count}");
+        terminal.WriteLine(Loc.Get("love_street.summary_lovers", romance.CurrentLovers.Count));
         if (romance.CurrentLovers.Count > 0)
         {
             terminal.SetColor("white");
@@ -2317,30 +2317,30 @@ public class LoveStreetLocation : BaseLocation
                 var npc = NPCSpawnSystem.Instance?.ActiveNPCs?.FirstOrDefault(n => n.ID == lover.NPCId);
                 var name = npc?.Name ?? (!string.IsNullOrEmpty(lover.NPCName) ? lover.NPCName : lover.NPCId);
                 var days = (DateTime.Now - lover.RelationshipStart).Days;
-                terminal.WriteLine($"   - {name} (together {days} days)");
+                terminal.WriteLine(Loc.Get("love_street.summary_lover_line", name, days));
             }
         }
         terminal.WriteLine("");
 
         // FWB
         terminal.SetColor("cyan");
-        terminal.WriteLine($" ~ FRIENDS WITH BENEFITS: {romance.FriendsWithBenefits.Count}");
+        terminal.WriteLine(Loc.Get("love_street.summary_fwb", romance.FriendsWithBenefits.Count));
         terminal.WriteLine("");
 
         // Exes
         terminal.SetColor("gray");
-        terminal.WriteLine($" X PAST RELATIONSHIPS: {romance.Exes.Count}");
+        terminal.WriteLine(Loc.Get("love_street.summary_exes", romance.Exes.Count));
         terminal.WriteLine("");
 
         // Summary
         terminal.SetColor("white");
-        terminal.WriteLine($" Total intimate encounters: {romance.EncounterHistory.Count}");
-        terminal.WriteLine($" Times married: {currentPlayer.MarriedTimes}");
-        terminal.WriteLine($" Children: {currentPlayer.Children}");
+        terminal.WriteLine(Loc.Get("love_street.summary_encounters", romance.EncounterHistory.Count));
+        terminal.WriteLine(Loc.Get("love_street.summary_married_times", currentPlayer.MarriedTimes));
+        terminal.WriteLine(Loc.Get("love_street.summary_children", currentPlayer.Children));
         terminal.WriteLine("");
 
         terminal.SetColor("red");
-        terminal.WriteLine($" Darkness points: {currentPlayer.Darkness}");
+        terminal.WriteLine(Loc.Get("love_street.summary_darkness", currentPlayer.Darkness));
 
         await terminal.WaitForKey();
     }
@@ -2353,10 +2353,10 @@ public class LoveStreetLocation : BaseLocation
     {
         return chance switch
         {
-            >= 0.30f => "HIGH",
-            >= 0.20f => "Medium",
-            >= 0.10f => "Low",
-            _ => "Very Low"
+            >= 0.30f => Loc.Get("love_street.risk_high"),
+            >= 0.20f => Loc.Get("love_street.risk_medium"),
+            >= 0.10f => Loc.Get("love_street.risk_low"),
+            _ => Loc.Get("love_street.risk_very_low")
         };
     }
 
@@ -2379,13 +2379,13 @@ public class LoveStreetLocation : BaseLocation
     {
         return level switch
         {
-            <= 10 => "Deeply in love",
-            <= 25 => "Very fond",
-            <= 40 => "Friendly",
-            <= 50 => "Neutral",
-            <= 65 => "Wary",
-            <= 80 => "Dislikes you",
-            _ => "Hostile"
+            <= 10 => Loc.Get("love_street.rel_deeply_in_love"),
+            <= 25 => Loc.Get("love_street.rel_very_fond"),
+            <= 40 => Loc.Get("love_street.rel_friendly"),
+            <= 50 => Loc.Get("love_street.rel_neutral"),
+            <= 65 => Loc.Get("love_street.rel_wary"),
+            <= 80 => Loc.Get("love_street.rel_dislikes"),
+            _ => Loc.Get("love_street.rel_hostile")
         };
     }
 
@@ -2394,34 +2394,34 @@ public class LoveStreetLocation : BaseLocation
         // Return the most prominent trait
         var traits = new List<(float val, string desc)>
         {
-            (profile.Flirtatiousness, "flirtatious"),
-            (profile.Romanticism, "romantic"),
-            (profile.Sensuality, "passionate"),
-            (profile.Tenderness, "gentle"),
-            (profile.Commitment, "devoted"),
-            (1f - profile.Commitment, "free-spirited"),
+            (profile.Flirtatiousness, Loc.Get("love_street.hint_flirtatious")),
+            (profile.Romanticism, Loc.Get("love_street.hint_romantic")),
+            (profile.Sensuality, Loc.Get("love_street.hint_passionate")),
+            (profile.Tenderness, Loc.Get("love_street.hint_gentle")),
+            (profile.Commitment, Loc.Get("love_street.hint_devoted")),
+            (1f - profile.Commitment, Loc.Get("love_street.hint_free_spirited")),
         };
 
         // Only consider traits above 0.5 to avoid weird descriptions
         var strong = traits.Where(t => t.val > 0.5f).OrderByDescending(t => t.val).ToList();
         if (strong.Count > 0)
-            return $"seems {strong[0].desc}";
+            return Loc.Get("love_street.seems_trait", strong[0].desc);
 
-        return "seems reserved";
+        return Loc.Get("love_street.seems_reserved");
     }
 
     private string GetOrientationDescription(PersonalityProfile profile)
     {
         return profile.Orientation switch
         {
-            SexualOrientation.Straight => "Prefers the opposite sex",
-            SexualOrientation.Gay => "Prefers the same sex",
-            SexualOrientation.Lesbian => "Prefers the same sex",
-            SexualOrientation.Bisexual => "Interested in all genders",
-            SexualOrientation.Pansexual => "Interested in all genders",
-            SexualOrientation.Asexual => "Not interested in romance",
-            SexualOrientation.Demisexual => "Needs a deep bond first",
-            _ => "Hard to tell"
+            SexualOrientation.Straight => Loc.Get("love_street.orient_straight"),
+            SexualOrientation.Gay => Loc.Get("love_street.orient_same_sex"),
+            SexualOrientation.Lesbian => Loc.Get("love_street.orient_same_sex"),
+            SexualOrientation.Bisexual => Loc.Get("love_street.orient_all"),
+            SexualOrientation.Pansexual => Loc.Get("love_street.orient_all"),
+            SexualOrientation.Asexual => Loc.Get("love_street.orient_asexual"),
+            SexualOrientation.Demisexual => Loc.Get("love_street.orient_demisexual"),
+            _ => Loc.Get("love_street.orient_unknown")
         };
     }
 

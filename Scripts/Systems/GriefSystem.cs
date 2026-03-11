@@ -241,7 +241,7 @@ namespace UsurperRemake.Systems
             // Display the attempt
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You attempt to resurrect {grief.CompanionName} using {method}...");
+            terminal.WriteLine(Loc.Get("grief.attempt_resurrect", grief.CompanionName, method));
             terminal.WriteLine("");
             await Task.Delay(2000);
 
@@ -257,30 +257,30 @@ namespace UsurperRemake.Systems
             if (grief.ResurrectionAttempts == 1)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The silence is your only answer.");
+                terminal.WriteLine(Loc.Get("grief.silence_answer"));
                 terminal.WriteLine("");
             }
             else if (grief.ResurrectionAttempts == 2)
             {
                 // Ashes metaphor
                 terminal.SetColor("dark_magenta");
-                terminal.WriteLine("A whisper touches your mind:");
+                terminal.WriteLine(Loc.Get("grief.whisper_touches"));
                 terminal.SetColor("magenta");
-                terminal.WriteLine("\"You cannot unburn what has burned.\"");
-                terminal.WriteLine("\"But ash feeds the soil. New things grow.\"");
+                terminal.WriteLine(Loc.Get("grief.cannot_unburn"));
+                terminal.WriteLine(Loc.Get("grief.ash_feeds_soil"));
                 terminal.WriteLine("");
             }
             else if (grief.ResurrectionAttempts == 3)
             {
                 // Echo metaphor
                 terminal.SetColor("dark_magenta");
-                terminal.WriteLine("The voice is clearer now, gentle but firm:");
+                terminal.WriteLine(Loc.Get("grief.voice_clearer"));
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine("");
-                terminal.WriteLine("\"A voice fades, but the echo remains.\"");
-                terminal.WriteLine("\"Their words shaped you. Changed you.\"");
-                terminal.WriteLine("\"You ARE their echo now.\"");
-                terminal.WriteLine("\"Every choice you make carries them forward.\"");
+                terminal.WriteLine(Loc.Get("grief.voice_fades_echo"));
+                terminal.WriteLine(Loc.Get("grief.words_shaped_you"));
+                terminal.WriteLine(Loc.Get("grief.you_are_echo"));
+                terminal.WriteLine(Loc.Get("grief.every_choice_carries"));
                 terminal.WriteLine("");
 
                 // This contributes to Ocean Philosophy understanding
@@ -290,18 +290,18 @@ namespace UsurperRemake.Systems
             {
                 // River metaphor
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("The voice speaks with infinite compassion:");
+                terminal.WriteLine(Loc.Get("grief.voice_compassion"));
                 terminal.SetColor("bright_white");
                 terminal.WriteLine("");
-                terminal.WriteLine("\"A river does not mourn the water that has passed.\"");
-                terminal.WriteLine("\"It flows on, carrying what was into what will be.\"");
-                terminal.WriteLine("\"Your grief is the river trying to flow backward.\"");
-                terminal.WriteLine("\"But rivers only move one direction.\"");
+                terminal.WriteLine(Loc.Get("grief.river_not_mourn"));
+                terminal.WriteLine(Loc.Get("grief.river_flows_on"));
+                terminal.WriteLine(Loc.Get("grief.grief_river_backward"));
+                terminal.WriteLine(Loc.Get("grief.rivers_one_direction"));
                 terminal.WriteLine("");
                 await Task.Delay(1500);
                 terminal.SetColor("cyan");
-                terminal.WriteLine("\"Let them go downstream.\"");
-                terminal.WriteLine("\"They are waiting for you at the sea.\"");
+                terminal.WriteLine(Loc.Get("grief.let_go_downstream"));
+                terminal.WriteLine(Loc.Get("grief.waiting_at_sea"));
                 terminal.WriteLine("");
 
                 // The river metaphor - understanding letting go
@@ -311,26 +311,26 @@ namespace UsurperRemake.Systems
             {
                 // Direct, simple truth
                 terminal.SetColor("bright_white");
-                terminal.WriteLine("The voice is quiet now. Almost a whisper:");
+                terminal.WriteLine(Loc.Get("grief.voice_quiet_whisper"));
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine("\"You loved them. That is why it hurts.\"");
-                terminal.WriteLine("\"The hurt is not a flaw. It is the price.\"");
-                terminal.WriteLine("\"Would you rather have never loved at all?\"");
+                terminal.WriteLine(Loc.Get("grief.loved_them_hurts"));
+                terminal.WriteLine(Loc.Get("grief.hurt_is_price"));
+                terminal.WriteLine(Loc.Get("grief.never_loved_at_all"));
                 terminal.WriteLine("");
                 await Task.Delay(2000);
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine("\"They changed you. That change is permanent.\"");
-                terminal.WriteLine("\"In that way, they are immortal.\"");
+                terminal.WriteLine(Loc.Get("grief.change_permanent"));
+                terminal.WriteLine(Loc.Get("grief.they_are_immortal"));
 
                 // The final understanding - love as a choice
                 OceanPhilosophySystem.Instance.CollectFragment(WaveFragment.TheChoice);
-                terminal.WriteLine("\"Stop trying to bring them back.\"");
-                terminal.WriteLine("\"Start carrying them forward.\"");
+                terminal.WriteLine(Loc.Get("grief.stop_bringing_back"));
+                terminal.WriteLine(Loc.Get("grief.start_carrying_forward"));
                 terminal.WriteLine("");
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return false;
         }
 
@@ -392,11 +392,11 @@ namespace UsurperRemake.Systems
             {
                 return stage switch
                 {
-                    GriefStage.Denial => "I see the shadow of loss upon you. But you are not yet ready to face it.",
-                    GriefStage.Anger => "Your rage burns bright. Use it, but do not let it consume you.",
-                    GriefStage.Bargaining => "There are no bargains to be made with death. Only acceptance.",
-                    GriefStage.Depression => "The weight of sorrow is heavy. But it, too, shall pass.",
-                    GriefStage.Acceptance => "You have weathered the storm. You are stronger for it.",
+                    GriefStage.Denial => Loc.Get("grief.npc_wise_denial"),
+                    GriefStage.Anger => Loc.Get("grief.npc_wise_anger"),
+                    GriefStage.Bargaining => Loc.Get("grief.npc_wise_bargaining"),
+                    GriefStage.Depression => Loc.Get("grief.npc_wise_depression"),
+                    GriefStage.Acceptance => Loc.Get("grief.npc_wise_acceptance"),
                     _ => ""
                 };
             }
@@ -404,11 +404,11 @@ namespace UsurperRemake.Systems
             {
                 return stage switch
                 {
-                    GriefStage.Denial => "You seem... distracted. Is everything alright?",
-                    GriefStage.Anger => "Whoa, easy there! What's got you so worked up?",
-                    GriefStage.Bargaining => "You're looking for something. I can tell. What is it?",
-                    GriefStage.Depression => "Hey... you don't look so good. Need to talk?",
-                    GriefStage.Acceptance => "There's something different about you. Wiser, maybe.",
+                    GriefStage.Denial => Loc.Get("grief.npc_casual_denial"),
+                    GriefStage.Anger => Loc.Get("grief.npc_casual_anger"),
+                    GriefStage.Bargaining => Loc.Get("grief.npc_casual_bargaining"),
+                    GriefStage.Depression => Loc.Get("grief.npc_casual_depression"),
+                    GriefStage.Acceptance => Loc.Get("grief.npc_casual_acceptance"),
                     _ => ""
                 };
             }
@@ -422,19 +422,19 @@ namespace UsurperRemake.Systems
             return stage switch
             {
                 GriefStage.Denial =>
-                    $"You could swear you see {companionName}'s face in the crowd. But when you look again, they're gone.",
+                    Loc.Get("grief.atmo_denial", companionName),
 
                 GriefStage.Anger =>
-                    "Your blood runs hot. Every enemy reminds you of what you've lost.",
+                    Loc.Get("grief.atmo_anger"),
 
                 GriefStage.Bargaining =>
-                    $"If only you could go back. Change things. Save {companionName}. There must be a way...",
+                    Loc.Get("grief.atmo_bargaining", companionName),
 
                 GriefStage.Depression =>
-                    $"The world seems gray. {companionName}'s absence is a weight on your chest.",
+                    Loc.Get("grief.atmo_depression", companionName),
 
                 GriefStage.Acceptance =>
-                    $"You think of {companionName} and smile. The pain remains, but it no longer defines you.",
+                    Loc.Get("grief.atmo_acceptance", companionName),
 
                 _ => ""
             };
@@ -450,7 +450,7 @@ namespace UsurperRemake.Systems
                 return;
 
             terminal.Clear();
-            UIHelper.WriteBoxHeader(terminal, "M E M O R I E S", "dark_cyan", 66);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("grief.header_memories"), "dark_cyan", 66);
             terminal.WriteLine("");
 
             foreach (var memory in companionMemories)
@@ -466,17 +466,17 @@ namespace UsurperRemake.Systems
             {
                 if (!grief.IsComplete)
                 {
-                    terminal.WriteLine($"  Current grief stage: {grief.CurrentStage}", "yellow");
-                    terminal.WriteLine($"  Days grieving: {GetCurrentDay() - grief.GriefStartDay}", "gray");
+                    terminal.WriteLine($"  {Loc.Get("grief.current_stage", grief.CurrentStage)}", "yellow");
+                    terminal.WriteLine($"  {Loc.Get("grief.days_grieving", GetCurrentDay() - grief.GriefStartDay)}", "gray");
                 }
                 else
                 {
-                    terminal.WriteLine("  The grief has passed. The memory remains.", "dark_magenta");
+                    terminal.WriteLine($"  {Loc.Get("grief.grief_passed")}", "dark_magenta");
                 }
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         /// <summary>
@@ -597,28 +597,28 @@ namespace UsurperRemake.Systems
                 GriefStage.Denial => new GriefEffects
                 {
                     CombatModifier = -0.20f,
-                    Description = "Your denial clouds your focus."
+                    Description = Loc.Get("grief.effect_denial")
                 },
                 GriefStage.Anger => new GriefEffects
                 {
                     DamageModifier = 0.30f,
                     DefenseModifier = -0.20f,
-                    Description = "Rage empowers your attacks but leaves you vulnerable."
+                    Description = Loc.Get("grief.effect_anger")
                 },
                 GriefStage.Bargaining => new GriefEffects
                 {
                     CombatModifier = -0.10f,
-                    Description = "Your desperate search distracts you."
+                    Description = Loc.Get("grief.effect_bargaining")
                 },
                 GriefStage.Depression => new GriefEffects
                 {
                     AllStatModifier = -0.30f,
-                    Description = "The weight of sorrow crushes your spirit."
+                    Description = Loc.Get("grief.effect_depression")
                 },
                 GriefStage.Acceptance => new GriefEffects
                 {
                     PermanentWisdomBonus = 5,
-                    Description = "You have made peace with loss."
+                    Description = Loc.Get("grief.effect_acceptance")
                 },
                 _ => new GriefEffects()
             };

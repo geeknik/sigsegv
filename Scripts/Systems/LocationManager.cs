@@ -318,7 +318,7 @@ public class LocationManager
                 GameEngine.MarkIntentionalExit();
                 if (!UsurperRemake.BBS.DoorMode.IsOnlineMode)
                 {
-                    terminal.WriteLine("Returning to main menu...", "yellow");
+                    terminal.WriteLine(Loc.Get("location.returning_main_menu"), "yellow");
                     await Task.Delay(1000);
                 }
             }
@@ -326,7 +326,7 @@ public class LocationManager
         catch (LocationChangeException ex)
         {
             // Handle legacy location change exception
-            terminal.WriteLine($"Navigating to {ex.Destination}...", "yellow");
+            terminal.WriteLine(Loc.Get("location.navigating_to", ex.Destination), "yellow");
             await Task.Delay(1000);
 
             // Convert string destination to GameLocation enum
@@ -336,7 +336,7 @@ public class LocationManager
             }
             else
             {
-                terminal.WriteLine($"Unknown destination: {ex.Destination}", "red");
+                terminal.WriteLine(Loc.Get("location.unknown_destination", ex.Destination), "red");
                 await Task.Delay(1500);
             }
         }
@@ -351,13 +351,13 @@ public class LocationManager
         terminal.SetColor("bright_red");
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-        terminal.WriteLine("                        YOU HAVE DIED!                          ");
+        terminal.WriteLine($"                        {Loc.Get("location.you_have_died")}                          ");
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("Your vision fades to black as death claims you...");
+        terminal.WriteLine(Loc.Get("location.death_vision_fades"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
@@ -365,9 +365,9 @@ public class LocationManager
         if (player.Resurrections > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You have {player.Resurrections} resurrection(s) available!");
+            terminal.WriteLine(Loc.Get("location.resurrections_available", player.Resurrections));
             terminal.WriteLine("");
-            var resurrect = await terminal.GetInput("Use a resurrection to avoid penalties? (Y/N): ");
+            var resurrect = await terminal.GetInput(Loc.Get("location.use_resurrection_prompt"));
 
             if (resurrect.ToUpper().StartsWith("Y"))
             {
@@ -376,8 +376,8 @@ public class LocationManager
                 player.HP = player.MaxHP;
                 terminal.SetColor("bright_green");
                 terminal.WriteLine("");
-                terminal.WriteLine("Divine light surrounds you!");
-                terminal.WriteLine("You have been fully resurrected with no penalties!");
+                terminal.WriteLine(Loc.Get("location.divine_light"));
+                terminal.WriteLine(Loc.Get("location.resurrected_no_penalty"));
                 await Task.Delay(2500);
 
                 player.Location = (int)GameLocation.TheInn;
@@ -388,7 +388,7 @@ public class LocationManager
 
         // Apply death penalties
         terminal.SetColor("red");
-        terminal.WriteLine("Death Penalties Applied:");
+        terminal.WriteLine(Loc.Get("location.death_penalties"));
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("─────────────────────────");
 
@@ -405,10 +405,10 @@ public class LocationManager
 
         terminal.SetColor("yellow");
         if (expLoss > 0)
-            terminal.WriteLine($"  - Lost {expLoss:N0} experience points");
+            terminal.WriteLine(Loc.Get("location.lost_experience", $"{expLoss:N0}"));
         if (goldLoss > 0)
-            terminal.WriteLine($"  - Lost {goldLoss:N0} gold (dropped upon death)");
-        terminal.WriteLine($"  - Monster defeats: {player.MDefeats}");
+            terminal.WriteLine(Loc.Get("location.lost_gold", $"{goldLoss:N0}"));
+        terminal.WriteLine(Loc.Get("location.monster_defeats", player.MDefeats));
         terminal.WriteLine("");
 
         // Resurrect player at the Inn with half HP
@@ -420,12 +420,12 @@ public class LocationManager
         player.PoisonTurns = 0;
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("You wake up at the Inn, nursed back to health by the innkeeper.");
-        terminal.WriteLine($"Your wounds have partially healed. (HP: {player.HP}/{player.MaxHP})");
+        terminal.WriteLine(Loc.Get("location.wake_at_inn"));
+        terminal.WriteLine(Loc.Get("location.wounds_healed", player.HP, player.MaxHP));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\"You're lucky to be alive, friend. Rest up and try again.\"");
+        terminal.WriteLine(Loc.Get("location.innkeeper_quote"));
         terminal.WriteLine("");
 
         await terminal.PressAnyKey();
@@ -434,7 +434,7 @@ public class LocationManager
         await SaveSystem.Instance.AutoSave(player);
 
         terminal.SetColor("green");
-        terminal.WriteLine("Your adventure continues...");
+        terminal.WriteLine(Loc.Get("location.adventure_continues"));
         await Task.Delay(1500);
     }
     
@@ -447,7 +447,7 @@ public class LocationManager
         // Check if navigation is allowed
         if (!CanNavigateTo(currentLocationId, destination))
         {
-            terminal.WriteLine($"You cannot go to {BaseLocation.GetLocationName(destination)} from here!", "red");
+            terminal.WriteLine(Loc.Get("location.cannot_go", BaseLocation.GetLocationName(destination)), "red");
             await Task.Delay(1500);
             return false;
         }
@@ -550,7 +550,7 @@ public class LocationManager
         }
         else
         {
-            terminal.WriteLine($"Unknown location '{locationClassName}'. Returning to Main Street.", "red");
+            terminal.WriteLine(Loc.Get("location.unknown_location", locationClassName), "red");
             await EnterLocation(GameLocation.MainStreet, player);
         }
     }

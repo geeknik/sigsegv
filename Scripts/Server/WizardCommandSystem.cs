@@ -171,7 +171,7 @@ public static class WizardCommandSystem
         if (sr)
         {
             terminal.SetColor("bright_white");
-            terminal.WriteLine("Wizard Commands");
+            terminal.WriteLine(Loc.Get("wizard.commands_title"));
         }
         else
         {
@@ -276,7 +276,7 @@ public static class WizardCommandSystem
         if (sr)
         {
             terminal.SetColor("bright_white");
-            terminal.WriteLine("Wizards Online");
+            terminal.WriteLine(Loc.Get("wizard.online_title"));
         }
         else
         {
@@ -471,7 +471,7 @@ public static class WizardCommandSystem
         if (sr)
         {
             terminal.SetColor("bright_white");
-            terminal.WriteLine("Player Locations");
+            terminal.WriteLine(Loc.Get("wizard.locations_title"));
         }
         else
         {
@@ -1482,7 +1482,7 @@ public static class WizardCommandSystem
         if (sr)
         {
             terminal.SetColor("bright_white");
-            terminal.WriteLine("Wizard Audit Log");
+            terminal.WriteLine(Loc.Get("wizard.audit_title"));
         }
         else
         {

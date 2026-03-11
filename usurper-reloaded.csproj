@@ -22,19 +22,14 @@
         <InternalsVisibleTo Include="Tests" />
     </ItemGroup>
 
-    <!-- Trimming for Release builds - removes unused framework code -->
-    <!-- Uses partial trim mode because System.Text.Json relies on reflection -->
+    <!-- Trimming disabled — was stripping DbConnection.OpenAsync() and Path.GetExtension()
+         at runtime despite TrimmerRootAssembly entries. Binary size isn't critical for a text game. -->
+    <!--
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <PublishTrimmed>true</PublishTrimmed>
         <TrimMode>partial</TrimMode>
     </PropertyGroup>
-
-    <!-- Keep System.Text.Json reflection working despite trimming.
-         The game uses reflection-based JsonSerializer.Deserialize<T>() everywhere.
-         Without this, the trimmer removes the reflection codepath and serialization breaks at runtime. -->
-    <ItemGroup Condition="'$(PublishTrimmed)' == 'true'">
-        <TrimmerRootAssembly Include="System.Text.Json" />
-    </ItemGroup>
+    -->
 
     <!-- Steam build configuration - Release optimizations + Steam integration -->
     <PropertyGroup Condition="'$(Configuration)' == 'Steam' Or '$(Configuration)' == 'SteamRelease'">
@@ -74,5 +69,10 @@
         <Compile Remove="Tests/**/*.cs" />
         <Compile Remove="SimpleGame.cs" />
         <Compile Remove="standalone-game/**/*.cs" />
+    </ItemGroup>
+
+    <!-- Localization JSON files - copy to output directory -->
+    <ItemGroup>
+        <Content Include="Localization\*.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>

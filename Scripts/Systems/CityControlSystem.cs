@@ -339,11 +339,11 @@ public class CityControlSystem
 
         if (string.IsNullOrEmpty(controllingTeam))
         {
-            return "The city is not under any team's control.";
+            return Loc.Get("city.no_control");
         }
 
         var info = GetCityControlInfo();
-        return $"'{controllingTeam}' controls the city ({info.MemberCount} members)";
+        return Loc.Get("city.team_controls", controllingTeam, info.MemberCount);
     }
 
     /// <summary>
@@ -438,19 +438,19 @@ public class CityControlSystem
         long total = basePrice + kingTax + cityTax;
 
         terminal.WriteLine("");
-        terminal.WriteLine($"  {itemName}: {basePrice:N0} gold", "white");
+        terminal.WriteLine($"  {itemName}: {basePrice:N0} {Loc.Get("ui.gold").ToLower()}", "white");
         if (kingTax > 0)
-            terminal.WriteLine($"  King's Tax ({king.KingTaxPercent}%): {kingTax:N0} gold", "yellow");
+            terminal.WriteLine($"  {Loc.Get("city.kings_tax", king.KingTaxPercent)}: {kingTax:N0} {Loc.Get("ui.gold").ToLower()}", "yellow");
         if (cityTax > 0)
         {
             var controllingTeam = GetControllingTeam();
             string cityLabel = !string.IsNullOrEmpty(controllingTeam)
-                ? $"City Tax ({king.CityTaxPercent}% to {controllingTeam})"
-                : $"City Tax ({king.CityTaxPercent}%)";
-            terminal.WriteLine($"  {cityLabel}: {cityTax:N0} gold", "cyan");
+                ? Loc.Get("city.city_tax_to", king.CityTaxPercent, controllingTeam)
+                : Loc.Get("city.city_tax", king.CityTaxPercent);
+            terminal.WriteLine($"  {cityLabel}: {cityTax:N0} {Loc.Get("ui.gold").ToLower()}", "cyan");
         }
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine($"  ─────────────────────────────", "gray");
-        terminal.WriteLine($"  Total: {total:N0} gold", "bright_white");
+        terminal.WriteLine($"  {Loc.Get("city.total")}: {total:N0} {Loc.Get("ui.gold").ToLower()}", "bright_white");
     }
 }

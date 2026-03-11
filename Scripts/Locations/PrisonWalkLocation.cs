@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -192,15 +193,15 @@ public partial class PrisonWalkLocation : BaseLocation
     {
         await terminal.WriteLineAsync();
         await terminal.WriteLineAsync("=== CHARACTER STATUS ===");
-        await terminal.WriteLineAsync($"Name: {player.DisplayName}");
-        await terminal.WriteLineAsync($"Level: {player.Level}");
-        await terminal.WriteLineAsync($"Health: {player.HP}/{player.MaxHP}");
-        await terminal.WriteLineAsync($"Gold: {player.Gold:N0}");
-        await terminal.WriteLineAsync($"Experience: {player.Experience:N0}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.name_label")}: {player.DisplayName}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.level")}: {player.Level}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.health_label")}: {player.HP}/{player.MaxHP}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.gold")}: {player.Gold:N0}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.experience")}: {player.Experience:N0}");
         await terminal.WriteLineAsync($"Chivalry: {player.Chivalry:N0}");
         await terminal.WriteLineAsync($"Darkness: {player.Darkness:N0}");
         await terminal.WriteLineAsync();
-        await terminal.WriteAsync("Press Enter to continue...");
+        await terminal.WriteAsync(Loc.Get("ui.press_enter"));
         await terminal.GetCharAsync();
     }
     
@@ -247,7 +248,7 @@ public partial class PrisonWalkLocation : BaseLocation
         }
         
         await terminal.WriteLineAsync();
-        await terminal.WriteAsync("Press Enter to continue...");
+        await terminal.WriteAsync(Loc.Get("ui.press_enter"));
         await terminal.GetCharAsync();
     }
     

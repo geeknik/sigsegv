@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -946,13 +947,13 @@ public class AdvancedCombatEngine
                 break;
 
             case CombatActionType.Status:
-                terminal.WriteLine($"\n{GameConfig.PlayerColor}Your Status:{GameConfig.TextColor}");
-                terminal.WriteLine($"HP: {player.HP:N0}/{player.MaxHP:N0}  MP: {player.Mana:N0}/{player.MaxMana:N0}");
-                terminal.WriteLine($"Level: {player.Level}  Class: {player.Class}");
+                terminal.WriteLine($"\n{GameConfig.PlayerColor}{Loc.Get("combat.your_status")}{GameConfig.TextColor}");
+                terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {player.HP:N0}/{player.MaxHP:N0}  {Loc.Get("combat.bar_mp")}: {player.Mana:N0}/{player.MaxMana:N0}");
+                terminal.WriteLine($"{Loc.Get("ui.level")}: {player.Level}  {Loc.Get("status.class")}: {player.Class}");
                 break;
 
             default:
-                terminal.WriteLine("You hesitate...");
+                terminal.WriteLine(Loc.Get("combat.you_hesitate"));
                 break;
         }
 
@@ -1102,12 +1103,12 @@ public class AdvancedCombatEngine
             case PvPActionType.QuickHeal:
                 int quickHeal = Math.Min((int)(attacker.MaxHP - attacker.HP), (int)(attacker.MaxHP / 8));
                 attacker.HP += quickHeal;
-                terminal.WriteLine($"Quick heal: {GameConfig.HealColor}{quickHeal:N0}{GameConfig.TextColor} HP!");
+                terminal.WriteLine($"{Loc.Get("combat.quick_heal", $"{GameConfig.HealColor}{quickHeal:N0}{GameConfig.TextColor}")}");
                 break;
 
             case PvPActionType.Status:
-                terminal.WriteLine($"\n{GameConfig.PlayerColor}Your Status:{GameConfig.TextColor}");
-                terminal.WriteLine($"HP: {attacker.HP:N0}/{attacker.MaxHP:N0}  MP: {attacker.Mana:N0}/{attacker.MaxMana:N0}");
+                terminal.WriteLine($"\n{GameConfig.PlayerColor}{Loc.Get("combat.your_status")}{GameConfig.TextColor}");
+                terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {attacker.HP:N0}/{attacker.MaxHP:N0}  {Loc.Get("combat.bar_mp")}: {attacker.Mana:N0}/{attacker.MaxMana:N0}");
                 break;
 
             default:
@@ -1167,10 +1168,10 @@ public class AdvancedCombatEngine
             attacker.Experience += expGain;
             result.ExperienceGained = expGain;
 
-            terminal.WriteLine("\n=== VICTORY! ===", "bright_green");
-            terminal.WriteLine($"You defeated {defender.Name2}!");
-            terminal.WriteLine($"Gold taken: {GameConfig.GoldColor}{goldTaken:N0}{GameConfig.TextColor}");
-            terminal.WriteLine($"Experience: {GameConfig.ExperienceColor}{expGain:N0}{GameConfig.TextColor}");
+            terminal.WriteLine($"\n{Loc.Get("combat.victory_title")}", "bright_green");
+            terminal.WriteLine(Loc.Get("combat.defeated_player", defender.Name2));
+            terminal.WriteLine($"{GameConfig.GoldColor}{Loc.Get("ui.gold_taken", $"{goldTaken:N0}")}{GameConfig.TextColor}");
+            terminal.WriteLine($"{Loc.Get("ui.experience")}: {GameConfig.ExperienceColor}{expGain:N0}{GameConfig.TextColor}");
 
             // News
             NewsSystem.Instance.Newsy($"Player Fight! {attacker.Name2} defeated {defender.Name2} in combat!", true, GameConfig.NewsCategory.General);

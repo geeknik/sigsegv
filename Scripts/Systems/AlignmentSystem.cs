@@ -356,7 +356,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.WriteLine("═══════════════════════════════════════");
             }
-            terminal.WriteLine("         ALIGNMENT STATUS");
+            terminal.WriteLine($"         {Loc.Get("alignment.status_header")}");
             if (!GameConfig.ScreenReaderMode)
             {
                 terminal.WriteLine("═══════════════════════════════════════");
@@ -364,14 +364,14 @@ namespace UsurperRemake.Systems
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.Write("Chivalry: ");
+            terminal.Write(Loc.Get("alignment.chivalry_label"));
             terminal.SetColor("bright_green");
             terminal.Write($"{character.Chivalry}");
             terminal.SetColor("gray");
             terminal.WriteLine("/1000");
 
             terminal.SetColor("yellow");
-            terminal.Write("Darkness: ");
+            terminal.Write(Loc.Get("alignment.darkness_label"));
             terminal.SetColor("red");
             terminal.Write($"{character.Darkness}");
             terminal.SetColor("gray");
@@ -379,7 +379,7 @@ namespace UsurperRemake.Systems
 
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.Write("Alignment: ");
+            terminal.Write($"{Loc.Get("ui.alignment")}: ");
             terminal.SetColor(color);
             terminal.WriteLine(text);
 
@@ -393,7 +393,7 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.Write("Holy ");
+                terminal.Write(Loc.Get("alignment.holy_label"));
                 terminal.SetColor("bright_green");
                 int chivBars = (int)Math.Min(10, character.Chivalry / 100);
                 int darkBars = (int)Math.Min(10, character.Darkness / 100);
@@ -405,13 +405,13 @@ namespace UsurperRemake.Systems
                 terminal.Write(new string('█', darkBars));
                 terminal.SetColor("gray");
                 terminal.Write(new string('░', 10 - darkBars));
-                terminal.WriteLine(" Evil");
+                terminal.WriteLine(Loc.Get("alignment.evil_label"));
             }
 
             // Show abilities
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Alignment Abilities:");
+            terminal.WriteLine(Loc.Get("alignment.abilities_header"));
             terminal.SetColor("white");
             foreach (var ability in GetAlignmentAbilities(character))
             {

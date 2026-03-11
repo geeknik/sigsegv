@@ -1,0 +1,8 @@
+main_street.align_neutral=Neutral
+main_street.chat=Chat
+main_street.good_deeds_divider===========
+main_street.menu_arena_short=Arena 
+main_street.menu_chat_padded=Chat         
+main_street.menu_chat_short=Chat 
+main_street.menu_inv=Inv 
+main_street.menu_prefs=Prefs 

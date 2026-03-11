@@ -165,7 +165,7 @@ namespace UsurperRemake.Systems
 
             while (true)
             {
-                var input = await terminal.GetInputAsync("Your choice: ");
+                var input = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
                 if (input == "0")
                 {

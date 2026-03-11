@@ -99,7 +99,7 @@ public partial class TempleLocation : BaseLocation
                 await DisplayMenu(refreshMenu);
                 refreshMenu = false;
                 
-                var choice = await terminal.GetInputAsync("Your choice: ");
+                var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
                 
                 switch (choice.ToUpper())
                 {
@@ -186,7 +186,7 @@ public partial class TempleLocation : BaseLocation
                         break;
                         
                     default:
-                        terminal.WriteLine("Invalid choice. Type 'look' to redraw menu.", "red");
+                        terminal.WriteLine(Loc.Get("temple.invalid_choice"), "red");
                         await Task.Delay(1000);
                         break;
                 }
@@ -206,21 +206,21 @@ public partial class TempleLocation : BaseLocation
     private async Task DisplayWelcomeMessage()
     {
         terminal.WriteLine("");
-        terminal.WriteLine("You enter the Temple Area", "yellow");
+        terminal.WriteLine(Loc.Get("temple.enter_area"), "yellow");
         terminal.WriteLine("");
         
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
         if (!string.IsNullOrEmpty(playerGod))
         {
-            terminal.WriteLine($"You worship {playerGod}.", "cyan");
+            terminal.WriteLine(Loc.Get("temple.worship_god", playerGod), "cyan");
         }
         else if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
-            terminal.WriteLine($"You follow the immortal {currentPlayer.WorshippedGod}.", "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.follow_immortal", currentPlayer.WorshippedGod), "bright_yellow");
         }
         else
         {
-            terminal.WriteLine("You are not a believer.", "gray");
+            terminal.WriteLine(Loc.Get("temple.not_believer"), "gray");
         }
 
         await Task.Delay(1500);
@@ -236,13 +236,13 @@ public partial class TempleLocation : BaseLocation
         terminal.ClearScreen();
 
         // Temple header - standardized format
-        WriteBoxHeader("TEMPLE OF THE GODS", "bright_cyan");
+        WriteBoxHeader(Loc.Get("temple.header_visual"), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("The Temple area is crowded with monks, preachers and");
-        terminal.WriteLine("processions of priests on their way to the altars.");
-        terminal.WriteLine("The doomsday prophets are trying to get your attention.");
+        terminal.WriteLine(Loc.Get("temple.description_line1"));
+        terminal.WriteLine(Loc.Get("temple.description_line2"));
+        terminal.WriteLine(Loc.Get("temple.description_line3"));
 
         // Hint at ancient stones if seal not collected
         var storyForHint = StoryProgressionSystem.Instance;
@@ -250,8 +250,8 @@ public partial class TempleLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("In the far corner, ancient stones form the temple's foundation...");
-            terminal.WriteLine("They seem older than any altar here.");
+            terminal.WriteLine(Loc.Get("temple.ancient_stones_hint1"));
+            terminal.WriteLine(Loc.Get("temple.ancient_stones_hint2"));
         }
 
         terminal.WriteLine("");
@@ -259,15 +259,15 @@ public partial class TempleLocation : BaseLocation
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
         if (!string.IsNullOrEmpty(playerGod))
         {
-            terminal.WriteLine($"You worship {playerGod}.", "cyan");
+            terminal.WriteLine(Loc.Get("temple.worship_god", playerGod), "cyan");
         }
         else if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
-            terminal.WriteLine($"You follow the immortal {currentPlayer.WorshippedGod}.", "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.follow_immortal", currentPlayer.WorshippedGod), "bright_yellow");
         }
         else
         {
-            terminal.WriteLine("You are not a believer.", "gray");
+            terminal.WriteLine(Loc.Get("temple.not_believer"), "gray");
         }
         terminal.WriteLine("");
         
@@ -279,46 +279,46 @@ public partial class TempleLocation : BaseLocation
 
         if (IsScreenReader)
         {
-            terminal.WriteLine("Temple Services:");
+            terminal.WriteLine(Loc.Get("temple.services"));
             terminal.WriteLine("");
-            terminal.WriteLine("W. Worship");
-            terminal.WriteLine("D. Desecrate altar");
-            terminal.WriteLine("H. Holy News");
-            terminal.WriteLine("A. Altars");
-            terminal.WriteLine("C. Contribute");
-            terminal.WriteLine("I. Item Sacrifice");
-            terminal.WriteLine("S. Status");
-            terminal.WriteLine("G. God ranking");
-            terminal.WriteLine("P. Prophecies");
+            terminal.WriteLine(Loc.Get("temple.sr_worship"));
+            terminal.WriteLine(Loc.Get("temple.sr_desecrate"));
+            terminal.WriteLine(Loc.Get("temple.sr_holy_news"));
+            terminal.WriteLine(Loc.Get("temple.sr_altars"));
+            terminal.WriteLine(Loc.Get("temple.sr_contribute"));
+            terminal.WriteLine(Loc.Get("temple.sr_item_sacrifice"));
+            terminal.WriteLine(Loc.Get("temple.sr_status"));
+            terminal.WriteLine(Loc.Get("temple.sr_god_ranking"));
+            terminal.WriteLine(Loc.Get("temple.sr_prophecies"));
 
             if (!string.IsNullOrEmpty(prayerGod))
             {
                 bool canPray = UsurperRemake.Systems.DivineBlessingSystem.Instance.CanPrayToday(currentPlayer.Name2);
                 if (canPray)
-                    terminal.WriteLine("Y. Pray");
+                    terminal.WriteLine(Loc.Get("temple.sr_pray"));
                 else
-                    terminal.WriteLine("(Prayed today)");
+                    terminal.WriteLine(Loc.Get("temple.sr_prayed_today"));
             }
 
             if (!story.CollectedSeals.Contains(UsurperRemake.Systems.SealType.Creation))
-                terminal.WriteLine("E. Examine Stones");
+                terminal.WriteLine(Loc.Get("temple.sr_examine_stones"));
 
             if (CanEnterDeepTemple())
-                terminal.WriteLine("T. The Deep Temple");
+                terminal.WriteLine(Loc.Get("temple.sr_deep_temple"));
 
             if (CanMeetMira())
-                terminal.WriteLine("M. Meditation Chapel (someone prays alone...)");
+                terminal.WriteLine(Loc.Get("temple.sr_meditation_chapel"));
 
             if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheFaith)
             {
                 if (factionSystem.PlayerFaction == null)
-                    terminal.WriteLine("F. The Faith (seek the High Priestess...)");
+                    terminal.WriteLine(Loc.Get("temple.sr_faith_seek"));
                 else
-                    terminal.WriteLine("F. The Faith (you serve another...)");
+                    terminal.WriteLine(Loc.Get("temple.sr_faith_serve_another"));
             }
             else
             {
-                terminal.WriteLine("You are a member of The Faith.");
+                terminal.WriteLine(Loc.Get("temple.sr_faith_member"));
             }
 
             if (FactionSystem.Instance?.HasTempleAccess() == true)
@@ -335,34 +335,34 @@ public partial class TempleLocation : BaseLocation
                     meditatedToday = currentPlayer.InnerSanctumLastDay >= today;
                 }
                 if (meditatedToday)
-                    terminal.WriteLine("N. Inner Sanctum (meditated today)");
+                    terminal.WriteLine(Loc.Get("temple.sr_inner_sanctum_meditated"));
                 else
-                    terminal.WriteLine($"N. Inner Sanctum ({GameConfig.InnerSanctumCost}g)");
+                    terminal.WriteLine(Loc.Get("temple.sr_inner_sanctum_cost", GameConfig.InnerSanctumCost));
             }
 
             if (immortalGods.Count > 0)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("Ascended Gods:");
+                terminal.WriteLine(Loc.Get("temple.sr_ascended_gods"));
                 if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
-                    terminal.WriteLine($"J. Join Immortal's Flock (Following: {currentPlayer.WorshippedGod})");
+                    terminal.WriteLine(Loc.Get("temple.sr_join_immortal_following", currentPlayer.WorshippedGod));
                 else
-                    terminal.WriteLine("J. Join Immortal's Flock (unaffiliated)");
+                    terminal.WriteLine(Loc.Get("temple.sr_join_immortal_unaffiliated"));
 
                 if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
                 {
-                    terminal.WriteLine("$. Sacrifice Gold (to your immortal god)");
-                    terminal.WriteLine("L. Leave Immortal's Faith");
+                    terminal.WriteLine(Loc.Get("temple.sr_sacrifice_gold"));
+                    terminal.WriteLine(Loc.Get("temple.sr_leave_immortal"));
                 }
             }
 
-            terminal.WriteLine("R. Return");
+            terminal.WriteLine(Loc.Get("temple.sr_return"));
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("Temple Services:");
+            terminal.WriteLine(Loc.Get("temple.services"));
             terminal.WriteLine("");
 
             // Row 1
@@ -373,7 +373,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("orship            ");
+            terminal.Write(Loc.Get("temple.menu_worship"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -382,7 +382,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("esecrate altar    ");
+            terminal.Write(Loc.Get("temple.menu_desecrate"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -391,7 +391,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("oly News");
+            terminal.WriteLine(Loc.Get("temple.menu_holy_news"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -401,7 +401,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ltars             ");
+            terminal.Write(Loc.Get("temple.menu_altars"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -410,7 +410,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ontribute         ");
+            terminal.Write(Loc.Get("temple.menu_contribute"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -419,7 +419,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("tem Sacrifice");
+            terminal.WriteLine(Loc.Get("temple.menu_item_sacrifice"));
 
             // Row 3
             terminal.SetColor("darkgray");
@@ -429,7 +429,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("tatus             ");
+            terminal.Write(Loc.Get("temple.menu_status"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -438,7 +438,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("od ranking        ");
+            terminal.Write(Loc.Get("temple.menu_god_ranking"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -447,7 +447,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rophecies         ");
+            terminal.Write(Loc.Get("temple.menu_prophecies"));
 
             // Daily prayer option - show if player worships a god
             if (!string.IsNullOrEmpty(prayerGod))
@@ -462,12 +462,12 @@ public partial class TempleLocation : BaseLocation
                     terminal.SetColor("darkgray");
                     terminal.Write("]");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine(" Pray");
+                    terminal.WriteLine(Loc.Get("temple.menu_pray"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(Prayed today)");
+                    terminal.WriteLine(Loc.Get("temple.menu_prayed_today"));
                 }
             }
             else
@@ -485,7 +485,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write("xamine Stones     ");
+                terminal.Write(Loc.Get("temple.menu_examine_stones"));
             }
             else
             {
@@ -502,7 +502,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_magenta");
-                terminal.WriteLine("he Deep Temple");
+                terminal.WriteLine(Loc.Get("temple.menu_deep_temple"));
             }
             else
             {
@@ -519,9 +519,9 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_green");
-                terminal.Write("editation Chapel ");
+                terminal.Write(Loc.Get("temple.menu_meditation_chapel"));
                 terminal.SetColor("gray");
-                terminal.WriteLine("(someone prays alone...)");
+                terminal.WriteLine(Loc.Get("temple.menu_meditation_hint"));
             }
 
             // The Faith faction option - only show if player isn't already a member
@@ -534,22 +534,22 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_yellow");
-                terminal.Write(" The Faith ");
+                terminal.Write(Loc.Get("temple.menu_the_faith"));
                 if (factionSystem.PlayerFaction == null)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(seek the High Priestess...)");
+                    terminal.WriteLine(Loc.Get("temple.menu_faith_seek"));
                 }
                 else
                 {
                     terminal.SetColor("dark_red");
-                    terminal.WriteLine("(you serve another...)");
+                    terminal.WriteLine(Loc.Get("temple.menu_faith_serve_another"));
                 }
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine(" You are a member of The Faith.");
+                terminal.WriteLine(Loc.Get("temple.menu_faith_member"));
             }
 
             // Inner Sanctum (Faith only)
@@ -562,7 +562,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("cyan");
-                terminal.Write(" Inner Sanctum");
+                terminal.Write(Loc.Get("temple.menu_inner_sanctum"));
                 bool meditatedToday;
                 if (DoorMode.IsOnlineMode)
                 {
@@ -577,12 +577,12 @@ public partial class TempleLocation : BaseLocation
                 if (meditatedToday)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  (meditated today)");
+                    terminal.WriteLine(Loc.Get("temple.menu_meditated_today"));
                 }
                 else
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  ({GameConfig.InnerSanctumCost}g)");
+                    terminal.WriteLine(Loc.Get("temple.menu_inner_sanctum_cost", GameConfig.InnerSanctumCost));
                 }
             }
 
@@ -590,7 +590,7 @@ public partial class TempleLocation : BaseLocation
             if (immortalGods.Count > 0)
             {
                 terminal.WriteLine("");
-                WriteSectionHeader("Ascended Gods", "bright_yellow");
+                WriteSectionHeader(Loc.Get("temple.ascended_gods"), "bright_yellow");
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -599,16 +599,16 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write("oin Immortal's Flock ");
+                terminal.Write(Loc.Get("temple.menu_join_flock"));
                 if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"(Following: {currentPlayer.WorshippedGod})");
+                    terminal.WriteLine(Loc.Get("temple.menu_following", currentPlayer.WorshippedGod));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(unaffiliated)");
+                    terminal.WriteLine(Loc.Get("temple.menu_unaffiliated"));
                 }
 
                 if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
@@ -620,9 +620,9 @@ public partial class TempleLocation : BaseLocation
                     terminal.SetColor("darkgray");
                     terminal.Write("]");
                     terminal.SetColor("white");
-                    terminal.Write("acrifice Gold       ");
+                    terminal.Write(Loc.Get("temple.menu_sacrifice_gold"));
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(to your immortal god)");
+                    terminal.WriteLine(Loc.Get("temple.menu_sacrifice_gold_hint"));
 
                     terminal.SetColor("darkgray");
                     terminal.Write(" [");
@@ -631,7 +631,7 @@ public partial class TempleLocation : BaseLocation
                     terminal.SetColor("darkgray");
                     terminal.Write("]");
                     terminal.SetColor("white");
-                    terminal.WriteLine("eave Immortal's Faith");
+                    terminal.WriteLine(Loc.Get("temple.menu_leave_faith"));
                 }
             }
 
@@ -642,7 +642,7 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn");
+            terminal.WriteLine(Loc.Get("temple.menu_return"));
             terminal.WriteLine("");
         }
     }
@@ -661,8 +661,8 @@ public partial class TempleLocation : BaseLocation
         // Also check if following an immortal player-god
         if (string.IsNullOrEmpty(currentGod) && !string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
-            terminal.WriteLine($"You currently follow the immortal {currentPlayer.WorshippedGod}.", "bright_yellow");
-            var choice = await terminal.GetInputAsync($"Abandon {currentPlayer.WorshippedGod} for an elder god? (Y/N) ");
+            terminal.WriteLine(Loc.Get("temple.follow_immortal_currently", currentPlayer.WorshippedGod), "bright_yellow");
+            var choice = await terminal.GetInputAsync(Loc.Get("temple.abandon_for_elder", currentPlayer.WorshippedGod));
             if (choice.ToUpper() == "Y")
             {
                 string oldGod = currentPlayer.WorshippedGod;
@@ -683,32 +683,32 @@ public partial class TempleLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"You renounce {oldGod}. Their divine presence fades from your mind.");
+                terminal.WriteLine(Loc.Get("temple.renounce_immortal", oldGod));
             }
             else
             {
-                terminal.WriteLine("You remain faithful to your immortal patron.", "green");
+                terminal.WriteLine(Loc.Get("temple.remain_faithful"), "green");
                 goAhead = false;
             }
         }
         else if (!string.IsNullOrEmpty(currentGod))
         {
-            terminal.WriteLine($"You currently worship {currentGod}.", "white");
+            terminal.WriteLine(Loc.Get("temple.currently_worship", currentGod), "white");
 
-            var choice = await terminal.GetInputAsync($"Have you lost your faith in {currentGod}? (Y/N) ");
+            var choice = await terminal.GetInputAsync(Loc.Get("temple.lost_faith", currentGod));
             if (choice.ToUpper() == "Y")
             {
                 // Abandon faith
                 terminal.WriteLine("");
-                terminal.WriteLine($"You don't believe in {currentGod} anymore.", "white");
-                terminal.WriteLine($"{currentGod}'s powers diminish...", "yellow");
+                terminal.WriteLine(Loc.Get("temple.dont_believe", currentGod), "white");
+                terminal.WriteLine(Loc.Get("temple.powers_diminish", currentGod), "yellow");
 
-                var noteChoice = await terminal.GetInputAsync($"Send a note to {currentGod}? (Y/N) ");
+                var noteChoice = await terminal.GetInputAsync(Loc.Get("temple.send_note", currentGod));
                 string note = "";
                 if (noteChoice.ToUpper() == "Y")
                 {
-                    note = await terminal.GetInputAsync("Note: ");
-                    terminal.WriteLine("Done!", "green");
+                    note = await terminal.GetInputAsync(Loc.Get("temple.note_prompt"));
+                    terminal.WriteLine(Loc.Get("temple.done"), "green");
                 }
 
                 if (string.IsNullOrEmpty(note))
@@ -727,24 +727,24 @@ public partial class TempleLocation : BaseLocation
 
                 // In Pascal, this would send mail to the god and news
                 terminal.WriteLine("");
-                terminal.WriteLine("You are no longer a believer.", "yellow");
+                terminal.WriteLine(Loc.Get("temple.no_longer_believer"), "yellow");
             }
             else
             {
-                terminal.WriteLine("Good for you. The gods don't take too kindly on apostates.", "green");
+                terminal.WriteLine(Loc.Get("temple.gods_dont_like_apostates"), "green");
                 goAhead = false;
             }
         }
 
         if (goAhead)
         {
-            var selectedGod = await SelectGod("Choose a god to worship");
+            var selectedGod = await SelectGod(Loc.Get("temple.choose_god_worship"));
 
             if (selectedGod != null)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine($"You raise your hands and pray to the almighty {selectedGod.Name}", "white");
-                terminal.Write("for forgiveness", "white");
+                terminal.WriteLine(Loc.Get("temple.raise_hands_pray", selectedGod.Name), "white");
+                terminal.Write(Loc.Get("temple.for_forgiveness"), "white");
 
                 // Delay dots animation (Pascal Make_Delay_Dots)
                 for (int i = 0; i < 15; i++)
@@ -754,7 +754,7 @@ public partial class TempleLocation : BaseLocation
                 }
                 terminal.WriteLine("");
 
-                terminal.WriteLine($"You are now a believer in {selectedGod.Name}!", "yellow");
+                terminal.WriteLine(Loc.Get("temple.now_believer", selectedGod.Name), "yellow");
 
                 // Set in god system
                 godSystem.SetPlayerGod(currentPlayer.Name2, selectedGod.Name);
@@ -763,7 +763,7 @@ public partial class TempleLocation : BaseLocation
                 if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"Your bond with the immortal {currentPlayer.WorshippedGod} is severed.");
+                    terminal.WriteLine(Loc.Get("temple.bond_severed", currentPlayer.WorshippedGod));
                     currentPlayer.WorshippedGod = "";
                     if (DoorMode.IsOnlineMode)
                     {
@@ -780,7 +780,7 @@ public partial class TempleLocation : BaseLocation
 
                 // In Pascal, this would send mail to god and news
                 terminal.WriteLine("");
-                terminal.WriteLine("The gods smile upon your faith!", "cyan");
+                terminal.WriteLine(Loc.Get("temple.gods_smile"), "cyan");
             }
         }
 
@@ -797,44 +797,44 @@ public partial class TempleLocation : BaseLocation
         
         if (currentPlayer.DesecrationsToday >= 2)
         {
-            terminal.WriteLine("The temple guards are watching you too closely after your earlier sacrilege.", "red");
-            terminal.WriteLine("You'll have to wait until tomorrow.", "gray");
+            terminal.WriteLine(Loc.Get("temple.desecration_limit"), "red");
+            terminal.WriteLine(Loc.Get("temple.wait_tomorrow"), "gray");
             await Task.Delay(2000);
             return;
         }
 
         if (currentPlayer.DarkNr < 1)
         {
-            terminal.WriteLine("You don't have any evil deeds left!", "red");
+            terminal.WriteLine(Loc.Get("temple.no_evil_deeds"), "red");
             await Task.Delay(2000);
             return;
         }
-        
-        var choice = await terminal.GetInputAsync("Do you really want to upset the gods? (Y/N) ");
+
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.upset_gods"));
         if (choice.ToUpper() != "Y")
         {
-            terminal.WriteLine("Good for you!", "green");
+            terminal.WriteLine(Loc.Get("temple.good_for_you"), "green");
             await Task.Delay(1000);
             return;
         }
         
-        var selectedGod = await SelectGod("Select god to desecrate altar", requireConfirmation: false);
+        var selectedGod = await SelectGod(Loc.Get("temple.select_god_desecrate"), requireConfirmation: false);
         if (selectedGod == null) return;
 
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
         if (!string.IsNullOrEmpty(playerGod) && playerGod == selectedGod.Name)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("You are not allowed to abuse your own God!", "red");
+            terminal.WriteLine(Loc.Get("temple.not_allowed_abuse_own"), "red");
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("red");
-        var confirmChoice = await terminal.GetInputAsync($"Are you SURE you want to desecrate {selectedGod.Name}'s altar? (Y/N) ");
+        var confirmChoice = await terminal.GetInputAsync(Loc.Get("temple.confirm_desecrate", selectedGod.Name));
         if (confirmChoice.ToUpper() != "Y")
         {
-            terminal.WriteLine("Wise choice. The gods remember those who show respect.", "gray");
+            terminal.WriteLine(Loc.Get("temple.wise_choice"), "gray");
             return;
         }
 
@@ -851,12 +851,12 @@ public partial class TempleLocation : BaseLocation
         
         if (currentPlayer.ChivNr < 1)
         {
-            terminal.WriteLine("You don't have any good deeds left!", "red");
+            terminal.WriteLine(Loc.Get("temple.no_good_deeds"), "red");
             await Task.Delay(2000);
             return;
         }
-        
-        var selectedGod = await SelectGod("Who shall receive your gift?", requireConfirmation: false);
+
+        var selectedGod = await SelectGod(Loc.Get("temple.who_receive_gift"), requireConfirmation: false);
         if (selectedGod == null) return;
 
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
@@ -866,17 +866,17 @@ public partial class TempleLocation : BaseLocation
         if (!string.IsNullOrEmpty(playerGod) && playerGod != selectedGod.Name)
         {
             terminal.WriteLine("");
-            terminal.WriteLine($"{selectedGod.Name} is not your God! Are you sure about this?", "red");
-            terminal.WriteLine($"The mighty {playerGod} is not going to be happy.", "red");
-            
-            var choice = await terminal.GetInputAsync("Continue? (Y/N) ");
+            terminal.WriteLine(Loc.Get("temple.not_your_god", selectedGod.Name), "red");
+            terminal.WriteLine(Loc.Get("temple.mighty_not_happy", playerGod), "red");
+
+            var choice = await terminal.GetInputAsync(Loc.Get("temple.continue_prompt"));
             if (choice.ToUpper() == "Y")
             {
                 wrongGod = true;
             }
             else
             {
-                terminal.WriteLine("Good for you!", "green");
+                terminal.WriteLine(Loc.Get("temple.good_for_you"), "green");
                 goAhead = false;
             }
         }
@@ -896,26 +896,26 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        WriteSectionHeader("Altars of the Gods", "magenta");
+        WriteSectionHeader(Loc.Get("temple.altars"), "magenta");
         terminal.WriteLine("");
         
         var activeGods = godSystem.GetActiveGods();
         if (activeGods.Count == 0)
         {
-            terminal.WriteLine("No gods exist in this realm.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_gods_exist"), "gray");
         }
         else
         {
             foreach (var god in activeGods.OrderByDescending(g => g.Experience))
             {
-                terminal.WriteLine($"Altar of {god.Name} the {god.GetTitle()}", "yellow");
-                terminal.WriteLine($"  Believers: {god.Believers}", "white");
-                terminal.WriteLine($"  Power: {god.Experience}", "cyan");
+                terminal.WriteLine(Loc.Get("temple.altar_of", god.Name, god.GetTitle()), "yellow");
+                terminal.WriteLine(Loc.Get("temple.believers_count", god.Believers), "white");
+                terminal.WriteLine(Loc.Get("temple.power_count", god.Experience), "cyan");
                 terminal.WriteLine("");
             }
         }
         
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -956,11 +956,11 @@ public partial class TempleLocation : BaseLocation
 
         if (ranking.Count == 0)
         {
-            terminal.WriteLine("No gods exist in this realm.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_gods_exist"), "gray");
         }
         else
         {
-            terminal.WriteLine("   Immortals                Rank                Followers", "white");
+            terminal.WriteLine(Loc.Get("temple.god_ranking_header"), "white");
             WriteThickDivider(59, "magenta");
 
             for (int i = 0; i < ranking.Count; i++)
@@ -971,7 +971,7 @@ public partial class TempleLocation : BaseLocation
             }
         }
 
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -981,20 +981,20 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        WriteSectionHeader("Holy News", "cyan");
+        WriteSectionHeader(Loc.Get("temple.holy_news"), "cyan");
         terminal.WriteLine("");
-        terminal.WriteLine("The gods watch over the realm...", "white");
-        terminal.WriteLine("Divine interventions shape the fate of mortals...", "white");
-        terminal.WriteLine("Prayers and sacrifices reach the heavens...", "white");
+        terminal.WriteLine(Loc.Get("temple.gods_watch"), "white");
+        terminal.WriteLine(Loc.Get("temple.divine_interventions"), "white");
+        terminal.WriteLine(Loc.Get("temple.prayers_reach"), "white");
         terminal.WriteLine("");
         
         var stats = godSystem.GetGodStatistics();
-        terminal.WriteLine($"Total Active Gods: {stats["TotalGods"]}", "yellow");
-        terminal.WriteLine($"Total Believers: {stats["TotalBelievers"]}", "yellow");
-        terminal.WriteLine($"Most Powerful: {stats["MostPowerfulGod"]}", "yellow");
-        terminal.WriteLine($"Most Popular: {stats["MostPopularGod"]}", "yellow");
+        terminal.WriteLine(Loc.Get("temple.total_gods", stats["TotalGods"]), "yellow");
+        terminal.WriteLine(Loc.Get("temple.total_believers", stats["TotalBelievers"]), "yellow");
+        terminal.WriteLine(Loc.Get("temple.most_powerful", stats["MostPowerfulGod"]), "yellow");
+        terminal.WriteLine(Loc.Get("temple.most_popular", stats["MostPopularGod"]), "yellow");
         
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -1008,7 +1008,7 @@ public partial class TempleLocation : BaseLocation
             .OrderBy(g => g.Name).ToList();
         if (activeGods.Count == 0)
         {
-            terminal.WriteLine("No gods are available.", "red");
+            terminal.WriteLine(Loc.Get("temple.no_gods_available"), "red");
             await Task.Delay(1000);
             return null;
         }
@@ -1019,7 +1019,7 @@ public partial class TempleLocation : BaseLocation
         while (true)
         {
             terminal.WriteLine("");
-            terminal.WriteLine($"{prompt} (or press Enter to cancel):", "white");
+            terminal.WriteLine(Loc.Get("temple.select_prompt", prompt), "white");
             var input = await terminal.GetInputAsync("> ");
 
             if (string.IsNullOrEmpty(input))
@@ -1035,7 +1035,7 @@ public partial class TempleLocation : BaseLocation
 
             if (matches.Count == 0)
             {
-                terminal.WriteLine($"No god found matching '{input}'. Try again.", "red");
+                terminal.WriteLine(Loc.Get("temple.no_god_match", input), "red");
                 continue;
             }
 
@@ -1059,13 +1059,13 @@ public partial class TempleLocation : BaseLocation
                 {
                     // Show ambiguous matches
                     terminal.WriteLine("");
-                    terminal.WriteLine("Multiple matches found:", "yellow");
+                    terminal.WriteLine(Loc.Get("temple.multiple_matches"), "yellow");
                     foreach (var match in matches)
                     {
                         string alignment = match.Goodness > match.Darkness ? "(Light)" : match.Darkness > match.Goodness ? "(Dark)" : "(Neutral)";
                         terminal.WriteLine($"  - {match.Name} {alignment}", "white");
                     }
-                    terminal.WriteLine("Please be more specific.", "gray");
+                    terminal.WriteLine(Loc.Get("temple.be_more_specific"), "gray");
                     continue;
                 }
             }
@@ -1078,17 +1078,17 @@ public partial class TempleLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor(alignColor);
-            terminal.WriteLine($"You have selected: {selectedGod.Name}, {selectedGod.GetTitle()}");
+            terminal.WriteLine(Loc.Get("temple.selected_god", selectedGod.Name, selectedGod.GetTitle()));
             terminal.SetColor("gray");
-            terminal.WriteLine($"  Alignment: {godAlignment} | Believers: {selectedGod.Believers}");
+            terminal.WriteLine(Loc.Get("temple.alignment_info", godAlignment, selectedGod.Believers));
 
             if (requireConfirmation)
             {
                 terminal.WriteLine("");
-                var confirm = await terminal.GetInputAsync($"Are you sure you want to choose {selectedGod.Name}? (Y/N) ");
+                var confirm = await terminal.GetInputAsync(Loc.Get("ui.confirm_choose", selectedGod.Name));
                 if (confirm.ToUpper() != "Y")
                 {
-                    terminal.WriteLine("Selection cancelled.", "gray");
+                    terminal.WriteLine(Loc.Get("temple.selection_cancelled"), "gray");
                     continue;
                 }
             }
@@ -1103,12 +1103,12 @@ public partial class TempleLocation : BaseLocation
     private void DisplayGodListCompact(List<God> gods)
     {
         terminal.WriteLine("");
-        WriteSectionHeader("Available Gods", "cyan");
+        WriteSectionHeader(Loc.Get("temple.available_gods"), "cyan");
         terminal.WriteLine("");
 
         if (gods.Count == 0)
         {
-            terminal.WriteLine("No gods currently accept worshippers.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_gods_accept"), "gray");
             return;
         }
 
@@ -1138,7 +1138,7 @@ public partial class TempleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("(Type part of a god's name to select, e.g., 'Sol' for Solarius)");
+        terminal.WriteLine(Loc.Get("temple.type_name_hint"));
     }
 
     /// <summary>
@@ -1147,7 +1147,7 @@ public partial class TempleLocation : BaseLocation
     private void DisplayGodList()
     {
         terminal.WriteLine("");
-        WriteSectionHeader("Available Gods", "cyan");
+        WriteSectionHeader(Loc.Get("temple.available_gods"), "cyan");
         terminal.WriteLine("");
 
         var activeGods = godSystem.GetActiveGods()
@@ -1156,7 +1156,7 @@ public partial class TempleLocation : BaseLocation
 
         if (activeGods.Count == 0)
         {
-            terminal.WriteLine("No gods currently accept worshippers.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_gods_accept"), "gray");
             terminal.WriteLine("");
             return;
         }
@@ -1183,7 +1183,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.WriteLine($"    {god.Properties["Description"]}", "gray");
             }
 
-            terminal.WriteLine($"    Believers: {god.Believers} | Power: {god.Experience:N0}", "white");
+            terminal.WriteLine(Loc.Get("temple.god_list_stats", god.Believers, god.Experience.ToString("N0")), "white");
             terminal.WriteLine("");
         }
     }
@@ -1200,33 +1200,33 @@ public partial class TempleLocation : BaseLocation
         switch (random.Next(2))
         {
             case 0:
-                terminal.WriteLine("When nobody is around You start to", "white");
-                terminal.WriteLine("pound away at the altar with a pickaxe.", "white");
-                terminal.Write("Hack", "red");
+                terminal.WriteLine(Loc.Get("temple.desecrate_hack_line1"), "white");
+                terminal.WriteLine(Loc.Get("temple.desecrate_hack_line2"), "white");
+                terminal.Write(Loc.Get("temple.desecrate_hack_word"), "red");
                 for (int i = 0; i < 4; i++)
                 {
                     await Task.Delay(500);
                     terminal.Write(".", "red");
                 }
-                terminal.Write("hack", "red");
+                terminal.Write(Loc.Get("temple.desecrate_hack_word_lower"), "red");
                 for (int i = 0; i < 4; i++)
                 {
                     await Task.Delay(500);
                     terminal.Write(".", "red");
                 }
-                terminal.WriteLine("hack..!", "red");
+                terminal.WriteLine(Loc.Get("temple.desecrate_hack_final"), "red");
                 break;
-                
+
             case 1:
-                terminal.WriteLine("You find some unholy substances and", "white");
-                terminal.WriteLine("pour them all over the altar!", "white");
-                terminal.WriteLine("The altar is severely damaged!", "red");
+                terminal.WriteLine(Loc.Get("temple.desecrate_unholy_line1"), "white");
+                terminal.WriteLine(Loc.Get("temple.desecrate_unholy_line2"), "white");
+                terminal.WriteLine(Loc.Get("temple.desecrate_altar_damaged"), "red");
                 break;
         }
-        
+
         terminal.WriteLine("");
-        terminal.WriteLine($"You have desecrated {god.Name}'s altar!", "red");
-        terminal.WriteLine("The gods will remember this blasphemy!", "red");
+        terminal.WriteLine(Loc.Get("temple.desecrated_altar", god.Name), "red");
+        terminal.WriteLine(Loc.Get("temple.gods_remember_blasphemy"), "red");
         
         // Process desecration in god system
         godSystem.ProcessAltarDesecration(god.Name, currentPlayer.Name2);
@@ -1247,13 +1247,13 @@ public partial class TempleLocation : BaseLocation
         while (!done)
         {
             terminal.WriteLine("");
-            WriteSectionHeader($"Sacrifice to {god.Name}", "cyan");
+            WriteSectionHeader(Loc.Get("temple.sacrifice_to", god.Name), "cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("(G)old", "yellow");
-            terminal.WriteLine("(S)tatus", "yellow");
-            terminal.WriteLine("(R)eturn", "yellow");
+            terminal.WriteLine(Loc.Get("temple.sacrifice_gold_option"), "yellow");
+            terminal.WriteLine(Loc.Get("temple.sacrifice_status_option"), "yellow");
+            terminal.WriteLine(Loc.Get("temple.sacrifice_return_option"), "yellow");
             
-            var choice = await terminal.GetInputAsync("Your choice: ");
+            var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
             
             switch (choice.ToUpper())
             {
@@ -1274,7 +1274,7 @@ public partial class TempleLocation : BaseLocation
                     break;
                     
                 default:
-                    terminal.WriteLine("Invalid choice.", "red");
+                    terminal.WriteLine(Loc.Get("temple.invalid_choice_short"), "red");
                     await Task.Delay(1000);
                     break;
             }
@@ -1287,23 +1287,23 @@ public partial class TempleLocation : BaseLocation
     private async Task ProcessGoldSacrifice(God god, bool wrongGod)
     {
         terminal.WriteLine("");
-        var goldStr = await terminal.GetInputAsync("Amount of gold to sacrifice: ");
+        var goldStr = await terminal.GetInputAsync(Loc.Get("temple.gold_sacrifice_prompt"));
 
         if (!long.TryParse(goldStr, out long goldAmount) || goldAmount <= 0)
         {
-            terminal.WriteLine("Invalid amount.", "red");
+            terminal.WriteLine(Loc.Get("temple.invalid_amount"), "red");
             await Task.Delay(1000);
             return;
         }
 
         if (goldAmount > currentPlayer.Gold)
         {
-            terminal.WriteLine("You don't have that much gold!", "red");
+            terminal.WriteLine(Loc.Get("temple.not_enough_gold"), "red");
             await Task.Delay(1000);
             return;
         }
 
-        var choice = await terminal.GetInputAsync($"Sacrifice {goldAmount} gold to {god.Name}? (Y/N) ");
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.confirm_sacrifice_gold", goldAmount, god.Name));
         if (choice.ToUpper() != "Y") return;
 
         // Process sacrifice
@@ -1311,9 +1311,9 @@ public partial class TempleLocation : BaseLocation
         var powerGained = godSystem.ProcessGoldSacrifice(god.Name, goldAmount, currentPlayer.Name2);
 
         terminal.WriteLine("");
-        terminal.WriteLine($"{god.Name}'s power is growing!", "yellow");
-        terminal.WriteLine("You can feel it...Your reward will come.", "white");
-        terminal.WriteLine($"Power increased by {powerGained} points!", "cyan");
+        terminal.WriteLine(Loc.Get("temple.god_power_growing", god.Name), "yellow");
+        terminal.WriteLine(Loc.Get("temple.reward_will_come"), "white");
+        terminal.WriteLine(Loc.Get("temple.power_increased", powerGained), "cyan");
 
         // Grant temporary blessing from sacrifice (if worshipping this god)
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
@@ -1330,7 +1330,7 @@ public partial class TempleLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.WriteLine(tempBlessing.Description);
                 var duration = tempBlessing.ExpiresAt - DateTime.Now;
-                terminal.WriteLine($"Duration: {duration.TotalMinutes:F0} minutes", "gray");
+                terminal.WriteLine(Loc.Get("temple.duration_minutes", duration.TotalMinutes.ToString("F0")), "gray");
             }
         }
 
@@ -1345,7 +1345,7 @@ public partial class TempleLocation : BaseLocation
             currentPlayer.Darkness += standingGain;
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheShadows, standingGain);
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"The darkness accepts your offering. (+{standingGain} Shadows standing)");
+            terminal.WriteLine(Loc.Get("temple.darkness_accepts", standingGain));
         }
         else
         {
@@ -1354,7 +1354,7 @@ public partial class TempleLocation : BaseLocation
             currentPlayer.Chivalry += standingGain;
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheFaith, standingGain);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Your devotion has been noted. (+{standingGain} Faith standing)");
+            terminal.WriteLine(Loc.Get("temple.devotion_noted", standingGain));
         }
 
         // Divine Wrath System - record betrayal when sacrificing to wrong god
@@ -1376,18 +1376,18 @@ public partial class TempleLocation : BaseLocation
             terminal.SetColor("bright_red");
             if (severity >= 3)
             {
-                terminal.WriteLine($"*** {playerGod.ToUpper()} SEETHES WITH RAGE! ***");
-                terminal.WriteLine("Your betrayal will not be forgotten. The dungeons hold your fate.");
+                terminal.WriteLine(Loc.Get("temple.god_seethes", playerGod.ToUpper()));
+                terminal.WriteLine(Loc.Get("temple.betrayal_not_forgotten"));
             }
             else if (severity == 2)
             {
-                terminal.WriteLine($"{playerGod} grows furious at your treachery!");
-                terminal.WriteLine("Darkness awaits you in the depths below...");
+                terminal.WriteLine(Loc.Get("temple.god_furious", playerGod));
+                terminal.WriteLine(Loc.Get("temple.darkness_awaits"));
             }
             else
             {
-                terminal.WriteLine($"{playerGod} is displeased by your unfaithfulness.");
-                terminal.WriteLine("Beware the shadows in your future...");
+                terminal.WriteLine(Loc.Get("temple.god_displeased", playerGod));
+                terminal.WriteLine(Loc.Get("temple.beware_shadows"));
             }
         }
 
@@ -1404,8 +1404,8 @@ public partial class TempleLocation : BaseLocation
         {
             if (!godSystem.VerifyGodExists(playerGod))
             {
-                terminal.WriteLine($"Your god {playerGod} no longer exists!", "red");
-                terminal.WriteLine("Your faith has been shaken...", "gray");
+                terminal.WriteLine(Loc.Get("temple.god_no_longer_exists", playerGod), "red");
+                terminal.WriteLine(Loc.Get("temple.faith_shaken"), "gray");
                 godSystem.SetPlayerGod(currentPlayer.Name2, "");
                 await Task.Delay(2000);
             }
@@ -1418,25 +1418,25 @@ public partial class TempleLocation : BaseLocation
     private async Task DisplayPlayerStatus()
     {
         terminal.WriteLine("");
-        WriteSectionHeader("Your Status", "cyan");
+        WriteSectionHeader(Loc.Get("temple.your_status"), "cyan");
         terminal.WriteLine("");
-        terminal.WriteLine($"Name: {currentPlayer.Name2}", "yellow");
-        terminal.WriteLine($"Level: {currentPlayer.Level}", "yellow");
-        terminal.WriteLine($"Gold: {currentPlayer.Gold:N0}", "yellow");
-        terminal.WriteLine($"Good Deeds: {currentPlayer.ChivNr}", "green");
-        terminal.WriteLine($"Evil Deeds: {currentPlayer.DarkNr}", "red");
-        
+        terminal.WriteLine($"{Loc.Get("ui.name_label")}: {currentPlayer.Name2}", "yellow");
+        terminal.WriteLine($"{Loc.Get("ui.level")}: {currentPlayer.Level}", "yellow");
+        terminal.WriteLine($"{Loc.Get("ui.gold")}: {currentPlayer.Gold:N0}", "yellow");
+        terminal.WriteLine(Loc.Get("temple.good_deeds", currentPlayer.ChivNr), "green");
+        terminal.WriteLine(Loc.Get("temple.evil_deeds", currentPlayer.DarkNr), "red");
+
         string playerGod = godSystem.GetPlayerGod(currentPlayer.Name2);
         if (!string.IsNullOrEmpty(playerGod))
         {
-            terminal.WriteLine($"God: {playerGod}", "cyan");
+            terminal.WriteLine(Loc.Get("temple.god_label", playerGod), "cyan");
         }
         else
         {
-            terminal.WriteLine("God: None (Pagan)", "gray");
+            terminal.WriteLine(Loc.Get("temple.god_none"), "gray");
         }
         
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
 
     #region Old Gods Integration
@@ -1448,7 +1448,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        WriteSectionHeader("The Prophecies of the Old Gods", "bright_magenta");
+        WriteSectionHeader(Loc.Get("temple.prophecies"), "bright_magenta");
         terminal.WriteLine("");
 
         // Random divine whisper intro
@@ -1464,9 +1464,9 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Maelketh, out var maelkethState))
         {
             if (maelkethState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The Broken Blade has shattered. War finds peace at last.", "green");
+                terminal.WriteLine(Loc.Get("temple.prophecy_maelketh_defeated"), "green");
             else if (maelkethState.Status == GodStatus.Saved)
-                terminal.WriteLine("The Blade remembers honor. War serves justice once more.", "bright_green");
+                terminal.WriteLine(Loc.Get("temple.prophecy_maelketh_saved"), "bright_green");
             else
                 terminal.WriteLine(OldGodsProphecies[0], "red");
             propheciesRevealed++;
@@ -1481,9 +1481,9 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Veloura, out var velouraState))
         {
             if (velouraState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The Withered Heart beats no more. Love fades from the world.", "gray");
+                terminal.WriteLine(Loc.Get("temple.prophecy_veloura_defeated"), "gray");
             else if (velouraState.Status == GodStatus.Saved)
-                terminal.WriteLine("Love blooms anew where hope was planted.", "bright_magenta");
+                terminal.WriteLine(Loc.Get("temple.prophecy_veloura_saved"), "bright_magenta");
             else
                 terminal.WriteLine(OldGodsProphecies[1], "red");
             propheciesRevealed++;
@@ -1498,7 +1498,7 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Thorgrim, out var thorgrimState))
         {
             if (thorgrimState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The Hollow Judge is silenced. Mortals must find their own justice.", "yellow");
+                terminal.WriteLine(Loc.Get("temple.prophecy_thorgrim_defeated"), "yellow");
             else
                 terminal.WriteLine(OldGodsProphecies[2], "red");
             propheciesRevealed++;
@@ -1513,9 +1513,9 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Noctura, out var nocturaState))
         {
             if (nocturaState.Status == GodStatus.Allied)
-                terminal.WriteLine("The Weaver's thread guides you through darkness.", "bright_cyan");
+                terminal.WriteLine(Loc.Get("temple.prophecy_noctura_allied"), "bright_cyan");
             else if (nocturaState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The shadows scatter. Secrets lie bare.", "gray");
+                terminal.WriteLine(Loc.Get("temple.prophecy_noctura_defeated"), "gray");
             else
                 terminal.WriteLine(OldGodsProphecies[3], "red");
             propheciesRevealed++;
@@ -1530,9 +1530,9 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Aurelion, out var aurelionState))
         {
             if (aurelionState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The Fading Light is extinguished. Truth dies in darkness.", "gray");
+                terminal.WriteLine(Loc.Get("temple.prophecy_aurelion_defeated"), "gray");
             else if (aurelionState.Status == GodStatus.Saved)
-                terminal.WriteLine("The Light burns anew within a mortal vessel.", "bright_yellow");
+                terminal.WriteLine(Loc.Get("temple.prophecy_aurelion_saved"), "bright_yellow");
             else
                 terminal.WriteLine(OldGodsProphecies[4], "red");
             propheciesRevealed++;
@@ -1547,9 +1547,9 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Terravok, out var terravokState))
         {
             if (terravokState.Status == GodStatus.Defeated)
-                terminal.WriteLine("The Mountain crumbles. The foundation breaks.", "gray");
+                terminal.WriteLine(Loc.Get("temple.prophecy_terravok_defeated"), "gray");
             else if (terravokState.Status == GodStatus.Saved)
-                terminal.WriteLine("The Mountain rises. The foundation stands eternal.", "bright_green");
+                terminal.WriteLine(Loc.Get("temple.prophecy_terravok_saved"), "bright_green");
             else
                 terminal.WriteLine(OldGodsProphecies[5], "red");
             propheciesRevealed++;
@@ -1564,7 +1564,7 @@ public partial class TempleLocation : BaseLocation
         if (story.OldGodStates.TryGetValue(OldGodType.Manwe, out var manweState))
         {
             if (manweState.Status != GodStatus.Imprisoned)
-                terminal.WriteLine("The Creator's question has been answered. What comes next?", "bright_white");
+                terminal.WriteLine(Loc.Get("temple.prophecy_manwe_resolved"), "bright_white");
             else
                 terminal.WriteLine(OldGodsProphecies[6], "bright_magenta");
             propheciesRevealed++;
@@ -1577,8 +1577,8 @@ public partial class TempleLocation : BaseLocation
 
         if (propheciesRevealed == 0)
         {
-            terminal.WriteLine("The prophecies remain sealed to those not yet ready.", "gray");
-            terminal.WriteLine("Grow stronger, and the whispers will find you...", "gray");
+            terminal.WriteLine(Loc.Get("temple.prophecies_sealed"), "gray");
+            terminal.WriteLine(Loc.Get("temple.prophecies_grow_stronger"), "gray");
         }
 
         terminal.WriteLine("");
@@ -1589,7 +1589,7 @@ public partial class TempleLocation : BaseLocation
             await DisplayDivineVision();
         }
 
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
 
     /// <summary>
@@ -1598,7 +1598,7 @@ public partial class TempleLocation : BaseLocation
     private async Task DisplayDivineVision()
     {
         terminal.WriteLine("");
-        WriteBoxHeader("A VISION OVERTAKES YOU", "bright_cyan", 63);
+        WriteBoxHeader(Loc.Get("temple.vision"), "bright_cyan", 63);
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -1607,40 +1607,40 @@ public partial class TempleLocation : BaseLocation
 
         if (godsFaced == 0)
         {
-            terminal.WriteLine("You see seven figures standing in a circle of light.", "white");
-            terminal.WriteLine("Their faces are beautiful, radiant, divine.", "white");
+            terminal.WriteLine(Loc.Get("temple.vision_seven_figures"), "white");
+            terminal.WriteLine(Loc.Get("temple.vision_faces_beautiful"), "white");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("Then darkness creeps in. One by one, their light dims.", "gray");
-            terminal.WriteLine("Their beauty twists. Their smiles become snarls.", "gray");
+            terminal.WriteLine(Loc.Get("temple.vision_darkness_creeps"), "gray");
+            terminal.WriteLine(Loc.Get("temple.vision_beauty_twists"), "gray");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("\"We were meant to guide you,\" one whispers.", "bright_magenta");
-            terminal.WriteLine("\"But you broke our hearts instead.\"", "bright_magenta");
+            terminal.WriteLine(Loc.Get("temple.vision_meant_to_guide"), "bright_magenta");
+            terminal.WriteLine(Loc.Get("temple.vision_broke_hearts"), "bright_magenta");
         }
         else if (godsFaced < 4)
         {
-            terminal.WriteLine("You see yourself walking through endless halls.", "white");
-            terminal.WriteLine("Ahead, a faint light flickers - barely visible.", "white");
+            terminal.WriteLine(Loc.Get("temple.vision_endless_halls"), "white");
+            terminal.WriteLine(Loc.Get("temple.vision_faint_light"), "white");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("A voice speaks: \"The Light fades with every lie.\"", "bright_yellow");
-            terminal.WriteLine("\"Find me before truth dies forever.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.vision_light_fades"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.vision_find_me"), "bright_yellow");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("You sense the vision comes from... here. The Temple.", "bright_cyan");
+            terminal.WriteLine(Loc.Get("temple.vision_from_temple"), "bright_cyan");
         }
         else
         {
-            terminal.WriteLine("You stand before a throne of stars.", "white");
-            terminal.WriteLine("Upon it sits a figure older than time itself.", "white");
+            terminal.WriteLine(Loc.Get("temple.vision_throne_stars"), "white");
+            terminal.WriteLine(Loc.Get("temple.vision_figure_older"), "white");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("\"You've come far, child of dust.\"", "bright_white");
-            terminal.WriteLine("\"But the final question remains.\"", "bright_white");
+            terminal.WriteLine(Loc.Get("temple.vision_come_far"), "bright_white");
+            terminal.WriteLine(Loc.Get("temple.vision_final_question"), "bright_white");
             await Task.Delay(1000);
             terminal.WriteLine("", "white");
-            terminal.WriteLine("\"Was creation worth the cost?\"", "bright_magenta");
+            terminal.WriteLine(Loc.Get("temple.vision_worth_cost"), "bright_magenta");
         }
 
         terminal.WriteLine("");
@@ -1683,22 +1683,22 @@ public partial class TempleLocation : BaseLocation
         if (!CanEnterDeepTemple())
         {
             terminal.WriteLine("");
-            terminal.WriteLine("The path to the Deep Temple is sealed.", "red");
-            terminal.WriteLine("You must prove yourself against the other Old Gods first.", "gray");
+            terminal.WriteLine(Loc.Get("temple.deep_temple_sealed"), "red");
+            terminal.WriteLine(Loc.Get("temple.deep_temple_prove"), "gray");
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteSectionHeader("THE DEEP TEMPLE", "bright_yellow");
+        WriteSectionHeader(Loc.Get("temple.deep_temple"), "bright_yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("You descend stone steps worn smooth by millennia of pilgrims.", "white");
-        terminal.WriteLine("The torches here burn with pale, flickering flames.", "white");
+        terminal.WriteLine(Loc.Get("temple.deep_temple_descend"), "white");
+        terminal.WriteLine(Loc.Get("temple.deep_temple_torches"), "white");
         await Task.Delay(1500);
         terminal.WriteLine("");
-        terminal.WriteLine("The air grows thick with the weight of forgotten prayers.", "gray");
-        terminal.WriteLine("Something watches you from the shadows between the light.", "gray");
+        terminal.WriteLine(Loc.Get("temple.deep_temple_air_thick"), "gray");
+        terminal.WriteLine(Loc.Get("temple.deep_temple_watches"), "gray");
         await Task.Delay(1500);
 
         var story = StoryProgressionSystem.Instance;
@@ -1709,35 +1709,35 @@ public partial class TempleLocation : BaseLocation
             if (aurelionState.Status == GodStatus.Defeated)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("The altar where Aurelion once dwelt is dark and cold.", "gray");
-                terminal.WriteLine("Only ash remains where the god of truth once flickered.", "gray");
-                terminal.WriteLine("You feel a deep sense of... loss.", "white");
-                await terminal.GetInputAsync("Press Enter to return...");
+                terminal.WriteLine(Loc.Get("temple.aurelion_altar_dark"), "gray");
+                terminal.WriteLine(Loc.Get("temple.aurelion_ash_remains"), "gray");
+                terminal.WriteLine(Loc.Get("temple.aurelion_sense_loss"), "white");
+                await terminal.GetInputAsync(Loc.Get("temple.press_enter_return"));
                 return;
             }
             else if (aurelionState.Status == GodStatus.Saved)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("A warm light fills the chamber.", "bright_yellow");
-                terminal.WriteLine("You feel Aurelion's presence within you - truth made flesh.", "bright_white");
+                terminal.WriteLine(Loc.Get("temple.aurelion_warm_light"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("temple.aurelion_presence"), "bright_white");
                 terminal.WriteLine("", "white");
-                terminal.WriteLine("\"Thank you,\" his voice echoes in your mind.", "bright_cyan");
-                terminal.WriteLine("\"For giving truth a new vessel.\"", "bright_cyan");
-                await terminal.GetInputAsync("Press Enter to return...");
+                terminal.WriteLine(Loc.Get("temple.aurelion_thank_you"), "bright_cyan");
+                terminal.WriteLine(Loc.Get("temple.aurelion_new_vessel"), "bright_cyan");
+                await terminal.GetInputAsync(Loc.Get("temple.press_enter_return"));
                 return;
             }
         }
 
         // Aurelion encounter available
         terminal.WriteLine("");
-        terminal.WriteLine("A faint glow pulses at the heart of the Deep Temple.", "bright_yellow");
-        terminal.WriteLine("It is weak... barely visible... but unmistakably divine.", "white");
+        terminal.WriteLine(Loc.Get("temple.aurelion_glow"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.aurelion_weak"), "white");
         terminal.WriteLine("");
-        terminal.WriteLine("\"You... can see me?\" a voice whispers.", "bright_yellow");
-        terminal.WriteLine("\"Few can anymore. The lies have grown so thick...\"", "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.aurelion_see_me"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.aurelion_few_can"), "bright_yellow");
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInputAsync("Approach the fading light? (Y/N) ");
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.approach_light"));
 
         if (choice.ToUpper() == "Y")
         {
@@ -1769,21 +1769,21 @@ public partial class TempleLocation : BaseLocation
             else
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("The light flickers but cannot fully manifest.", "yellow");
-                terminal.WriteLine("\"I am... too weak. You must face the others first.\"", "bright_yellow");
-                terminal.WriteLine("\"Defeat more of my fallen siblings. Only then...\"", "bright_yellow");
+                terminal.WriteLine(Loc.Get("temple.aurelion_flickers"), "yellow");
+                terminal.WriteLine(Loc.Get("temple.aurelion_too_weak"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("temple.aurelion_defeat_siblings"), "bright_yellow");
                 await Task.Delay(2000);
             }
         }
         else
         {
             terminal.WriteLine("");
-            terminal.WriteLine("You step back from the fading light.", "white");
-            terminal.WriteLine("\"I understand,\" the voice whispers sadly.", "bright_yellow");
-            terminal.WriteLine("\"Not everyone is ready for the truth.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.step_back"), "white");
+            terminal.WriteLine(Loc.Get("temple.aurelion_understand"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("temple.aurelion_not_ready"), "bright_yellow");
         }
 
-        await terminal.GetInputAsync("Press Enter to return...");
+        await terminal.GetInputAsync(Loc.Get("temple.press_enter_return"));
     }
 
     /// <summary>
@@ -1793,30 +1793,30 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.WriteLine("");
-        WriteSectionHeader("Item Sacrifice", "cyan");
+        WriteSectionHeader(Loc.Get("temple.item_sacrifice"), "cyan");
         terminal.WriteLine("");
 
         string currentGod = godSystem.GetPlayerGod(currentPlayer.Name2);
 
         if (string.IsNullOrEmpty(currentGod))
         {
-            terminal.WriteLine("You must worship a god before you can sacrifice items!", "red");
-            terminal.WriteLine("Visit the (W)orship option first.", "gray");
+            terminal.WriteLine(Loc.Get("temple.must_worship_first"), "red");
+            terminal.WriteLine(Loc.Get("temple.visit_worship"), "gray");
             await Task.Delay(2000);
             return;
         }
 
-        terminal.WriteLine($"You kneel before the altar of {currentGod}.", "white");
+        terminal.WriteLine(Loc.Get("temple.kneel_before", currentGod), "white");
         terminal.WriteLine("", "white");
-        terminal.WriteLine("What would you sacrifice?", "cyan");
+        terminal.WriteLine(Loc.Get("temple.what_sacrifice"), "cyan");
         terminal.WriteLine("", "white");
-        terminal.WriteLine("(W)eapon - Offer your weapon for divine blessing", "yellow");
-        terminal.WriteLine("(A)rmor - Offer your armor for divine protection", "yellow");
-        terminal.WriteLine("(H)ealing potions - Offer potions for divine favor", "yellow");
-        terminal.WriteLine("(R)eturn", "yellow");
+        terminal.WriteLine(Loc.Get("temple.sacrifice_weapon_option"), "yellow");
+        terminal.WriteLine(Loc.Get("temple.sacrifice_armor_option"), "yellow");
+        terminal.WriteLine(Loc.Get("temple.sacrifice_potions_option"), "yellow");
+        terminal.WriteLine(Loc.Get("temple.sacrifice_return"), "yellow");
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInputAsync("Sacrifice: ");
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.sacrifice_prompt"));
 
         switch (choice.ToUpper())
         {
@@ -1841,28 +1841,28 @@ public partial class TempleLocation : BaseLocation
     {
         if (currentPlayer.WeapPow <= 0)
         {
-            terminal.WriteLine("You have no weapon to sacrifice!", "red");
+            terminal.WriteLine(Loc.Get("temple.no_weapon"), "red");
             await Task.Delay(1500);
             return;
         }
 
-        var confirm = await terminal.GetInputAsync($"Sacrifice your weapon (Power: {currentPlayer.WeapPow}) to {godName}? (Y/N) ");
+        var confirm = await terminal.GetInputAsync(Loc.Get("temple.confirm_sacrifice_weapon", currentPlayer.WeapPow, godName));
         if (confirm.ToUpper() != "Y") return;
 
         long powerGained = currentPlayer.WeapPow * 2;
         godSystem.ProcessGoldSacrifice(godName, powerGained * 100, currentPlayer.Name2); // Convert to equivalent gold power
 
         terminal.WriteLine("");
-        terminal.WriteLine("Your weapon dissolves into divine light!", "bright_yellow");
-        terminal.WriteLine($"{godName} accepts your sacrifice!", "cyan");
-        terminal.WriteLine($"Divine power increased by {powerGained}!", "bright_cyan");
+        terminal.WriteLine(Loc.Get("temple.dissolves_divine_light"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.god_accepts", godName), "cyan");
+        terminal.WriteLine(Loc.Get("temple.divine_power_increased", powerGained), "bright_cyan");
 
         // Chance for divine blessing based on weapon power
         if (random.NextDouble() < 0.3 + (currentPlayer.WeapPow / 500.0))
         {
             int blessingBonus = random.Next(2, 6);
             currentPlayer.Strength += blessingBonus;
-            terminal.WriteLine($"{godName} blesses you with +{blessingBonus} Strength!", "bright_green");
+            terminal.WriteLine(Loc.Get("temple.blessing_strength", godName, blessingBonus), "bright_green");
         }
 
         currentPlayer.WeapPow = 0;
@@ -1884,28 +1884,28 @@ public partial class TempleLocation : BaseLocation
     {
         if (currentPlayer.ArmPow <= 0)
         {
-            terminal.WriteLine("You have no armor to sacrifice!", "red");
+            terminal.WriteLine(Loc.Get("temple.no_armor"), "red");
             await Task.Delay(1500);
             return;
         }
 
-        var confirm = await terminal.GetInputAsync($"Sacrifice your armor (Power: {currentPlayer.ArmPow}) to {godName}? (Y/N) ");
+        var confirm = await terminal.GetInputAsync(Loc.Get("temple.confirm_sacrifice_armor", currentPlayer.ArmPow, godName));
         if (confirm.ToUpper() != "Y") return;
 
         long powerGained = currentPlayer.ArmPow * 2;
         godSystem.ProcessGoldSacrifice(godName, powerGained * 100, currentPlayer.Name2);
 
         terminal.WriteLine("");
-        terminal.WriteLine("Your armor dissolves into divine light!", "bright_yellow");
-        terminal.WriteLine($"{godName} accepts your sacrifice!", "cyan");
-        terminal.WriteLine($"Divine power increased by {powerGained}!", "bright_cyan");
+        terminal.WriteLine(Loc.Get("temple.armor_dissolves"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.god_accepts", godName), "cyan");
+        terminal.WriteLine(Loc.Get("temple.divine_power_increased", powerGained), "bright_cyan");
 
         // Chance for divine blessing
         if (random.NextDouble() < 0.3 + (currentPlayer.ArmPow / 500.0))
         {
             int blessingBonus = random.Next(2, 6);
             currentPlayer.Defence += blessingBonus;
-            terminal.WriteLine($"{godName} blesses you with +{blessingBonus} Defence!", "bright_green");
+            terminal.WriteLine(Loc.Get("temple.blessing_defence", godName, blessingBonus), "bright_green");
         }
 
         currentPlayer.ArmPow = 0;
@@ -1926,29 +1926,29 @@ public partial class TempleLocation : BaseLocation
     {
         if (currentPlayer.Healing <= 0)
         {
-            terminal.WriteLine("You have no healing potions to sacrifice!", "red");
+            terminal.WriteLine(Loc.Get("temple.no_potions"), "red");
             await Task.Delay(1500);
             return;
         }
 
-        terminal.WriteLine($"You have {currentPlayer.Healing} healing potions.", "white");
-        var amountStr = await terminal.GetInputAsync("How many to sacrifice? ");
+        terminal.WriteLine(Loc.Get("temple.have_potions", currentPlayer.Healing), "white");
+        var amountStr = await terminal.GetInputAsync(Loc.Get("temple.how_many_sacrifice"));
 
         if (!int.TryParse(amountStr, out int amount) || amount <= 0)
         {
-            terminal.WriteLine("Invalid amount.", "red");
+            terminal.WriteLine(Loc.Get("temple.invalid_amount"), "red");
             await Task.Delay(1000);
             return;
         }
 
         if (amount > currentPlayer.Healing)
         {
-            terminal.WriteLine("You don't have that many potions!", "red");
+            terminal.WriteLine(Loc.Get("temple.not_enough_potions"), "red");
             await Task.Delay(1000);
             return;
         }
 
-        var confirm = await terminal.GetInputAsync($"Sacrifice {amount} healing potions to {godName}? (Y/N) ");
+        var confirm = await terminal.GetInputAsync(Loc.Get("temple.confirm_sacrifice_potions", amount, godName));
         if (confirm.ToUpper() != "Y") return;
 
         long powerGained = amount * 5; // Each potion gives 5 power
@@ -1957,15 +1957,15 @@ public partial class TempleLocation : BaseLocation
         currentPlayer.Healing -= amount;
 
         terminal.WriteLine("");
-        terminal.WriteLine("Your potions evaporate into divine essence!", "bright_yellow");
-        terminal.WriteLine($"{godName} accepts your sacrifice!", "cyan");
-        terminal.WriteLine($"Divine power increased by {powerGained}!", "bright_cyan");
+        terminal.WriteLine(Loc.Get("temple.potions_evaporate"), "bright_yellow");
+        terminal.WriteLine(Loc.Get("temple.god_accepts", godName), "cyan");
+        terminal.WriteLine(Loc.Get("temple.divine_power_increased", powerGained), "bright_cyan");
 
         // Chance for divine healing
         if (amount >= 3 && random.NextDouble() < 0.5)
         {
             currentPlayer.HP = currentPlayer.MaxHP;
-            terminal.WriteLine($"{godName} fully restores your health!", "bright_green");
+            terminal.WriteLine(Loc.Get("temple.god_restores_health", godName), "bright_green");
         }
 
         // Apply faction effects based on god alignment
@@ -1992,7 +1992,7 @@ public partial class TempleLocation : BaseLocation
             currentPlayer.Darkness += amount;
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheShadows, amount);
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"The darkness notes your devotion. (+{amount} Shadows standing)");
+            terminal.WriteLine(Loc.Get("temple.darkness_notes_devotion", amount));
         }
         else
         {
@@ -2000,7 +2000,7 @@ public partial class TempleLocation : BaseLocation
             currentPlayer.Chivalry += amount;
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheFaith, amount);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"The light notes your devotion. (+{amount} Faith standing)");
+            terminal.WriteLine(Loc.Get("temple.light_notes_devotion", amount));
         }
     }
 
@@ -2015,20 +2015,20 @@ public partial class TempleLocation : BaseLocation
         var random = new Random();
 
         // Desecration flavour text
-        string[] desecrationMethods = new[]
+        string[] desecrationKeys = new[]
         {
-            "You smash the altar with a pickaxe, shattering holy relics.",
-            "You pour unholy substances over the sacred symbols.",
-            "You carve blasphemous words into the altar's surface.",
-            "You set fire to the offerings left by faithful worshippers.",
-            "You topple the statue of the god, watching it shatter."
+            "temple.desecrate_method_smash",
+            "temple.desecrate_method_pour",
+            "temple.desecrate_method_carve",
+            "temple.desecrate_method_fire",
+            "temple.desecrate_method_topple"
         };
 
-        terminal.WriteLine(desecrationMethods[random.Next(desecrationMethods.Length)], "red");
+        terminal.WriteLine(Loc.Get(desecrationKeys[random.Next(desecrationKeys.Length)]), "red");
         await Task.Delay(1500);
 
         terminal.WriteLine("");
-        terminal.WriteLine($"You have desecrated {god.Name}'s altar!", "bright_red");
+        terminal.WriteLine(Loc.Get("temple.desecrated_altar", god.Name), "bright_red");
 
         // Process desecration in god system
         godSystem.ProcessAltarDesecration(god.Name, currentPlayer.Name2);
@@ -2043,8 +2043,8 @@ public partial class TempleLocation : BaseLocation
         currentPlayer.DesecrationsToday++;
 
         terminal.WriteLine("", "white");
-        terminal.WriteLine($"Darkness flows into your soul! (+{darknessGain} Darkness)", "dark_red");
-        terminal.WriteLine($"Experience gained from profane knowledge! (+{xpGain} XP)", "yellow");
+        terminal.WriteLine(Loc.Get("temple.darkness_flows", darknessGain), "dark_red");
+        terminal.WriteLine(Loc.Get("temple.xp_from_profane", xpGain), "yellow");
 
         // Divine retribution — escalates with repeated desecrations
         // First desecration: 30% curse chance, mild damage
@@ -2053,14 +2053,14 @@ public partial class TempleLocation : BaseLocation
         if (random.NextDouble() < curseChance)
         {
             terminal.WriteLine("", "white");
-            terminal.WriteLine($"{god.Name} curses you from beyond!", "bright_red");
+            terminal.WriteLine(Loc.Get("temple.god_curses", god.Name), "bright_red");
 
             int curseDamage = random.Next(10, 30 + currentPlayer.Level);
             if (currentPlayer.DesecrationsToday >= 2)
             {
                 // Second desecration: much heavier punishment
                 curseDamage *= 3;
-                terminal.WriteLine("The divine fury is overwhelming!", "bright_red");
+                terminal.WriteLine(Loc.Get("temple.divine_fury"), "bright_red");
 
                 // Lose a random base stat point
                 string[] stats = { "Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma" };
@@ -2075,11 +2075,11 @@ public partial class TempleLocation : BaseLocation
                     case "Charisma": currentPlayer.BaseCharisma = Math.Max(1, currentPlayer.BaseCharisma - 1); break;
                 }
                 currentPlayer.RecalculateStats();
-                terminal.WriteLine($"You feel your {lostStat} diminish as divine power strips it away! (-1 {lostStat})", "red");
+                terminal.WriteLine(Loc.Get("temple.stat_diminish", lostStat, lostStat), "red");
             }
 
             currentPlayer.HP = Math.Max(1, currentPlayer.HP - curseDamage);
-            terminal.WriteLine($"You take {curseDamage} divine damage!", "red");
+            terminal.WriteLine(Loc.Get("temple.divine_damage", curseDamage), "red");
         }
 
         // Generate news
@@ -2100,8 +2100,8 @@ public partial class TempleLocation : BaseLocation
         if (story.CollectedSeals.Contains(UsurperRemake.Systems.SealType.Creation))
         {
             terminal.WriteLine("");
-            terminal.WriteLine("The ancient stones still stand, but their secret has been revealed.", "gray");
-            terminal.WriteLine("You remember the truth of creation...", "gray");
+            terminal.WriteLine(Loc.Get("temple.ancient_stones_revealed"), "gray");
+            terminal.WriteLine(Loc.Get("temple.remember_truth"), "gray");
             await Task.Delay(1500);
             return;
         }
@@ -2109,33 +2109,33 @@ public partial class TempleLocation : BaseLocation
         terminal.WriteLine("");
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("You walk past the busy altars, past the crowds of worshippers,");
-        terminal.WriteLine("to the far corner of the temple where few tread.");
+        terminal.WriteLine(Loc.Get("temple.walk_past_altars"));
+        terminal.WriteLine(Loc.Get("temple.far_corner"));
         terminal.SetColor("white");
         terminal.WriteLine("");
         await Task.Delay(1500);
 
-        terminal.WriteLine("Here, massive stones form the foundation of the building.");
-        terminal.WriteLine("They are older than the temple itself - older than any god");
-        terminal.WriteLine("whose altar stands above.");
+        terminal.WriteLine(Loc.Get("temple.massive_stones"));
+        terminal.WriteLine(Loc.Get("temple.older_than_temple"));
+        terminal.WriteLine(Loc.Get("temple.whose_altar"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("gray");
-        terminal.WriteLine("The monks say these stones were here before the city was built.");
-        terminal.WriteLine("Before mortals came to this land.");
-        terminal.WriteLine("Before even the gods walked the earth.");
+        terminal.WriteLine(Loc.Get("temple.monks_say"));
+        terminal.WriteLine(Loc.Get("temple.before_mortals"));
+        terminal.WriteLine(Loc.Get("temple.before_gods"));
         terminal.SetColor("white");
         terminal.WriteLine("");
         await Task.Delay(1500);
 
-        var choice = await terminal.GetInputAsync("Touch the ancient stone? (Y/N) ");
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.touch_stone"));
 
         if (choice.ToUpper() != "Y")
         {
             terminal.WriteLine("");
-            terminal.WriteLine("You step back from the stones.", "gray");
-            terminal.WriteLine("Perhaps another time...", "gray");
+            terminal.WriteLine(Loc.Get("temple.step_back_stones"), "gray");
+            terminal.WriteLine(Loc.Get("temple.perhaps_another_time"), "gray");
             await Task.Delay(1000);
             return;
         }
@@ -2143,40 +2143,40 @@ public partial class TempleLocation : BaseLocation
         // Discovery sequence
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("Your hand touches the cold stone...");
+        terminal.WriteLine(Loc.Get("temple.hand_touches"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("At first, nothing.");
+        terminal.WriteLine(Loc.Get("temple.at_first_nothing"));
         terminal.WriteLine("");
         await Task.Delay(800);
 
-        terminal.WriteLine("Then warmth. A pulse, like a heartbeat.");
+        terminal.WriteLine(Loc.Get("temple.warmth_pulse"));
         terminal.WriteLine("");
         await Task.Delay(800);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("The stone GLOWS beneath your palm.");
-        terminal.WriteLine("Ancient symbols flare to life - a language");
-        terminal.WriteLine("older than any spoken by mortal or god.");
+        terminal.WriteLine(Loc.Get("temple.stone_glows"));
+        terminal.WriteLine(Loc.Get("temple.ancient_symbols"));
+        terminal.WriteLine(Loc.Get("temple.older_language"));
         terminal.SetColor("white");
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("A voice speaks directly into your mind:");
+        terminal.WriteLine(Loc.Get("temple.voice_speaks"));
         terminal.WriteLine("");
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  \"You seek truth. So few do anymore.\"");
-        terminal.WriteLine("  \"This is the First Seal - the story of creation.\"");
-        terminal.WriteLine("  \"Remember it well, for understanding begins here.\"");
+        terminal.WriteLine(Loc.Get("temple.seek_truth"));
+        terminal.WriteLine(Loc.Get("temple.first_seal"));
+        terminal.WriteLine(Loc.Get("temple.remember_well"));
         terminal.SetColor("white");
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("gray");
-        await terminal.GetInputAsync("  Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("temple.press_enter_continue"));
 
         // Collect the seal
         var sealSystem = UsurperRemake.Systems.SevenSealsSystem.Instance;
@@ -2199,8 +2199,8 @@ public partial class TempleLocation : BaseLocation
         if (string.IsNullOrEmpty(playerGod) && string.IsNullOrEmpty(worshippedImmortal))
         {
             terminal.WriteLine("");
-            terminal.WriteLine("You must worship a god before you can pray for blessings.", "yellow");
-            terminal.WriteLine("Visit (W)orship to choose a deity.", "gray");
+            terminal.WriteLine(Loc.Get("temple.must_worship_to_pray"), "yellow");
+            terminal.WriteLine(Loc.Get("temple.visit_worship_first"), "gray");
             await Task.Delay(2000);
             return;
         }
@@ -2208,8 +2208,8 @@ public partial class TempleLocation : BaseLocation
         if (!UsurperRemake.Systems.DivineBlessingSystem.Instance.CanPrayToday(currentPlayer.Name2))
         {
             terminal.WriteLine("");
-            terminal.WriteLine("You have already prayed today.", "gray");
-            terminal.WriteLine("Return tomorrow for another blessing.", "gray");
+            terminal.WriteLine(Loc.Get("temple.already_prayed"), "gray");
+            terminal.WriteLine(Loc.Get("temple.return_tomorrow"), "gray");
             await Task.Delay(1500);
             return;
         }
@@ -2220,11 +2220,11 @@ public partial class TempleLocation : BaseLocation
             terminal.WriteLine("");
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"You kneel before the altar of {worshippedImmortal}...");
+            terminal.WriteLine(Loc.Get("temple.kneel_altar", worshippedImmortal));
             await Task.Delay(1000);
 
             terminal.SetColor("white");
-            terminal.WriteLine("Your prayers rise to the immortal realm...");
+            terminal.WriteLine(Loc.Get("temple.prayers_rise_immortal"));
             await Task.Delay(1000);
 
             // Mark prayer as done for today (set LastPrayerRealDate for online mode)
@@ -2248,7 +2248,7 @@ public partial class TempleLocation : BaseLocation
                 }
 
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  {worshippedImmortal}'s divine power surges through you!");
+                terminal.WriteLine(Loc.Get("temple.divine_power_surges", worshippedImmortal));
                 terminal.WriteLine("");
 
                 // Show boosted boon effects
@@ -2263,7 +2263,7 @@ public partial class TempleLocation : BaseLocation
                 boonLines = DivineBoonRegistry.GetEffectSummaryLines(godConfig);
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  Prayer amplifies your patron's boons:");
+                terminal.WriteLine(Loc.Get("temple.prayer_amplifies"));
                 foreach (var line in boonLines)
                 {
                     terminal.SetColor("white");
@@ -2273,15 +2273,15 @@ public partial class TempleLocation : BaseLocation
                 if (prayerBonus > 0)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"  Combat blessing: +{(int)(prayerBonus * 100)}% damage/defense for {prayerCombats} combats");
+                    terminal.WriteLine(Loc.Get("temple.combat_blessing", (int)(prayerBonus * 100), prayerCombats));
                 }
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {worshippedImmortal} has not yet configured divine favors.");
+                terminal.WriteLine(Loc.Get("temple.no_boons_configured", worshippedImmortal));
                 terminal.SetColor("white");
-                terminal.WriteLine("  Your prayer is heard, but no boons flow.");
+                terminal.WriteLine(Loc.Get("temple.prayer_heard_no_boons"));
             }
 
             // Grant the god experience from the prayer
@@ -2321,7 +2321,7 @@ public partial class TempleLocation : BaseLocation
         var god = godSystem.GetGod(playerGod);
         if (god == null)
         {
-            terminal.WriteLine("Your god no longer exists...", "red");
+            terminal.WriteLine(Loc.Get("temple.god_no_longer_exists_short"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -2329,11 +2329,11 @@ public partial class TempleLocation : BaseLocation
         terminal.WriteLine("");
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"You kneel before the altar of {playerGod}...");
+        terminal.WriteLine(Loc.Get("temple.kneel_altar", playerGod));
         await Task.Delay(1000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("Your prayers rise like incense to the heavens...");
+        terminal.WriteLine(Loc.Get("temple.prayers_rise_incense"));
         await Task.Delay(1000);
 
         // Determine prayer response based on god's alignment
@@ -2342,17 +2342,17 @@ public partial class TempleLocation : BaseLocation
         if (alignment > 0.3f)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Warm light fills the chamber as your god hears you.");
+            terminal.WriteLine(Loc.Get("temple.warm_light_fills"));
         }
         else if (alignment < -0.3f)
         {
             terminal.SetColor("dark_magenta");
-            terminal.WriteLine("Shadows coil around you as your god acknowledges your devotion.");
+            terminal.WriteLine(Loc.Get("temple.shadows_coil"));
         }
         else
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("A sense of balance and clarity washes over you.");
+            terminal.WriteLine(Loc.Get("temple.balance_clarity"));
         }
         await Task.Delay(1000);
 
@@ -2369,23 +2369,23 @@ public partial class TempleLocation : BaseLocation
             terminal.WriteLine("");
 
             if (blessing.DamageBonus > 0)
-                terminal.WriteLine($"  Damage: +{blessing.DamageBonus}%", "red");
+                terminal.WriteLine(Loc.Get("temple.damage_bonus", blessing.DamageBonus), "red");
             if (blessing.DefenseBonus > 0)
-                terminal.WriteLine($"  Defense: +{blessing.DefenseBonus}%", "cyan");
+                terminal.WriteLine(Loc.Get("temple.defense_bonus", blessing.DefenseBonus), "cyan");
             if (blessing.XPBonus > 0)
-                terminal.WriteLine($"  XP Bonus: +{blessing.XPBonus}%", "yellow");
+                terminal.WriteLine(Loc.Get("temple.xp_bonus", blessing.XPBonus), "yellow");
 
             var duration = blessing.ExpiresAt - DateTime.Now;
-            terminal.WriteLine($"  Duration: {duration.TotalMinutes:F0} minutes", "gray");
+            terminal.WriteLine(Loc.Get("temple.duration_label", duration.TotalMinutes.ToString("F0")), "gray");
 
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"{playerGod}'s blessing is upon you!");
+            terminal.WriteLine(Loc.Get("temple.blessing_upon_you", playerGod));
         }
         else
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Your prayers go unanswered today...", "gray");
+            terminal.WriteLine(Loc.Get("temple.prayers_unanswered"), "gray");
         }
 
         // Apply small faction effect for daily prayer based on god alignment
@@ -2394,14 +2394,14 @@ public partial class TempleLocation : BaseLocation
             // Good god - light action
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheFaith, 1);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("(+1 Faith standing)");
+            terminal.WriteLine(Loc.Get("temple.faith_standing_gain"));
         }
         else if (alignment < -0.3f)
         {
             // Evil god - dark action
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheShadows, 1);
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("(+1 Shadows standing)");
+            terminal.WriteLine(Loc.Get("temple.shadows_standing_gain"));
         }
 
         await Task.Delay(2000);
@@ -2447,34 +2447,34 @@ public partial class TempleLocation : BaseLocation
         if (!CanMeetMira())
         {
             terminal.WriteLine("");
-            terminal.WriteLine("The meditation chapel is empty.", "gray");
-            terminal.WriteLine("Only silence and candle smoke fill the small room.", "gray");
+            terminal.WriteLine(Loc.Get("temple.meditation_chapel_empty"), "gray");
+            terminal.WriteLine(Loc.Get("temple.only_silence"), "gray");
             await Task.Delay(1500);
             refreshMenu = true;
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("MEDITATION CHAPEL", "bright_green", 66);
+        WriteBoxHeader(Loc.Get("temple.meditation"), "bright_green", 66);
         terminal.WriteLine("");
         await Task.Delay(1000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("You step into a small, quiet chapel off the main temple.");
-        terminal.WriteLine("A single candle illuminates a woman kneeling before an empty altar.");
+        terminal.WriteLine(Loc.Get("temple.step_into_chapel"));
+        terminal.WriteLine(Loc.Get("temple.candle_illuminates"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("gray");
-        terminal.WriteLine("She wears the faded robes of a priestess, though they bear no symbol.");
-        terminal.WriteLine("Her hands are clasped, but her lips do not move.");
-        terminal.WriteLine("She prays to... nothing. An empty space where faith once lived.");
+        terminal.WriteLine(Loc.Get("temple.faded_robes"));
+        terminal.WriteLine(Loc.Get("temple.hands_clasped"));
+        terminal.WriteLine(Loc.Get("temple.prays_to_nothing"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         // First dialogue
         terminal.SetColor("cyan");
-        terminal.WriteLine("She notices you watching.");
+        terminal.WriteLine(Loc.Get("temple.notices_watching"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine($"\"{mira.DialogueHints[0]}\"");
@@ -2482,7 +2482,7 @@ public partial class TempleLocation : BaseLocation
         await Task.Delay(2000);
 
         terminal.SetColor("white");
-        terminal.WriteLine("She turns back to the empty altar.");
+        terminal.WriteLine(Loc.Get("temple.turns_back"));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
         terminal.WriteLine($"\"{mira.DialogueHints[1]}\"");
@@ -2491,9 +2491,9 @@ public partial class TempleLocation : BaseLocation
 
         // Show her details
         terminal.SetColor("yellow");
-        terminal.WriteLine($"This is {mira.Name}, {mira.Title}.");
-        terminal.WriteLine($"Role: {mira.CombatRole}");
-        terminal.WriteLine($"Abilities: {string.Join(", ", mira.Abilities)}");
+        terminal.WriteLine(Loc.Get("temple.this_is_companion", mira.Name, mira.Title));
+        terminal.WriteLine(Loc.Get("temple.role_label", mira.CombatRole));
+        terminal.WriteLine(Loc.Get("temple.abilities_label", string.Join(", ", mira.Abilities)));
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
@@ -2504,19 +2504,19 @@ public partial class TempleLocation : BaseLocation
         terminal.SetColor("bright_yellow");
         if (IsScreenReader)
         {
-            terminal.WriteLine("R. Ask her to join you");
-            terminal.WriteLine("T. Talk about her past");
-            terminal.WriteLine("L. Leave her to her prayers");
+            terminal.WriteLine(Loc.Get("temple.sr_ask_join"));
+            terminal.WriteLine(Loc.Get("temple.sr_talk_past"));
+            terminal.WriteLine(Loc.Get("temple.sr_leave_prayers"));
         }
         else
         {
-            terminal.WriteLine("[R] Ask her to join you");
-            terminal.WriteLine("[T] Talk about her past");
-            terminal.WriteLine("[L] Leave her to her prayers");
+            terminal.WriteLine(Loc.Get("temple.visual_ask_join"));
+            terminal.WriteLine(Loc.Get("temple.visual_talk_past"));
+            terminal.WriteLine(Loc.Get("temple.visual_leave_prayers"));
         }
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInputAsync("Your choice: ");
+        var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
         switch (choice.ToUpper())
         {
@@ -2531,8 +2531,8 @@ public partial class TempleLocation : BaseLocation
             default:
                 terminal.SetColor("gray");
                 terminal.WriteLine("");
-                terminal.WriteLine("You leave her to her silent vigil.");
-                terminal.WriteLine("As you reach the door, she speaks without turning:");
+                terminal.WriteLine(Loc.Get("temple.leave_silent_vigil"));
+                terminal.WriteLine(Loc.Get("temple.speaks_without_turning"));
                 terminal.SetColor("cyan");
                 terminal.WriteLine($"\"{mira.DialogueHints[2]}\"");
                 break;
@@ -2540,7 +2540,7 @@ public partial class TempleLocation : BaseLocation
 
         // Mark encounter as complete
         StoryProgressionSystem.Instance.SetStoryFlag("mira_temple_encounter_complete", true);
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         refreshMenu = true;
     }
 
@@ -2553,29 +2553,29 @@ public partial class TempleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("\"The dungeons are dangerous,\" you say. \"A healer would be invaluable.\"");
+        terminal.WriteLine(Loc.Get("temple.dungeons_dangerous"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"{mira.Name} looks at you for a long moment.");
-        terminal.WriteLine("Something flickers in her eyes. Not hope - something smaller.");
-        terminal.WriteLine("A question, perhaps.");
+        terminal.WriteLine(Loc.Get("temple.looks_long_moment", mira.Name));
+        terminal.WriteLine(Loc.Get("temple.flickers_in_eyes"));
+        terminal.WriteLine(Loc.Get("temple.a_question"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"You want me to heal,\" she says.");
-        terminal.WriteLine("\"I can do that. I've always been able to do that.\"");
-        terminal.WriteLine("\"But will it matter? Will any of it matter?\"");
+        terminal.WriteLine(Loc.Get("temple.want_me_to_heal"));
+        terminal.WriteLine(Loc.Get("temple.always_been_able"));
+        terminal.WriteLine(Loc.Get("temple.will_it_matter"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("white");
-        terminal.WriteLine("She doesn't wait for an answer.");
+        terminal.WriteLine(Loc.Get("temple.doesnt_wait"));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("\"Perhaps if I help you long enough, I'll find out.\"");
+        terminal.WriteLine(Loc.Get("temple.perhaps_help"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
@@ -2586,11 +2586,11 @@ public partial class TempleLocation : BaseLocation
         {
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine($"{mira.Name} rises from the empty altar.");
-            terminal.WriteLine("The candle behind her flickers - but does not go out.");
+            terminal.WriteLine(Loc.Get("temple.rises_from_altar", mira.Name));
+            terminal.WriteLine(Loc.Get("temple.candle_flickers"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("WARNING: Companions can die permanently. She may find her answer in sacrifice.");
+            terminal.WriteLine(Loc.Get("temple.companion_death_warning"));
 
             // Generate news
             NewsSystem.Instance.Newsy(false, $"{currentPlayer.Name2} found {mira.Name} praying at an empty altar in the Temple.");
@@ -2604,7 +2604,7 @@ public partial class TempleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("You sit beside her. The silence stretches between you.");
+        terminal.WriteLine(Loc.Get("temple.sit_beside"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -2614,28 +2614,28 @@ public partial class TempleLocation : BaseLocation
         await Task.Delay(1500);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("\"I was a healer at Veloura's temple,\" she says finally.");
-        terminal.WriteLine("\"When the corruption came... the healers became something else.\"");
-        terminal.WriteLine("\"I escaped. But I left my faith behind.\"");
+        terminal.WriteLine(Loc.Get("temple.was_healer_veloura"));
+        terminal.WriteLine(Loc.Get("temple.corruption_came"));
+        terminal.WriteLine(Loc.Get("temple.escaped_left_faith"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
         if (!string.IsNullOrEmpty(mira.PersonalQuestDescription))
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"Personal Quest: {mira.PersonalQuestName}");
+            terminal.WriteLine(Loc.Get("temple.personal_quest_label", mira.PersonalQuestName));
             terminal.WriteLine($"\"{mira.PersonalQuestDescription}\"");
             terminal.WriteLine("");
         }
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"I keep praying,\" she whispers.");
-        terminal.WriteLine("\"To an empty altar. To nothing.\"");
-        terminal.WriteLine("\"Because if I stop... I don't know what I am anymore.\"");
+        terminal.WriteLine(Loc.Get("temple.keep_praying"));
+        terminal.WriteLine(Loc.Get("temple.to_empty_altar"));
+        terminal.WriteLine(Loc.Get("temple.if_i_stop"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
-        var followUp = await terminal.GetInputAsync("Ask her to join you? (Y/N): ");
+        var followUp = await terminal.GetInputAsync(Loc.Get("temple.ask_join_prompt"));
         if (followUp.ToUpper() == "Y")
         {
             await AttemptMiraRecruitment(mira);
@@ -2644,8 +2644,8 @@ public partial class TempleLocation : BaseLocation
         {
             terminal.SetColor("gray");
             terminal.WriteLine("");
-            terminal.WriteLine("You squeeze her shoulder gently and leave.");
-            terminal.WriteLine("Perhaps another time.");
+            terminal.WriteLine(Loc.Get("temple.squeeze_shoulder"));
+            terminal.WriteLine(Loc.Get("temple.perhaps_another_time"));
         }
     }
 
@@ -2662,18 +2662,18 @@ public partial class TempleLocation : BaseLocation
         var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
 
         terminal.ClearScreen();
-        WriteBoxHeader("THE FAITH", "bright_yellow");
+        WriteBoxHeader(Loc.Get("temple.the_faith"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("You approach the inner sanctum of the Temple, where only the most");
-        terminal.WriteLine("devoted are permitted. An elderly priestess in white robes greets you.");
+        terminal.WriteLine(Loc.Get("temple.faith_approach"));
+        terminal.WriteLine(Loc.Get("temple.faith_devoted"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"I am High Priestess Mirael,\" she says, her voice gentle but firm.");
-        terminal.WriteLine("\"I have watched your journey with interest, traveler.\"");
+        terminal.WriteLine(Loc.Get("temple.mirael_intro"));
+        terminal.WriteLine(Loc.Get("temple.mirael_watched"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -2681,43 +2681,43 @@ public partial class TempleLocation : BaseLocation
         if (factionSystem.PlayerFaction != null)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("She studies you with knowing eyes.");
+            terminal.WriteLine(Loc.Get("temple.mirael_studies"));
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"\"You already serve {UsurperRemake.Systems.FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name}.\"");
-            terminal.WriteLine("\"The Faith does not accept divided loyalties.\"");
-            terminal.WriteLine("\"Should you ever renounce your current allegiance, seek me again.\"");
+            terminal.WriteLine(Loc.Get("temple.already_serve", UsurperRemake.Systems.FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name));
+            terminal.WriteLine(Loc.Get("temple.no_divided_loyalties"));
+            terminal.WriteLine(Loc.Get("temple.renounce_seek_again"));
             terminal.WriteLine("");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             refreshMenu = true;
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("She gestures to the sacred flames burning eternally on the altar.");
+        terminal.WriteLine(Loc.Get("temple.sacred_flames"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"The Faith believes the Old Gods were once pure and good.\"");
-        terminal.WriteLine("\"They guided humanity with love, wisdom, and truth.\"");
-        terminal.WriteLine("\"But mortal worship corrupted them - our fears, our hatreds,\"");
-        terminal.WriteLine("\"our lies... they absorbed them all until they broke.\"");
+        terminal.WriteLine(Loc.Get("temple.faith_old_gods_pure"));
+        terminal.WriteLine(Loc.Get("temple.faith_guided"));
+        terminal.WriteLine(Loc.Get("temple.faith_corrupted"));
+        terminal.WriteLine(Loc.Get("temple.faith_absorbed"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("\"We believe the gods can be HEALED, not destroyed.\"");
-        terminal.WriteLine("\"Through devotion, sacrifice, and unwavering faith,\"");
-        terminal.WriteLine("\"we will restore them to their former glory.\"");
+        terminal.WriteLine(Loc.Get("temple.faith_healed"));
+        terminal.WriteLine(Loc.Get("temple.faith_devotion"));
+        terminal.WriteLine(Loc.Get("temple.faith_restore"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         // Show faction benefits
-        WriteSectionHeader("Benefits of The Faith", "bright_yellow");
+        WriteSectionHeader(Loc.Get("temple.faith_benefits"), "bright_yellow");
         terminal.SetColor("white");
-        terminal.WriteLine("• 25% discount on healing services at all healers");
-        terminal.WriteLine("• Access to special healing prayers and blessings");
-        terminal.WriteLine("• Friendly treatment from clerics and temple NPCs");
-        terminal.WriteLine("• Standing with The Faith grows through devotion");
+        terminal.WriteLine(Loc.Get("temple.benefit_healing"));
+        terminal.WriteLine(Loc.Get("temple.benefit_prayers"));
+        terminal.WriteLine(Loc.Get("temple.benefit_npcs"));
+        terminal.WriteLine(Loc.Get("temple.benefit_standing"));
         terminal.WriteLine("");
 
         // Check requirements
@@ -2725,40 +2725,40 @@ public partial class TempleLocation : BaseLocation
 
         if (!canJoin)
         {
-            WriteSectionHeader("Requirements Not Met", "red");
+            WriteSectionHeader(Loc.Get("temple.requirements_not_met"), "red");
             terminal.SetColor("yellow");
             terminal.WriteLine(reason);
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("The Faith requires:");
-            terminal.WriteLine("• Level 10 or higher");
-            terminal.WriteLine("• Faith Standing 100+ (make gold offerings, pray daily)");
-            terminal.WriteLine($"  Your Faith Standing: {factionSystem.FactionStanding[UsurperRemake.Systems.Faction.TheFaith]}");
+            terminal.WriteLine(Loc.Get("temple.faith_requires"));
+            terminal.WriteLine(Loc.Get("temple.faith_req_level"));
+            terminal.WriteLine(Loc.Get("temple.faith_req_standing"));
+            terminal.WriteLine(Loc.Get("temple.faith_your_standing", factionSystem.FactionStanding[UsurperRemake.Systems.Faction.TheFaith]));
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("\"Return when your faith burns brighter,\" Mirael says kindly.");
-            terminal.WriteLine("\"Make offerings at our altars. Pray daily. Show your devotion.\"");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("temple.mirael_return"));
+            terminal.WriteLine(Loc.Get("temple.mirael_offerings"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             refreshMenu = true;
             return;
         }
 
         // Can join - offer the choice
-        WriteSectionHeader("Requirements Met", "bright_green");
+        WriteSectionHeader(Loc.Get("temple.requirements_met"), "bright_green");
         terminal.SetColor("white");
-        terminal.WriteLine("High Priestess Mirael extends her hand toward you.");
+        terminal.WriteLine(Loc.Get("temple.mirael_extends"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Your devotion has been noted. Your offerings accepted.\"");
-        terminal.WriteLine("\"Will you take the sacred oath and join The Faith?\"");
+        terminal.WriteLine(Loc.Get("temple.mirael_noted"));
+        terminal.WriteLine(Loc.Get("temple.mirael_oath"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("WARNING: Joining The Faith will:");
-        terminal.WriteLine("• Lock you out of The Crown and The Shadows");
-        terminal.WriteLine("• Decrease standing with rival factions by 100");
+        terminal.WriteLine(Loc.Get("temple.join_warning"));
+        terminal.WriteLine(Loc.Get("temple.join_lock_out"));
+        terminal.WriteLine(Loc.Get("temple.join_decrease"));
         terminal.WriteLine("");
 
-        var choice = await terminal.GetInputAsync("Join The Faith? (Y/N) ");
+        var choice = await terminal.GetInputAsync(Loc.Get("temple.join_prompt"));
 
         if (choice.ToUpper() == "Y")
         {
@@ -2768,12 +2768,12 @@ public partial class TempleLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Mirael nods with understanding.");
-            terminal.WriteLine("\"The path of faith is not for everyone. But know this:\"");
-            terminal.WriteLine("\"Our doors remain open, should you ever seek the light.\"");
+            terminal.WriteLine(Loc.Get("temple.mirael_understanding"));
+            terminal.WriteLine(Loc.Get("temple.mirael_not_for_everyone"));
+            terminal.WriteLine(Loc.Get("temple.mirael_doors_open"));
         }
 
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         refreshMenu = true;
     }
 
@@ -2783,54 +2783,54 @@ public partial class TempleLocation : BaseLocation
     private async Task PerformFaithOath(UsurperRemake.Systems.FactionSystem factionSystem)
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE SACRED OATH", "bright_yellow");
+        WriteBoxHeader(Loc.Get("temple.sacred_oath"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("You kneel before the sacred flames.");
-        terminal.WriteLine("High Priestess Mirael stands before you, her hands raised.");
+        terminal.WriteLine(Loc.Get("temple.kneel_sacred_flames"));
+        terminal.WriteLine(Loc.Get("temple.mirael_stands"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Repeat after me:\"");
+        terminal.WriteLine(Loc.Get("temple.repeat_after_me"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"I pledge my soul to the restoration of the gods.\"");
+        terminal.WriteLine(Loc.Get("temple.oath_line1"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"I will heal what is broken, mend what is torn.\"");
+        terminal.WriteLine(Loc.Get("temple.oath_line2"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"Through faith, I will be the light in darkness.\"");
+        terminal.WriteLine(Loc.Get("temple.oath_line3"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"Until the gods are pure, I shall not rest.\"");
+        terminal.WriteLine(Loc.Get("temple.oath_line4"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The sacred flames flare brightly, bathing you in warm light.");
-        terminal.WriteLine("You feel a profound sense of peace wash over you.");
+        terminal.WriteLine(Loc.Get("temple.flames_flare"));
+        terminal.WriteLine(Loc.Get("temple.profound_peace"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         // Actually join the faction
         factionSystem.JoinFaction(UsurperRemake.Systems.Faction.TheFaith, currentPlayer);
 
-        WriteBoxHeader("YOU HAVE JOINED THE FAITH", "bright_green");
+        WriteBoxHeader(Loc.Get("temple.joined_faith"), "bright_green");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Welcome, child of the light,\" Mirael says warmly.");
-        terminal.WriteLine("\"You are now one of us. May your faith never waver.\"");
+        terminal.WriteLine(Loc.Get("temple.mirael_welcome"));
+        terminal.WriteLine(Loc.Get("temple.mirael_never_waver"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("As a member of The Faith, you will receive:");
+        terminal.WriteLine(Loc.Get("temple.as_member_receive"));
         terminal.SetColor("bright_green");
-        terminal.WriteLine("• 25% discount on all healing services");
-        terminal.WriteLine("• Recognition from Temple NPCs");
-        terminal.WriteLine("• Access to Faith-only blessings and prayers");
+        terminal.WriteLine(Loc.Get("temple.receive_discount"));
+        terminal.WriteLine(Loc.Get("temple.receive_recognition"));
+        terminal.WriteLine(Loc.Get("temple.receive_blessings"));
         terminal.WriteLine("");
 
         // Generate news
@@ -2849,8 +2849,8 @@ public partial class TempleLocation : BaseLocation
         if (FactionSystem.Instance?.HasTempleAccess() != true)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  The Inner Sanctum is sealed to outsiders.");
-            terminal.WriteLine("  Only members of The Faith may enter.");
+            terminal.WriteLine("\n" + Loc.Get("temple.sanctum_sealed"));
+            terminal.WriteLine(Loc.Get("temple.sanctum_faith_only"));
             await Task.Delay(2000);
             return;
         }
@@ -2869,36 +2869,36 @@ public partial class TempleLocation : BaseLocation
         if (alreadyMeditated)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  You have already meditated today.");
-            terminal.WriteLine("  The sanctum will be ready again tomorrow.");
+            terminal.WriteLine("\n" + Loc.Get("temple.sanctum_already_meditated"));
+            terminal.WriteLine(Loc.Get("temple.sanctum_ready_tomorrow"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("THE INNER SANCTUM", "bright_cyan", 66);
+        WriteBoxHeader(Loc.Get("temple.inner_sanctum"), "bright_cyan", 66);
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("  A chamber of perfect stillness. Incense hangs in the air.");
-        terminal.WriteLine("  Ancient runes pulse faintly along the walls.");
+        terminal.WriteLine(Loc.Get("temple.sanctum_stillness"));
+        terminal.WriteLine(Loc.Get("temple.sanctum_runes"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\n  Deep meditation costs {GameConfig.InnerSanctumCost} gold.");
+        terminal.WriteLine("\n" + Loc.Get("temple.sanctum_cost", GameConfig.InnerSanctumCost));
         terminal.SetColor("cyan");
-        terminal.WriteLine("  The sanctum grants a permanent +1 to a random attribute.");
+        terminal.WriteLine(Loc.Get("temple.sanctum_grant"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  Gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("temple.sanctum_gold_label", currentPlayer.Gold.ToString("N0")));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("  Enter the sanctum? (Y/N): ");
+        var input = await terminal.GetInput(Loc.Get("temple.sanctum_enter_prompt"));
         if (input.Trim().ToUpper() != "Y")
             return;
 
         if (currentPlayer.Gold < GameConfig.InnerSanctumCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  You cant afford the offering.");
+            terminal.WriteLine(Loc.Get("temple.sanctum_cant_afford"));
             await Task.Delay(2000);
             return;
         }
@@ -2911,10 +2911,10 @@ public partial class TempleLocation : BaseLocation
             currentPlayer.InnerSanctumLastDay = DailySystemManager.Instance?.CurrentDay ?? 0;
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\n  You kneel on the cold stone and close your eyes...");
+        terminal.WriteLine("\n" + Loc.Get("temple.sanctum_kneel"));
         await Task.Delay(2000);
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("  Warmth floods through you. Something shifts within.");
+        terminal.WriteLine(Loc.Get("temple.sanctum_warmth"));
         await Task.Delay(1500);
 
         // Grant +1 to a random stat
@@ -2935,9 +2935,9 @@ public partial class TempleLocation : BaseLocation
         }
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"\n  +1 {statName}!");
+        terminal.WriteLine("\n" + Loc.Get("temple.sanctum_stat_gain", statName));
         terminal.SetColor("gray");
-        terminal.WriteLine("  The sanctum's power has left its mark on you.");
+        terminal.WriteLine(Loc.Get("temple.sanctum_power_mark"));
         terminal.WriteLine("");
 
         await terminal.PressAnyKey();
@@ -3006,13 +3006,13 @@ public partial class TempleLocation : BaseLocation
         var gods = await GetImmortalGodsAsync();
         if (gods.Count == 0)
         {
-            terminal.WriteLine("  There are no ascended gods to worship.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_ascended_gods"), "gray");
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("ALTARS OF THE ASCENDED", "bright_yellow");
+        WriteBoxHeader(Loc.Get("temple.altars_ascended"), "bright_yellow");
         terminal.WriteLine("");
 
         for (int i = 0; i < gods.Count; i++)
@@ -3047,7 +3047,7 @@ public partial class TempleLocation : BaseLocation
         }
 
         terminal.WriteLine("");
-        string input = await terminal.GetInputAsync("  Worship which god? (0 to cancel): ");
+        string input = await terminal.GetInputAsync(Loc.Get("temple.worship_which"));
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > gods.Count) return;
 
         var chosen = gods[idx - 1];
@@ -3055,7 +3055,7 @@ public partial class TempleLocation : BaseLocation
         // Check if already following this god
         if (currentPlayer.WorshippedGod == chosen.DivineName)
         {
-            terminal.WriteLine($"  You already follow {chosen.DivineName}.", "gray");
+            terminal.WriteLine(Loc.Get("temple.already_follow", chosen.DivineName), "gray");
             await terminal.PressAnyKey();
             return;
         }
@@ -3063,8 +3063,8 @@ public partial class TempleLocation : BaseLocation
         // If already following another player god, warn
         if (!string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
-            terminal.WriteLine($"  You currently follow {currentPlayer.WorshippedGod}.", "yellow");
-            string confirm = await terminal.GetInputAsync("  Abandon them? (Y/N): ");
+            terminal.WriteLine(Loc.Get("temple.currently_follow", currentPlayer.WorshippedGod), "yellow");
+            string confirm = await terminal.GetInputAsync(Loc.Get("temple.abandon_prompt"));
             if (confirm.Trim().ToUpper() != "Y") return;
         }
 
@@ -3072,14 +3072,14 @@ public partial class TempleLocation : BaseLocation
         string oldNpcGod = godSystem.GetPlayerGod(currentPlayer.Name2);
         if (!string.IsNullOrEmpty(oldNpcGod))
         {
-            terminal.WriteLine($"  You currently worship the elder god {oldNpcGod}.", "yellow");
-            string confirm = await terminal.GetInputAsync($"  Abandon {oldNpcGod} for a mortal-born god? (Y/N): ");
+            terminal.WriteLine(Loc.Get("temple.currently_worship_elder", oldNpcGod), "yellow");
+            string confirm = await terminal.GetInputAsync(Loc.Get("temple.abandon_elder_prompt", oldNpcGod));
             if (confirm.Trim().ToUpper() != "Y") return;
 
             godSystem.SetPlayerGod(currentPlayer.Name2, "");
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"  You renounce {oldNpcGod}!");
+            terminal.WriteLine(Loc.Get("temple.renounce_elder", oldNpcGod));
 
             // Divine retribution — the elder god may smite the apostate
             var rng = new Random();
@@ -3088,15 +3088,15 @@ public partial class TempleLocation : BaseLocation
                 long smiteDamage = Math.Max(1, (long)(currentPlayer.MaxHP * (0.1 + rng.NextDouble() * 0.2)));
                 currentPlayer.HP = Math.Max(1, currentPlayer.HP - smiteDamage);
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"  {oldNpcGod} strikes you down for your betrayal!");
+                terminal.WriteLine(Loc.Get("temple.elder_strikes", oldNpcGod));
                 terminal.SetColor("white");
-                terminal.WriteLine($"  You take {smiteDamage} damage! (HP: {currentPlayer.HP}/{currentPlayer.MaxHP})");
+                terminal.WriteLine(Loc.Get("temple.elder_damage", smiteDamage, currentPlayer.HP, currentPlayer.MaxHP));
                 await Task.Delay(1500);
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  {oldNpcGod} watches silently as you walk away...");
+                terminal.WriteLine(Loc.Get("temple.elder_watches", oldNpcGod));
                 await Task.Delay(1000);
             }
         }
@@ -3108,16 +3108,16 @@ public partial class TempleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  You kneel before the altar of {chosen.DivineName}.");
+        terminal.WriteLine(Loc.Get("temple.kneel_immortal", chosen.DivineName));
         terminal.SetColor("white");
-        terminal.WriteLine("  You feel a divine presence acknowledge you.");
+        terminal.WriteLine(Loc.Get("temple.divine_presence"));
 
         // Show boon effects the player will receive
         var effects = currentPlayer.CachedBoonEffects;
         if (effects != null && effects.HasAnyEffect)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  You feel their divine favors flow into you:");
+            terminal.WriteLine(Loc.Get("temple.divine_favors_flow"));
             foreach (var line in DivineBoonRegistry.GetEffectSummaryLines(chosen.DivineBoonConfig))
             {
                 terminal.SetColor("white");
@@ -3154,25 +3154,25 @@ public partial class TempleLocation : BaseLocation
         if (string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
             terminal.WriteLine(IsScreenReader
-                ? "  You must worship an immortal god first. Use J to join a flock."
-                : "  You must worship an immortal god first. Use [J] to join a flock.", "gray");
+                ? Loc.Get("temple.must_worship_immortal_sr")
+                : Loc.Get("temple.must_worship_immortal"), "gray");
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  Sacrifice gold to {currentPlayer.WorshippedGod}");
+        terminal.WriteLine(Loc.Get("temple.sacrifice_gold_to", currentPlayer.WorshippedGod));
         terminal.SetColor("white");
-        terminal.WriteLine($"  Gold on hand: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("temple.gold_on_hand", currentPlayer.Gold.ToString("N0")));
         terminal.WriteLine("");
 
-        string input = await terminal.GetInputAsync("  Amount to sacrifice (0 to cancel): ");
+        string input = await terminal.GetInputAsync(Loc.Get("temple.amount_to_sacrifice"));
         if (!long.TryParse(input, out long amount) || amount <= 0) return;
 
         if (amount > currentPlayer.Gold)
         {
-            terminal.WriteLine("  You don't have that much gold.", "red");
+            terminal.WriteLine(Loc.Get("temple.not_enough_gold_sacrifice"), "red");
             await terminal.PressAnyKey();
             return;
         }
@@ -3235,15 +3235,15 @@ public partial class TempleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"  You place {amount:N0} gold upon the altar of {currentPlayer.WorshippedGod}.");
+        terminal.WriteLine(Loc.Get("temple.gold_upon_altar", amount.ToString("N0"), currentPlayer.WorshippedGod));
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  The offering burns with divine fire! (Power: {power})");
+        terminal.WriteLine(Loc.Get("temple.offering_burns", power));
 
         // Small blessing for the worshipper
         if (power >= 3)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  You feel a warm glow of divine favor.");
+            terminal.WriteLine(Loc.Get("temple.warm_glow"));
         }
 
         terminal.WriteLine("");
@@ -3254,21 +3254,21 @@ public partial class TempleLocation : BaseLocation
     {
         if (string.IsNullOrEmpty(currentPlayer.WorshippedGod))
         {
-            terminal.WriteLine("  You don't follow any immortal god.", "gray");
+            terminal.WriteLine(Loc.Get("temple.no_immortal_god"), "gray");
             await terminal.PressAnyKey();
             return;
         }
 
         string godName = currentPlayer.WorshippedGod;
-        string confirm = await terminal.GetInputAsync($"  Abandon your faith in {godName}? (Y/N): ");
+        string confirm = await terminal.GetInputAsync(Loc.Get("temple.abandon_faith_prompt", godName));
         if (confirm.Trim().ToUpper() != "Y") return;
 
         currentPlayer.WorshippedGod = "";
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  You turn away from {godName}'s altar.");
+        terminal.WriteLine(Loc.Get("temple.turn_away", godName));
         terminal.SetColor("gray");
-        terminal.WriteLine("  You are once again without divine patronage.");
+        terminal.WriteLine(Loc.Get("temple.without_patronage"));
 
         // Persist atomically to DB so believer counts update immediately
         if (DoorMode.IsOnlineMode)

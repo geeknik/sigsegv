@@ -72,7 +72,7 @@ namespace UsurperRemake.Systems
             // Show skip hint
             terminal.Clear();
             terminal.WriteLine("");
-            terminal.WriteLine("  (Press SPACE at any time to skip through text faster)", "dark_gray");
+            terminal.WriteLine($"  ({Loc.Get("opening_story.skip_hint")})", "dark_gray");
             await SkippableDelay(2000);
 
             // Phase 1: The Awakening (mysterious dream-like intro)
@@ -154,7 +154,7 @@ namespace UsurperRemake.Systems
             await SkippableDelay(500);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "THE AWAKENING", "dark_cyan", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("opening_story.the_awakening"), "dark_cyan", 67);
             terminal.WriteLine("");
 
             await SkippableDelay(1000);
@@ -197,7 +197,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace UsurperRemake.Systems
             }
             else
             {
-                terminal.WriteLine("  --- A Letter to Yourself ---", "yellow");
+                terminal.WriteLine($"  --- {Loc.Get("opening_story.letter_title")} ---", "yellow");
                 await SkippableDelay(200);
                 terminal.WriteLine("", "yellow");
                 terminal.WriteLine("  To myself, if I survive:", "yellow");
@@ -298,11 +298,11 @@ namespace UsurperRemake.Systems
             await SkippableDelay(1000);
 
             terminal.WriteLine("");
-            terminal.WriteLine("  The parchment crumbles to dust in your hands.", "gray");
-            terminal.WriteLine("  But the words burn in your mind.", "white");
+            terminal.WriteLine($"  {Loc.Get("opening_story.parchment_crumbles")}", "gray");
+            terminal.WriteLine($"  {Loc.Get("opening_story.words_burn")}", "white");
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace UsurperRemake.Systems
             await SkippableDelay(500);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "YOUR JOURNEY BEGINS", "bright_cyan", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("opening_story.journey_begins"), "bright_cyan", 67);
             terminal.WriteLine("");
 
             await SkippableDelay(500);
@@ -362,28 +362,28 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("  ─────────────────────────────────────────────────────────", "dark_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("  WHAT TO DO:", "bright_green");
-            terminal.WriteLine("  - Explore the town and talk to NPCs", "green");
-            terminal.WriteLine("  - Equip yourself at the shops", "green");
-            terminal.WriteLine("  - Descend into the Dungeons to grow stronger", "green");
-            terminal.WriteLine("  - Find the Seven Seals to unlock the true ending", "green");
-            terminal.WriteLine("  - Pay attention to dreams and strange visions...", "cyan");
+            terminal.WriteLine($"  {Loc.Get("opening_story.what_to_do")}", "bright_green");
+            terminal.WriteLine($"  - {Loc.Get("opening_story.tip_explore")}", "green");
+            terminal.WriteLine($"  - {Loc.Get("opening_story.tip_equip")}", "green");
+            terminal.WriteLine($"  - {Loc.Get("opening_story.tip_dungeon")}", "green");
+            terminal.WriteLine($"  - {Loc.Get("opening_story.tip_seals")}", "green");
+            terminal.WriteLine($"  - {Loc.Get("opening_story.tip_dreams")}", "cyan");
             terminal.WriteLine("");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("  ─────────────────────────────────────────────────────────", "dark_cyan");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to begin your journey...");
+            await terminal.GetInputAsync($"  {Loc.Get("opening_story.press_enter_journey")}");
 
             // Final transition
             terminal.Clear();
             terminal.WriteLine("");
             terminal.WriteLine("");
             terminal.WriteLine("", "white");
-            terminal.WriteLine("        Welcome to the world of Usurper.", "bright_cyan");
+            terminal.WriteLine($"        {Loc.Get("opening_story.welcome")}", "bright_cyan");
             terminal.WriteLine("", "white");
-            terminal.WriteLine("        May you find what you seek...", "cyan");
-            terminal.WriteLine("        ...and remember what you've forgotten.", "gray");
+            terminal.WriteLine($"        {Loc.Get("opening_story.may_you_find")}", "cyan");
+            terminal.WriteLine($"        {Loc.Get("opening_story.remember_forgotten")}", "gray");
             terminal.WriteLine("");
             await SkippableDelay(3000);
         }
@@ -450,7 +450,7 @@ namespace UsurperRemake.Systems
 
             terminal.Clear();
             terminal.WriteLine("");
-            terminal.WriteLine("  (Press SPACE at any time to skip through text faster)", "dark_gray");
+            terminal.WriteLine($"  ({Loc.Get("opening_story.skip_hint")})", "dark_gray");
             await SkippableDelay(2000);
 
             terminal.Clear();
@@ -459,7 +459,7 @@ namespace UsurperRemake.Systems
             int cycle = StoryProgressionSystem.Instance.CurrentCycle;
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, $"CYCLE {cycle}", "bright_magenta", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("opening_story.cycle_header", cycle), "bright_magenta", 67);
             terminal.WriteLine("");
 
             await SkippableDelay(1000);
@@ -535,7 +535,7 @@ namespace UsurperRemake.Systems
             if (bonuses != null && bonuses.Count > 0)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Echoes of past cycles grant you power:", "bright_green");
+                terminal.WriteLine($"  {Loc.Get("opening_story.echoes_power")}", "bright_green");
                 foreach (var bonus in bonuses)
                 {
                     terminal.WriteLine($"    - {bonus}", "green");
@@ -543,7 +543,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue the cycle...");
+            await terminal.GetInputAsync($"  {Loc.Get("opening_story.press_enter_cycle")}");
 
             // Mark opening complete
             StoryProgressionSystem.Instance.SetStoryFlag("opening_complete", true);

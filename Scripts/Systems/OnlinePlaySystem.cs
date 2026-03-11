@@ -51,20 +51,20 @@ namespace UsurperRemake.Systems
         {
             terminal.ClearScreen();
 
-            UIHelper.WriteBoxHeader(terminal, "ONLINE PLAY", "bright_cyan");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("online.header"), "bright_cyan");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("  Connect to the Usurper Reborn online server.");
-            terminal.WriteLine("  Your online character is stored on the server - separate from local saves.");
+            terminal.WriteLine(Loc.Get("online.connect_desc"));
+            terminal.WriteLine(Loc.Get("online.separate_saves"));
             if (UsurperRemake.BBS.DoorMode.IsInDoorMode)
-                terminal.WriteLine("  You will be logged in automatically using your BBS username.");
+                terminal.WriteLine(Loc.Get("online.bbs_auto_login"));
             else
-                terminal.WriteLine("  You will login or create an account after connecting.");
+                terminal.WriteLine(Loc.Get("online.login_or_create"));
             terminal.WriteLine("");
 
             terminal.SetColor("bright_white");
-            terminal.Write("  Server: ");
+            terminal.Write($"  {Loc.Get("online.server_label")}");
             terminal.SetColor("bright_green");
             terminal.WriteLine($"{GameConfig.OnlineServerAddress}:{GameConfig.OnlineServerPort}");
             terminal.WriteLine("");
@@ -76,7 +76,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Connect");
+            terminal.WriteLine(Loc.Get("online.menu_connect"));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -85,11 +85,11 @@ namespace UsurperRemake.Systems
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("gray");
-            terminal.WriteLine("Back to Main Menu");
+            terminal.WriteLine(Loc.Get("online.menu_back"));
 
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            var menuChoice = await terminal.GetInput("  Your choice: ");
+            var menuChoice = await terminal.GetInput($"  {Loc.Get("ui.your_choice")}");
 
             if (menuChoice.Trim().ToUpper() != "C")
                 return;
@@ -105,7 +105,7 @@ namespace UsurperRemake.Systems
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"  Connecting to {server}:{port} (encrypted)...");
+            terminal.WriteLine(Loc.Get("online.connecting_encrypted", server, port));
 
             try
             {
@@ -124,7 +124,7 @@ namespace UsurperRemake.Systems
                 shellStream = sshClient.CreateShellStream("xterm", 80, 24, 800, 600, 4096, terminalModes);
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  Connected (SSH encrypted)!");
+                terminal.WriteLine(Loc.Get("online.connected_ssh"));
                 terminal.WriteLine("");
                 return true;
             }
@@ -132,25 +132,25 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("bright_red");
                 terminal.WriteLine("");
-                terminal.WriteLine($"  SSH connection failed: {ex.Message}");
+                terminal.WriteLine(Loc.Get("online.ssh_failed", ex.Message));
                 terminal.SetColor("gray");
-                terminal.WriteLine("  The server may be down or unreachable.");
+                terminal.WriteLine(Loc.Get("online.server_down"));
                 return false;
             }
             catch (System.Net.Sockets.SocketException ex)
             {
                 terminal.SetColor("bright_red");
                 terminal.WriteLine("");
-                terminal.WriteLine($"  Connection failed: {ex.Message}");
+                terminal.WriteLine(Loc.Get("online.connection_failed", ex.Message));
                 terminal.SetColor("gray");
-                terminal.WriteLine("  The server may be down or unreachable.");
+                terminal.WriteLine(Loc.Get("online.server_down"));
                 return false;
             }
             catch (Exception ex)
             {
                 terminal.SetColor("bright_red");
                 terminal.WriteLine("");
-                terminal.WriteLine($"  Error: {ex.Message}");
+                terminal.WriteLine(Loc.Get("online.error", ex.Message));
                 DebugLogger.Instance.LogError("ONLINE_PLAY", $"SSH connection error: {ex}");
                 return false;
             }
@@ -164,7 +164,7 @@ namespace UsurperRemake.Systems
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"  Connecting to {server}:{port} (telnet)...");
+            terminal.WriteLine(Loc.Get("online.connecting_telnet", server, port));
 
             try
             {
@@ -175,7 +175,7 @@ namespace UsurperRemake.Systems
                 if (await Task.WhenAny(connectTask, Task.Delay(10000)) != connectTask)
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("  Connection timed out.");
+                    terminal.WriteLine(Loc.Get("online.connection_timed_out"));
                     return false;
                 }
                 await connectTask; // propagate any exception
@@ -185,22 +185,22 @@ namespace UsurperRemake.Systems
                 tcpStream.WriteTimeout = 10000;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  Connected!");
+                terminal.WriteLine(Loc.Get("online.connected"));
                 terminal.WriteLine("");
                 return true;
             }
             catch (SocketException ex)
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"  Connection failed: {ex.Message}");
+                terminal.WriteLine(Loc.Get("online.connection_failed", ex.Message));
                 terminal.SetColor("gray");
-                terminal.WriteLine("  The server may be down or unreachable.");
+                terminal.WriteLine(Loc.Get("online.server_down"));
                 return false;
             }
             catch (Exception ex)
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"  Error: {ex.Message}");
+                terminal.WriteLine(Loc.Get("online.error", ex.Message));
                 DebugLogger.Instance.LogError("ONLINE_PLAY", $"TCP connection error: {ex}");
                 return false;
             }
@@ -318,7 +318,7 @@ namespace UsurperRemake.Systems
                 string bbsUsername = UsurperRemake.BBS.DoorMode.GetPlayerName() ?? "unknown";
                 string authHeader = $"AUTH:{bbsUsername}:BBS\n";
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Authenticating as {bbsUsername}...");
+                terminal.WriteLine(Loc.Get("online.authenticating_as", bbsUsername));
 
                 try
                 {
@@ -327,7 +327,7 @@ namespace UsurperRemake.Systems
                 catch
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("  Lost connection to server.");
+                    terminal.WriteLine(Loc.Get("online.lost_connection"));
                     await terminal.PressAnyKey();
                     Disconnect();
                     return;
@@ -344,22 +344,22 @@ namespace UsurperRemake.Systems
                         var errText = errEnd > errStart
                             ? authResponse.Substring(errStart, errEnd - errStart).Trim()
                             : authResponse.Substring(errStart).Trim();
-                        terminal.WriteLine($"  Auth failed: {errText}");
+                        terminal.WriteLine(Loc.Get("online.auth_failed", errText));
                     }
                     else
                     {
-                        terminal.WriteLine("  Auth failed: no response from server.");
+                        terminal.WriteLine(Loc.Get("online.auth_failed_no_response"));
                     }
                     terminal.SetColor("gray");
-                    terminal.WriteLine("  The server may need --auto-provision enabled for BBS passthrough.");
+                    terminal.WriteLine(Loc.Get("online.auto_provision_hint"));
                     await terminal.PressAnyKey();
                     Disconnect();
                     return;
                 }
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("  Authenticated!");
-                terminal.WriteLine("  Starting game session...");
+                terminal.WriteLine(Loc.Get("online.authenticated"));
+                terminal.WriteLine(Loc.Get("online.starting_session"));
                 terminal.WriteLine("");
 
                 cancellationSource = new CancellationTokenSource();
@@ -404,7 +404,7 @@ namespace UsurperRemake.Systems
                 if (savedCreds != null && attempts == 1)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  Logging in as {savedCreds.Username}...");
+                    terminal.WriteLine(Loc.Get("online.logging_in_as", savedCreds.Username));
 
                     string authLine = $"AUTH:{savedCreds.Username}:{savedCreds.GetDecodedPassword()}:{GetConnectionType()}\n";
                     WriteToServer(authLine);
@@ -413,7 +413,7 @@ namespace UsurperRemake.Systems
                     if (response != null && response.Contains("OK"))
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine("  Logged in!");
+                        terminal.WriteLine(Loc.Get("online.logged_in"));
                         authenticated = true;
                         break;
                     }
@@ -424,8 +424,8 @@ namespace UsurperRemake.Systems
                         var errMsg = response?.Contains("ERR:") == true
                             ? response.Substring(response.IndexOf("ERR:") + 4).Trim()
                             : "Connection lost";
-                        terminal.WriteLine($"  Saved login failed: {errMsg}");
-                        terminal.WriteLine("  Please log in manually.");
+                        terminal.WriteLine(Loc.Get("online.saved_login_failed", errMsg));
+                        terminal.WriteLine(Loc.Get("online.login_manually"));
                         terminal.WriteLine("");
                         DeleteSavedCredentials();
                         savedCreds = null;
@@ -455,7 +455,7 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine("  ──────────────────────────────────────");
                 }
                 terminal.SetColor("bright_white");
-                terminal.WriteLine("  Account Login");
+                terminal.WriteLine(Loc.Get("online.account_login"));
                 if (!GameConfig.ScreenReaderMode)
                 {
                     terminal.SetColor("bright_cyan");
@@ -465,9 +465,9 @@ namespace UsurperRemake.Systems
 
                 if (GameConfig.ScreenReaderMode)
                 {
-                    terminal.WriteLine("  L. Login to existing account", "white");
-                    terminal.WriteLine("  R. Register new account", "white");
-                    terminal.WriteLine("  Q. Quit", "gray");
+                    terminal.WriteLine($"  L. {Loc.Get("online.login_existing")}", "white");
+                    terminal.WriteLine($"  R. {Loc.Get("online.register_new")}", "white");
+                    terminal.WriteLine($"  Q. {Loc.Get("online.quit")}", "gray");
                 }
                 else
                 {
@@ -478,7 +478,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Login to existing account");
+                    terminal.WriteLine(Loc.Get("online.login_existing"));
 
                     terminal.SetColor("darkgray");
                     terminal.Write("  [");
@@ -487,7 +487,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine("Register new account");
+                    terminal.WriteLine(Loc.Get("online.register_new"));
 
                     terminal.SetColor("darkgray");
                     terminal.Write("  [");
@@ -496,12 +496,12 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Quit");
+                    terminal.WriteLine(Loc.Get("online.quit"));
                 }
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_white");
-                var choice = (await terminal.GetInput("  Choice: ")).Trim().ToUpper();
+                var choice = (await terminal.GetInput($"  {Loc.Get("ui.choice")}")).Trim().ToUpper();
 
                 if (choice == "Q" || string.IsNullOrEmpty(choice))
                 {
@@ -518,10 +518,10 @@ namespace UsurperRemake.Systems
                     // Login
                     terminal.WriteLine("");
                     terminal.SetColor("bright_white");
-                    username = (await terminal.GetInput("  Username: ")).Trim();
+                    username = (await terminal.GetInput($"  {Loc.Get("online.username_prompt")}")).Trim();
                     if (string.IsNullOrEmpty(username)) continue;
 
-                    terminal.Write("  Password: ", "bright_white");
+                    terminal.Write($"  {Loc.Get("online.password_prompt")}", "bright_white");
                     password = (await terminal.GetMaskedInput()).Trim();
                     if (string.IsNullOrEmpty(password)) continue;
                 }
@@ -530,35 +530,35 @@ namespace UsurperRemake.Systems
                     // Register
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    username = (await terminal.GetInput("  Choose a username: ")).Trim();
+                    username = (await terminal.GetInput($"  {Loc.Get("online.choose_username")}")).Trim();
                     if (string.IsNullOrEmpty(username)) continue;
 
                     if (username.Length < 2 || username.Length > 20)
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine("  Username must be 2-20 characters.");
+                        terminal.WriteLine(Loc.Get("online.username_length"));
                         terminal.WriteLine("");
                         continue;
                     }
 
-                    terminal.Write("  Choose a password: ", "bright_green");
+                    terminal.Write($"  {Loc.Get("online.choose_password")}", "bright_green");
                     password = (await terminal.GetMaskedInput()).Trim();
                     if (string.IsNullOrEmpty(password)) continue;
 
                     if (password.Length < 4)
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine("  Password must be at least 4 characters.");
+                        terminal.WriteLine(Loc.Get("online.password_length"));
                         terminal.WriteLine("");
                         continue;
                     }
 
-                    terminal.Write("  Confirm password: ", "bright_green");
+                    terminal.Write($"  {Loc.Get("online.confirm_password")}", "bright_green");
                     var confirm = (await terminal.GetMaskedInput()).Trim();
                     if (password != confirm)
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine("  Passwords do not match.");
+                        terminal.WriteLine(Loc.Get("online.passwords_no_match"));
                         terminal.WriteLine("");
                         continue;
                     }
@@ -585,7 +585,7 @@ namespace UsurperRemake.Systems
                 catch
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("  Lost connection to server.");
+                    terminal.WriteLine(Loc.Get("online.lost_connection"));
                     await terminal.PressAnyKey();
                     Disconnect();
                     return;
@@ -596,7 +596,7 @@ namespace UsurperRemake.Systems
                 if (authResponse == null)
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("  Server closed the connection.");
+                    terminal.WriteLine(Loc.Get("online.server_closed"));
                     await terminal.PressAnyKey();
                     Disconnect();
                     return;
@@ -641,25 +641,25 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("bright_green");
                     if (UsurperRemake.BBS.DoorMode.IsInDoorMode)
                     {
-                        terminal.WriteLine("  Authenticated!");
+                        terminal.WriteLine(Loc.Get("online.authenticated"));
                     }
                     else
                     {
-                        terminal.Write("  Authenticated! ");
+                        terminal.Write(Loc.Get("online.authenticated_prompt"));
                         terminal.SetColor("gray");
-                        var save = (await terminal.GetInput("Save credentials for next time? (Y/N): ")).Trim().ToUpper();
+                        var save = (await terminal.GetInput(Loc.Get("online.save_credentials_prompt"))).Trim().ToUpper();
                         if (save == "Y")
                         {
                             SaveCredentials(server, port, username!, password!);
                             terminal.SetColor("green");
-                            terminal.WriteLine("  Credentials saved.");
+                            terminal.WriteLine(Loc.Get("online.credentials_saved"));
                         }
                     }
                 }
                 else
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine($"  Unexpected response from server.");
+                    terminal.WriteLine(Loc.Get("online.unexpected_response"));
                     DebugLogger.Instance.LogError("ONLINE_PLAY", $"Unexpected auth response: {authResponse}");
                     Disconnect();
                     return;
@@ -669,7 +669,7 @@ namespace UsurperRemake.Systems
             if (!authenticated)
             {
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("  Too many failed attempts. Returning to menu.");
+                terminal.WriteLine(Loc.Get("online.too_many_attempts"));
                 await terminal.PressAnyKey();
                 Disconnect();
                 return;
@@ -677,7 +677,7 @@ namespace UsurperRemake.Systems
 
             // Auth succeeded — bridge local terminal ↔ SSH stream
             terminal.SetColor("bright_green");
-            terminal.WriteLine("  Starting game session...");
+            terminal.WriteLine(Loc.Get("online.starting_session"));
             terminal.WriteLine("");
 
             cancellationSource = new CancellationTokenSource();
@@ -802,7 +802,7 @@ namespace UsurperRemake.Systems
             if (!useTcpMode)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Press Ctrl+] to disconnect.");
+                terminal.WriteLine(Loc.Get("online.disconnect_hint"));
                 terminal.WriteLine("");
             }
 
@@ -1025,7 +1025,7 @@ namespace UsurperRemake.Systems
 
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("  Disconnected from server.");
+            terminal.WriteLine(Loc.Get("online.disconnected"));
             await Task.Delay(1500);
         }
 

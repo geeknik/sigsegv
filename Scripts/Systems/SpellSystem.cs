@@ -941,12 +941,9 @@ public static class SpellSystem
                 break;
 
             case 4: // Sleep
-                if (target != null)
-                {
-                    result.SpecialEffect = "sleep";
-                    result.Duration = (int)((random.Next(5) + 3 + (caster.Level / 20)) * profMult);
-                    result.Message += $" {target.Name2} falls into magical slumber!";
-                }
+                result.SpecialEffect = "sleep";
+                result.Duration = (int)((random.Next(5) + 3 + (caster.Level / 20)) * profMult);
+                result.Message += $" {target?.Name2 ?? "The enemy"} falls into magical slumber!";
                 break;
 
             case 5: // Frost Touch - Base: 40-58 damage
@@ -957,12 +954,9 @@ public static class SpellSystem
                 break;
 
             case 6: // Web
-                if (target != null)
-                {
-                    result.SpecialEffect = "web";
-                    result.Duration = (int)((random.Next(4) + 2 + (caster.Level / 20)) * profMult);
-                    result.Message += $" A Magic Web traps {target.Name2}!";
-                }
+                result.SpecialEffect = "web";
+                result.Duration = (int)((random.Next(4) + 2 + (caster.Level / 20)) * profMult);
+                result.Message += $" A Magic Web traps {target?.Name2 ?? "the enemy"}!";
                 break;
 
             case 7: // Haste - Attack bonus
@@ -990,12 +984,9 @@ public static class SpellSystem
                 break;
 
             case 10: // Fear
-                if (target != null)
-                {
-                    result.SpecialEffect = "fear";
-                    result.Duration = (int)((random.Next(6) + 2 + (caster.Level / 15)) * profMult);
-                    result.Message += $" {target.Name2} is overwhelmed by terror!";
-                }
+                result.SpecialEffect = "fear";
+                result.Duration = (int)((random.Next(6) + 2 + (caster.Level / 15)) * profMult);
+                result.Message += $" {target?.Name2 ?? "The enemy"} is overwhelmed by terror!";
                 break;
 
             case 11: // Lightning Bolt - Base: 60-80 damage
@@ -1130,12 +1121,9 @@ public static class SpellSystem
                 break;
 
             case 2: // Poison Touch - DoT
-                if (target != null)
-                {
-                    result.SpecialEffect = "poison";
-                    result.Duration = (int)((random.Next(6) + 3 + (caster.Level / 20)) * profMult);
-                    result.Message += $" {target.Name2} is poisoned!";
-                }
+                result.SpecialEffect = "poison";
+                result.Duration = (int)((random.Next(6) + 3 + (caster.Level / 20)) * profMult);
+                result.Message += $" {target?.Name2 ?? "The enemy"} is poisoned!";
                 break;
 
             case 3: // Mind Spike - Base: 12-22 damage
@@ -1146,12 +1134,9 @@ public static class SpellSystem
                 break;
 
             case 4: // Freeze
-                if (target != null)
-                {
-                    result.SpecialEffect = "freeze";
-                    result.Duration = (int)((random.Next(5) + 2 + (caster.Level / 20)) * profMult);
-                    result.Message += $" {target.Name2} is frozen in ice!";
-                }
+                result.SpecialEffect = "freeze";
+                result.Duration = (int)((random.Next(5) + 2 + (caster.Level / 20)) * profMult);
+                result.Message += $" {target?.Name2 ?? "The enemy"} is frozen in ice!";
                 break;
 
             case 5: // Duplicate - Protection +14
@@ -1169,12 +1154,9 @@ public static class SpellSystem
                 break;
 
             case 7: // Confusion
-                if (target != null)
-                {
-                    result.SpecialEffect = "confusion";
-                    result.Duration = (int)((random.Next(4) + 2 + (caster.Level / 20)) * profMult);
-                    result.Message += $" {target.Name2}'s mind becomes muddled!";
-                }
+                result.SpecialEffect = "confusion";
+                result.Duration = (int)((random.Next(4) + 2 + (caster.Level / 20)) * profMult);
+                result.Message += $" {target?.Name2 ?? "The enemy"}'s mind becomes muddled!";
                 break;
 
             // --- MID TIER (Levels 26-50) - Second Awakening ---
@@ -1222,12 +1204,9 @@ public static class SpellSystem
                 break;
 
             case 14: // Dominate
-                if (target != null)
-                {
-                    result.SpecialEffect = "dominate";
-                    result.Duration = (int)((random.Next(3) + 2 + (caster.Level / 25)) * profMult);
-                    result.Message += $" {caster.Name2} seizes control of {target.Name2}'s mind!";
-                }
+                result.SpecialEffect = "dominate";
+                result.Duration = (int)((random.Next(3) + 2 + (caster.Level / 25)) * profMult);
+                result.Message += $" {caster.Name2} seizes control of {target?.Name2 ?? "the enemy"}'s mind!";
                 break;
 
             // --- HIGH TIER (Levels 51-75) - Third Awakening ---

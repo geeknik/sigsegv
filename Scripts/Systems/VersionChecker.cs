@@ -328,12 +328,12 @@ namespace UsurperRemake.Systems
             bool isBBSMode = UsurperRemake.BBS.DoorMode.IsInDoorMode;
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "NEW VERSION AVAILABLE", "bright_yellow", 76);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("version.header"), "bright_yellow", 76);
             terminal.SetColor("white");
             terminal.WriteLine("");
-            terminal.WriteLine($"  Current version: {CurrentVersion}");
+            terminal.WriteLine($"  {Loc.Get("version.current", CurrentVersion)}");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"  Latest version:  {LatestVersion}");
+            terminal.WriteLine($"  {Loc.Get("version.latest", LatestVersion)}");
             terminal.SetColor("white");
             terminal.WriteLine("");
 
@@ -341,18 +341,18 @@ namespace UsurperRemake.Systems
             {
                 // In BBS mode, tell the player to notify their sysop
                 terminal.SetColor("cyan");
-                terminal.WriteLine("  A newer version of Usurper Reborn is available!");
-                terminal.WriteLine("  Please notify your SysOp to update the game.");
+                terminal.WriteLine($"  {Loc.Get("version.bbs_newer")}");
+                terminal.WriteLine($"  {Loc.Get("version.bbs_notify_sysop")}");
                 terminal.SetColor("gray");
                 terminal.WriteLine("");
-                terminal.WriteLine("  SysOp: Download the latest version at:");
+                terminal.WriteLine($"  {Loc.Get("version.bbs_sysop_download")}");
                 terminal.SetColor("cyan");
                 terminal.WriteLine($"  {ReleaseUrl}");
                 terminal.SetColor("white");
             }
             else
             {
-                terminal.WriteLine("  Download the latest version at:");
+                terminal.WriteLine($"  {Loc.Get("version.download_at")}");
                 terminal.SetColor("cyan");
                 terminal.WriteLine($"  {ReleaseUrl}");
                 terminal.SetColor("white");
@@ -368,7 +368,7 @@ namespace UsurperRemake.Systems
                     // Clean up markdown and show first few lines
                     notes = notes.Replace("#", "").Replace("*", "").Replace("\r", "");
                     var lines = notes.Split('\n');
-                    terminal.WriteLine("  Release notes:");
+                    terminal.WriteLine($"  {Loc.Get("version.release_notes")}");
                     for (int i = 0; i < Math.Min(lines.Length, 3); i++)
                     {
                         if (!string.IsNullOrWhiteSpace(lines[i]))
@@ -381,7 +381,7 @@ namespace UsurperRemake.Systems
 
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.Write("  Press any key to continue...");
+            terminal.Write($"  {Loc.Get("version.press_any_key")}");
             terminal.SetColor("white");
             await terminal.PressAnyKey();
             terminal.WriteLine("");
@@ -396,7 +396,7 @@ namespace UsurperRemake.Systems
                 return false;
 
             terminal.SetColor("cyan");
-            terminal.Write("  Would you like to open the download page? (Y/N): ");
+            terminal.Write($"  {Loc.Get("version.open_download_prompt")}");
             terminal.SetColor("white");
 
             var response = await terminal.ReadLineAsync();
@@ -906,9 +906,9 @@ rd /S /Q ""{tempDir}"" 2>nul
 
             terminal.SetColor("cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("  Auto-update is available for your platform!");
+            terminal.WriteLine($"  {Loc.Get("version.auto_update_available")}");
             terminal.WriteLine("");
-            terminal.Write("  Would you like to download and install automatically? (Y/N): ");
+            terminal.Write($"  {Loc.Get("version.auto_update_prompt")}");
             terminal.SetColor("white");
 
             var response = await terminal.ReadLineAsync();
@@ -916,7 +916,7 @@ rd /S /Q ""{tempDir}"" 2>nul
             {
                 // Offer manual download as fallback
                 terminal.SetColor("gray");
-                terminal.Write("  Would you like to open the download page instead? (Y/N): ");
+                terminal.Write($"  {Loc.Get("version.manual_download_prompt")}");
                 terminal.SetColor("white");
                 response = await terminal.ReadLineAsync();
                 if (response?.Trim().ToUpper() == "Y")
@@ -928,7 +928,7 @@ rd /S /Q ""{tempDir}"" 2>nul
 
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("  Downloading update...");
+            terminal.WriteLine($"  {Loc.Get("version.downloading")}");
             terminal.SetColor("white");
 
             var lastProgress = 0;
@@ -936,7 +936,7 @@ rd /S /Q ""{tempDir}"" 2>nul
             {
                 if (progress >= lastProgress + 10 || progress == 100)
                 {
-                    terminal.Write($"\r  Progress: {progress}%   ");
+                    terminal.Write($"\r  {Loc.Get("version.progress", progress)}   ");
                     lastProgress = progress;
                 }
             });
@@ -947,11 +947,11 @@ rd /S /Q ""{tempDir}"" 2>nul
             {
                 terminal.SetColor("bright_green");
                 terminal.WriteLine("");
-                terminal.WriteLine("  Update downloaded successfully!");
-                terminal.WriteLine("  The game will now close and update automatically.");
+                terminal.WriteLine($"  {Loc.Get("version.update_success")}");
+                terminal.WriteLine($"  {Loc.Get("version.update_close")}");
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.Write("  Press any key to continue...");
+                terminal.Write($"  {Loc.Get("version.press_any_key")}");
                 terminal.SetColor("white");
                 await terminal.PressAnyKey();
                 return true; // Signal that game should exit
@@ -962,7 +962,7 @@ rd /S /Q ""{tempDir}"" 2>nul
                 terminal.WriteLine($"  {DownloadError}");
                 terminal.SetColor("gray");
                 terminal.WriteLine("");
-                terminal.Write("  Would you like to open the download page instead? (Y/N): ");
+                terminal.Write($"  {Loc.Get("version.manual_download_prompt")}");
                 terminal.SetColor("white");
                 response = await terminal.ReadLineAsync();
                 if (response?.Trim().ToUpper() == "Y")

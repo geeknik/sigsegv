@@ -46,7 +46,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("red");
                 terminal.WriteLine("ACCESS DENIED: SysOp privileges required.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace UsurperRemake.Systems
                     DisplayOnlineConsole();
 
                     terminal.SetColor("gray");
-                    terminal.Write("Choice: ");
+                    terminal.Write(Loc.Get("ui.choice"));
                     var choice = await terminal.GetInputAsync("");
                     done = await ProcessOnlineChoice(choice);
                 }
@@ -72,7 +72,7 @@ namespace UsurperRemake.Systems
                     DisplayConsole();
 
                     terminal.SetColor("gray");
-                    terminal.Write("Choice: ");
+                    terminal.Write(Loc.Get("ui.choice"));
                     var choice = await terminal.GetInputAsync("");
                     done = await ProcessLocalChoice(choice);
                 }
@@ -141,7 +141,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("red");
                 terminal.WriteLine("Error: SQL backend not available for online mode.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return false;
             }
 
@@ -440,7 +440,7 @@ namespace UsurperRemake.Systems
                 terminal.ClearScreen();
                 terminal.SetColor("yellow");
                 terminal.WriteLine("No players found.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
@@ -818,7 +818,7 @@ namespace UsurperRemake.Systems
                 {
                     terminal.SetColor("gray");
                     terminal.WriteLine("No save directory found.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -831,7 +831,7 @@ namespace UsurperRemake.Systems
                 {
                     terminal.SetColor("gray");
                     terminal.WriteLine("No player saves found.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -865,7 +865,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.SetColor("gray");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task DeletePlayer()
@@ -893,7 +893,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("red");
                 terminal.WriteLine($"Player '{playerName}' not found.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
@@ -940,7 +940,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("Deletion cancelled.");
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task PardonPlayer()
@@ -969,7 +969,7 @@ namespace UsurperRemake.Systems
                 {
                     terminal.SetColor("red");
                     terminal.WriteLine($"Player '{playerName}' not found.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -989,7 +989,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("  [2] Clear Darkness (set to 0)");
                 terminal.WriteLine("  [3] Full pardon (release + clear Darkness)");
                 terminal.WriteLine("  [Q] Cancel");
-                terminal.Write("Choice: ");
+                terminal.Write(Loc.Get("ui.choice"));
                 var choice = await terminal.GetInputAsync("");
 
                 bool modified = false;
@@ -1016,8 +1016,8 @@ namespace UsurperRemake.Systems
                         break;
                     default:
                         terminal.SetColor("gray");
-                        terminal.WriteLine("Cancelled.");
-                        await terminal.GetInputAsync("Press Enter to continue...");
+                        terminal.WriteLine(Loc.Get("ui.cancelled"));
+                        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         return;
                 }
 
@@ -1036,7 +1036,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine($"Error pardoning player: {ex.Message}");
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         #endregion
@@ -1086,7 +1086,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("Game reset cancelled.");
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task PerformGameReset()
@@ -1225,7 +1225,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("");
 
                 terminal.SetColor("gray");
-                terminal.Write("Choice: ");
+                terminal.Write(Loc.Get("ui.choice"));
                 var choice = await terminal.GetInputAsync("");
 
                 switch (choice.ToUpper())
@@ -1246,7 +1246,7 @@ namespace UsurperRemake.Systems
                             terminal.SetColor("red");
                             terminal.WriteLine($"Invalid input '{xpInput}'. Please enter a number between 0.1 and 10.0.");
                         }
-                        await terminal.GetInputAsync("Press Enter to continue...");
+                        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         break;
 
                     case "2":
@@ -1265,7 +1265,7 @@ namespace UsurperRemake.Systems
                             terminal.SetColor("red");
                             terminal.WriteLine($"Invalid input '{goldInput}'. Please enter a number between 0.1 and 10.0.");
                         }
-                        await terminal.GetInputAsync("Press Enter to continue...");
+                        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         break;
 
                     case "3":
@@ -1284,7 +1284,7 @@ namespace UsurperRemake.Systems
                             terminal.SetColor("red");
                             terminal.WriteLine($"Invalid input '{hpInput}'. Please enter a number between 0.1 and 10.0.");
                         }
-                        await terminal.GetInputAsync("Press Enter to continue...");
+                        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         break;
 
                     case "4":
@@ -1303,7 +1303,7 @@ namespace UsurperRemake.Systems
                             terminal.SetColor("red");
                             terminal.WriteLine($"Invalid input '{dmgInput}'. Please enter a number between 0.1 and 10.0.");
                         }
-                        await terminal.GetInputAsync("Press Enter to continue...");
+                        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         break;
 
                     case "Q":
@@ -1348,7 +1348,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("red");
                 terminal.WriteLine($"Invalid input. Please enter a number between {GameConfig.MinBBSIdleTimeoutMinutes} and {GameConfig.MaxBBSIdleTimeoutMinutes}.");
             }
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task SetDefaultColorTheme()
@@ -1399,7 +1399,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("red");
                 terminal.WriteLine("Invalid choice.");
             }
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task ToggleOnlinePlay()
@@ -1459,7 +1459,7 @@ namespace UsurperRemake.Systems
                 {
                     terminal.SetColor("red");
                     terminal.WriteLine("Invalid port. Please enter a number between 1 and 65535.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
             }
@@ -1468,7 +1468,7 @@ namespace UsurperRemake.Systems
             terminal.SetColor("green");
             terminal.WriteLine($"Online server set to {GameConfig.OnlineServerAddress}:{GameConfig.OnlineServerPort} (saved).");
             DebugLogger.Instance.LogInfo("SYSOP", $"Online server changed to {GameConfig.OnlineServerAddress}:{GameConfig.OnlineServerPort}");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task SetMOTD()
@@ -1504,7 +1504,7 @@ namespace UsurperRemake.Systems
             }
 
             DebugLogger.Instance.LogInfo("SYSOP", $"MOTD changed to: {newMOTD}");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         #endregion
@@ -1584,7 +1584,7 @@ namespace UsurperRemake.Systems
                         }
                         else
                         {
-                            await terminal.GetInputAsync("Press Enter to continue...");
+                            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                         }
                         break;
                     }
@@ -1594,7 +1594,7 @@ namespace UsurperRemake.Systems
             {
                 terminal.SetColor("red");
                 terminal.WriteLine($"Error: {ex.Message}");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
         }
 
@@ -1623,7 +1623,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("gray");
                     terminal.WriteLine("  No players currently online.");
                     terminal.WriteLine("");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -1637,7 +1637,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("gray");
                     terminal.WriteLine("  No other players online to kick.");
                     terminal.WriteLine("");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -1678,13 +1678,13 @@ namespace UsurperRemake.Systems
                 }
 
                 terminal.WriteLine("");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
             catch (Exception ex)
             {
                 terminal.SetColor("red");
                 terminal.WriteLine($"Error: {ex.Message}");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
         }
 
@@ -1721,7 +1721,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.SetColor("gray");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task ViewOnlineStatistics(SqlSaveBackend sqlBackend)
@@ -1812,7 +1812,7 @@ namespace UsurperRemake.Systems
                     terminal.ClearScreen();
                     terminal.SetColor("gray");
                     terminal.WriteLine("No debug log found.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -1822,7 +1822,7 @@ namespace UsurperRemake.Systems
                     terminal.ClearScreen();
                     terminal.SetColor("gray");
                     terminal.WriteLine("Debug log is empty.");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -1881,7 +1881,7 @@ namespace UsurperRemake.Systems
                 terminal.ClearScreen();
                 terminal.SetColor("red");
                 terminal.WriteLine($"Error reading log: {ex.Message}");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
         }
 
@@ -1894,7 +1894,7 @@ namespace UsurperRemake.Systems
                 terminal.ClearScreen();
                 terminal.SetColor("gray");
                 terminal.WriteLine("No active NPCs found.");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
@@ -1963,7 +1963,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("This is a Steam build. Updates are handled automatically by Steam.");
                 terminal.WriteLine("Please check Steam for available updates.");
                 terminal.WriteLine("");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 return;
             }
 
@@ -1993,7 +1993,7 @@ namespace UsurperRemake.Systems
                     terminal.SetColor("cyan");
                     terminal.WriteLine("  https://github.com/binary-knight/usurper-reborn/releases/latest");
                     terminal.WriteLine("");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -2006,7 +2006,7 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine($"Current: {checker.CurrentVersion}");
                     terminal.WriteLine($"Latest:  {checker.LatestVersion}");
                     terminal.WriteLine("");
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                     return;
                 }
 
@@ -2056,7 +2056,7 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine("");
 
                     terminal.SetColor("gray");
-                    terminal.Write("Choice: ");
+                    terminal.Write(Loc.Get("ui.choice"));
                     var choice = await terminal.GetInputAsync("");
 
                     switch (choice)
@@ -2069,12 +2069,12 @@ namespace UsurperRemake.Systems
                             terminal.SetColor("green");
                             terminal.WriteLine("");
                             terminal.WriteLine("Opening download page in browser...");
-                            await terminal.GetInputAsync("Press Enter to continue...");
+                            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                             break;
                         default:
                             terminal.SetColor("gray");
                             terminal.WriteLine("Update skipped.");
-                            await terminal.GetInputAsync("Press Enter to continue...");
+                            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                             break;
                     }
                 }
@@ -2095,7 +2095,7 @@ namespace UsurperRemake.Systems
                         terminal.WriteLine("");
                         terminal.WriteLine("Opening download page in browser...");
                     }
-                    await terminal.GetInputAsync("Press Enter to continue...");
+                    await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
                 }
             }
             catch (Exception ex)
@@ -2103,7 +2103,7 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("red");
                 terminal.WriteLine($"Error checking for updates: {ex.Message}");
                 DebugLogger.Instance.LogError("SYSOP", $"Update check failed: {ex.Message}");
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
         }
 
@@ -2169,7 +2169,7 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine("Opening download page in browser...");
                 }
 
-                await terminal.GetInputAsync("Press Enter to continue...");
+                await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             }
         }
 
@@ -2251,7 +2251,7 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("");
 
                 terminal.SetColor("gray");
-                terminal.Write("Choice: ");
+                terminal.Write(Loc.Get("ui.choice"));
                 var choice = (await terminal.GetInputAsync("")).Trim().ToUpper();
 
                 switch (choice)

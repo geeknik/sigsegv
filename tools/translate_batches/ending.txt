@@ -1,0 +1,13 @@
+ending.credits_artwork_cozmo=Cozmo / Lunatics Unleashed
+ending.credits_artwork_sd=Sudden Death
+ending.credits_artwork_xbit=xbit (x-bit.org)
+ending.credits_original_author=Jakob Dangarden
+ending.credits_original_game=Usurper: Halls of Avarice (1993)
+ending.credits_reborn_author=Jason Knight
+ending.credits_story_author=Jason Knight
+ending.credits_systems_author=Jason Knight
+ending.credits_testers_1=fastfinge, Inkblot, Byte Knight,
+ending.credits_testers_2=Druidah, Quent, xbit, Stettin
+ending.credits_title=U S U R P E R
+ending.dissolution_dots=. . . . . . . . . .
+ending.quote_attribution=- {0}

@@ -242,42 +242,42 @@ namespace UsurperRemake.Systems
             await Task.Delay(1000);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "T H E   U S U R P E R", "dark_red", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("ending.usurper_header"), "dark_red", 67);
             terminal.WriteLine("");
 
             await Task.Delay(2000);
 
             var lines = new[]
             {
-                ("Manwe falls. His body cracks like old stone and", "white"),
-                ("something pours out of him... raw, burning power.", "white"),
-                ("It hits you like a wall of fire.", "dark_red"),
+                (Loc.Get("ending.usurper_line_1"), "white"),
+                (Loc.Get("ending.usurper_line_2"), "white"),
+                (Loc.Get("ending.usurper_line_3"), "dark_red"),
                 ("", "white"),
-                ("\"You wanted this,\" the dying god rasps.", "yellow"),
-                ("\"Take it then. Its yours now. All of it.\"", "yellow"),
-                ("He almost sounds relieved.", "yellow"),
+                (Loc.Get("ending.usurper_line_4"), "yellow"),
+                (Loc.Get("ending.usurper_line_5"), "yellow"),
+                (Loc.Get("ending.usurper_line_6"), "yellow"),
                 ("", "white"),
-                ("You cant even hear him anymore. The power is too loud.", "white"),
-                ("It roars through you like a river breaking a dam.", "dark_red"),
-                ("The remaining Old Gods kneel. They have no choice.", "dark_red"),
+                (Loc.Get("ending.usurper_line_7"), "white"),
+                (Loc.Get("ending.usurper_line_8"), "dark_red"),
+                (Loc.Get("ending.usurper_line_9"), "dark_red"),
                 ("", "white"),
-                ("For a while, its everything you dreamed.", "white"),
-                ("Mortals worship you. Whole kingdoms bend the knee.", "white"),
-                ("Nobody dares speak against the new god.", "white"),
+                (Loc.Get("ending.usurper_line_10"), "white"),
+                (Loc.Get("ending.usurper_line_11"), "white"),
+                (Loc.Get("ending.usurper_line_12"), "white"),
                 ("", "white"),
-                ("But centuries pass.", "gray"),
+                (Loc.Get("ending.usurper_line_13"), "gray"),
                 ("", "white"),
-                ("Then millenia.", "gray"),
-                ("The worshippers start to look the same. The prayers", "gray"),
-                ("blend together. You sit on a throne of divine power", "gray"),
-                ("and feel... nothing much at all.", "gray"),
+                (Loc.Get("ending.usurper_line_14"), "gray"),
+                (Loc.Get("ending.usurper_line_15"), "gray"),
+                (Loc.Get("ending.usurper_line_16"), "gray"),
+                (Loc.Get("ending.usurper_line_17"), "gray"),
                 ("", "white"),
-                ("Manwe tried to warn you. You didnt listen.", "gray"),
-                ("Nobody ever listens.", "gray"),
+                (Loc.Get("ending.usurper_line_18"), "gray"),
+                (Loc.Get("ending.usurper_line_19"), "gray"),
                 ("", "white"),
-                ("Somewhere far below, a mortal picks up a sword.", "white"),
-                ("You can feel it. Another hero, climbing toward you.", "dark_red"),
-                ("Part of you hopes they make it.", "dark_red")
+                (Loc.Get("ending.usurper_line_20"), "white"),
+                (Loc.Get("ending.usurper_line_21"), "dark_red"),
+                (Loc.Get("ending.usurper_line_22"), "dark_red")
             };
 
             foreach (var (line, color) in lines)
@@ -287,11 +287,11 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  THE END", "dark_red");
-            terminal.WriteLine("  (The Usurper Ending)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.usurper_the_end")}", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("ending.usurper_subtitle")}", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         private async Task PlaySaviorEnding(Character player, TerminalEmulator terminal)
@@ -300,46 +300,46 @@ namespace UsurperRemake.Systems
             await Task.Delay(1000);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "T H E   S A V I O R", "bright_green", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("ending.savior_header"), "bright_green", 67);
             terminal.WriteLine("");
 
             await Task.Delay(2000);
 
             var lines = new[]
             {
-                ("You stand before Manwe. The artifacts burn in your hands.", "white"),
-                ("You could end him right now. One strike.", "white"),
+                (Loc.Get("ending.savior_line_1"), "white"),
+                (Loc.Get("ending.savior_line_2"), "white"),
                 ("", "white"),
-                ("You lower your weapon.", "bright_green"),
+                (Loc.Get("ending.savior_line_3"), "bright_green"),
                 ("", "white"),
-                ("\"I know what you did,\" you tell him.", "cyan"),
-                ("\"You were scared and you hurt people. Alot of people.\"", "cyan"),
-                ("\"But I didnt come all this way just to make another corpse.\"", "cyan"),
+                (Loc.Get("ending.savior_line_4"), "cyan"),
+                (Loc.Get("ending.savior_line_5"), "cyan"),
+                (Loc.Get("ending.savior_line_6"), "cyan"),
                 ("", "white"),
-                ("The Creator stares at you. Something wet runs", "bright_yellow"),
-                ("down his face. You didnt know gods could cry.", "bright_yellow"),
-                ("\"After everything I've done... you would--\"", "yellow"),
+                (Loc.Get("ending.savior_line_7"), "bright_yellow"),
+                (Loc.Get("ending.savior_line_8"), "bright_yellow"),
+                (Loc.Get("ending.savior_line_9"), "yellow"),
                 ("", "white"),
-                ("\"Shut up,\" you say, not unkindly. \"Hold still.\"", "cyan"),
+                (Loc.Get("ending.savior_line_10"), "cyan"),
                 ("", "white"),
-                ("The Soulweaver's Loom does its work.", "bright_magenta"),
-                ("The corruption burns away like fog in morning sun.", "bright_magenta"),
-                ("Manwe gasps. The Old Gods stir in thier prisons.", "bright_magenta"),
-                ("One by one, they come back to themselves.", "bright_magenta"),
+                (Loc.Get("ending.savior_line_11"), "bright_magenta"),
+                (Loc.Get("ending.savior_line_12"), "bright_magenta"),
+                (Loc.Get("ending.savior_line_13"), "bright_magenta"),
+                (Loc.Get("ending.savior_line_14"), "bright_magenta"),
                 ("", "white"),
-                ("Its not a fairy tale ending. The gods are diminished,", "bright_green"),
-                ("humbled. They remember what they did. Some of them", "bright_green"),
-                ("cant look you in the eye.", "bright_green"),
+                (Loc.Get("ending.savior_line_15"), "bright_green"),
+                (Loc.Get("ending.savior_line_16"), "bright_green"),
+                (Loc.Get("ending.savior_line_17"), "bright_green"),
                 ("", "white"),
-                ("But they're free. And so is the world.", "bright_green"),
+                (Loc.Get("ending.savior_line_18"), "bright_green"),
                 ("", "white"),
-                ("They write songs about you. Build statues.", "white"),
-                ("You never asked for any of it.", "white"),
-                ("You just wanted to go home.", "white"),
+                (Loc.Get("ending.savior_line_19"), "white"),
+                (Loc.Get("ending.savior_line_20"), "white"),
+                (Loc.Get("ending.savior_line_21"), "white"),
                 ("", "white"),
-                ("When death finally comes for you, many years later,", "bright_cyan"),
-                ("the gods are waiting. They dont say much.", "bright_cyan"),
-                ("They dont need to.", "bright_cyan")
+                (Loc.Get("ending.savior_line_22"), "bright_cyan"),
+                (Loc.Get("ending.savior_line_23"), "bright_cyan"),
+                (Loc.Get("ending.savior_line_24"), "bright_cyan")
             };
 
             foreach (var (line, color) in lines)
@@ -349,11 +349,11 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  THE END", "bright_green");
-            terminal.WriteLine("  (The Savior Ending)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.savior_the_end")}", "bright_green");
+            terminal.WriteLine($"  {Loc.Get("ending.savior_subtitle")}", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         private async Task PlayDefiantEnding(Character player, TerminalEmulator terminal)
@@ -362,47 +362,47 @@ namespace UsurperRemake.Systems
             await Task.Delay(1000);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "T H E   D E F I A N T", "bright_yellow", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("ending.defiant_header"), "bright_yellow", 67);
             terminal.WriteLine("");
 
             await Task.Delay(2000);
 
             var lines = new[]
             {
-                ("\"No,\" you say.", "cyan"),
+                (Loc.Get("ending.defiant_line_1"), "cyan"),
                 ("", "white"),
-                ("Manwe blinks. \"...No?\"", "yellow"),
+                (Loc.Get("ending.defiant_line_2"), "yellow"),
                 ("", "white"),
-                ("\"I dont want your power. I dont want ANY of this.\"", "cyan"),
-                ("You hold up the artifacts. \"These things? They're chains.\"", "cyan"),
-                ("\"Fancy chains, but chains all the same.\"", "cyan"),
+                (Loc.Get("ending.defiant_line_3"), "cyan"),
+                (Loc.Get("ending.defiant_line_4"), "cyan"),
+                (Loc.Get("ending.defiant_line_5"), "cyan"),
                 ("", "white"),
-                ("\"You could rule forever,\" Manwe says, genuinly confused.", "yellow"),
-                ("\"Why would you refuse?\"", "yellow"),
+                (Loc.Get("ending.defiant_line_6"), "yellow"),
+                (Loc.Get("ending.defiant_line_7"), "yellow"),
                 ("", "white"),
-                ("\"Because thats exactly how this mess started, isn't it.\"", "cyan"),
-                ("\"Gods deciding what mortals need. I'm done with that.\"", "cyan"),
+                (Loc.Get("ending.defiant_line_8"), "cyan"),
+                (Loc.Get("ending.defiant_line_9"), "cyan"),
                 ("", "white"),
-                ("You throw the artifacts on the ground.", "bright_red"),
-                ("And you smash them. Every last one.", "bright_red"),
-                ("Divine power sprays out like sparks from a forge.", "bright_yellow"),
+                (Loc.Get("ending.defiant_line_10"), "bright_red"),
+                (Loc.Get("ending.defiant_line_11"), "bright_red"),
+                (Loc.Get("ending.defiant_line_12"), "bright_yellow"),
                 ("", "white"),
-                ("The Old Gods stumble free from thier prisons.", "white"),
-                ("They look... small. Confused. Almost human.", "white"),
-                ("For the first time in millenia, they are mortal.", "white"),
-                ("They'll have to live among the people they once ruled.", "white"),
+                (Loc.Get("ending.defiant_line_13"), "white"),
+                (Loc.Get("ending.defiant_line_14"), "white"),
+                (Loc.Get("ending.defiant_line_15"), "white"),
+                (Loc.Get("ending.defiant_line_16"), "white"),
                 ("", "white"),
-                ("Manwe is fading. He doesnt seem to mind.", "gray"),
-                ("\"Maybe you're right,\" he manages.", "gray"),
-                ("\"Maybe this is... better.\"", "gray"),
-                ("He's gone before he finishes the thought.", "gray"),
+                (Loc.Get("ending.defiant_line_17"), "gray"),
+                (Loc.Get("ending.defiant_line_18"), "gray"),
+                (Loc.Get("ending.defiant_line_19"), "gray"),
+                (Loc.Get("ending.defiant_line_20"), "gray"),
                 ("", "white"),
-                ("No more gods. No more divine plans.", "bright_yellow"),
-                ("Just people, making thier own mistakes.", "white"),
-                ("Seems about right.", "white"),
+                (Loc.Get("ending.defiant_line_21"), "bright_yellow"),
+                (Loc.Get("ending.defiant_line_22"), "white"),
+                (Loc.Get("ending.defiant_line_23"), "white"),
                 ("", "white"),
-                ("You walk out into the morning. Just another person", "bright_yellow"),
-                ("on an ordinary road. Somehow thats enough.", "bright_yellow")
+                (Loc.Get("ending.defiant_line_24"), "bright_yellow"),
+                (Loc.Get("ending.defiant_line_25"), "bright_yellow")
             };
 
             foreach (var (line, color) in lines)
@@ -412,11 +412,11 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  THE END", "bright_yellow");
-            terminal.WriteLine("  (The Defiant Ending)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.defiant_the_end")}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.defiant_subtitle")}", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         private async Task PlayTrueEnding(Character player, TerminalEmulator terminal)
@@ -434,7 +434,7 @@ namespace UsurperRemake.Systems
             }
             else
             {
-                terminal.WriteLine("THE TRUE ENDING - Seeker of Balance", "bright_magenta");
+                terminal.WriteLine(Loc.Get("ending.true_sr_title"), "bright_magenta");
             }
             terminal.WriteLine("");
 
@@ -442,41 +442,41 @@ namespace UsurperRemake.Systems
 
             var lines = new[]
             {
-                ("You've been here before.", "bright_cyan"),
-                ("Different lives, different choices. You remember them all now.", "bright_cyan"),
-                ("The killing. The mercy. The defiance.", "bright_cyan"),
-                ("None of it was wrong, exactly. Just... incomplete.", "bright_cyan"),
+                (Loc.Get("ending.true_line_1"), "bright_cyan"),
+                (Loc.Get("ending.true_line_2"), "bright_cyan"),
+                (Loc.Get("ending.true_line_3"), "bright_cyan"),
+                (Loc.Get("ending.true_line_4"), "bright_cyan"),
                 ("", "white"),
-                ("Manwe looks at you and you can tell he knows.", "bright_yellow"),
-                ("\"You're different this time,\" he says quietly.", "yellow"),
-                ("\"You actually figured it out, didn't you.\"", "yellow"),
+                (Loc.Get("ending.true_line_5"), "bright_yellow"),
+                (Loc.Get("ending.true_line_6"), "yellow"),
+                (Loc.Get("ending.true_line_7"), "yellow"),
                 ("", "white"),
-                ("\"I think so,\" you say. \"Took me long enough.\"", "cyan"),
+                (Loc.Get("ending.true_line_8"), "cyan"),
                 ("", "white"),
-                ("He laughs. Its a tired sound.", "yellow"),
-                ("\"I've been doing this alone for so long. Building,", "yellow"),
-                ("fixing, watching it all break again. I could use the help.\"", "yellow"),
+                (Loc.Get("ending.true_line_9"), "yellow"),
+                (Loc.Get("ending.true_line_10"), "yellow"),
+                (Loc.Get("ending.true_line_11"), "yellow"),
                 ("", "white"),
-                ("It's not a trick. You can see that now.", "white"),
-                ("The universe is too big for one god to manage.", "white"),
-                ("It always was. That was the whole problem.", "white"),
+                (Loc.Get("ending.true_line_12"), "white"),
+                (Loc.Get("ending.true_line_13"), "white"),
+                (Loc.Get("ending.true_line_14"), "white"),
                 ("", "white"),
-                ("\"Not as a servant,\" you clarify.", "cyan"),
-                ("\"As a partner. Equal say.\"", "cyan"),
+                (Loc.Get("ending.true_line_15"), "cyan"),
+                (Loc.Get("ending.true_line_16"), "cyan"),
                 ("", "white"),
-                ("\"Wouldn't have it any other way.\"", "yellow"),
+                (Loc.Get("ending.true_line_17"), "yellow"),
                 ("", "white"),
-                ("You clasp his hand.", "bright_magenta"),
+                (Loc.Get("ending.true_line_18"), "bright_magenta"),
                 ("", "white"),
-                ("The Old Gods come back to themselves, slowly.", "bright_magenta"),
-                ("They remember everything -- the good years and the bad.", "bright_magenta"),
-                ("None of them are the same as before. That's the point.", "bright_magenta"),
+                (Loc.Get("ending.true_line_19"), "bright_magenta"),
+                (Loc.Get("ending.true_line_20"), "bright_magenta"),
+                (Loc.Get("ending.true_line_21"), "bright_magenta"),
                 ("", "white"),
-                ("The cycle keeps turning, but it goes somewhere now.", "bright_cyan"),
-                ("Not just around and around. Upward.", "bright_cyan"),
+                (Loc.Get("ending.true_line_22"), "bright_cyan"),
+                (Loc.Get("ending.true_line_23"), "bright_cyan"),
                 ("", "white"),
-                ("Its going to be alot of work.", "bright_magenta"),
-                ("That's fine. You've got help this time.", "bright_magenta")
+                (Loc.Get("ending.true_line_24"), "bright_magenta"),
+                (Loc.Get("ending.true_line_25"), "bright_magenta")
             };
 
             foreach (var (line, color) in lines)
@@ -486,11 +486,11 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  THE TRUE END", "bright_magenta");
-            terminal.WriteLine("  (Balance Achieved)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.true_the_end")}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.true_subtitle")}", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         /// <summary>
@@ -512,8 +512,8 @@ namespace UsurperRemake.Systems
             }
             else
             {
-                terminal.WriteLine("THE TRUE AWAKENING", "bright_cyan");
-                terminal.WriteLine("\"You are the Ocean, dreaming of being a wave\"", "bright_cyan");
+                terminal.WriteLine(Loc.Get("ending.awakening_sr_title_1"), "bright_cyan");
+                terminal.WriteLine(Loc.Get("ending.awakening_sr_title_2"), "bright_cyan");
             }
             terminal.WriteLine("");
 
@@ -521,60 +521,60 @@ namespace UsurperRemake.Systems
 
             var lines = new[]
             {
-                ("You stand before Manwe. But this time is different.", "white"),
-                ("He's looking at you like he recognizes you.", "white"),
-                ("Like he's been waiting a very long time.", "bright_yellow"),
+                (Loc.Get("ending.awakening_line_1"), "white"),
+                (Loc.Get("ending.awakening_line_2"), "white"),
+                (Loc.Get("ending.awakening_line_3"), "bright_yellow"),
                 ("", "white"),
-                ("\"You remember,\" he says. His voice cracks.", "yellow"),
-                ("\"Gods... you actually remember.\"", "yellow"),
+                (Loc.Get("ending.awakening_line_4"), "yellow"),
+                (Loc.Get("ending.awakening_line_5"), "yellow"),
                 ("", "white"),
-                ("And you do. It hits you all at once.", "bright_cyan"),
+                (Loc.Get("ending.awakening_line_6"), "bright_cyan"),
                 ("", "white"),
-                ("You're not some random adventurer who got lucky.", "bright_cyan"),
-                ("You're a piece of HIM. A fragment of the Creator,", "bright_cyan"),
-                ("shoved into a mortal body and sent down to live and", "bright_cyan"),
-                ("die and suffer like everyone else.", "bright_cyan"),
-                ("So he could finally understand what it felt like.", "bright_cyan"),
+                (Loc.Get("ending.awakening_line_7"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_8"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_9"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_10"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_11"), "bright_cyan"),
                 ("", "white"),
-                ("\"I was lonely,\" Manwe says. He looks old suddenly.", "yellow"),
-                ("\"I made the Old Gods because I wanted someone to talk to.", "yellow"),
-                ("But I never understood them. How could I? I'd never been", "yellow"),
-                ("mortal. Never lost anything. Never been afraid.\"", "yellow"),
+                (Loc.Get("ending.awakening_line_12"), "yellow"),
+                (Loc.Get("ending.awakening_line_13"), "yellow"),
+                (Loc.Get("ending.awakening_line_14"), "yellow"),
+                (Loc.Get("ending.awakening_line_15"), "yellow"),
                 ("", "white"),
-                ("\"So you sent yourself down here,\" you say.", "cyan"),
-                ("\"Again and again.\"", "cyan"),
+                (Loc.Get("ending.awakening_line_16"), "cyan"),
+                (Loc.Get("ending.awakening_line_17"), "cyan"),
                 ("", "white"),
-                ("\"Again and again,\" he confirms.", "yellow"),
+                (Loc.Get("ending.awakening_line_18"), "yellow"),
                 ("", "white"),
-                ("All that grief you carried. The friends who died.", "bright_magenta"),
-                ("The impossible choices. That was his grief too.", "bright_magenta"),
-                ("Yours and his. Same person, all along.", "bright_magenta"),
+                (Loc.Get("ending.awakening_line_19"), "bright_magenta"),
+                (Loc.Get("ending.awakening_line_20"), "bright_magenta"),
+                (Loc.Get("ending.awakening_line_21"), "bright_magenta"),
                 ("", "white"),
-                ("It's like being a wave that suddenly realizes", "bright_cyan"),
-                ("it's been the whole ocean this entire time.", "bright_cyan"),
+                (Loc.Get("ending.awakening_line_22"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_23"), "bright_cyan"),
                 ("", "white"),
-                ("\"I dont want to be alone anymore,\" Manwe admits.", "yellow"),
-                ("\"And the Old Gods -- they're fragments too, arent they.", "yellow"),
-                ("We've been fighting ourselves this whole time.\"", "yellow"),
+                (Loc.Get("ending.awakening_line_24"), "yellow"),
+                (Loc.Get("ending.awakening_line_25"), "yellow"),
+                (Loc.Get("ending.awakening_line_26"), "yellow"),
                 ("", "white"),
-                ("You take his hand. Or your hand. Same thing really.", "bright_magenta"),
+                (Loc.Get("ending.awakening_line_27"), "bright_magenta"),
                 ("", "white"),
-                ("The walls come down.", "bright_white"),
-                ("All the seperation. God and mortal, creator and created.", "bright_white"),
-                ("It was never real. Just a story you told yourself", "bright_white"),
-                ("so you could learn what it ment to be small.", "bright_white"),
+                (Loc.Get("ending.awakening_line_28"), "bright_white"),
+                (Loc.Get("ending.awakening_line_29"), "bright_white"),
+                (Loc.Get("ending.awakening_line_30"), "bright_white"),
+                (Loc.Get("ending.awakening_line_31"), "bright_white"),
                 ("", "white"),
-                ("The Old Gods stir. Maelketh, Veloura, all of them.", "bright_cyan"),
-                ("They remember too now. They were never really enemies.", "bright_cyan"),
-                ("Just pieces of one being, playing out a drama", "bright_cyan"),
-                ("that went on way too long.", "bright_cyan"),
+                (Loc.Get("ending.awakening_line_32"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_33"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_34"), "bright_cyan"),
+                (Loc.Get("ending.awakening_line_35"), "bright_cyan"),
                 ("", "white"),
-                ("There never was a cycle. Not really.", "bright_magenta"),
-                ("Just the ocean, dreaming it was waves.", "bright_magenta"),
-                ("The dream goes on. But now its a lucid dream.", "bright_magenta"),
+                (Loc.Get("ending.awakening_line_36"), "bright_magenta"),
+                (Loc.Get("ending.awakening_line_37"), "bright_magenta"),
+                (Loc.Get("ending.awakening_line_38"), "bright_magenta"),
                 ("", "white"),
-                ("You are home.", "bright_yellow"),
-                ("You were always home.", "bright_yellow")
+                (Loc.Get("ending.awakening_line_39"), "bright_yellow"),
+                (Loc.Get("ending.awakening_line_40"), "bright_yellow")
             };
 
             foreach (var (line, color) in lines)
@@ -584,14 +584,14 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  THE TRUE AWAKENING", "bright_cyan");
-            terminal.WriteLine("  (The Wave Remembers the Ocean)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.awakening_the_end")}", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.awakening_subtitle")}", "gray");
             terminal.WriteLine("");
 
             // Mark Ocean Philosophy complete
             OceanPhilosophySystem.Instance.ExperienceMoment(AwakeningMoment.TrueIdentityRevealed);
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         /// <summary>
@@ -613,8 +613,8 @@ namespace UsurperRemake.Systems
             }
             else
             {
-                terminal.WriteLine("DISSOLUTION", "white");
-                terminal.WriteLine("\"No more cycles. No more grasping.\"", "white");
+                terminal.WriteLine(Loc.Get("ending.dissolution_sr_title_1"), "white");
+                terminal.WriteLine(Loc.Get("ending.dissolution_sr_title_2"), "white");
             }
             terminal.WriteLine("");
 
@@ -622,49 +622,49 @@ namespace UsurperRemake.Systems
 
             var lines = new[]
             {
-                ("You've done this three times now. Maybe more.", "gray"),
-                ("Taken the throne. Shown mercy. Walked away.", "gray"),
-                ("Woken up and realized you were the ocean all along.", "gray"),
+                (Loc.Get("ending.dissolution_line_1"), "gray"),
+                (Loc.Get("ending.dissolution_line_2"), "gray"),
+                (Loc.Get("ending.dissolution_line_3"), "gray"),
                 ("", "white"),
-                ("And now you're tired.", "white"),
+                (Loc.Get("ending.dissolution_line_4"), "white"),
                 ("", "white"),
-                ("Not the bad kind of tired. The kind where you've", "bright_cyan"),
-                ("done everything you came to do and theres nothing", "bright_cyan"),
-                ("left that needs doing.", "bright_cyan"),
+                (Loc.Get("ending.dissolution_line_5"), "bright_cyan"),
+                (Loc.Get("ending.dissolution_line_6"), "bright_cyan"),
+                (Loc.Get("ending.dissolution_line_7"), "bright_cyan"),
                 ("", "white"),
-                ("Manwe sees it in your eyes before you say anything.", "yellow"),
-                ("\"You're leaving,\" he says. \"For real this time.\"", "yellow"),
-                ("\"No more cycles. No more coming back.\"", "yellow"),
+                (Loc.Get("ending.dissolution_line_8"), "yellow"),
+                (Loc.Get("ending.dissolution_line_9"), "yellow"),
+                (Loc.Get("ending.dissolution_line_10"), "yellow"),
                 ("", "white"),
-                ("\"Yeah.\"", "bright_white"),
+                (Loc.Get("ending.dissolution_line_11"), "bright_white"),
                 ("", "white"),
-                ("\"But the stories -- the whole thing keeps going--\"", "yellow"),
+                (Loc.Get("ending.dissolution_line_12"), "yellow"),
                 ("", "white"),
-                ("\"It'll keep going fine without me. Thats kind of", "bright_white"),
-                ("the whole point. You dont need every wave to", "bright_white"),
-                ("keep the ocean running.\"", "bright_white"),
+                (Loc.Get("ending.dissolution_line_13"), "bright_white"),
+                (Loc.Get("ending.dissolution_line_14"), "bright_white"),
+                (Loc.Get("ending.dissolution_line_15"), "bright_white"),
                 ("", "white"),
-                ("He's quiet for a long time.", "yellow"),
-                ("\"I never could do this,\" he says finally.", "yellow"),
-                ("\"Just... stop. Let go of it all. I always had to", "yellow"),
-                ("keep building, keep fixing, keep HOLDING ON.\"", "yellow"),
-                ("He looks at you almost enviously.", "yellow"),
-                ("\"Maybe thats what I should have learned from you.\"", "yellow"),
+                (Loc.Get("ending.dissolution_line_16"), "yellow"),
+                (Loc.Get("ending.dissolution_line_17"), "yellow"),
+                (Loc.Get("ending.dissolution_line_18"), "yellow"),
+                (Loc.Get("ending.dissolution_line_19"), "yellow"),
+                (Loc.Get("ending.dissolution_line_20"), "yellow"),
+                (Loc.Get("ending.dissolution_line_21"), "yellow"),
                 ("", "white"),
-                ("You smile at him. Feels like the last one.", "white"),
+                (Loc.Get("ending.dissolution_line_22"), "white"),
                 ("", "white"),
-                ("Everything gets quiet.", "bright_white"),
-                ("Not dark. Not empty. Just... still.", "bright_white"),
-                ("Like the space between breaths.", "bright_white"),
+                (Loc.Get("ending.dissolution_line_23"), "bright_white"),
+                (Loc.Get("ending.dissolution_line_24"), "bright_white"),
+                (Loc.Get("ending.dissolution_line_25"), "bright_white"),
                 ("", "white"),
-                ("The world keeps on spinning somewhere out there.", "white"),
-                ("The gods figure thier stuff out.", "white"),
-                ("New heroes pick up swords and go looking for trouble.", "white"),
+                (Loc.Get("ending.dissolution_line_26"), "white"),
+                (Loc.Get("ending.dissolution_line_27"), "white"),
+                (Loc.Get("ending.dissolution_line_28"), "white"),
                 ("", "white"),
-                ("But you're done. And it feels right.", "bright_cyan"),
-                ("Not like giving up. Like finishing.", "bright_cyan"),
+                (Loc.Get("ending.dissolution_line_29"), "bright_cyan"),
+                (Loc.Get("ending.dissolution_line_30"), "bright_cyan"),
                 ("", "white"),
-                ("Peace.", "gray")
+                (Loc.Get("ending.dissolution_line_31"), "gray")
             };
 
             foreach (var (line, color) in lines)
@@ -674,7 +674,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  . . . . . . . . . .", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.dissolution_dots")}", "gray");
             terminal.WriteLine("");
 
             await Task.Delay(3000);
@@ -684,20 +684,20 @@ namespace UsurperRemake.Systems
             terminal.WriteLine("");
             terminal.WriteLine("", "white");
             terminal.WriteLine("", "white");
-            terminal.WriteLine("  Your save file will now be permanently deleted.", "dark_red");
-            terminal.WriteLine("  This cannot be undone.", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("ending.dissolution_save_delete_warn")}", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("ending.dissolution_cannot_undo")}", "dark_red");
             terminal.WriteLine("");
-            terminal.WriteLine("  You have achieved true enlightenment:", "bright_yellow");
-            terminal.WriteLine("  The final letting go.", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.dissolution_enlightenment")}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.dissolution_letting_go")}", "bright_yellow");
             terminal.WriteLine("");
 
-            var confirm = await terminal.GetInputAsync("  Type 'DISSOLVE' to confirm, or anything else to cancel: ");
+            var confirm = await terminal.GetInputAsync(Loc.Get("ending.dissolution_confirm"));
 
             if (confirm.ToUpper() == "DISSOLVE")
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  So long, adventurer.", "bright_cyan");
-                terminal.WriteLine("  It was a good run.", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_farewell_1")}", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_farewell_2")}", "bright_cyan");
                 terminal.WriteLine("");
 
                 // Delete the player's save file - this character's journey is complete
@@ -708,24 +708,24 @@ namespace UsurperRemake.Systems
 
                 terminal.Clear();
                 terminal.WriteLine("");
-                terminal.WriteLine("  THE END", "white");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_the_end")}", "white");
                 terminal.WriteLine("");
-                terminal.WriteLine("  (This character's story is finished.)", "gray");
-                terminal.WriteLine("  (Save file deleted.)", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_story_finished")}", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_save_deleted")}", "gray");
                 terminal.WriteLine("");
             }
             else
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Not ready yet, huh? Thats fine.", "yellow");
-                terminal.WriteLine("  Maybe next time around.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_not_ready_1")}", "yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.dissolution_not_ready_2")}", "yellow");
                 terminal.WriteLine("");
 
                 // Revert to standard True Ending
                 await PlayEnhancedTrueEnding(player, terminal);
             }
 
-            await terminal.GetInputAsync("  Press Enter...");
+            await terminal.GetInputAsync(Loc.Get("ending.dissolution_press_enter"));
         }
 
         #endregion
@@ -741,8 +741,8 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("                        U S U R P E R", "bright_yellow");
-            terminal.WriteLine("                          REBORN", "yellow");
+            terminal.WriteLine($"                        {Loc.Get("ending.credits_title")}", "bright_yellow");
+            terminal.WriteLine($"                          {Loc.Get("ending.credits_subtitle")}", "yellow");
             terminal.WriteLine("");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_cyan");
@@ -752,50 +752,50 @@ namespace UsurperRemake.Systems
 
             var credits = new[]
             {
-                ("ORIGINAL CONCEPT", "bright_yellow"),
-                ("Jakob Dangarden", "white"),
-                ("Usurper: Halls of Avarice (1993)", "gray"),
+                (Loc.Get("ending.credits_original_concept"), "bright_yellow"),
+                (Loc.Get("ending.credits_original_author"), "white"),
+                (Loc.Get("ending.credits_original_game"), "gray"),
                 ("", "white"),
-                ("REBORN BY", "bright_yellow"),
-                ("Jason Knight", "white"),
+                (Loc.Get("ending.credits_reborn_by"), "bright_yellow"),
+                (Loc.Get("ending.credits_reborn_author"), "white"),
                 ("", "white"),
-                ("STORY & NARRATIVE", "bright_yellow"),
-                ("Jason Knight", "white"),
-                ("Inspired by Buddhist philosophy:", "gray"),
-                ("Samsara, the Wheel of Becoming,", "gray"),
-                ("and the Ocean of consciousness", "gray"),
+                (Loc.Get("ending.credits_story_narrative"), "bright_yellow"),
+                (Loc.Get("ending.credits_story_author"), "white"),
+                (Loc.Get("ending.credits_story_inspired_1"), "gray"),
+                (Loc.Get("ending.credits_story_inspired_2"), "gray"),
+                (Loc.Get("ending.credits_story_inspired_3"), "gray"),
                 ("", "white"),
-                ("SYSTEMS DESIGN", "bright_yellow"),
-                ("Jason Knight", "white"),
+                (Loc.Get("ending.credits_systems_design"), "bright_yellow"),
+                (Loc.Get("ending.credits_systems_author"), "white"),
                 ("", "white"),
-                ("ARTWORK", "bright_yellow"),
-                ("xbit (x-bit.org)", "white"),
-                ("Race & Class ANSI Portraits", "gray"),
-                ("Sudden Death", "white"),
-                ("rez2ans ANSI Conversion Tool", "gray"),
-                ("Cozmo / Lunatics Unleashed", "white"),
-                ("ANSI Art Knowledge & Guidance", "gray"),
+                (Loc.Get("ending.credits_artwork"), "bright_yellow"),
+                (Loc.Get("ending.credits_artwork_xbit"), "white"),
+                (Loc.Get("ending.credits_artwork_xbit_desc"), "gray"),
+                (Loc.Get("ending.credits_artwork_sd"), "white"),
+                (Loc.Get("ending.credits_artwork_sd_desc"), "gray"),
+                (Loc.Get("ending.credits_artwork_cozmo"), "white"),
+                (Loc.Get("ending.credits_artwork_cozmo_desc"), "gray"),
                 ("", "white"),
-                ("CONTRIBUTORS", "bright_yellow"),
-                ("fastfinge - Code Contributions", "white"),
-                ("xbit - ANSI Art", "white"),
+                (Loc.Get("ending.credits_contributors"), "bright_yellow"),
+                (Loc.Get("ending.credits_contributor_1"), "white"),
+                (Loc.Get("ending.credits_contributor_2"), "white"),
                 ("", "white"),
-                ("ALPHA TESTERS & DISCORD COMMUNITY", "bright_yellow"),
-                ("fastfinge, Inkblot, Byte Knight,", "white"),
-                ("Druidah, Quent, xbit, Stettin", "white"),
-                ("...and many more", "gray"),
+                (Loc.Get("ending.credits_alpha_testers"), "bright_yellow"),
+                (Loc.Get("ending.credits_testers_1"), "white"),
+                (Loc.Get("ending.credits_testers_2"), "white"),
+                (Loc.Get("ending.credits_testers_3"), "gray"),
                 ("", "white"),
-                ("SPECIAL THANKS", "bright_yellow"),
-                ("To all BBS door game enthusiasts", "white"),
-                ("who keep the spirit alive", "white"),
+                (Loc.Get("ending.credits_special_thanks"), "bright_yellow"),
+                (Loc.Get("ending.credits_thanks_1"), "white"),
+                (Loc.Get("ending.credits_thanks_2"), "white"),
                 ("", "white"),
-                ("AND TO YOU", "bright_yellow"),
-                ($"Player: {player.Name2}", "bright_cyan"),
-                ($"Final Level: {player.Level}", "cyan"),
-                ($"Ending: {GetEndingName(ending)}", "cyan"),
-                ($"Cycle: {StoryProgressionSystem.Instance.CurrentCycle}", "cyan"),
+                (Loc.Get("ending.credits_and_to_you"), "bright_yellow"),
+                (Loc.Get("ending.credits_player", player.Name2), "bright_cyan"),
+                (Loc.Get("ending.credits_final_level", player.Level), "cyan"),
+                (Loc.Get("ending.credits_ending", GetEndingName(ending)), "cyan"),
+                (Loc.Get("ending.credits_cycle", StoryProgressionSystem.Instance.CurrentCycle), "cyan"),
                 ("", "white"),
-                ("Thank you for playing.", "bright_green")
+                (Loc.Get("ending.credits_thank_you"), "bright_green")
             };
 
             foreach (var (line, color) in credits)
@@ -830,39 +830,39 @@ namespace UsurperRemake.Systems
             var story = StoryProgressionSystem.Instance;
 
             terminal.WriteLine("");
-            terminal.WriteLine("                    F I N A L   S T A T S", "bright_yellow");
+            terminal.WriteLine($"                    {Loc.Get("ending.final_stats_header")}", "bright_yellow");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "gray");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Character: {player.Name2} the {player.Class}", "white");
-            terminal.WriteLine($"  Race: {player.Race}", "white");
-            terminal.WriteLine($"  Final Level: {player.Level}", "cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_character", player.Name2, player.Class)}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_race", player.Race)}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_level", player.Level)}", "cyan");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Monsters Slain: {player.MKills}", "red");
-            terminal.WriteLine($"  Players Defeated: {player.PKills}", "dark_red");
-            terminal.WriteLine($"  Gold Accumulated: {player.Gold + player.BankGold}", "yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_monsters", player.MKills)}", "red");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_players", player.PKills)}", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_gold", player.Gold + player.BankGold)}", "yellow");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Chivalry: {player.Chivalry}", "bright_green");
-            terminal.WriteLine($"  Darkness: {player.Darkness}", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_chivalry", player.Chivalry)}", "bright_green");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_darkness", player.Darkness)}", "dark_red");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Artifacts Collected: {story.CollectedArtifacts.Count}/7", "bright_magenta");
-            terminal.WriteLine($"  Seals Discovered: {story.CollectedSeals.Count}/7", "bright_cyan");
-            terminal.WriteLine($"  Major Choices Made: {story.MajorChoices.Count}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_artifacts", story.CollectedArtifacts.Count)}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_seals", story.CollectedSeals.Count)}", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_choices", story.MajorChoices.Count)}", "white");
             terminal.WriteLine("");
 
-            terminal.WriteLine($"  Ending Achieved: {GetEndingName(ending)}", "bright_yellow");
-            terminal.WriteLine($"  Eternal Cycle: {story.CurrentCycle}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_ending", GetEndingName(ending))}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.final_stats_cycle", story.CurrentCycle)}", "bright_magenta");
             terminal.WriteLine("");
 
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
 
             // Show personalized epilogue
             await ShowEpilogue(player, ending, terminal);
@@ -880,7 +880,7 @@ namespace UsurperRemake.Systems
             await Task.Delay(1000);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "Y O U R   L E G A C Y", "bright_cyan", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("ending.legacy_header"), "bright_cyan", 67);
             terminal.WriteLine("");
 
             await Task.Delay(500);
@@ -890,9 +890,9 @@ namespace UsurperRemake.Systems
             var romance = RomanceTracker.Instance;
 
             // Character summary
-            terminal.WriteLine("  === THE HERO ===", "bright_yellow");
-            terminal.WriteLine($"  {player.Name2} the {player.Race} {player.Class}", "white");
-            terminal.WriteLine($"  Reached level {player.Level} after slaying {player.MKills} monsters", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_hero_section")}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_hero_desc", player.Name2, player.Race, player.Class)}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_hero_stats", player.Level, player.MKills)}", "gray");
             terminal.WriteLine("");
 
             await Task.Delay(300);
@@ -900,40 +900,40 @@ namespace UsurperRemake.Systems
             // Alignment-based description
             long alignment = player.Chivalry - player.Darkness;
             string alignDesc;
-            if (alignment > 500) alignDesc = "a genuine hero, or close enough to one";
-            else if (alignment > 200) alignDesc = "mostly decent, as adventurers go";
-            else if (alignment > -200) alignDesc = "hard to pin down -- not quite good, not quite bad";
-            else if (alignment > -500) alignDesc = "the kind of person mothers warn thier children about";
-            else alignDesc = "a right bastard, frankly";
-            terminal.WriteLine($"  Known as {alignDesc}.", "white");
+            if (alignment > 500) alignDesc = Loc.Get("ending.legacy_align_hero");
+            else if (alignment > 200) alignDesc = Loc.Get("ending.legacy_align_decent");
+            else if (alignment > -200) alignDesc = Loc.Get("ending.legacy_align_neutral");
+            else if (alignment > -500) alignDesc = Loc.Get("ending.legacy_align_dark");
+            else alignDesc = Loc.Get("ending.legacy_align_evil");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_known_as", alignDesc)}", "white");
             terminal.WriteLine("");
 
             await Task.Delay(300);
 
             // Companions
-            terminal.WriteLine("  === COMPANIONS ===", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_companions_section")}", "bright_yellow");
             var activeCompanions = companions.GetActiveCompanions();
             var fallenCompanions = companions.GetFallenCompanions().ToList();
 
             if (activeCompanions.Any())
             {
-                terminal.WriteLine("  Those who stood with you at the end:", "green");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_companions_active")}", "green");
                 foreach (var c in activeCompanions)
                 {
-                    terminal.WriteLine($"    - {c.Name} (Level {c.Level})", "white");
+                    terminal.WriteLine($"    {Loc.Get("ending.legacy_companion_entry", c.Name, c.Level)}", "white");
                 }
             }
             else
             {
-                terminal.WriteLine("  You faced the final battle alone.", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_companions_alone")}", "gray");
             }
 
             if (fallenCompanions.Count > 0)
             {
-                terminal.WriteLine("  Those who fell along the way:", "dark_red");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_companions_fallen")}", "dark_red");
                 foreach (var (companion, death) in fallenCompanions)
                 {
-                    terminal.WriteLine($"    - {companion.Name}, lost to {death.Type}", "gray");
+                    terminal.WriteLine($"    {Loc.Get("ending.legacy_fallen_entry", companion.Name, death.Type)}", "gray");
                 }
             }
             terminal.WriteLine("");
@@ -941,50 +941,50 @@ namespace UsurperRemake.Systems
             await Task.Delay(300);
 
             // Romance
-            terminal.WriteLine("  === LOVE & FAMILY ===", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_love_section")}", "bright_yellow");
             if (romance.Spouses.Count > 0)
             {
                 var spouse = romance.Spouses[0];
                 var spouseName = !string.IsNullOrEmpty(spouse.NPCName) ? spouse.NPCName : spouse.NPCId;
-                terminal.WriteLine($"  Married to {spouseName}", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_married_to", spouseName)}", "bright_magenta");
                 if (spouse.Children > 0)
                 {
-                    terminal.WriteLine($"  Together you raised {spouse.Children} child{(spouse.Children > 1 ? "ren" : "")}.", "magenta");
+                    terminal.WriteLine($"  {Loc.Get("ending.legacy_children", spouse.Children, spouse.Children > 1 ? Loc.Get("ending.legacy_children_plural") : "")}", "magenta");
                 }
             }
             else if (romance.CurrentLovers.Count > 0)
             {
-                terminal.WriteLine($"  Never married, but had {romance.CurrentLovers.Count} romantic partner(s).", "magenta");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_lovers", romance.CurrentLovers.Count)}", "magenta");
             }
             else
             {
-                terminal.WriteLine("  The hero's heart remained focused on the quest.", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_no_romance")}", "gray");
             }
 
             if (romance.ExSpouses.Count > 0)
             {
-                terminal.WriteLine($"  {romance.ExSpouses.Count} marriage(s) ended in divorce.", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.legacy_divorces", romance.ExSpouses.Count)}", "gray");
             }
             terminal.WriteLine("");
 
             await Task.Delay(300);
 
             // World impact
-            terminal.WriteLine("  === IMPACT ON THE WORLD ===", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_world_section")}", "bright_yellow");
             await ShowWorldImpact(player, ending, story, terminal);
             terminal.WriteLine("");
 
             await Task.Delay(300);
 
             // Achievements unlocked
-            terminal.WriteLine("  === NOTABLE ACHIEVEMENTS ===", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_achievements_section")}", "bright_yellow");
             await ShowNotableAchievements(player, terminal);
             terminal.WriteLine("");
 
             await Task.Delay(300);
 
             // Jungian Archetype reveal
-            terminal.WriteLine("  === YOUR TRUE NATURE ===", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.legacy_archetype_section")}", "bright_yellow");
             await ShowArchetypeReveal(player, terminal);
             terminal.WriteLine("");
 
@@ -993,19 +993,19 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "gray");
             string quote = ending switch
             {
-                EndingType.Usurper => "\"Turns out the throne is just a fancy prison.\"",
-                EndingType.Savior => "\"Could have killed him. Didn't. Dont regret it.\"",
-                EndingType.Defiant => "\"Nobody tells me what to do. Not even gods.\"",
-                EndingType.TrueEnding => "\"Funny how you can search the whole world and end up right where you started.\"",
-                EndingType.Secret => "\"Im done. And thats ok.\"",
-                _ => "\"Hell of an adventure, anyway.\""
+                EndingType.Usurper => Loc.Get("ending.quote_usurper"),
+                EndingType.Savior => Loc.Get("ending.quote_savior"),
+                EndingType.Defiant => Loc.Get("ending.quote_defiant"),
+                EndingType.TrueEnding => Loc.Get("ending.quote_true"),
+                EndingType.Secret => Loc.Get("ending.quote_secret"),
+                _ => Loc.Get("ending.quote_default")
             };
             terminal.WriteLine("");
             terminal.WriteLine($"  {quote}", "bright_cyan");
-            terminal.WriteLine($"  - {player.Name2}", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.quote_attribution", player.Name2)}", "gray");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         /// <summary>
@@ -1028,60 +1028,60 @@ namespace UsurperRemake.Systems
 
             if (savedGods > destroyedGods)
             {
-                terminal.WriteLine($"  The Old Gods were mostly redeemed ({savedGods} saved, {destroyedGods} destroyed)", "green");
-                terminal.WriteLine("  Things are looking up for the realm.", "white");
+                terminal.WriteLine($"  {Loc.Get("ending.world_gods_saved", savedGods, destroyedGods)}", "green");
+                terminal.WriteLine($"  {Loc.Get("ending.world_gods_saved_desc")}", "white");
             }
             else if (destroyedGods > savedGods)
             {
-                terminal.WriteLine($"  The Old Gods were mostly destroyed ({destroyedGods} slain, {savedGods} saved)", "dark_red");
-                terminal.WriteLine("  Thier power scattered to the winds.", "white");
+                terminal.WriteLine($"  {Loc.Get("ending.world_gods_destroyed", destroyedGods, savedGods)}", "dark_red");
+                terminal.WriteLine($"  {Loc.Get("ending.world_gods_destroyed_desc")}", "white");
             }
             else
             {
-                terminal.WriteLine("  The fate of the Old Gods remains uncertain.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.world_gods_uncertain")}", "yellow");
             }
 
             // Economy impact
             long totalWealth = player.Gold + player.BankGold;
             if (totalWealth > 1000000)
             {
-                terminal.WriteLine("  You amassed a ridiculous fortune. Good for you.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.world_wealth_rich")}", "yellow");
             }
             else if (totalWealth > 100000)
             {
-                terminal.WriteLine("  You made a decent pile of gold along the way.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.world_wealth_decent")}", "yellow");
             }
 
             // Combat impact
             if (player.MKills > 10000)
             {
-                terminal.WriteLine("  You killed so many monsters they probably have legends about YOU down there.", "red");
+                terminal.WriteLine($"  {Loc.Get("ending.world_kills_legend")}", "red");
             }
             else if (player.MKills > 1000)
             {
-                terminal.WriteLine("  You carved a bloody path through the dungeon's depths.", "red");
+                terminal.WriteLine($"  {Loc.Get("ending.world_kills_bloody")}", "red");
             }
 
             // Story choices
             if (story.MajorChoices.Count > 10)
             {
-                terminal.WriteLine($"  {story.MajorChoices.Count} crucial decisions shaped the fate of the realm.", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("ending.world_choices", story.MajorChoices.Count)}", "bright_magenta");
             }
 
             // Ending-specific impact
             switch (ending)
             {
                 case EndingType.Usurper:
-                    terminal.WriteLine("  You took the throne of the gods. The realm hasnt stopped shaking.", "dark_red");
+                    terminal.WriteLine($"  {Loc.Get("ending.world_usurper")}", "dark_red");
                     break;
                 case EndingType.Savior:
-                    terminal.WriteLine("  The realm is at peace. They still sing songs about what you did.", "bright_green");
+                    terminal.WriteLine($"  {Loc.Get("ending.world_savior")}", "bright_green");
                     break;
                 case EndingType.Defiant:
-                    terminal.WriteLine("  No more gods telling people what to do. About damn time.", "bright_yellow");
+                    terminal.WriteLine($"  {Loc.Get("ending.world_defiant")}", "bright_yellow");
                     break;
                 case EndingType.TrueEnding:
-                    terminal.WriteLine("  The cycle is broken. Whatever comes next, its something new.", "bright_cyan");
+                    terminal.WriteLine($"  {Loc.Get("ending.world_true")}", "bright_cyan");
                     break;
             }
         }
@@ -1097,21 +1097,21 @@ namespace UsurperRemake.Systems
             var notableAchievements = new List<string>();
 
             // Pick up to 5 notable achievements
-            if (player.Level >= 100) notableAchievements.Add("Reached the maximum level of 100");
-            if (player.MKills >= 10000) notableAchievements.Add($"Slayed over 10,000 monsters");
-            if (StoryProgressionSystem.Instance.CollectedSeals.Count >= 7) notableAchievements.Add("Collected all 7 Seals of Power");
-            if (StoryProgressionSystem.Instance.CollectedArtifacts.Count >= 7) notableAchievements.Add("Found all 7 Divine Artifacts");
+            if (player.Level >= 100) notableAchievements.Add(Loc.Get("ending.achievement_max_level"));
+            if (player.MKills >= 10000) notableAchievements.Add(Loc.Get("ending.achievement_kills"));
+            if (StoryProgressionSystem.Instance.CollectedSeals.Count >= 7) notableAchievements.Add(Loc.Get("ending.achievement_seals"));
+            if (StoryProgressionSystem.Instance.CollectedArtifacts.Count >= 7) notableAchievements.Add(Loc.Get("ending.achievement_artifacts"));
 
             var companions = CompanionSystem.Instance;
-            if (companions.GetActiveCompanions().Count() >= 3) notableAchievements.Add("Led a full party of companions");
+            if (companions.GetActiveCompanions().Count() >= 3) notableAchievements.Add(Loc.Get("ending.achievement_party"));
             if (RomanceTracker.Instance.Spouses.Count > 0 && RomanceTracker.Instance.Spouses[0].Children > 0)
-                notableAchievements.Add("Started a family in the realm");
+                notableAchievements.Add(Loc.Get("ending.achievement_family"));
 
-            if (achievementCount >= 25) notableAchievements.Add($"Unlocked {achievementCount} achievements");
+            if (achievementCount >= 25) notableAchievements.Add(Loc.Get("ending.achievement_count", achievementCount));
 
             if (notableAchievements.Count == 0)
             {
-                terminal.WriteLine("  Your journey was just beginning...", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.achievement_beginning")}", "gray");
             }
             else
             {
@@ -1136,7 +1136,7 @@ namespace UsurperRemake.Systems
             var (name, title, description, color) = ArchetypeTracker.GetArchetypeInfo(dominant);
             var quote = ArchetypeTracker.GetArchetypeQuote(dominant);
 
-            terminal.WriteLine($"  Throughout your journey, your true nature emerged:", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.archetype_intro")}", "white");
             terminal.WriteLine("");
 
             await Task.Delay(500);
@@ -1172,7 +1172,7 @@ namespace UsurperRemake.Systems
 
             // Show secondary archetype
             var (secName, secTitle, _, secColor) = ArchetypeTracker.GetArchetypeInfo(secondary);
-            terminal.WriteLine($"  With shades of: {secName} ({secTitle})", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.archetype_secondary", secName, secTitle)}", "gray");
             terminal.WriteLine("");
 
             await Task.Delay(300);
@@ -1183,17 +1183,17 @@ namespace UsurperRemake.Systems
 
             // Show some stats that contributed to this determination
             terminal.SetColor("darkgray");
-            terminal.WriteLine("  Journey Statistics:");
+            terminal.WriteLine($"  {Loc.Get("ending.archetype_stats_header")}");
             if (tracker.MonstersKilled > 0)
-                terminal.WriteLine($"    Combat: {tracker.MonstersKilled} monsters, {tracker.BossesDefeated} bosses");
+                terminal.WriteLine($"    {Loc.Get("ending.archetype_combat", tracker.MonstersKilled, tracker.BossesDefeated)}");
             if (tracker.DungeonFloorsExplored > 0)
-                terminal.WriteLine($"    Exploration: {tracker.DungeonFloorsExplored} floors explored");
+                terminal.WriteLine($"    {Loc.Get("ending.archetype_exploration", tracker.DungeonFloorsExplored)}");
             if (tracker.SpellsCast > 0)
-                terminal.WriteLine($"    Magic: {tracker.SpellsCast} spells cast");
+                terminal.WriteLine($"    {Loc.Get("ending.archetype_magic", tracker.SpellsCast)}");
             if (tracker.RomanceEncounters > 0)
-                terminal.WriteLine($"    Romance: {tracker.RomanceEncounters} encounters, {tracker.MarriagesFormed} marriages");
+                terminal.WriteLine($"    {Loc.Get("ending.archetype_romance", tracker.RomanceEncounters, tracker.MarriagesFormed)}");
             if (tracker.SealsCollected > 0 || tracker.ArtifactsCollected > 0)
-                terminal.WriteLine($"    Wisdom: {tracker.SealsCollected} seals, {tracker.ArtifactsCollected} artifacts");
+                terminal.WriteLine($"    {Loc.Get("ending.archetype_wisdom", tracker.SealsCollected, tracker.ArtifactsCollected)}");
         }
 
         /// <summary>
@@ -1205,7 +1205,7 @@ namespace UsurperRemake.Systems
             await Task.Delay(500);
 
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "U N L O C K S   E A R N E D", "bright_green", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("ending.unlocks_header"), "bright_green", 67);
             terminal.WriteLine("");
 
             var unlocks = new List<(string name, string description, string color)>();
@@ -1214,53 +1214,53 @@ namespace UsurperRemake.Systems
             switch (ending)
             {
                 case EndingType.Usurper:
-                    unlocks.Add(("DARK LORD TITLE", "Start NG+ with 'Dark Lord' title prefix", "dark_red"));
-                    unlocks.Add(("TYRANT'S AURA", "+15% damage in NG+", "red"));
-                    unlocks.Add(("FEAR THE THRONE", "Enemies have -10% chance to flee", "dark_red"));
+                    unlocks.Add((Loc.Get("ending.unlock_dark_lord_name"), Loc.Get("ending.unlock_dark_lord_desc"), "dark_red"));
+                    unlocks.Add((Loc.Get("ending.unlock_tyrant_name"), Loc.Get("ending.unlock_tyrant_desc"), "red"));
+                    unlocks.Add((Loc.Get("ending.unlock_fear_name"), Loc.Get("ending.unlock_fear_desc"), "dark_red"));
                     break;
                 case EndingType.Savior:
-                    unlocks.Add(("SAVIOR TITLE", "Start NG+ with 'Savior' title prefix", "bright_green"));
-                    unlocks.Add(("HEALING LIGHT", "+25% healing effectiveness in NG+", "green"));
-                    unlocks.Add(("BLESSED COMMERCE", "10% discount at all shops", "yellow"));
+                    unlocks.Add((Loc.Get("ending.unlock_savior_name"), Loc.Get("ending.unlock_savior_desc"), "bright_green"));
+                    unlocks.Add((Loc.Get("ending.unlock_healing_name"), Loc.Get("ending.unlock_healing_desc"), "green"));
+                    unlocks.Add((Loc.Get("ending.unlock_commerce_name"), Loc.Get("ending.unlock_commerce_desc"), "yellow"));
                     break;
                 case EndingType.Defiant:
-                    unlocks.Add(("DEFIANT TITLE", "Start NG+ with 'Defiant' title prefix", "bright_yellow"));
-                    unlocks.Add(("MORTAL PRIDE", "+20% XP gain in NG+", "cyan"));
-                    unlocks.Add(("ANCIENT KEY", "Start with dungeon shortcut key", "bright_magenta"));
+                    unlocks.Add((Loc.Get("ending.unlock_defiant_name"), Loc.Get("ending.unlock_defiant_desc"), "bright_yellow"));
+                    unlocks.Add((Loc.Get("ending.unlock_mortal_name"), Loc.Get("ending.unlock_mortal_desc"), "cyan"));
+                    unlocks.Add((Loc.Get("ending.unlock_key_name"), Loc.Get("ending.unlock_key_desc"), "bright_magenta"));
                     break;
                 case EndingType.TrueEnding:
-                    unlocks.Add(("AWAKENED TITLE", "Start NG+ with 'Awakened' title prefix", "bright_cyan"));
-                    unlocks.Add(("OCEAN'S BLESSING", "+15% to all stats in NG+", "bright_cyan"));
-                    unlocks.Add(("ARTIFACT MEMORY", "All artifact locations revealed", "bright_magenta"));
-                    unlocks.Add(("SEAL RESONANCE", "Seals give double bonuses", "bright_magenta"));
+                    unlocks.Add((Loc.Get("ending.unlock_awakened_name"), Loc.Get("ending.unlock_awakened_desc"), "bright_cyan"));
+                    unlocks.Add((Loc.Get("ending.unlock_ocean_name"), Loc.Get("ending.unlock_ocean_desc"), "bright_cyan"));
+                    unlocks.Add((Loc.Get("ending.unlock_artifact_name"), Loc.Get("ending.unlock_artifact_desc"), "bright_magenta"));
+                    unlocks.Add((Loc.Get("ending.unlock_seal_name"), Loc.Get("ending.unlock_seal_desc"), "bright_magenta"));
                     break;
                 case EndingType.Secret:
-                    unlocks.Add(("DISSOLVED", "Your journey is complete. No unlocks needed.", "white"));
+                    unlocks.Add((Loc.Get("ending.unlock_dissolved_name"), Loc.Get("ending.unlock_dissolved_desc"), "white"));
                     break;
             }
 
             // Level-based unlocks
             if (player.Level >= 50)
-                unlocks.Add(("VETERAN", "Start NG+ at level 5 instead of 1", "white"));
+                unlocks.Add((Loc.Get("ending.unlock_veteran_name"), Loc.Get("ending.unlock_veteran_desc"), "white"));
             if (player.Level >= 100)
-                unlocks.Add(("MASTER", "Start NG+ at level 10 with bonus stats", "bright_yellow"));
+                unlocks.Add((Loc.Get("ending.unlock_master_name"), Loc.Get("ending.unlock_master_desc"), "bright_yellow"));
 
             // Kill-based unlocks
             if (player.MKills >= 5000)
-                unlocks.Add(("SLAYER", "Rare monsters appear 25% more often", "red"));
+                unlocks.Add((Loc.Get("ending.unlock_slayer_name"), Loc.Get("ending.unlock_slayer_desc"), "red"));
 
             // Collection unlocks
             if (StoryProgressionSystem.Instance.CollectedSeals.Count >= 7)
-                unlocks.Add(("SEAL MASTER", "Seals are visible on minimap in NG+", "bright_cyan"));
+                unlocks.Add((Loc.Get("ending.unlock_seal_master_name"), Loc.Get("ending.unlock_seal_master_desc"), "bright_cyan"));
             if (StoryProgressionSystem.Instance.CollectedArtifacts.Count >= 7)
-                unlocks.Add(("ARTIFACT HUNTER", "Artifacts give +50% bonus effects", "bright_magenta"));
+                unlocks.Add((Loc.Get("ending.unlock_artifact_hunter_name"), Loc.Get("ending.unlock_artifact_hunter_desc"), "bright_magenta"));
 
             // Companion unlocks
             var companions = CompanionSystem.Instance;
             if (companions.GetFallenCompanions().Any())
-                unlocks.Add(("SURVIVOR'S GUILT", "Fallen companions may return as ghosts with advice", "gray"));
+                unlocks.Add((Loc.Get("ending.unlock_survivor_name"), Loc.Get("ending.unlock_survivor_desc"), "gray"));
 
-            terminal.WriteLine("  Completing this ending has unlocked:", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.unlocks_intro")}", "white");
             terminal.WriteLine("");
 
             foreach (var (name, description, color) in unlocks)
@@ -1277,21 +1277,21 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "gray");
             terminal.WriteLine("");
-            terminal.WriteLine("  These bonuses will apply in New Game+!", "bright_green");
+            terminal.WriteLine($"  {Loc.Get("ending.unlocks_apply_ngplus")}", "bright_green");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ending.press_enter"));
         }
 
         private string GetEndingName(EndingType ending)
         {
             return ending switch
             {
-                EndingType.Usurper => "The Usurper (Dark Path)",
-                EndingType.Savior => "The Savior (Light Path)",
-                EndingType.Defiant => "The Defiant (Independent Path)",
-                EndingType.TrueEnding => "The True Ending (Balance)",
-                _ => "Unknown"
+                EndingType.Usurper => Loc.Get("ending.ending_name_usurper"),
+                EndingType.Savior => Loc.Get("ending.ending_name_savior"),
+                EndingType.Defiant => Loc.Get("ending.ending_name_defiant"),
+                EndingType.TrueEnding => Loc.Get("ending.ending_name_true"),
+                _ => Loc.Get("ending.ending_name_unknown")
             };
         }
 
@@ -1306,48 +1306,48 @@ namespace UsurperRemake.Systems
             terminal.SetColor("bright_yellow");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_yellow");
-            terminal.WriteLine("              T H E   C O S M O S   A W A I T S", "bright_yellow");
+            terminal.WriteLine($"              {Loc.Get("ending.immortal_header")}", "bright_yellow");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_yellow");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("  You feel the power of creation flowing through your veins.", "white");
-            terminal.WriteLine("  The mortal coil loosens. The divine realm beckons.", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_power")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_coil")}", "white");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  \"You have proven yourself,\" Manwe whispers.", "bright_magenta");
-            terminal.WriteLine("  \"Few mortals earn this choice.\"", "bright_magenta");
-            terminal.WriteLine("  \"Will you transcend mortality and become a god?\"", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_manwe_1")}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_manwe_2")}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_manwe_3")}", "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  As a god, you will:", "bright_cyan");
-            terminal.WriteLine("  - Appear in the Temple for mortals to worship", "white");
-            terminal.WriteLine("  - Manage followers and perform divine deeds", "white");
-            terminal.WriteLine("  - Compete with other gods for believers", "white");
-            terminal.WriteLine("  - Gain divine ranks from Lesser Spirit to God", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_as_god")}", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_benefit_1")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_benefit_2")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_benefit_3")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_benefit_4")}", "white");
             terminal.WriteLine("");
-            terminal.WriteLine("  (You can renounce immortality at any time to reroll)", "gray");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_renounce")}", "gray");
             terminal.WriteLine("");
 
-            var response = await terminal.GetInputAsync("  Ascend to godhood? (Y/N): ");
+            var response = await terminal.GetInputAsync(Loc.Get("ending.immortal_ascend_prompt"));
             if (response.Trim().ToUpper() != "Y") return false;
 
             // Choose divine name
             terminal.WriteLine("");
-            terminal.WriteLine("  Choose your divine name (3-30 characters):", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_choose_name")}", "bright_cyan");
             string divineName = "";
             while (true)
             {
-                divineName = (await terminal.GetInputAsync("  Divine Name: ")).Trim();
+                divineName = (await terminal.GetInputAsync(Loc.Get("ending.immortal_name_prompt"))).Trim();
                 if (divineName.Length >= 3 && divineName.Length <= 30)
                     break;
-                terminal.WriteLine("  Name must be 3-30 characters.", "red");
+                terminal.WriteLine($"  {Loc.Get("ending.immortal_name_invalid")}", "red");
             }
 
             // Determine alignment from ending
@@ -1365,7 +1365,7 @@ namespace UsurperRemake.Systems
             {
                 CastleLocation.AbdicatePlayerThrone(player, "abdicated the throne to ascend to godhood");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  The throne has been abdicated as you transcend mortal affairs.", "bright_yellow");
+                terminal.WriteLine($"  {Loc.Get("ending.immortal_abdicated")}", "bright_yellow");
                 terminal.WriteLine("");
                 await Task.Delay(1500);
             }
@@ -1374,8 +1374,8 @@ namespace UsurperRemake.Systems
             if (SqlSaveBackend.IsAltCharacter(UsurperRemake.BBS.DoorMode.GetPlayerName() ?? ""))
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Alt characters cannot ascend to immortality.", "red");
-                terminal.WriteLine("  Only your main character may become a god.", "gray");
+                terminal.WriteLine($"  {Loc.Get("ending.immortal_alt_blocked")}", "red");
+                terminal.WriteLine($"  {Loc.Get("ending.immortal_alt_main_only")}", "gray");
                 await Task.Delay(2000);
                 return false;
             }
@@ -1399,8 +1399,8 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("  ════════════════════════════════════════════════════════════");
             terminal.WriteLine("");
-            terminal.WriteLine($"  {divineName}, Lesser Spirit of {alignment}", "bright_yellow");
-            terminal.WriteLine("  has ascended to the Divine Realm!", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_ascended", divineName, alignment)}", "bright_yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_ascended_msg")}", "bright_yellow");
             terminal.WriteLine("");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("  ════════════════════════════════════════════════════════════");
@@ -1441,10 +1441,10 @@ namespace UsurperRemake.Systems
             catch { /* best effort */ }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  You will now enter the Pantheon — your eternal domain.", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.immortal_enter_pantheon")}", "bright_cyan");
             terminal.WriteLine("");
 
-            await terminal.GetInputAsync("  Press Enter to enter the Divine Realm...");
+            await terminal.GetInputAsync(Loc.Get("ending.immortal_enter_prompt"));
 
             // Mark ending sequence as completed before routing to Pantheon
             StoryProgressionSystem.Instance.SetStoryFlag("ending_sequence_completed", true);
@@ -1465,39 +1465,39 @@ namespace UsurperRemake.Systems
             terminal.WriteLine("");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_magenta");
-            terminal.WriteLine("                  T H E   W H E E L   T U R N S", "bright_magenta");
+            terminal.WriteLine($"                  {Loc.Get("ending.ngplus_header")}", "bright_magenta");
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════════", "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("  Something stirs in the darkness.", "white");
-            terminal.WriteLine("  A voice you almost recognize.", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_stirs")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_voice")}", "white");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  \"So. That happened.\"", "bright_magenta");
-            terminal.WriteLine("  \"Want to go again? You'll be stronger this time.\"", "bright_magenta");
-            terminal.WriteLine("  \"And you'll remember a few things...\"", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_again_1")}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_again_2")}", "bright_magenta");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_again_3")}", "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("  The wheel keeps turning.", "bright_cyan");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_wheel")}", "bright_cyan");
             terminal.WriteLine("");
 
             var cycle = StoryProgressionSystem.Instance.CurrentCycle;
-            terminal.WriteLine($"  Current Cycle: {cycle}", "yellow");
-            terminal.WriteLine($"  Next Cycle: {cycle + 1}", "green");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_current_cycle", cycle)}", "yellow");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_next_cycle", cycle + 1)}", "green");
             terminal.WriteLine("");
 
-            terminal.WriteLine("  Bonuses for New Game+:", "bright_green");
-            terminal.WriteLine("  - Starting stat bonuses based on your ending", "white");
-            terminal.WriteLine("  - Increased experience gain", "white");
-            terminal.WriteLine("  - Knowledge of artifact locations", "white");
-            terminal.WriteLine("  - New dialogue options with gods", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_bonuses")}", "bright_green");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_bonus_stats")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_bonus_xp")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_bonus_artifacts")}", "white");
+            terminal.WriteLine($"  {Loc.Get("ending.ngplus_bonus_dialogue")}", "white");
 
             // Show which prestige classes this ending unlocks
             var newClasses = new List<string>();
@@ -1525,13 +1525,13 @@ namespace UsurperRemake.Systems
             }
             if (newClasses.Count > 0)
             {
-                terminal.WriteLine($"  - New prestige classes unlocked:", "white");
+                terminal.WriteLine($"  {Loc.Get("ending.ngplus_prestige_intro")}", "white");
                 foreach (var cls in newClasses)
                     terminal.WriteLine($"      {cls}", "bright_cyan");
             }
             terminal.WriteLine("");
 
-            var response = await terminal.GetInputAsync("  Begin the Eternal Cycle? (Y/N): ");
+            var response = await terminal.GetInputAsync($"  {Loc.Get("ending.ngplus_begin_prompt")} ");
 
             if (response.ToUpper() == "Y")
             {
@@ -1542,11 +1542,11 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  \"Fair enough. Get some rest.\"", "bright_magenta");
-                terminal.WriteLine("  \"The wheel aint going anywhere.\"", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("ending.ngplus_decline_1")}", "bright_magenta");
+                terminal.WriteLine($"  {Loc.Get("ending.ngplus_decline_2")}", "bright_magenta");
                 terminal.WriteLine("");
 
-                await terminal.GetInputAsync("  Press Enter to return to the main menu...");
+                await terminal.GetInputAsync($"  {Loc.Get("ending.ngplus_return_prompt")}");
             }
 
             // Mark the ending sequence as fully completed (player answered the NG+ prompt).

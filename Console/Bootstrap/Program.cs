@@ -46,6 +46,9 @@ namespace UsurperConsole
             // Set up global exception handlers FIRST so we catch everything
             SetupGlobalExceptionHandlers();
 
+            // Initialize localization system (loads language JSON files)
+            UsurperRemake.Systems.Loc.Initialize();
+
             // Handle --version flag: print version and exit immediately
             if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v" || args[0] == "-V"))
             {

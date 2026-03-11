@@ -36,28 +36,28 @@ namespace UsurperRemake.Systems
                 DisplayEquipmentOverview();
                 DisplayInventoryMenu();
 
-                var choice = await terminal.GetInput("Inventory: ");
+                var choice = await terminal.GetInput(Loc.Get("inventory.prompt"));
                 exitInventory = await ProcessInventoryChoice(choice.ToUpper().Trim());
             }
         }
 
         private void DisplayInventoryHeader()
         {
-            UIHelper.WriteBoxHeader(terminal, "INVENTORY", "bright_cyan");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("inventory.title"), "bright_cyan");
             terminal.WriteLine("");
 
             // Show weapon configuration
             terminal.SetColor("yellow");
-            terminal.Write("Combat Style: ");
+            terminal.Write($"{Loc.Get("inventory.combat_style")}: ");
             terminal.SetColor("bright_white");
             if (player.IsTwoHanding)
-                terminal.WriteLine("Two-Handed (+25% damage, -15% defense)");
+                terminal.WriteLine(Loc.Get("inventory.style_two_handed"));
             else if (player.IsDualWielding)
-                terminal.WriteLine("Dual-Wield (+1 attack, -10% defense)");
+                terminal.WriteLine(Loc.Get("inventory.style_dual_wield"));
             else if (player.HasShieldEquipped)
-                terminal.WriteLine("Sword & Board (balanced, 20% block chance)");
+                terminal.WriteLine(Loc.Get("inventory.style_sword_board"));
             else
-                terminal.WriteLine("One-Handed");
+                terminal.WriteLine(Loc.Get("inventory.style_one_handed"));
             terminal.WriteLine("");
         }
 
@@ -65,38 +65,38 @@ namespace UsurperRemake.Systems
         {
             terminal.SetColor("yellow");
             if (!GameConfig.ScreenReaderMode)
-                terminal.WriteLine("═══ EQUIPPED ITEMS ═══");
+                terminal.WriteLine($"═══ {Loc.Get("inventory.equipped_items")} ═══");
             else
-                terminal.WriteLine("EQUIPPED ITEMS");
+                terminal.WriteLine(Loc.Get("inventory.equipped_items"));
             terminal.WriteLine("");
 
             // Weapons section
             terminal.SetColor("bright_red");
-            terminal.WriteLine("[ WEAPONS ]");
-            DisplaySlot("Main Hand", EquipmentSlot.MainHand, "1");
-            DisplaySlot("Off Hand", EquipmentSlot.OffHand, "2");
+            terminal.WriteLine($"[ {Loc.Get("inventory.section_weapons")} ]");
+            DisplaySlot(Loc.Get("inventory.slot_main_hand"), EquipmentSlot.MainHand, "1");
+            DisplaySlot(Loc.Get("inventory.slot_off_hand"), EquipmentSlot.OffHand, "2");
             terminal.WriteLine("");
 
             // Armor section
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("[ ARMOR ]");
-            DisplaySlot("Head", EquipmentSlot.Head, "3");
-            DisplaySlot("Body", EquipmentSlot.Body, "4");
-            DisplaySlot("Arms", EquipmentSlot.Arms, "5");
-            DisplaySlot("Hands", EquipmentSlot.Hands, "6");
-            DisplaySlot("Legs", EquipmentSlot.Legs, "7");
-            DisplaySlot("Feet", EquipmentSlot.Feet, "8");
-            DisplaySlot("Waist", EquipmentSlot.Waist, "9");
-            DisplaySlot("Face", EquipmentSlot.Face, "F");
-            DisplaySlot("Cloak", EquipmentSlot.Cloak, "C");
+            terminal.WriteLine($"[ {Loc.Get("inventory.section_armor")} ]");
+            DisplaySlot(Loc.Get("inventory.slot_head"), EquipmentSlot.Head, "3");
+            DisplaySlot(Loc.Get("inventory.slot_body"), EquipmentSlot.Body, "4");
+            DisplaySlot(Loc.Get("inventory.slot_arms"), EquipmentSlot.Arms, "5");
+            DisplaySlot(Loc.Get("inventory.slot_hands"), EquipmentSlot.Hands, "6");
+            DisplaySlot(Loc.Get("inventory.slot_legs"), EquipmentSlot.Legs, "7");
+            DisplaySlot(Loc.Get("inventory.slot_feet"), EquipmentSlot.Feet, "8");
+            DisplaySlot(Loc.Get("inventory.slot_waist"), EquipmentSlot.Waist, "9");
+            DisplaySlot(Loc.Get("inventory.slot_face"), EquipmentSlot.Face, "F");
+            DisplaySlot(Loc.Get("inventory.slot_cloak"), EquipmentSlot.Cloak, "C");
             terminal.WriteLine("");
 
             // Accessories section
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("[ ACCESSORIES ]");
-            DisplaySlot("Neck", EquipmentSlot.Neck, "N");
-            DisplaySlot("Left Ring", EquipmentSlot.LFinger, "L");
-            DisplaySlot("Right Ring", EquipmentSlot.RFinger, "R");
+            terminal.WriteLine($"[ {Loc.Get("inventory.section_accessories")} ]");
+            DisplaySlot(Loc.Get("inventory.slot_neck"), EquipmentSlot.Neck, "N");
+            DisplaySlot(Loc.Get("inventory.slot_left_ring"), EquipmentSlot.LFinger, "L");
+            DisplaySlot(Loc.Get("inventory.slot_right_ring"), EquipmentSlot.RFinger, "R");
             terminal.WriteLine("");
 
             // Stats summary
@@ -110,14 +110,14 @@ namespace UsurperRemake.Systems
         {
             terminal.SetColor("yellow");
             if (!GameConfig.ScreenReaderMode)
-                terminal.WriteLine("═══ BACKPACK ═══");
+                terminal.WriteLine($"═══ {Loc.Get("inventory.backpack")} ═══");
             else
-                terminal.WriteLine("BACKPACK");
+                terminal.WriteLine(Loc.Get("inventory.backpack"));
 
             if (player.Inventory == null || player.Inventory.Count == 0)
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("  (Empty - pick up items in the dungeon!)");
+                terminal.WriteLine($"  ({Loc.Get("inventory.backpack_empty")})");
                 terminal.WriteLine("");
                 return;
             }
@@ -147,12 +147,12 @@ namespace UsurperRemake.Systems
                     terminal.Write($" - {item.Value:N0}g");
 
                     var stats = new List<string>();
-                    if (item.Attack > 0) stats.Add($"WP:{item.Attack}");
-                    if (item.Armor > 0) stats.Add($"AC:{item.Armor}");
-                    if (item.Defence > 0) stats.Add($"Def:{item.Defence}");
-                    if (item.Strength != 0) stats.Add($"Str:{item.Strength:+#;-#;0}");
-                    if (item.Dexterity != 0) stats.Add($"Dex:{item.Dexterity:+#;-#;0}");
-                    if (item.Wisdom != 0) stats.Add($"Wis:{item.Wisdom:+#;-#;0}");
+                    if (item.Attack > 0) stats.Add($"{Loc.Get("ui.stat_wp")}:{item.Attack}");
+                    if (item.Armor > 0) stats.Add($"{Loc.Get("ui.stat_ac")}:{item.Armor}");
+                    if (item.Defence > 0) stats.Add($"{Loc.Get("ui.stat_def")}:{item.Defence}");
+                    if (item.Strength != 0) stats.Add($"{Loc.Get("ui.stat_str")}:{item.Strength:+#;-#;0}");
+                    if (item.Dexterity != 0) stats.Add($"{Loc.Get("ui.stat_dex")}:{item.Dexterity:+#;-#;0}");
+                    if (item.Wisdom != 0) stats.Add($"{Loc.Get("ui.stat_wis")}:{item.Wisdom:+#;-#;0}");
 
                     if (stats.Count > 0)
                     {
@@ -176,7 +176,7 @@ namespace UsurperRemake.Systems
             if (player.Inventory.Count > 20)
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine($"  ... and {player.Inventory.Count - 20} more items");
+                terminal.WriteLine($"  ... {Loc.Get("inventory.and_more", player.Inventory.Count - 20)}");
             }
 
             terminal.WriteLine("");
@@ -222,12 +222,12 @@ namespace UsurperRemake.Systems
                     if (mainHand?.Handedness == WeaponHandedness.TwoHanded)
                     {
                         terminal.SetColor("darkgray");
-                        terminal.WriteLine("(using 2H weapon)");
+                        terminal.WriteLine(Loc.Get("inventory.using_2h"));
                         return;
                     }
                 }
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("Empty");
+                terminal.WriteLine(Loc.Get("ui.empty"));
             }
         }
 
@@ -249,19 +249,19 @@ namespace UsurperRemake.Systems
         {
             var stats = new List<string>();
 
-            if (item.WeaponPower > 0) stats.Add($"WP:{item.WeaponPower}");
-            if (item.ArmorClass > 0) stats.Add($"AC:{item.ArmorClass}");
-            if (item.ShieldBonus > 0) stats.Add($"Block:{item.ShieldBonus}");
-            if (item.StrengthBonus != 0) stats.Add($"Str:{item.StrengthBonus:+#;-#;0}");
-            if (item.DexterityBonus != 0) stats.Add($"Dex:{item.DexterityBonus:+#;-#;0}");
-            if (item.ConstitutionBonus != 0) stats.Add($"Con:{item.ConstitutionBonus:+#;-#;0}");
-            if (item.IntelligenceBonus != 0) stats.Add($"Int:{item.IntelligenceBonus:+#;-#;0}");
-            if (item.WisdomBonus != 0) stats.Add($"Wis:{item.WisdomBonus:+#;-#;0}");
-            if (item.MaxHPBonus != 0) stats.Add($"HP:{item.MaxHPBonus:+#;-#;0}");
-            if (item.MaxManaBonus != 0) stats.Add($"MP:{item.MaxManaBonus:+#;-#;0}");
-            if (item.MagicResistance != 0) stats.Add($"MR:{item.MagicResistance:+#;-#;0}");
-            if (item.CriticalChanceBonus != 0) stats.Add($"Crit:{item.CriticalChanceBonus}%");
-            if (item.LifeSteal != 0) stats.Add($"LS:{item.LifeSteal}%");
+            if (item.WeaponPower > 0) stats.Add($"{Loc.Get("ui.stat_wp")}:{item.WeaponPower}");
+            if (item.ArmorClass > 0) stats.Add($"{Loc.Get("ui.stat_ac")}:{item.ArmorClass}");
+            if (item.ShieldBonus > 0) stats.Add($"{Loc.Get("ui.stat_block")}:{item.ShieldBonus}");
+            if (item.StrengthBonus != 0) stats.Add($"{Loc.Get("ui.stat_str")}:{item.StrengthBonus:+#;-#;0}");
+            if (item.DexterityBonus != 0) stats.Add($"{Loc.Get("ui.stat_dex")}:{item.DexterityBonus:+#;-#;0}");
+            if (item.ConstitutionBonus != 0) stats.Add($"{Loc.Get("ui.stat_con")}:{item.ConstitutionBonus:+#;-#;0}");
+            if (item.IntelligenceBonus != 0) stats.Add($"{Loc.Get("ui.stat_int")}:{item.IntelligenceBonus:+#;-#;0}");
+            if (item.WisdomBonus != 0) stats.Add($"{Loc.Get("ui.stat_wis")}:{item.WisdomBonus:+#;-#;0}");
+            if (item.MaxHPBonus != 0) stats.Add($"{Loc.Get("ui.stat_hp")}:{item.MaxHPBonus:+#;-#;0}");
+            if (item.MaxManaBonus != 0) stats.Add($"{Loc.Get("ui.stat_mp")}:{item.MaxManaBonus:+#;-#;0}");
+            if (item.MagicResistance != 0) stats.Add($"{Loc.Get("ui.stat_mr")}:{item.MagicResistance:+#;-#;0}");
+            if (item.CriticalChanceBonus != 0) stats.Add($"{Loc.Get("ui.stat_crit")}:{item.CriticalChanceBonus}%");
+            if (item.LifeSteal != 0) stats.Add($"{Loc.Get("ui.stat_ls")}:{item.LifeSteal}%");
 
             return string.Join(", ", stats.Take(4)); // Limit to 4 stats for display
         }
@@ -270,9 +270,9 @@ namespace UsurperRemake.Systems
         {
             terminal.SetColor("yellow");
             if (!GameConfig.ScreenReaderMode)
-                terminal.WriteLine("═══ EQUIPMENT BONUSES ═══");
+                terminal.WriteLine($"═══ {Loc.Get("inventory.equipment_bonuses")} ═══");
             else
-                terminal.WriteLine("EQUIPMENT BONUSES");
+                terminal.WriteLine(Loc.Get("inventory.equipment_bonuses"));
 
             // Calculate total bonuses from equipment
             int totalWeapPow = 0, totalArmPow = 0;
@@ -300,11 +300,11 @@ namespace UsurperRemake.Systems
             }
 
             terminal.SetColor("white");
-            terminal.Write("Weapon Power: ");
+            terminal.Write($"{Loc.Get("ui.weapon_power")}: ");
             terminal.SetColor("bright_red");
             terminal.Write($"{totalWeapPow}");
             terminal.SetColor("white");
-            terminal.Write("  |  Armor Class: ");
+            terminal.Write($"  |  {Loc.Get("ui.armor_class")}: ");
             terminal.SetColor("bright_cyan");
             terminal.WriteLine($"{totalArmPow}");
 
@@ -312,7 +312,7 @@ namespace UsurperRemake.Systems
             if (totalStr != 0 || totalDex != 0 || totalCon != 0)
             {
                 terminal.SetColor("white");
-                terminal.Write("Stats: ");
+                terminal.Write($"{Loc.Get("inventory.stats")}: ");
                 if (totalStr != 0) { terminal.SetColor("green"); terminal.Write($"Str {totalStr:+#;-#;0}  "); }
                 if (totalDex != 0) { terminal.SetColor("green"); terminal.Write($"Dex {totalDex:+#;-#;0}  "); }
                 if (totalCon != 0) { terminal.SetColor("green"); terminal.Write($"Con {totalCon:+#;-#;0}  "); }
@@ -325,7 +325,7 @@ namespace UsurperRemake.Systems
             if (totalMaxHP != 0 || totalMaxMana != 0 || totalMR != 0 || totalDef != 0)
             {
                 terminal.SetColor("white");
-                terminal.Write("Other: ");
+                terminal.Write($"{Loc.Get("inventory.other")}: ");
                 if (totalMaxHP != 0) { terminal.SetColor("red"); terminal.Write($"MaxHP {totalMaxHP:+#;-#;0}  "); }
                 if (totalMaxMana != 0) { terminal.SetColor("blue"); terminal.Write($"MaxMP {totalMaxMana:+#;-#;0}  "); }
                 if (totalMR != 0) { terminal.SetColor("magenta"); terminal.Write($"MagicRes {totalMR:+#;-#;0}  "); }
@@ -344,8 +344,8 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("────────────────────────────────────────────────────────────────────────────────");
             }
             terminal.SetColor("white");
-            terminal.WriteLine("Options: [1-9,F,C,N,L,R] Manage Slot  |  [B#] Manage Backpack Item  |  [U]nequip All");
-            terminal.WriteLine("         [D]rop Item  |  [Q]uit Inventory");
+            terminal.WriteLine(Loc.Get("inventory.options_line1"));
+            terminal.WriteLine(Loc.Get("inventory.options_line2"));
             terminal.WriteLine("");
         }
 
@@ -413,7 +413,7 @@ namespace UsurperRemake.Systems
                     }
                     else
                     {
-                        terminal.WriteLine("Invalid choice.", "red");
+                        terminal.WriteLine(Loc.Get("inventory.invalid_choice"), "red");
                         await Task.Delay(500);
                     }
                     break;
@@ -426,7 +426,7 @@ namespace UsurperRemake.Systems
         {
             if (player.Inventory == null || index < 1 || index > player.Inventory.Count)
             {
-                terminal.WriteLine("Invalid item number.", "red");
+                terminal.WriteLine(Loc.Get("inventory.invalid_item"), "red");
                 await Task.Delay(500);
                 return;
             }
@@ -434,7 +434,7 @@ namespace UsurperRemake.Systems
             var item = player.Inventory[index - 1];
 
             terminal.ClearScreen();
-            UIHelper.WriteBoxHeader(terminal, "MANAGE ITEM", "bright_cyan");
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("inventory.manage_item"), "bright_cyan");
             terminal.WriteLine("");
 
             if (item.IsIdentified)
@@ -442,19 +442,19 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("yellow");
                 terminal.WriteLine($"  {item.Name}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Value: {item.Value:N0} gold");
-                terminal.WriteLine($"  Type: {item.Type}");
+                terminal.WriteLine($"  {Loc.Get("inventory.value")}: {item.Value:N0} {Loc.Get("ui.gold_word")}");
+                terminal.WriteLine($"  {Loc.Get("inventory.type")}: {item.Type}");
                 terminal.WriteLine("");
 
                 // Show stats
                 var stats = new List<string>();
-                if (item.Attack > 0) stats.Add($"Weapon Power: +{item.Attack}");
-                if (item.Armor > 0) stats.Add($"Armor Class: +{item.Armor}");
-                if (item.Defence > 0) stats.Add($"Defence: +{item.Defence}");
-                if (item.Strength != 0) stats.Add($"Strength: {item.Strength:+#;-#;0}");
-                if (item.Dexterity != 0) stats.Add($"Dexterity: {item.Dexterity:+#;-#;0}");
-                if (item.Wisdom != 0) stats.Add($"Wisdom: {item.Wisdom:+#;-#;0}");
-                if (item.MagicProperties?.Mana != 0) stats.Add($"Mana: {item.MagicProperties.Mana:+#;-#;0}");
+                if (item.Attack > 0) stats.Add($"{Loc.Get("ui.weapon_power")}: +{item.Attack}");
+                if (item.Armor > 0) stats.Add($"{Loc.Get("ui.armor_class")}: +{item.Armor}");
+                if (item.Defence > 0) stats.Add($"{Loc.Get("ui.stat_defense")}: +{item.Defence}");
+                if (item.Strength != 0) stats.Add($"{Loc.Get("ui.stat_strength")}: {item.Strength:+#;-#;0}");
+                if (item.Dexterity != 0) stats.Add($"{Loc.Get("ui.stat_dexterity")}: {item.Dexterity:+#;-#;0}");
+                if (item.Wisdom != 0) stats.Add($"{Loc.Get("ui.stat_wisdom")}: {item.Wisdom:+#;-#;0}");
+                if (item.MagicProperties?.Mana != 0) stats.Add($"{Loc.Get("ui.stat_mana")}: {item.MagicProperties.Mana:+#;-#;0}");
 
                 if (stats.Count > 0)
                 {
@@ -471,26 +471,26 @@ namespace UsurperRemake.Systems
                 terminal.SetColor("magenta");
                 terminal.WriteLine($"  {LootGenerator.GetUnidentifiedName(item)}");
                 terminal.SetColor("gray");
-                terminal.WriteLine("  Properties unknown - visit the Magic Shop to identify.");
+                terminal.WriteLine($"  {Loc.Get("inventory.properties_unknown")}");
                 terminal.WriteLine("");
             }
 
             terminal.SetColor("white");
             if (item.IsIdentified)
             {
-                terminal.WriteLine("  [E] Equip Item");
+                terminal.WriteLine($"  [E] {Loc.Get("inventory.equip_item")}");
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("  [E] Equip Item (must identify first)");
+                terminal.WriteLine($"  [E] {Loc.Get("inventory.equip_identify_first")}");
                 terminal.SetColor("white");
             }
-            terminal.WriteLine("  [D] Drop Item");
-            terminal.WriteLine("  [Q] Back");
+            terminal.WriteLine($"  [D] {Loc.Get("inventory.drop_item")}");
+            terminal.WriteLine($"  [Q] {Loc.Get("inventory.back")}");
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.choice"));
 
             switch (choice.ToUpper())
             {
@@ -498,9 +498,9 @@ namespace UsurperRemake.Systems
                     if (!item.IsIdentified)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine("You can't equip an unidentified item.");
+                        terminal.WriteLine(Loc.Get("inventory.cant_equip_unidentified"));
                         terminal.SetColor("gray");
-                        terminal.WriteLine("Take it to the Magic Shop to have it identified first.");
+                        terminal.WriteLine(Loc.Get("inventory.visit_magic_shop"));
                         await Task.Delay(2000);
                         break;
                     }
@@ -510,9 +510,9 @@ namespace UsurperRemake.Systems
                     if (item.IsCursed)
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine($"The {item.Name} is CURSED! You cannot drop it.");
+                        terminal.WriteLine(Loc.Get("inventory.cursed_cant_drop", item.Name));
                         terminal.SetColor("gray");
-                        terminal.WriteLine("Visit the Healer to have the curse removed.");
+                        terminal.WriteLine(Loc.Get("inventory.visit_healer_curse"));
                         await Task.Delay(2000);
                     }
                     else
@@ -520,7 +520,7 @@ namespace UsurperRemake.Systems
                         string dropName = item.IsIdentified ? item.Name : LootGenerator.GetUnidentifiedName(item);
                         player.Inventory.Remove(item);
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"You drop the {dropName}.");
+                        terminal.WriteLine(Loc.Get("inventory.dropped_item", dropName));
                         await Task.Delay(1000);
                     }
                     break;
@@ -531,7 +531,7 @@ namespace UsurperRemake.Systems
         {
             if (player.Inventory == null || itemIndex < 0 || itemIndex >= player.Inventory.Count)
             {
-                terminal.WriteLine("Invalid item.", "red");
+                terminal.WriteLine(Loc.Get("inventory.invalid_item"), "red");
                 await Task.Delay(1000);
                 return;
             }
@@ -584,7 +584,7 @@ namespace UsurperRemake.Systems
             if (item.Type == ObjType.Food || item.Type == ObjType.Drink ||
                 item.Type == ObjType.Potion || (item.Type == ObjType.Magic && !isMagicEquipment))
             {
-                terminal.WriteLine("This item cannot be equipped.", "red");
+                terminal.WriteLine(Loc.Get("inventory.cant_equip"), "red");
                 await Task.Delay(1000);
                 return;
             }
@@ -632,12 +632,12 @@ namespace UsurperRemake.Systems
             {
                 terminal.WriteLine("");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("Equip to which finger?");
+                terminal.WriteLine(Loc.Get("inventory.which_finger"));
                 terminal.SetColor("white");
-                terminal.WriteLine("  (L) Left finger");
-                terminal.WriteLine("  (R) Right finger");
-                terminal.WriteLine("  (C) Cancel");
-                terminal.Write("Choice: ");
+                terminal.WriteLine($"  (L) {Loc.Get("inventory.left_finger")}");
+                terminal.WriteLine($"  (R) {Loc.Get("inventory.right_finger")}");
+                terminal.WriteLine($"  (C) {Loc.Get("ui.cancel")}");
+                terminal.Write(Loc.Get("ui.choice"));
                 var fingerChoice = await terminal.GetInput("");
                 if (fingerChoice.ToUpper() == "R")
                     targetSlot = EquipmentSlot.RFinger;
@@ -645,7 +645,7 @@ namespace UsurperRemake.Systems
                     targetSlot = EquipmentSlot.LFinger;
                 else
                 {
-                    terminal.WriteLine("Cancelled.", "gray");
+                    terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
                     await Task.Delay(1000);
                     return;
                 }
@@ -684,7 +684,7 @@ namespace UsurperRemake.Systems
                 finalSlot = await PromptForWeaponSlot();
                 if (finalSlot == null)
                 {
-                    terminal.WriteLine("Cancelled.", "gray");
+                    terminal.WriteLine(Loc.Get("ui.cancelled"), "gray");
                     await Task.Delay(1000);
                     return;
                 }
@@ -696,15 +696,7 @@ namespace UsurperRemake.Systems
 
             if (currentEquip != null)
             {
-                string slotDisplayName = compareSlot switch
-                {
-                    EquipmentSlot.MainHand => "Main Hand",
-                    EquipmentSlot.OffHand => "Off Hand",
-                    EquipmentSlot.LFinger => "Left Ring",
-                    EquipmentSlot.RFinger => "Right Ring",
-                    EquipmentSlot.Neck => "Necklace",
-                    _ => compareSlot.ToString()
-                };
+                string slotDisplayName = GetSlotDisplayName(compareSlot);
 
                 terminal.WriteLine("");
                 if (!GameConfig.ScreenReaderMode)
@@ -713,9 +705,9 @@ namespace UsurperRemake.Systems
                     terminal.WriteLine("  ─────────────────────────────────────");
                 }
                 terminal.SetColor("white");
-                terminal.WriteLine($"  COMPARISON ({slotDisplayName} slot):");
+                terminal.WriteLine($"  {Loc.Get("inventory.comparison")} ({slotDisplayName}):");
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"  Currently Equipped: {currentEquip.Name}");
+                terminal.WriteLine($"  {Loc.Get("inventory.currently_equipped")}: {currentEquip.Name}");
 
                 // Compare primary stat
                 if (item.Type == ObjType.Weapon)
@@ -794,12 +786,12 @@ namespace UsurperRemake.Systems
                 terminal.WriteLine("");
 
                 terminal.SetColor("white");
-                terminal.Write("Equip this item? (Y/N): ");
+                terminal.Write(Loc.Get("inventory.equip_confirm"));
                 var confirm = await terminal.GetInput("");
                 if (confirm.ToUpper() != "Y")
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Cancelled.");
+                    terminal.WriteLine(Loc.Get("ui.cancelled"));
                     await Task.Delay(1000);
                     return;
                 }
@@ -812,7 +804,7 @@ namespace UsurperRemake.Systems
                 player.Inventory.RemoveAt(itemIndex);
 
                 terminal.SetColor("green");
-                terminal.WriteLine($"Equipped {item.Name}.");
+                terminal.WriteLine(Loc.Get("inventory.equipped", item.Name));
                 if (!string.IsNullOrEmpty(message))
                 {
                     terminal.SetColor("gray");
@@ -822,7 +814,7 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"Cannot equip: {message}");
+                terminal.WriteLine(Loc.Get("inventory.cannot_equip", message));
             }
 
             player.RecalculateStats();
@@ -836,7 +828,7 @@ namespace UsurperRemake.Systems
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("This is a one-handed weapon. Where would you like to equip it?");
+            terminal.WriteLine(Loc.Get("inventory.one_handed_where"));
             terminal.WriteLine("");
 
             // Show current equipment in both slots
@@ -844,7 +836,7 @@ namespace UsurperRemake.Systems
             var offHandItem = player.GetEquipment(EquipmentSlot.OffHand);
 
             terminal.SetColor("white");
-            terminal.Write("  (M) Main Hand: ");
+            terminal.Write($"  (M) {Loc.Get("inventory.slot_main_hand")}: ");
             if (mainHandItem != null)
             {
                 terminal.SetColor("yellow");
@@ -853,11 +845,11 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("Empty");
+                terminal.WriteLine(Loc.Get("ui.empty"));
             }
 
             terminal.SetColor("white");
-            terminal.Write("  (O) Off-Hand:  ");
+            terminal.Write($"  (O) {Loc.Get("inventory.slot_off_hand")}:  ");
             if (offHandItem != null)
             {
                 terminal.SetColor("yellow");
@@ -866,14 +858,14 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("Empty");
+                terminal.WriteLine(Loc.Get("ui.empty"));
             }
 
             terminal.SetColor("white");
-            terminal.WriteLine("  (C) Cancel");
+            terminal.WriteLine($"  (C) {Loc.Get("ui.cancel")}");
             terminal.WriteLine("");
 
-            terminal.Write("Your choice: ");
+            terminal.Write(Loc.Get("ui.your_choice"));
             var slotChoice = await terminal.GetInput("");
 
             return slotChoice.ToUpper() switch
@@ -888,12 +880,12 @@ namespace UsurperRemake.Systems
         {
             if (player.Inventory == null || player.Inventory.Count == 0)
             {
-                terminal.WriteLine("Your backpack is empty.", "gray");
+                terminal.WriteLine(Loc.Get("inventory.backpack_empty"), "gray");
                 await Task.Delay(1000);
                 return;
             }
 
-            terminal.WriteLine("Enter item number to drop (B1, B2, etc): ", "yellow");
+            terminal.WriteLine(Loc.Get("inventory.enter_drop_number"), "yellow");
             var input = await terminal.GetInput("");
 
             if (input.ToUpper().StartsWith("B") && int.TryParse(input.Substring(1), out int index))
@@ -903,18 +895,18 @@ namespace UsurperRemake.Systems
                     var item = player.Inventory[index - 1];
                     if (item.IsCursed)
                     {
-                        terminal.WriteLine($"The {item.Name} is CURSED! You cannot drop it.", "red");
-                        terminal.WriteLine("Visit the Healer to have the curse removed.", "gray");
+                        terminal.WriteLine(Loc.Get("inventory.cursed_cant_drop", item.Name), "red");
+                        terminal.WriteLine(Loc.Get("inventory.visit_healer_curse"), "gray");
                         await Task.Delay(2000);
                         return;
                     }
                     player.Inventory.RemoveAt(index - 1);
-                    terminal.WriteLine($"You drop the {item.Name}.", "yellow");
+                    terminal.WriteLine(Loc.Get("inventory.dropped_item", item.Name), "yellow");
                     await Task.Delay(1000);
                 }
                 else
                 {
-                    terminal.WriteLine("Invalid item number.", "red");
+                    terminal.WriteLine(Loc.Get("inventory.invalid_item"), "red");
                     await Task.Delay(500);
                 }
             }
@@ -936,7 +928,7 @@ namespace UsurperRemake.Systems
 
             // Show current item
             terminal.SetColor("white");
-            terminal.Write("Currently Equipped: ");
+            terminal.Write($"{Loc.Get("inventory.currently_equipped")}: ");
             if (currentItem != null)
             {
                 terminal.SetColor(GetRarityColor(currentItem.Rarity));
@@ -946,31 +938,31 @@ namespace UsurperRemake.Systems
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("Nothing");
+                terminal.WriteLine(Loc.Get("inventory.nothing"));
             }
             terminal.WriteLine("");
 
             // Show options
             terminal.SetColor("cyan");
-            terminal.WriteLine("Options:");
+            terminal.WriteLine($"{Loc.Get("inventory.options")}:");
             terminal.SetColor("white");
             if (currentItem != null)
             {
-                terminal.WriteLine("  [U] Unequip this item");
+                terminal.WriteLine($"  [U] {Loc.Get("inventory.unequip_item")}");
             }
-            terminal.WriteLine("  [Q] Return to inventory");
+            terminal.WriteLine($"  [Q] {Loc.Get("inventory.return_inventory")}");
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInput("Choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.choice"));
 
             if (choice.ToUpper().Trim() == "U" && currentItem != null)
             {
                 if (currentItem.IsCursed)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"The {currentItem.Name} is CURSED! You cannot unequip it.");
+                    terminal.WriteLine(Loc.Get("inventory.cursed_cant_unequip", currentItem.Name));
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Visit the Healer to have the curse removed.");
+                    terminal.WriteLine(Loc.Get("inventory.visit_healer_curse"));
                     await Task.Delay(2000);
                     return;
                 }
@@ -1012,9 +1004,9 @@ namespace UsurperRemake.Systems
                     player.RecalculateStats();
 
                     terminal.SetColor("yellow");
-                    terminal.WriteLine($"Unequipped {unequipped.Name}.");
+                    terminal.WriteLine(Loc.Get("inventory.unequipped", unequipped.Name));
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(Item returned to your backpack)");
+                    terminal.WriteLine(Loc.Get("inventory.returned_backpack"));
                     await Task.Delay(1500);
                 }
             }
@@ -1028,28 +1020,28 @@ namespace UsurperRemake.Systems
             var stats = new List<string>();
 
             // Combat stats
-            if (item.WeaponPower > 0) stats.Add($"Weapon Power: {item.WeaponPower}");
-            if (item.ArmorClass > 0) stats.Add($"Armor Class: {item.ArmorClass}");
-            if (item.ShieldBonus > 0) stats.Add($"Shield Block: {item.ShieldBonus}");
+            if (item.WeaponPower > 0) stats.Add($"{Loc.Get("ui.weapon_power")}: {item.WeaponPower}");
+            if (item.ArmorClass > 0) stats.Add($"{Loc.Get("ui.armor_class")}: {item.ArmorClass}");
+            if (item.ShieldBonus > 0) stats.Add($"{Loc.Get("ui.shield_block")}: {item.ShieldBonus}");
 
             // Attribute bonuses
-            if (item.StrengthBonus != 0) stats.Add($"Strength: {item.StrengthBonus:+#;-#;0}");
-            if (item.DexterityBonus != 0) stats.Add($"Dexterity: {item.DexterityBonus:+#;-#;0}");
-            if (item.ConstitutionBonus != 0) stats.Add($"Constitution: {item.ConstitutionBonus:+#;-#;0}");
-            if (item.IntelligenceBonus != 0) stats.Add($"Intelligence: {item.IntelligenceBonus:+#;-#;0}");
-            if (item.WisdomBonus != 0) stats.Add($"Wisdom: {item.WisdomBonus:+#;-#;0}");
-            if (item.CharismaBonus != 0) stats.Add($"Charisma: {item.CharismaBonus:+#;-#;0}");
-            if (item.AgilityBonus != 0) stats.Add($"Agility: {item.AgilityBonus:+#;-#;0}");
-            if (item.StaminaBonus != 0) stats.Add($"Stamina: {item.StaminaBonus:+#;-#;0}");
+            if (item.StrengthBonus != 0) stats.Add($"{Loc.Get("ui.stat_strength")}: {item.StrengthBonus:+#;-#;0}");
+            if (item.DexterityBonus != 0) stats.Add($"{Loc.Get("ui.stat_dexterity")}: {item.DexterityBonus:+#;-#;0}");
+            if (item.ConstitutionBonus != 0) stats.Add($"{Loc.Get("ui.stat_constitution")}: {item.ConstitutionBonus:+#;-#;0}");
+            if (item.IntelligenceBonus != 0) stats.Add($"{Loc.Get("ui.stat_intelligence")}: {item.IntelligenceBonus:+#;-#;0}");
+            if (item.WisdomBonus != 0) stats.Add($"{Loc.Get("ui.stat_wisdom")}: {item.WisdomBonus:+#;-#;0}");
+            if (item.CharismaBonus != 0) stats.Add($"{Loc.Get("ui.stat_charisma")}: {item.CharismaBonus:+#;-#;0}");
+            if (item.AgilityBonus != 0) stats.Add($"{Loc.Get("ui.stat_agility")}: {item.AgilityBonus:+#;-#;0}");
+            if (item.StaminaBonus != 0) stats.Add($"{Loc.Get("ui.stat_stamina")}: {item.StaminaBonus:+#;-#;0}");
 
             // Other bonuses
-            if (item.MaxHPBonus != 0) stats.Add($"Max HP: {item.MaxHPBonus:+#;-#;0}");
-            if (item.MaxManaBonus != 0) stats.Add($"Max Mana: {item.MaxManaBonus:+#;-#;0}");
-            if (item.DefenceBonus != 0) stats.Add($"Defence: {item.DefenceBonus:+#;-#;0}");
-            if (item.MagicResistance != 0) stats.Add($"Magic Resist: {item.MagicResistance:+#;-#;0}");
-            if (item.CriticalChanceBonus != 0) stats.Add($"Crit Chance: {item.CriticalChanceBonus}%");
-            if (item.CriticalDamageBonus != 0) stats.Add($"Crit Damage: {item.CriticalDamageBonus}%");
-            if (item.LifeSteal != 0) stats.Add($"Life Steal: {item.LifeSteal}%");
+            if (item.MaxHPBonus != 0) stats.Add($"{Loc.Get("ui.max_hp")}: {item.MaxHPBonus:+#;-#;0}");
+            if (item.MaxManaBonus != 0) stats.Add($"{Loc.Get("ui.max_mana")}: {item.MaxManaBonus:+#;-#;0}");
+            if (item.DefenceBonus != 0) stats.Add($"{Loc.Get("ui.stat_defense")}: {item.DefenceBonus:+#;-#;0}");
+            if (item.MagicResistance != 0) stats.Add($"{Loc.Get("ui.magic_resist")}: {item.MagicResistance:+#;-#;0}");
+            if (item.CriticalChanceBonus != 0) stats.Add($"{Loc.Get("ui.crit_chance")}: {item.CriticalChanceBonus}%");
+            if (item.CriticalDamageBonus != 0) stats.Add($"{Loc.Get("ui.crit_damage")}: {item.CriticalDamageBonus}%");
+            if (item.LifeSteal != 0) stats.Add($"{Loc.Get("ui.life_steal")}: {item.LifeSteal}%");
 
             if (stats.Count > 0)
             {
@@ -1062,40 +1054,40 @@ namespace UsurperRemake.Systems
 
             // Requirements
             var reqs = new List<string>();
-            if (item.MinLevel > 1) reqs.Add($"Level {item.MinLevel}");
-            if (item.StrengthRequired > 0) reqs.Add($"Str {item.StrengthRequired}");
-            if (item.RequiresGood) reqs.Add("Good alignment");
-            if (item.RequiresEvil) reqs.Add("Evil alignment");
-            if (item.IsUnique) reqs.Add("UNIQUE");
+            if (item.MinLevel > 1) reqs.Add($"{Loc.Get("inventory.req_level")} {item.MinLevel}");
+            if (item.StrengthRequired > 0) reqs.Add($"{Loc.Get("ui.stat_str")} {item.StrengthRequired}");
+            if (item.RequiresGood) reqs.Add(Loc.Get("inventory.req_good"));
+            if (item.RequiresEvil) reqs.Add(Loc.Get("inventory.req_evil"));
+            if (item.IsUnique) reqs.Add(Loc.Get("inventory.req_unique"));
 
             if (reqs.Count > 0)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  Requires: {string.Join(", ", reqs)}");
+                terminal.WriteLine($"  {Loc.Get("inventory.requires")}: {string.Join(", ", reqs)}");
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"  Value: {item.Value:N0} gold");
+            terminal.WriteLine($"  {Loc.Get("inventory.value")}: {item.Value:N0} {Loc.Get("ui.gold_word")}");
         }
 
         private string GetSlotDisplayName(EquipmentSlot slot)
         {
             return slot switch
             {
-                EquipmentSlot.MainHand => "Main Hand",
-                EquipmentSlot.OffHand => "Off Hand",
-                EquipmentSlot.Head => "Head",
-                EquipmentSlot.Body => "Body",
-                EquipmentSlot.Arms => "Arms",
-                EquipmentSlot.Hands => "Hands",
-                EquipmentSlot.Legs => "Legs",
-                EquipmentSlot.Feet => "Feet",
-                EquipmentSlot.Waist => "Waist",
-                EquipmentSlot.Neck => "Neck",
-                EquipmentSlot.Face => "Face",
-                EquipmentSlot.Cloak => "Cloak",
-                EquipmentSlot.LFinger => "Left Ring",
-                EquipmentSlot.RFinger => "Right Ring",
+                EquipmentSlot.MainHand => Loc.Get("inventory.slot_main_hand"),
+                EquipmentSlot.OffHand => Loc.Get("inventory.slot_off_hand"),
+                EquipmentSlot.Head => Loc.Get("inventory.slot_head"),
+                EquipmentSlot.Body => Loc.Get("inventory.slot_body"),
+                EquipmentSlot.Arms => Loc.Get("inventory.slot_arms"),
+                EquipmentSlot.Hands => Loc.Get("inventory.slot_hands"),
+                EquipmentSlot.Legs => Loc.Get("inventory.slot_legs"),
+                EquipmentSlot.Feet => Loc.Get("inventory.slot_feet"),
+                EquipmentSlot.Waist => Loc.Get("inventory.slot_waist"),
+                EquipmentSlot.Neck => Loc.Get("inventory.slot_neck"),
+                EquipmentSlot.Face => Loc.Get("inventory.slot_face"),
+                EquipmentSlot.Cloak => Loc.Get("inventory.slot_cloak"),
+                EquipmentSlot.LFinger => Loc.Get("inventory.slot_left_ring"),
+                EquipmentSlot.RFinger => Loc.Get("inventory.slot_right_ring"),
                 _ => slot.ToString()
             };
         }
@@ -1104,7 +1096,7 @@ namespace UsurperRemake.Systems
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Unequipping all items...");
+            terminal.WriteLine(Loc.Get("inventory.unequipping_all"));
 
             int count = 0;
             foreach (var slot in Enum.GetValues<EquipmentSlot>())
@@ -1152,12 +1144,12 @@ namespace UsurperRemake.Systems
             if (count > 0)
             {
                 terminal.SetColor("green");
-                terminal.WriteLine($"Unequipped {count} item(s) to your backpack.");
+                terminal.WriteLine(Loc.Get("inventory.unequipped_count", count));
             }
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("No items to unequip.");
+                terminal.WriteLine(Loc.Get("inventory.no_items_unequip"));
             }
 
             await Task.Delay(1500);

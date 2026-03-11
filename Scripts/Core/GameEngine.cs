@@ -1,6 +1,7 @@
 using UsurperRemake.Utils;
 using UsurperRemake.Systems;
 using UsurperRemake.Data;
+using UsurperRemake.Locations;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -80,6 +81,13 @@ public partial class GameEngine
         }
     }
     private static bool _staticIsIntentionalExit = false;
+
+    /// <summary>
+    /// True if the player actively selected a language on the main menu this session.
+    /// Used to prevent LoadSaveByFileName from overwriting their choice with the saved default.
+    /// Uses AsyncLocal so each MUD session has its own flag.
+    /// </summary>
+    private static readonly System.Threading.AsyncLocal<bool> _languageSetThisSession = new();
 
     /// <summary>
     /// Mark the current session as an intentional exit (prevents warning on shutdown)
@@ -407,7 +415,7 @@ public partial class GameEngine
         var welcomeName = mainSave?.PlayerName ?? altSave?.PlayerName
             ?? (char.ToUpper(playerName[0]) + playerName.Substring(1));
         terminal.SetColor("white");
-        terminal.WriteLine($"Welcome, {welcomeName}!");
+        terminal.WriteLine(Loc.Get("engine.welcome", welcomeName));
         terminal.WriteLine("");
         bool isSysOp = UsurperRemake.BBS.DoorMode.IsSysOp;
         bool isOnlineAdmin = UsurperRemake.Server.SessionContext.IsActive
@@ -434,17 +442,19 @@ public partial class GameEngine
         if (mainSave != null)
         {
             terminal.SetColor("green");
-            string mainTag = mainIsImmortal ? " [IMMORTAL]" : "";
-            terminal.WriteLine($"  [1] {mainSave.PlayerName} — Level {mainSave.Level} {mainSave.ClassName}{mainTag}");
+            string mainTag = mainIsImmortal ? Loc.Get("engine.immortal_tag") : "";
+            terminal.WriteLine(Loc.Get("engine.char_slot", "1", mainSave.PlayerName, mainSave.Level, mainSave.ClassName, mainTag));
             terminal.SetColor("gray");
-            terminal.WriteLine($"      Last played: {mainSave.SaveTime:yyyy-MM-dd HH:mm}");
+            if (mainSave.SaveTime.Year >= 2020)
+                terminal.WriteLine(Loc.Get("engine.last_played", mainSave.SaveTime.ToString("yyyy-MM-dd HH:mm")));
         }
         if (altSave != null)
         {
             terminal.SetColor("green");
-            terminal.WriteLine($"  [2] {altSave.PlayerName} — Level {altSave.Level} {altSave.ClassName}");
+            terminal.WriteLine(Loc.Get("engine.char_slot", "2", altSave.PlayerName, altSave.Level, altSave.ClassName, ""));
             terminal.SetColor("gray");
-            terminal.WriteLine($"      Last played: {altSave.SaveTime:yyyy-MM-dd HH:mm}");
+            if (altSave.SaveTime.Year >= 2020)
+                terminal.WriteLine(Loc.Get("engine.last_played", altSave.SaveTime.ToString("yyyy-MM-dd HH:mm")));
         }
         if (mainSave != null || altSave != null)
             terminal.WriteLine("");
@@ -461,74 +471,74 @@ public partial class GameEngine
         {
             // ── Compact BBS menu: all options in a dense layout ──
             if (mainSave != null)
-                WriteMenuKey("1", $"Play {mainSave.PlayerName}");
+                WriteMenuKey("1", Loc.Get("engine.menu_play", mainSave.PlayerName));
             if (altSave != null)
-                WriteMenuKey("2", $"Play {altSave.PlayerName}");
+                WriteMenuKey("2", Loc.Get("engine.menu_play", altSave.PlayerName));
             if (mainSave == null)
-                WriteMenuKey("N", "New Character");
+                WriteMenuKey("N", Loc.Get("engine.menu_new_char"));
             else
-                WriteMenuKey("N", "New (Overwrites!)");
+                WriteMenuKey("N", Loc.Get("engine.menu_new_overwrite"));
             if (canCreateAlt)
-                WriteMenuKey("M", "Create Alt");
+                WriteMenuKey("M", Loc.Get("engine.menu_create_alt"));
             if (altSave != null)
-                WriteMenuKey("D", "Delete Alt");
+                WriteMenuKey("D", Loc.Get("engine.menu_delete_alt"));
             if (showOnline)
-                WriteMenuKey("O", "Online Multiplayer");
+                WriteMenuKey("O", Loc.Get("engine.menu_online"));
             terminal.WriteLine("");
-            WriteMenuKey("I", "Story");
-            WriteMenuKey("H", "History");
-            WriteMenuKey("B", "BBS List");
-            WriteMenuKey("C", "Credits");
-            WriteMenuKey("A", GameConfig.ScreenReaderMode ? "Screen Reader: ON" : "Screen Reader: OFF");
-            WriteMenuKey("Z", GameConfig.CompactMode ? "Compact: ON" : "Compact: OFF");
+            WriteMenuKey("I", Loc.Get("engine.menu_story"));
+            WriteMenuKey("H", Loc.Get("engine.menu_history"));
+            WriteMenuKey("B", Loc.Get("engine.menu_bbs_list"));
+            WriteMenuKey("C", Loc.Get("engine.menu_credits"));
+            WriteMenuKey("A", GameConfig.ScreenReaderMode ? Loc.Get("engine.menu_sr_on") : Loc.Get("engine.menu_sr_off"));
+            WriteMenuKey("Z", GameConfig.CompactMode ? Loc.Get("engine.menu_compact_on") : Loc.Get("engine.menu_compact_off"));
             if (UsurperRemake.Server.SessionContext.IsActive)
-                WriteMenuKey("S", "Spectate");
+                WriteMenuKey("S", Loc.Get("engine.menu_spectate"));
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !UsurperRemake.BBS.DoorMode.IsInDoorMode)
-                WriteMenuKey("P", "Password");
+                WriteMenuKey("P", Loc.Get("engine.menu_password"));
             if (isSysOp || isOnlineAdmin)
-                WriteMenuKey("%", isSysOp ? "SysOp" : "Admin");
+                WriteMenuKey("%", isSysOp ? Loc.Get("engine.menu_sysop") : Loc.Get("engine.menu_admin"));
 #if !STEAM_BUILD
-            WriteMenuKey("@", "Support");
+            WriteMenuKey("@", Loc.Get("engine.menu_support"));
 #endif
-            WriteMenuKey("Q", "Quit");
+            WriteMenuKey("Q", Loc.Get("engine.menu_quit"));
             terminal.WriteLine("");
         }
         else
         {
             // ── Full menu for MUD/local/Steam ──
             terminal.SetColor("darkgray");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  PLAY" : "  ── PLAY ─────────────────────────────────────────────────────────────────");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("engine.section_play") : "  ── PLAY ─────────────────────────────────────────────────────────────────");
             if (mainSave != null)
-                WriteMenuKey("1", $"Play {mainSave.PlayerName}");
+                WriteMenuKey("1", Loc.Get("engine.menu_play", mainSave.PlayerName));
             if (altSave != null)
-                WriteMenuKey("2", $"Play {altSave.PlayerName}");
+                WriteMenuKey("2", Loc.Get("engine.menu_play", altSave.PlayerName));
             if (canCreateAlt)
-                WriteMenuKey("M", "Create Mortal Alt Character");
+                WriteMenuKey("M", Loc.Get("engine.menu_create_mortal_alt"));
             if (altSave != null)
-                WriteMenuKey("D", "Delete Alt Character");
+                WriteMenuKey("D", Loc.Get("engine.menu_delete_alt_full"));
             if (mainSave == null)
-                WriteMenuKey("N", "Create new character");
+                WriteMenuKey("N", Loc.Get("engine.menu_create_new"));
             else
-                WriteMenuKey("N", "New character (WARNING: Overwrites main!)");
+                WriteMenuKey("N", Loc.Get("engine.menu_new_overwrite_full"));
             if (showOnline)
-                WriteMenuKey("O", "Online Multiplayer - Shared World");
+                WriteMenuKey("O", Loc.Get("engine.menu_online_full"));
 
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  INFO" : "  ── INFO ─────────────────────────────────────────────────────────────────");
-            WriteMenuKey("I", "The Story So Far...");
-            WriteMenuKey("H", "Usurper History");
-            WriteMenuKey("B", "BBS & Online Server List");
-            WriteMenuKey("C", "Credits");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("engine.section_info") : "  ── INFO ─────────────────────────────────────────────────────────────────");
+            WriteMenuKey("I", Loc.Get("engine.menu_story_full"));
+            WriteMenuKey("H", Loc.Get("engine.menu_history_full"));
+            WriteMenuKey("B", Loc.Get("engine.menu_bbs_full"));
+            WriteMenuKey("C", Loc.Get("engine.menu_credits"));
 #if !STEAM_BUILD
-            WriteMenuKey("@", "Support the Developer");
+            WriteMenuKey("@", Loc.Get("engine.menu_support_full"));
 #endif
 
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
-            terminal.WriteLine(GameConfig.ScreenReaderMode ? "  ACCESSIBILITY" : "  ── ACCESSIBILITY ────────────────────────────────────────────────────────");
+            terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("engine.section_accessibility") : "  ── ACCESSIBILITY ────────────────────────────────────────────────────────");
             terminal.SetColor("darkgray");
             terminal.Write("  [");
             terminal.SetColor("bright_yellow");
@@ -538,12 +548,12 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Screen Reader Mode: ON");
+                terminal.WriteLine(Loc.Get("engine.menu_sr_on"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("Screen Reader Mode: OFF");
+                terminal.WriteLine(Loc.Get("engine.menu_sr_off"));
             }
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -554,22 +564,23 @@ public partial class GameEngine
             if (GameConfig.CompactMode)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Compact Mode: ON (Mobile/Small Screen)");
+                terminal.WriteLine(Loc.Get("engine.main_compact_on_visual"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("Compact Mode: OFF");
+                terminal.WriteLine(Loc.Get("engine.main_compact_off_visual"));
             }
             if (UsurperRemake.Server.SessionContext.IsActive)
-                WriteMenuKey("S", "Spectate a Player");
+                WriteMenuKey("S", Loc.Get("engine.menu_spectate_full"));
+            WriteMenuKey("G", Loc.Get("engine.main_language_visual", UsurperRemake.Systems.Loc.GetLanguageName(GameConfig.Language)));
 
             terminal.WriteLine("");
 
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !UsurperRemake.BBS.DoorMode.IsInDoorMode)
-                WriteMenuKey("P", "Change Password");
+                WriteMenuKey("P", Loc.Get("engine.menu_change_password"));
             if (isSysOp || isOnlineAdmin)
-                WriteMenuKey("%", isSysOp ? "SysOp Console" : "Admin Console");
+                WriteMenuKey("%", isSysOp ? Loc.Get("engine.menu_sysop_console") : Loc.Get("engine.menu_admin_console"));
             terminal.SetColor("darkgray");
             terminal.Write("  [");
             terminal.SetColor("red");
@@ -577,11 +588,11 @@ public partial class GameEngine
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("gray");
-            terminal.WriteLine("Quit");
+            terminal.WriteLine(Loc.Get("engine.menu_quit"));
             terminal.WriteLine("");
         }
 
-        var choice = await terminal.GetInput("Your choice: ");
+        var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
         switch (choice.ToUpper())
         {
@@ -637,7 +648,7 @@ public partial class GameEngine
                 }
                 else
                 {
-                    terminal.WriteLine("  You must be an immortal to create an alt character.", "red");
+                    terminal.WriteLine(Loc.Get("engine.immortal_required"), "red");
                     await Task.Delay(2000);
                     await RunBBSDoorMode();
                     return;
@@ -649,10 +660,10 @@ public partial class GameEngine
                 {
                     terminal.SetColor("bright_red");
                     terminal.WriteLine("");
-                    terminal.WriteLine("WARNING: This will DELETE your main character!");
+                    terminal.WriteLine(Loc.Get("engine.delete_main_warning"));
                     if (altSave != null)
-                        terminal.WriteLine("Your alt character will NOT be affected.");
-                    var confirm = await terminal.GetInput("Type 'DELETE' to confirm: ");
+                        terminal.WriteLine(Loc.Get("engine.delete_alt_unaffected"));
+                    var confirm = await terminal.GetInput(Loc.Get("engine.delete_confirm_prompt"));
                     if (confirm == "DELETE")
                     {
                         // Delete main character save only (not alt)
@@ -669,7 +680,7 @@ public partial class GameEngine
                     }
                     else
                     {
-                        terminal.WriteLine("Character deletion cancelled.", "yellow");
+                        terminal.WriteLine(Loc.Get("engine.delete_cancelled"), "yellow");
                         await Task.Delay(2000);
                         await RunBBSDoorMode();
                         return;
@@ -730,13 +741,13 @@ public partial class GameEngine
                 terminal.WriteLine("");
                 if (GameConfig.ScreenReaderMode)
                 {
-                    terminal.WriteLine("Screen Reader Mode ENABLED", "bright_green");
-                    terminal.WriteLine("Menus will use simplified plain text format.", "white");
+                    terminal.WriteLine(Loc.Get("engine.sr_enabled"), "bright_green");
+                    terminal.WriteLine(Loc.Get("engine.sr_enabled_desc"), "white");
                 }
                 else
                 {
-                    terminal.WriteLine("Screen Reader Mode DISABLED", "white");
-                    terminal.WriteLine("Menus will use visual ASCII art format.", "white");
+                    terminal.WriteLine(Loc.Get("engine.sr_disabled"), "white");
+                    terminal.WriteLine(Loc.Get("engine.sr_disabled_desc"), "white");
                 }
                 await Task.Delay(1500);
                 await RunBBSDoorMode();
@@ -747,13 +758,13 @@ public partial class GameEngine
                 terminal.WriteLine("");
                 if (GameConfig.CompactMode)
                 {
-                    terminal.WriteLine("Compact Mode ENABLED", "bright_green");
-                    terminal.WriteLine("Menus optimized for mobile and small screens.", "white");
+                    terminal.WriteLine(Loc.Get("engine.compact_enabled"), "bright_green");
+                    terminal.WriteLine(Loc.Get("engine.compact_enabled_desc"), "white");
                 }
                 else
                 {
-                    terminal.WriteLine("Compact Mode DISABLED", "white");
-                    terminal.WriteLine("Full-size menus restored.", "white");
+                    terminal.WriteLine(Loc.Get("engine.compact_disabled"), "white");
+                    terminal.WriteLine(Loc.Get("engine.compact_disabled_desc"), "white");
                 }
                 await Task.Delay(1500);
                 await RunBBSDoorMode();
@@ -779,9 +790,32 @@ public partial class GameEngine
                 }
                 break;
 
+            case "G":
+                terminal.WriteLine("");
+                terminal.WriteLine(Loc.Get("prefs.select_language"), "bright_yellow");
+                terminal.WriteLine("");
+                var doorLangs = UsurperRemake.Systems.Loc.AvailableLanguages;
+                for (int li = 0; li < doorLangs.Length; li++)
+                {
+                    var marker = doorLangs[li].Code == (GameConfig.Language ?? "en") ? " *" : "";
+                    terminal.WriteLine($"  {li + 1}. {doorLangs[li].Name}{marker}");
+                }
+                terminal.WriteLine("");
+                var doorLangChoice = await terminal.GetInput(Loc.Get("ui.your_choice"));
+                if (int.TryParse(doorLangChoice.Trim(), out int doorLangIdx) && doorLangIdx >= 1 && doorLangIdx <= doorLangs.Length)
+                {
+                    var selectedLang = doorLangs[doorLangIdx - 1].Code;
+                    GameConfig.Language = selectedLang;
+                    _languageSetThisSession.Value = true;
+                    terminal.WriteLine(Loc.Get("prefs.language_set", UsurperRemake.Systems.Loc.GetLanguageName(selectedLang)), "green");
+                    await Task.Delay(800);
+                }
+                await RunBBSDoorMode();
+                return;
+
             case "Q":
                 IsIntentionalExit = true;
-                terminal.WriteLine("Goodbye!", "cyan");
+                terminal.WriteLine(Loc.Get("engine.goodbye"), "cyan");
                 await Task.Delay(1000);
                 break;
 
@@ -797,8 +831,8 @@ public partial class GameEngine
                 {
                     terminal.SetColor("bright_red");
                     terminal.WriteLine("");
-                    terminal.WriteLine($"  WARNING: This will permanently delete {altSave.PlayerName}!");
-                    var confirmDel = await terminal.GetInput("  Type 'DELETE' to confirm: ");
+                    terminal.WriteLine(Loc.Get("engine.delete_alt_warning", altSave.PlayerName));
+                    var confirmDel = await terminal.GetInput(Loc.Get("engine.delete_alt_confirm"));
                     if (confirmDel == "DELETE")
                     {
                         SaveSystem.Instance.DeleteSave(altKey);
@@ -807,12 +841,12 @@ public partial class GameEngine
                         {
                             try { await sqlDel.UnregisterSleepingPlayer(altKey); } catch { }
                         }
-                        terminal.WriteLine($"  {altSave.PlayerName} has been deleted.", "yellow");
+                        terminal.WriteLine(Loc.Get("engine.delete_alt_done", altSave.PlayerName), "yellow");
                         await Task.Delay(2000);
                     }
                     else
                     {
-                        terminal.WriteLine("  Deletion cancelled.", "gray");
+                        terminal.WriteLine(Loc.Get("engine.delete_alt_cancelled"), "gray");
                         await Task.Delay(1500);
                     }
                     await RunBBSDoorMode();
@@ -1146,11 +1180,10 @@ public partial class GameEngine
         luckyNPC.Level++;
         luckyNPC.Experience += luckyNPC.Level * 1000;
 
-        // Boost stats
-        luckyNPC.MaxHP += random.Next(10, 30);
+        // Boost stats using proper class-based increases (same as players)
+        LevelMasterLocation.ApplyClassStatIncreases(luckyNPC);
+        luckyNPC.RecalculateStats();
         luckyNPC.HP = luckyNPC.MaxHP;
-        luckyNPC.Strength += random.Next(1, 3);
-        luckyNPC.Defence += random.Next(1, 2);
         luckyNPC.WeapPow += random.Next(1, 3);
         luckyNPC.ArmPow += random.Next(1, 2);
 
@@ -1170,15 +1203,15 @@ public partial class GameEngine
         terminal.ClearScreen();
         terminal.ShowANSIArt("USURPER");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("USURPER REBORN - Halls of Avarice");
+        terminal.WriteLine(Loc.Get("engine.title"));
         terminal.SetColor("gray");
-        terminal.WriteLine($"v{GameConfig.Version} \"{GameConfig.VersionName}\"");
+        terminal.WriteLine(Loc.Get("engine.title_version", GameConfig.Version, GameConfig.VersionName));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("1993 - Original by Jakob Dangarden");
-        terminal.WriteLine("2025 - Reborn by Jason Knight");
+        terminal.WriteLine(Loc.Get("engine.title_original"));
+        terminal.WriteLine(Loc.Get("engine.title_reborn"));
         terminal.WriteLine("");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.WaitForKey();
     }
     
@@ -1190,7 +1223,7 @@ public partial class GameEngine
         if (compact)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  [!] ALPHA - Bugs expected. Data may be wiped. /bug to report.");
+            terminal.WriteLine(Loc.Get("engine.alpha_compact"));
             return;
         }
 
@@ -1198,10 +1231,10 @@ public partial class GameEngine
         if (GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("  ALPHA BUILD - Expect bugs, balance issues, and missing content.");
+            terminal.WriteLine(Loc.Get("engine.alpha_sr"));
             terminal.SetColor("white");
-            terminal.WriteLine("  Character data may be wiped at any time (full wipe planned at Beta).");
-            terminal.WriteLine("  Report bugs via /bug in-game or join our Discord:");
+            terminal.WriteLine(Loc.Get("engine.alpha_wipe"));
+            terminal.WriteLine(Loc.Get("engine.alpha_report"));
             terminal.SetColor("bright_cyan");
             terminal.WriteLine($"  {GameConfig.DiscordInvite}");
         }
@@ -1211,17 +1244,17 @@ public partial class GameEngine
             terminal.WriteLine("  ╔══════════════════════════════════════════════════════════════════════════╗");
             terminal.Write("  ║ ");
             terminal.SetColor("bright_yellow");
-            terminal.Write("[!] ALPHA BUILD - Expect bugs, balance issues, and missing content. [!]");
+            terminal.Write(Loc.Get("engine.alpha_box_title"));
             terminal.SetColor("bright_red");
             terminal.WriteLine("  ║");
             terminal.Write("  ║ ");
             terminal.SetColor("white");
-            terminal.Write("Character data may be wiped at any time (full wipe planned at Beta).    ");
+            terminal.Write(Loc.Get("engine.alpha_box_wipe"));
             terminal.SetColor("bright_red");
             terminal.WriteLine(" ║");
             terminal.Write("  ║ ");
             terminal.SetColor("white");
-            terminal.Write("Report bugs via /bug in-game or join our Discord:                       ");
+            terminal.Write(Loc.Get("engine.alpha_box_report"));
             terminal.SetColor("bright_red");
             terminal.WriteLine(" ║");
             terminal.Write("  ║ ");
@@ -1257,7 +1290,7 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  USURPER REBORN - Halls of Avarice");
+                terminal.WriteLine(Loc.Get("engine.main_title_sr"));
             }
             else
             {
@@ -1266,9 +1299,7 @@ public partial class GameEngine
                 terminal.SetColor("cyan");
                 terminal.Write("║");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("                USURPER REBORN");
-                terminal.SetColor("white");
-                terminal.Write(" - Halls of Avarice                             ");
+                { string t = Loc.Get("engine.main_title_box"); string s = Loc.Get("engine.main_subtitle_box"); string full = t + s; int pad = 78 - full.Length; int l = pad / 2; int r = pad - l; terminal.Write(new string(' ', l) + t); terminal.SetColor("white"); terminal.Write(s + new string(' ', r)); }
                 terminal.SetColor("cyan");
                 terminal.WriteLine("║");
                 terminal.SetColor("cyan");
@@ -1281,43 +1312,44 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 // Screen reader friendly menu - plain text, no multi-color brackets
-                terminal.WriteLine("  PLAY", "darkgray");
-                terminal.WriteLine("  S. Single-Player", "bright_green");
+                terminal.WriteLine(Loc.Get("engine.section_play"), "darkgray");
+                terminal.WriteLine($"  S. {Loc.Get("engine.main_single_player")}", "bright_green");
                 if (!UsurperRemake.BBS.DoorMode.IsMudServerMode && !UsurperRemake.BBS.DoorMode.IsMudRelayMode
                     && !GameConfig.DisableOnlinePlay)
-                    terminal.WriteLine("  O. Online Multiplayer, Shared World", "bright_yellow");
+                    terminal.WriteLine(Loc.Get("engine.main_online_sr"), "bright_yellow");
                 terminal.WriteLine("");
 
-                terminal.WriteLine("  INFO", "darkgray");
-                terminal.WriteLine("  I. The Story So Far", "white");
-                terminal.WriteLine("  H. Usurper History", "white");
-                terminal.WriteLine("  B. BBS and Online Server List", "white");
-                terminal.WriteLine("  C. Credits", "white");
+                terminal.WriteLine(Loc.Get("engine.section_info"), "darkgray");
+                terminal.WriteLine(Loc.Get("engine.main_story_sr"), "white");
+                terminal.WriteLine(Loc.Get("engine.main_history_sr"), "white");
+                terminal.WriteLine(Loc.Get("engine.main_bbs_sr"), "white");
+                terminal.WriteLine(Loc.Get("engine.main_credits_sr"), "white");
 #if !STEAM_BUILD
-                terminal.WriteLine("  @. Support the Developer", "bright_yellow");
+                terminal.WriteLine(Loc.Get("engine.main_support_sr"), "bright_yellow");
 #endif
                 terminal.WriteLine("");
 
-                terminal.WriteLine("  ACCESSIBILITY", "darkgray");
-                terminal.WriteLine("  A. Screen Reader Mode: ON", "bright_green");
+                terminal.WriteLine(Loc.Get("engine.section_accessibility"), "darkgray");
+                terminal.WriteLine(Loc.Get("engine.main_sr_on"), "bright_green");
                 terminal.WriteLine(GameConfig.CompactMode
-                    ? "  Z. Compact Mode: ON"
-                    : "  Z. Compact Mode: OFF", GameConfig.CompactMode ? "bright_green" : "white");
+                    ? Loc.Get("engine.main_compact_on_sr")
+                    : Loc.Get("engine.main_compact_off_sr"), GameConfig.CompactMode ? "bright_green" : "white");
                 if (BaseLocation.IsRunningInWezTerm())
-                    terminal.WriteLine($"  F. Terminal Font: {BaseLocation.ReadCurrentFont()}", "white");
+                    terminal.WriteLine(Loc.Get("engine.main_font_sr", BaseLocation.ReadCurrentFont()), "white");
+                terminal.WriteLine($"  L. {Loc.Get("engine.main_language_sr", UsurperRemake.Systems.Loc.GetLanguageName(GameConfig.Language ?? "en"))}", "white");
                 terminal.WriteLine("");
 
-                terminal.WriteLine("  Q. Quit", "gray");
+                terminal.WriteLine(Loc.Get("engine.main_quit_sr"), "gray");
 
                 if (UsurperRemake.BBS.DoorMode.IsInDoorMode && UsurperRemake.BBS.DoorMode.IsSysOp)
-                    terminal.WriteLine("  %. SysOp Console", "yellow");
+                    terminal.WriteLine(Loc.Get("engine.main_sysop_sr"), "yellow");
             }
             else
             {
                 // Visual menu with colored brackets
                 // PLAY section
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("  ── PLAY ──────────────────────────────────────────────────────────────────");
+                { string t = Loc.Get("engine.section_play_visual"); terminal.WriteLine(t + new string('─', 78 - t.Length)); }
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
                 terminal.SetColor("bright_cyan");
@@ -1325,7 +1357,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("Single-Player");
+                terminal.WriteLine(Loc.Get("engine.main_single_player"));
 
                 // Online Multiplayer - hidden when already on the server, or when SysOp disabled it
                 if (!UsurperRemake.BBS.DoorMode.IsMudServerMode && !UsurperRemake.BBS.DoorMode.IsMudRelayMode
@@ -1338,14 +1370,14 @@ public partial class GameEngine
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("Online Multiplayer - Shared World");
+                    terminal.WriteLine(Loc.Get("engine.menu_online_full"));
                 }
 
                 terminal.WriteLine("");
 
                 // INFO section
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("  ── INFO ──────────────────────────────────────────────────────────────────");
+                { string t = Loc.Get("engine.section_info_visual"); terminal.WriteLine(t + new string('─', 78 - t.Length)); }
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
                 terminal.SetColor("bright_cyan");
@@ -1353,7 +1385,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("white");
-                terminal.WriteLine("The Story So Far...");
+                terminal.WriteLine(Loc.Get("engine.menu_story_full"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -1362,7 +1394,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("white");
-                terminal.WriteLine("Usurper History");
+                terminal.WriteLine(Loc.Get("engine.menu_history_full"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -1371,7 +1403,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("white");
-                terminal.WriteLine("BBS & Online Server List");
+                terminal.WriteLine(Loc.Get("engine.menu_bbs_full"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -1380,7 +1412,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Credits");
+                terminal.WriteLine(Loc.Get("engine.menu_credits"));
 
 
 #if !STEAM_BUILD
@@ -1391,14 +1423,14 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("Support the Developer");
+                terminal.WriteLine(Loc.Get("engine.menu_support_full"));
 #endif
 
                 terminal.WriteLine("");
 
                 // Accessibility section
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("  ── ACCESSIBILITY ─────────────────────────────────────────────────────");
+                { string t = Loc.Get("engine.section_accessibility_visual"); terminal.WriteLine(t + new string('─', 78 - t.Length)); }
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
                 terminal.SetColor("bright_cyan");
@@ -1406,7 +1438,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("white");
-                terminal.WriteLine("Screen Reader Mode: OFF");
+                terminal.WriteLine(Loc.Get("engine.main_sr_off_visual"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("  [");
@@ -1417,13 +1449,22 @@ public partial class GameEngine
                 if (GameConfig.CompactMode)
                 {
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("Compact Mode: ON (Mobile/Small Screen)");
+                    terminal.WriteLine(Loc.Get("engine.main_compact_on_visual"));
                 }
                 else
                 {
                     terminal.SetColor("white");
-                    terminal.WriteLine("Compact Mode: OFF");
+                    terminal.WriteLine(Loc.Get("engine.main_compact_off_visual"));
                 }
+
+                terminal.SetColor("darkgray");
+                terminal.Write("  [");
+                terminal.SetColor("bright_cyan");
+                terminal.Write("L");
+                terminal.SetColor("darkgray");
+                terminal.Write("] ");
+                terminal.SetColor("white");
+                terminal.WriteLine(Loc.Get("engine.main_language_visual", UsurperRemake.Systems.Loc.GetLanguageName(GameConfig.Language ?? "en")));
 
                 if (BaseLocation.IsRunningInWezTerm())
                 {
@@ -1434,7 +1475,7 @@ public partial class GameEngine
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("white");
-                    terminal.WriteLine($"Terminal Font: {BaseLocation.ReadCurrentFont()}");
+                    terminal.WriteLine(Loc.Get("engine.main_font_visual", BaseLocation.ReadCurrentFont()));
                 }
 
                 terminal.WriteLine("");
@@ -1445,7 +1486,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Quit");
+                terminal.WriteLine(Loc.Get("engine.menu_quit"));
 
                 // SysOp option - only visible in BBS door mode for SysOps
                 if (UsurperRemake.BBS.DoorMode.IsInDoorMode && UsurperRemake.BBS.DoorMode.IsSysOp)
@@ -1458,13 +1499,13 @@ public partial class GameEngine
                     terminal.SetColor("darkgray");
                     terminal.Write("] ");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("SysOp Console");
+                    terminal.WriteLine(Loc.Get("engine.menu_sysop_console"));
                 }
             }
 
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            var choice = await terminal.GetInput("Your choice: ");
+            var choice = await terminal.GetInput(Loc.Get("ui.your_choice"));
 
             switch (choice.ToUpper())
             {
@@ -1489,13 +1530,13 @@ public partial class GameEngine
                     terminal.WriteLine("");
                     if (GameConfig.ScreenReaderMode)
                     {
-                        terminal.WriteLine("Screen Reader Mode ENABLED", "bright_green");
-                        terminal.WriteLine("Menus will use simplified plain text format.", "white");
+                        terminal.WriteLine(Loc.Get("engine.sr_enabled"), "bright_green");
+                        terminal.WriteLine(Loc.Get("engine.sr_enabled_desc"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Screen Reader Mode DISABLED", "white");
-                        terminal.WriteLine("Menus will use visual ASCII art format.", "white");
+                        terminal.WriteLine(Loc.Get("engine.sr_disabled"), "white");
+                        terminal.WriteLine(Loc.Get("engine.sr_disabled_desc"), "white");
                     }
                     await Task.Delay(1500);
                     break;
@@ -1504,13 +1545,13 @@ public partial class GameEngine
                     terminal.WriteLine("");
                     if (GameConfig.CompactMode)
                     {
-                        terminal.WriteLine("Compact Mode ENABLED", "bright_green");
-                        terminal.WriteLine("Menus optimized for mobile and small screens.", "white");
+                        terminal.WriteLine(Loc.Get("engine.compact_enabled"), "bright_green");
+                        terminal.WriteLine(Loc.Get("engine.compact_enabled_desc"), "white");
                     }
                     else
                     {
-                        terminal.WriteLine("Compact Mode DISABLED", "white");
-                        terminal.WriteLine("Full-size menus restored.", "white");
+                        terminal.WriteLine(Loc.Get("engine.compact_disabled"), "white");
+                        terminal.WriteLine(Loc.Get("engine.compact_disabled_desc"), "white");
                     }
                     await Task.Delay(1500);
                     break;
@@ -1523,8 +1564,29 @@ public partial class GameEngine
                         int next = (idx + 1) % fonts.Length;
                         BaseLocation.WriteTerminalFont(fonts[next]);
                         terminal.WriteLine("");
-                        terminal.WriteLine($"Terminal font set to: {fonts[next]}", "green");
-                        terminal.WriteLine("  Font will update in the terminal momentarily.", "white");
+                        terminal.WriteLine(Loc.Get("engine.font_set", fonts[next]), "green");
+                        terminal.WriteLine(Loc.Get("engine.font_update"), "white");
+                        await Task.Delay(800);
+                    }
+                    break;
+                case "L":
+                    terminal.WriteLine("");
+                    terminal.WriteLine(Loc.Get("prefs.select_language"), "bright_yellow");
+                    terminal.WriteLine("");
+                    var mainLangs = UsurperRemake.Systems.Loc.AvailableLanguages;
+                    for (int li = 0; li < mainLangs.Length; li++)
+                    {
+                        var marker = mainLangs[li].Code == (GameConfig.Language ?? "en") ? " *" : "";
+                        terminal.WriteLine($"  {li + 1}. {mainLangs[li].Name}{marker}");
+                    }
+                    terminal.WriteLine("");
+                    var mainLangChoice = await terminal.GetInput(Loc.Get("ui.your_choice"));
+                    if (int.TryParse(mainLangChoice.Trim(), out int mainLangIdx) && mainLangIdx >= 1 && mainLangIdx <= mainLangs.Length)
+                    {
+                        var selectedLang = mainLangs[mainLangIdx - 1].Code;
+                        GameConfig.Language = selectedLang;
+                        _languageSetThisSession.Value = true;
+                        terminal.WriteLine(Loc.Get("prefs.language_set", UsurperRemake.Systems.Loc.GetLanguageName(selectedLang)), "green");
                         await Task.Delay(800);
                     }
                     break;
@@ -1575,8 +1637,8 @@ public partial class GameEngine
         if (sqlBackend == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Admin console requires online mode with SQL backend.");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("engine.admin_requires_online"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
         var adminConsole = new OnlineAdminConsole(terminal, sqlBackend);
@@ -1593,60 +1655,60 @@ public partial class GameEngine
         if (sqlBackend == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Password change requires online mode.");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("engine.password_requires_online"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine(GameConfig.ScreenReaderMode ? "CHANGE PASSWORD" : "═══ CHANGE PASSWORD ═══");
+        terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("engine.change_password_title") : Loc.Get("engine.change_password_title_visual"));
         terminal.WriteLine("");
 
         var username = UsurperRemake.BBS.DoorMode.OnlineUsername;
         if (string.IsNullOrEmpty(username))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No username found.");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("engine.no_username"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Account: {username}");
+        terminal.WriteLine(Loc.Get("engine.account_label", username));
         terminal.WriteLine("");
 
-        var currentPassword = await terminal.GetMaskedInput("Current password: ");
+        var currentPassword = await terminal.GetMaskedInput(Loc.Get("engine.current_password_prompt"));
         if (string.IsNullOrWhiteSpace(currentPassword))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
 
-        var newPassword = await terminal.GetMaskedInput("New password (min 4 chars): ");
+        var newPassword = await terminal.GetMaskedInput(Loc.Get("engine.new_password_prompt"));
         if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 4)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Password must be at least 4 characters.");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("engine.password_min_length"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
-        var confirmPassword = await terminal.GetMaskedInput("Confirm new password: ");
+        var confirmPassword = await terminal.GetMaskedInput(Loc.Get("engine.confirm_password_prompt"));
         if (newPassword != confirmPassword)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Passwords do not match.");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("engine.passwords_no_match"));
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
         var (success, message) = await sqlBackend.ChangePassword(username, currentPassword, newPassword);
         terminal.SetColor(success ? "bright_green" : "red");
         terminal.WriteLine(message);
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1672,7 +1734,7 @@ public partial class GameEngine
         terminal.ClearScreen();
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("Spectator Mode", "bright_white");
+            terminal.WriteLine(Loc.Get("engine.spectator_title"), "bright_white");
         }
         else
         {
@@ -1680,7 +1742,7 @@ public partial class GameEngine
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
             terminal.Write("║");
             terminal.SetColor("bright_white");
-            terminal.Write("                                Spectator Mode                                ");
+            { string t = Loc.Get("engine.spectator_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.Write(new string(' ', l) + t + new string(' ', r)); }
             terminal.SetColor("bright_magenta");
             terminal.WriteLine("║");
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
@@ -1698,21 +1760,21 @@ public partial class GameEngine
         if (candidates.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No players are currently in-game to watch.");
+            terminal.WriteLine(Loc.Get("engine.no_players_to_watch"));
             terminal.WriteLine("");
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("  Players available to watch:");
+        terminal.WriteLine(Loc.Get("engine.players_to_watch"));
         terminal.WriteLine("");
 
         for (int i = 0; i < candidates.Count; i++)
         {
             var p = candidates[i];
             var spectatorCount = p.Spectators.Count;
-            var watching = spectatorCount > 0 ? $" ({spectatorCount} watching)" : "";
+            var watching = spectatorCount > 0 ? Loc.Get("engine.watching_count", spectatorCount) : "";
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("white");
@@ -1729,17 +1791,17 @@ public partial class GameEngine
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  The selected player must accept your request before you can watch.");
+        terminal.WriteLine(Loc.Get("engine.spectator_consent"));
         terminal.WriteLine("");
 
-        var input = await terminal.GetInput("  Select player # (or Q to cancel): ");
+        var input = await terminal.GetInput(Loc.Get("engine.spectator_select"));
         if (string.IsNullOrWhiteSpace(input) || input.Trim().ToUpper() == "Q")
             return;
 
         if (!int.TryParse(input.Trim(), out int selection) || selection < 1 || selection > candidates.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Invalid selection.");
+            terminal.WriteLine(Loc.Get("engine.spectator_invalid"));
             await Task.Delay(1500);
             return;
         }
@@ -1750,7 +1812,7 @@ public partial class GameEngine
         if (target.PendingSpectateRequest != null && !target.PendingSpectateRequest.IsExpired)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  That player already has a pending spectate request. Try again later.");
+            terminal.WriteLine(Loc.Get("engine.spectator_pending"));
             await Task.Delay(2000);
             return;
         }
@@ -1766,8 +1828,8 @@ public partial class GameEngine
             $"\u001b[1;35m  * Type /accept to allow or /deny to refuse.\u001b[0m");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine($"  Spectate request sent to {target.Username}.");
-        terminal.WriteLine("  Waiting for their response (60 second timeout)...");
+        terminal.WriteLine(Loc.Get("engine.spectator_sent", target.Username));
+        terminal.WriteLine(Loc.Get("engine.spectator_waiting"));
 
         // Wait for response with timeout
         bool accepted;
@@ -1798,14 +1860,14 @@ public partial class GameEngine
         if (!accepted)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  Request was denied or timed out.");
+            terminal.WriteLine(Loc.Get("engine.spectator_denied"));
             await Task.Delay(2000);
             return;
         }
 
         // Accepted — enter spectator mode
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"  {target.Username} accepted your request!");
+        terminal.WriteLine(Loc.Get("engine.spectator_accepted", target.Username));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
@@ -1851,14 +1913,14 @@ public partial class GameEngine
             terminal.WriteLine("  ══════════════════════════════════════════════════════════════════════════");
         }
         terminal.SetColor("bright_white");
-        terminal.WriteLine($"  SPECTATING: {targetSession.Username}");
+        terminal.WriteLine(Loc.Get("engine.spectating_label", targetSession.Username));
         if (!GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_magenta");
             terminal.WriteLine("  ══════════════════════════════════════════════════════════════════════════");
         }
         terminal.SetColor("gray");
-        terminal.WriteLine("  Type Q + Enter to stop watching.");
+        terminal.WriteLine(Loc.Get("engine.spectator_quit_hint"));
         terminal.WriteLine("");
 
         // Spectator input loop
@@ -1878,7 +1940,7 @@ public partial class GameEngine
                 {
                     terminal.WriteLine("");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("  The player you were watching has disconnected.");
+                    terminal.WriteLine(Loc.Get("engine.spectator_disconnected"));
                     break;
                 }
 
@@ -1914,7 +1976,7 @@ public partial class GameEngine
 
         terminal.SetColor("cyan");
         terminal.WriteLine("");
-        terminal.WriteLine("  Spectator mode ended.");
+        terminal.WriteLine(Loc.Get("engine.spectator_ended"));
         await Task.Delay(1500);
     }
 
@@ -1929,7 +1991,7 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("SAVE FILE MANAGEMENT");
+                terminal.WriteLine(Loc.Get("engine.save_management_title"));
             }
             else
             {
@@ -1937,7 +1999,7 @@ public partial class GameEngine
                 terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
                 terminal.Write("║");
                 terminal.SetColor("bright_yellow");
-                { const string t = "SAVE FILE MANAGEMENT"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.Write(new string(' ', l) + t + new string(' ', r)); }
+                { string t = Loc.Get("engine.save_management_title"); int l = (78 - t.Length) / 2, r = 78 - t.Length - l; terminal.Write(new string(' ', l) + t + new string(' ', r)); }
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine("║");
                 terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
@@ -1951,10 +2013,10 @@ public partial class GameEngine
             {
                 // No saves exist - create new character
                 terminal.SetColor("yellow");
-                terminal.WriteLine("No saved games found.");
+                terminal.WriteLine(Loc.Get("engine.no_saves_found"));
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine("Let's create a new character!");
+                terminal.WriteLine(Loc.Get("engine.create_character_prompt"));
                 terminal.WriteLine("");
 
                 // Go directly to character creation - name will be entered there
@@ -1964,7 +2026,7 @@ public partial class GameEngine
 
             // Show existing save slots
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Existing Save Slots:");
+            terminal.WriteLine(Loc.Get("engine.existing_saves"));
             terminal.WriteLine("");
 
             for (int i = 0; i < playerNames.Count; i++)
@@ -1977,7 +2039,8 @@ public partial class GameEngine
                     if (GameConfig.ScreenReaderMode)
                     {
                         terminal.SetColor("white");
-                        terminal.WriteLine($"{i + 1}. {mostRecentSave.PlayerName} ({mostRecentSave.ClassName}) - Level {mostRecentSave.Level} | {mostRecentSave.SaveType} | {mostRecentSave.SaveTime:yyyy-MM-dd HH:mm:ss}");
+                        string saveTimeStr = mostRecentSave.SaveTime.Year >= 2020 ? mostRecentSave.SaveTime.ToString("yyyy-MM-dd HH:mm:ss") : "";
+                        terminal.WriteLine(Loc.Get("engine.save_slot_sr_display", i + 1, mostRecentSave.PlayerName, mostRecentSave.ClassName, mostRecentSave.Level, mostRecentSave.SaveType, saveTimeStr));
                     }
                     else
                     {
@@ -1992,7 +2055,7 @@ public partial class GameEngine
                         terminal.SetColor("cyan");
                         terminal.Write($" ({mostRecentSave.ClassName})");
                         terminal.SetColor("gray");
-                        terminal.Write($" - Level {mostRecentSave.Level}");
+                        terminal.Write(Loc.Get("engine.save_slot_level", mostRecentSave.Level));
                         terminal.SetColor("darkgray");
                         terminal.Write(" | ");
                         terminal.SetColor(mostRecentSave.IsAutosave ? "yellow" : "green");
@@ -2008,8 +2071,8 @@ public partial class GameEngine
             terminal.WriteLine("");
             if (GameConfig.ScreenReaderMode)
             {
-                terminal.WriteLine("N. New Character", "green");
-                terminal.WriteLine("B. Back to Main Menu", "red");
+                terminal.WriteLine($"N. {Loc.Get("engine.new_character")}", "green");
+                terminal.WriteLine($"B. {Loc.Get("engine.back_to_menu")}", "red");
             }
             else
             {
@@ -2020,7 +2083,7 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("green");
-                terminal.WriteLine("New Character");
+                terminal.WriteLine(Loc.Get("engine.new_character"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
@@ -2029,12 +2092,12 @@ public partial class GameEngine
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("red");
-                terminal.WriteLine("Back to Main Menu");
+                terminal.WriteLine(Loc.Get("engine.back_to_menu"));
             }
 
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            var choice = await terminal.GetInput("Select save slot or option: ");
+            var choice = await terminal.GetInput(Loc.Get("engine.select_save_prompt"));
 
             // Handle numeric selection
             if (int.TryParse(choice, out int slotNumber) && slotNumber > 0 && slotNumber <= playerNames.Count)
@@ -2048,7 +2111,7 @@ public partial class GameEngine
             switch (choice.ToUpper())
             {
                 case "N":
-                    var newName = await terminal.GetInput("Enter new character name: ");
+                    var newName = await terminal.GetInput(Loc.Get("engine.enter_name_prompt"));
                     if (!string.IsNullOrWhiteSpace(newName))
                     {
                         // Refresh player names list in case characters were deleted
@@ -2060,7 +2123,7 @@ public partial class GameEngine
 
                         if (nameExists)
                         {
-                            terminal.WriteLine("That name already exists! Choose a different name.", "red");
+                            terminal.WriteLine(Loc.Get("engine.name_exists"), "red");
                             await Task.Delay(2000);
                         }
                         else
@@ -2075,7 +2138,7 @@ public partial class GameEngine
                     return;
 
                 default:
-                    terminal.WriteLine("Invalid choice!", "red");
+                    terminal.WriteLine(Loc.Get("engine.invalid_choice"), "red");
                     await Task.Delay(1500);
                     break;
             }
@@ -2093,7 +2156,7 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"Save Slots For: {playerName}");
+                terminal.WriteLine(Loc.Get("engine.save_slots_for", playerName));
             }
             else
             {
@@ -2101,7 +2164,7 @@ public partial class GameEngine
                 terminal.WriteLine($"╔══════════════════════════════════════════════════════════════════════════════╗");
                 terminal.Write("║");
                 terminal.SetColor("bright_yellow");
-                { string label = "Save Slots For: " + playerName; int l = (78 - label.Length) / 2, r = 78 - label.Length - l; terminal.Write(new string(' ', l) + label + new string(' ', r)); }
+                { string label = Loc.Get("engine.save_slots_for", playerName); int l = (78 - label.Length) / 2, r = 78 - label.Length - l; terminal.Write(new string(' ', l) + label + new string(' ', r)); }
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine("║");
                 terminal.WriteLine($"╚══════════════════════════════════════════════════════════════════════════════╝");
@@ -2112,14 +2175,14 @@ public partial class GameEngine
 
             if (saves.Count == 0)
             {
-                terminal.WriteLine("No saves found for this character.", "red");
+                terminal.WriteLine(Loc.Get("engine.no_saves_for_char"), "red");
                 await Task.Delay(2000);
                 return;
             }
 
             // Display all saves (autosaves and manual saves)
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Available Saves:");
+            terminal.WriteLine(Loc.Get("engine.available_saves"));
             terminal.WriteLine("");
 
             for (int i = 0; i < saves.Count && i < 10; i++) // Show up to 10 saves
@@ -2136,7 +2199,7 @@ public partial class GameEngine
                 terminal.Write($"{save.SaveType.PadRight(12)}");
 
                 terminal.SetColor("gray");
-                terminal.Write($" - Day {save.CurrentDay}, Level {save.Level}, {save.TurnsRemaining} turns");
+                terminal.Write(Loc.Get("engine.save_detail", save.CurrentDay, save.Level, save.TurnsRemaining));
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" | ");
@@ -2153,7 +2216,7 @@ public partial class GameEngine
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("red");
-            terminal.WriteLine("Delete this character (all saves)");
+            terminal.WriteLine(Loc.Get("engine.delete_all_saves"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -2162,11 +2225,11 @@ public partial class GameEngine
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("red");
-            terminal.WriteLine("Back");
+            terminal.WriteLine(Loc.Get("engine.back"));
 
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            var choice = await terminal.GetInput("Select save to load: ");
+            var choice = await terminal.GetInput(Loc.Get("engine.select_save_load"));
 
             // Handle numeric selection
             if (int.TryParse(choice, out int saveNumber) && saveNumber > 0 && saveNumber <= saves.Count)
@@ -2181,7 +2244,7 @@ public partial class GameEngine
             {
                 case "D":
                     terminal.WriteLine("");
-                    var confirm = await terminal.GetInput($"Delete ALL saves for '{playerName}'? Type 'DELETE' to confirm: ");
+                    var confirm = await terminal.GetInput(Loc.Get("engine.delete_saves_confirm", playerName));
                     if (confirm == "DELETE")
                     {
                         // Delete all saves for this player
@@ -2198,7 +2261,7 @@ public partial class GameEngine
                             {
                             }
                         }
-                        terminal.WriteLine("All saves deleted.", "green");
+                        terminal.WriteLine(Loc.Get("engine.all_saves_deleted"), "green");
                         await Task.Delay(1500);
                         return;
                     }
@@ -2208,7 +2271,7 @@ public partial class GameEngine
                     return;
 
                 default:
-                    terminal.WriteLine("Invalid choice!", "red");
+                    terminal.WriteLine(Loc.Get("engine.invalid_choice"), "red");
                     await Task.Delay(1500);
                     break;
             }
@@ -2222,18 +2285,18 @@ public partial class GameEngine
     {
         try
         {
-            terminal.WriteLine("Loading save...", "yellow");
+            terminal.WriteLine(Loc.Get("engine.loading_save"), "yellow");
 
             var saveData = await SaveSystem.Instance.LoadSaveByFileName(fileName);
             if (saveData == null)
             {
-                terminal.WriteLine("Failed to load save file!", "red");
-                terminal.WriteLine("The save file may be corrupted or invalid.", "yellow");
+                terminal.WriteLine(Loc.Get("engine.load_failed"), "red");
+                terminal.WriteLine(Loc.Get("engine.load_corrupted"), "yellow");
                 await Task.Delay(2000);
                 // In online/door mode, offer to create a new character instead of just exiting
                 if (UsurperRemake.BBS.DoorMode.IsInDoorMode || UsurperRemake.BBS.DoorMode.IsOnlineMode)
                 {
-                    terminal.WriteLine("Starting new character instead...", "yellow");
+                    terminal.WriteLine(Loc.Get("engine.starting_new_instead"), "yellow");
                     await Task.Delay(1000);
                     await CreateNewGame(fileName);
                 }
@@ -2243,12 +2306,12 @@ public partial class GameEngine
             // Validate save data
             if (saveData.Player == null)
             {
-                terminal.WriteLine("Save file is missing player data!", "red");
+                terminal.WriteLine(Loc.Get("engine.missing_player_data"), "red");
                 await Task.Delay(3000);
                 return;
             }
 
-            terminal.WriteLine($"Restoring {saveData.Player.Name2 ?? saveData.Player.Name1}...", "green");
+            terminal.WriteLine(Loc.Get("engine.restoring_player", saveData.Player.Name2 ?? saveData.Player.Name1), "green");
             await Task.Delay(500);
 
             // Log save data before restore
@@ -2260,7 +2323,7 @@ public partial class GameEngine
             if (currentPlayer == null)
             {
                 DebugLogger.Instance.LogError("LOAD", "Failed to restore player data");
-                terminal.WriteLine("Failed to restore player data!", "red");
+                terminal.WriteLine(Loc.Get("engine.restore_failed"), "red");
                 await Task.Delay(3000);
                 return;
             }
@@ -2374,7 +2437,7 @@ public partial class GameEngine
             // Restore telemetry settings
             TelemetrySystem.Instance.Deserialize(saveData.Telemetry);
 
-            terminal.WriteLine("Save loaded successfully!", "bright_green");
+            terminal.WriteLine(Loc.Get("engine.save_loaded"), "bright_green");
             await Task.Delay(1000);
 
             // Update online display name to character's Name2 (custom display name)
@@ -2406,7 +2469,7 @@ public partial class GameEngine
                     if (!teamExists)
                     {
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"Your team '{currentPlayer.Team}' no longer exists. You have been removed.");
+                        terminal.WriteLine(Loc.Get("engine.team_no_longer_exists", currentPlayer.Team));
                         WorldSimulator.UnregisterPlayerTeam(currentPlayer.Team);
                         currentPlayer.Team = "";
                         currentPlayer.TeamPW = "";
@@ -2530,8 +2593,8 @@ public partial class GameEngine
                 {
                     terminal.SetColor("bright_yellow");
                     terminal.WriteLine("");
-                    terminal.WriteLine("Your previous session ended before the cycle could complete.");
-                    terminal.WriteLine("Resuming where you left off...");
+                    terminal.WriteLine(Loc.Get("engine.session_incomplete"));
+                    terminal.WriteLine(Loc.Get("engine.session_resuming"));
                     terminal.WriteLine("");
                     await Task.Delay(2000);
 
@@ -2581,7 +2644,7 @@ public partial class GameEngine
         }
         catch (Exception ex)
         {
-            terminal.WriteLine($"Error loading save: {ex.Message}", "red");
+            terminal.WriteLine(Loc.Get("engine.error_loading", ex.Message), "red");
             UsurperRemake.Systems.DebugLogger.Instance.LogError("CRASH", $"Failed to load save {fileName}:\n{ex}");
             UsurperRemake.Systems.DebugLogger.Instance.Flush();
             await Task.Delay(3000);
@@ -2709,12 +2772,12 @@ public partial class GameEngine
                 terminal.SetColor("bright_red");
                 string locationLabel = sleepInfo.SleepLocation switch
                 {
-                    "inn" => "INN ROOM",
-                    "home" => "HOME",
-                    "castle" => "CASTLE",
-                    _ => "DORMITORY"
+                    "inn" => Loc.Get("engine.sleep_inn"),
+                    "home" => Loc.Get("engine.sleep_home"),
+                    "castle" => Loc.Get("engine.sleep_castle"),
+                    _ => Loc.Get("engine.sleep_dormitory")
                 };
-                terminal.WriteLine($"\u2551                     SLEEP REPORT  ({locationLabel})                         \u2551");
+                { string sleepTitle = Loc.Get("engine.sleep_report_title", locationLabel); int sl = (76 - sleepTitle.Length) / 2; int sr = 76 - sleepTitle.Length - sl; terminal.WriteLine($"\u2551{new string(' ', sl)}{sleepTitle}{new string(' ', sr)}\u2551"); }
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine("\u2560\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2563");
 
@@ -2743,12 +2806,12 @@ public partial class GameEngine
                             if (guardResult == "guard_won")
                             {
                                 terminal.SetColor("bright_green");
-                                terminal.WriteLine($"  Your {guardName} fought off {attacker}!");
+                                terminal.WriteLine(Loc.Get("engine.guard_fought_off", guardName, attacker));
                             }
                             else
                             {
                                 terminal.SetColor("red");
-                                terminal.WriteLine($"  Your {guardName} was defeated by {attacker}!");
+                                terminal.WriteLine(Loc.Get("engine.guard_defeated", guardName, attacker));
                             }
                         }
                     }
@@ -2757,32 +2820,32 @@ public partial class GameEngine
                     if (result == "attacker_won")
                     {
                         terminal.SetColor("bright_red");
-                        terminal.WriteLine($"  {attacker} attacked you while you slept and won!");
+                        terminal.WriteLine(Loc.Get("engine.attacker_won", attacker));
                         if (goldStolen > 0)
                         {
                             terminal.SetColor("red");
-                            terminal.WriteLine($"  They stole {goldStolen:N0} gold!");
+                            terminal.WriteLine(Loc.Get("engine.gold_stolen", goldStolen.ToString("N0")));
                         }
                         if (!string.IsNullOrEmpty(itemStolen))
                         {
                             terminal.SetColor("red");
-                            terminal.WriteLine($"  They stole your {itemStolen}!");
+                            terminal.WriteLine(Loc.Get("engine.item_stolen", itemStolen));
                         }
                         if (xpLost > 0)
                         {
                             terminal.SetColor("red");
-                            terminal.WriteLine($"  You lost {xpLost:N0} experience!");
+                            terminal.WriteLine(Loc.Get("engine.xp_lost", xpLost.ToString("N0")));
                         }
                     }
                     else if (result == "defender_won")
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  {attacker} tried to attack you in your sleep but you fought them off!");
+                        terminal.WriteLine(Loc.Get("engine.defender_won", attacker));
                     }
                     else if (result == "guards_repelled")
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"  Your guards drove {attacker} away!");
+                        terminal.WriteLine(Loc.Get("engine.guards_repelled", attacker));
                     }
                 }
 
@@ -2792,8 +2855,8 @@ public partial class GameEngine
                     terminal.WriteLine("");
                     terminal.SetColor("bright_red");
                     terminal.WriteLine("  ================================================");
-                    terminal.WriteLine("  You were KILLED while sleeping!");
-                    terminal.WriteLine("  You wake up at the Temple, bruised and robbed.");
+                    terminal.WriteLine(Loc.Get("engine.killed_sleeping"));
+                    terminal.WriteLine(Loc.Get("engine.wake_temple"));
                     terminal.WriteLine("  ================================================");
 
                     // Apply death state — respawn with reduced HP
@@ -2807,7 +2870,7 @@ public partial class GameEngine
                 {
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("  You survived the night.");
+                    terminal.WriteLine(Loc.Get("engine.survived_night"));
                 }
 
                 terminal.WriteLine("");
@@ -2867,11 +2930,11 @@ public partial class GameEngine
             if (GameConfig.ScreenReaderMode)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("WHILE YOU WERE GONE");
+                terminal.WriteLine(Loc.Get("engine.while_you_were_gone"));
             }
             else
             {
-                const string wyweTitle = "WHILE YOU WERE GONE";
+                string wyweTitle = Loc.Get("engine.while_you_were_gone");
                 const int wyweInner = 78;
                 int wyweLeft  = (wyweInner - wyweTitle.Length) / 2;
                 int wyweRight = wyweInner - wyweTitle.Length - wyweLeft;
@@ -2891,7 +2954,7 @@ public partial class GameEngine
             {
                 terminal.WriteLine("");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  -- Arena Attacks --");
+                terminal.WriteLine(Loc.Get("engine.arena_attacks"));
                 foreach (var attack in pvpAttacks)
                 {
                     bool defenderWon = attack.WinnerUsername.Equals(username, StringComparison.OrdinalIgnoreCase)
@@ -2900,14 +2963,14 @@ public partial class GameEngine
                     if (defenderWon)
                     {
                         terminal.SetColor("bright_green");
-                        string goldMsg = attack.GoldStolen > 0 ? $" You gained {attack.GoldStolen:N0} gold." : "";
-                        terminal.WriteLine($"  * {attack.AttackerName} attacked you but your shadow defeated them!{goldMsg}");
+                        string goldMsg = attack.GoldStolen > 0 ? Loc.Get("engine.pvp_you_gained_gold", attack.GoldStolen.ToString("N0")) : "";
+                        terminal.WriteLine(Loc.Get("engine.pvp_shadow_won", attack.AttackerName, goldMsg));
                     }
                     else
                     {
                         terminal.SetColor("bright_red");
-                        string goldMsg = attack.GoldStolen > 0 ? $" They stole {attack.GoldStolen:N0} of your gold." : "";
-                        terminal.WriteLine($"  * {attack.AttackerName} attacked you and won!{goldMsg}");
+                        string goldMsg = attack.GoldStolen > 0 ? Loc.Get("engine.pvp_they_stole_gold", attack.GoldStolen.ToString("N0")) : "";
+                        terminal.WriteLine(Loc.Get("engine.pvp_attacker_won", attack.AttackerName, goldMsg));
                     }
                 }
             }
@@ -2917,7 +2980,7 @@ public partial class GameEngine
             {
                 terminal.WriteLine("");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  -- Messages ({unreadMail} unread) --");
+                terminal.WriteLine(Loc.Get("engine.messages_section", unreadMail));
                 foreach (var msg in directMessages)
                 {
                     terminal.SetColor("cyan");
@@ -2927,16 +2990,16 @@ public partial class GameEngine
                 if (unreadMail > directMessages.Count)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"  Type /mail to read your full mailbox.");
+                    terminal.WriteLine(Loc.Get("engine.read_mailbox"));
                 }
             }
             else if (unreadMail > 0)
             {
                 terminal.WriteLine("");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  -- Mail ({unreadMail} unread) --");
+                terminal.WriteLine(Loc.Get("engine.mail_section", unreadMail));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Type /mail to read your mailbox.");
+                terminal.WriteLine(Loc.Get("engine.read_mail"));
             }
 
             // --- Trade Packages Section ---
@@ -2944,11 +3007,11 @@ public partial class GameEngine
             {
                 terminal.WriteLine("");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  -- Trade Packages ({pendingTrades} pending) --");
+                terminal.WriteLine(Loc.Get("engine.trade_section", pendingTrades));
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"  You have {pendingTrades} package{(pendingTrades != 1 ? "s" : "")} waiting!");
+                terminal.WriteLine(Loc.Get("engine.trade_waiting", pendingTrades, pendingTrades != 1 ? "s" : ""));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"  Type /trade to view and accept.");
+                terminal.WriteLine(Loc.Get("engine.trade_hint"));
             }
 
             // --- World News Section ---
@@ -2956,7 +3019,7 @@ public partial class GameEngine
             {
                 terminal.WriteLine("");
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("  -- World News --");
+                terminal.WriteLine(Loc.Get("engine.world_news"));
                 int newsShown = 0;
                 foreach (var entry in news)
                 {
@@ -3024,7 +3087,7 @@ public partial class GameEngine
     /// </summary>
     private async Task LoadExistingGame(string playerName)
     {
-        terminal.WriteLine("Loading game...", "yellow");
+        terminal.WriteLine(Loc.Get("save.loading"), "yellow");
 
         // Clear dungeon party before loading to prevent state leak between saves
         ClearDungeonParty();
@@ -3032,14 +3095,14 @@ public partial class GameEngine
         var saveData = await SaveSystem.Instance.LoadGame(playerName);
         if (saveData == null)
         {
-            terminal.WriteLine("Failed to load save file!", "red");
+            terminal.WriteLine(Loc.Get("engine.load_game_failed"), "red");
             await Task.Delay(2000);
             return;
         }
 
         // Restore player from save data
         currentPlayer = RestorePlayerFromSaveData(saveData.Player);
-        
+
         // Load daily system state
         dailyManager.LoadFromSaveData(saveData);
         
@@ -3109,12 +3172,15 @@ public partial class GameEngine
             );
         }
 
-        terminal.WriteLine($"Game loaded successfully! Day {saveData.CurrentDay}, {saveData.Player.TurnsRemaining} turns remaining", "green");
+        terminal.WriteLine(Loc.Get("engine.game_loaded", saveData.CurrentDay, saveData.Player.TurnsRemaining), "green");
         await Task.Delay(1500);
-        
+
+        // World sim catch-up: fast-forward the world based on time away (single-player only)
+        await RunWorldSimCatchUp(saveData.SaveTime);
+
         // Check if daily reset is needed after loading
         await dailyManager.CheckDailyReset();
-        
+
         // Enter the game world
         await EnterGameWorld();
     }
@@ -3187,8 +3253,9 @@ public partial class GameEngine
         // Inherit pre-login screen reader toggle into new character
         currentPlayer.ScreenReaderMode = GameConfig.ScreenReaderMode;
 
-        // Inherit pre-login compact mode toggle into new character
+        // Inherit pre-login compact mode and language into new character
         currentPlayer.CompactMode = GameConfig.CompactMode;
+        currentPlayer.Language = GameConfig.Language;
 
         // Auto-populate quickbar with starting spells/abilities
         AutoPopulateQuickbar(currentPlayer);
@@ -3213,11 +3280,11 @@ public partial class GameEngine
         var success = await SaveSystem.Instance.SaveGame(savePlayerName, currentPlayer);
         if (success)
         {
-            terminal.WriteLine("New game saved successfully!", "green");
+            terminal.WriteLine(Loc.Get("engine.new_game_saved"), "green");
         }
         else
         {
-            terminal.WriteLine("Warning: Failed to save game!", "red");
+            terminal.WriteLine(Loc.Get("engine.save_warning"), "red");
         }
 
         await Task.Delay(1500);
@@ -3315,9 +3382,9 @@ public partial class GameEngine
             // This creates teams, establishes a King, city control, guards, etc.
             if (!WorldInitializerSystem.Instance.IsWorldInitialized)
             {
-                terminal.WriteLine("The world stirs with activity...", "cyan");
+                terminal.WriteLine(Loc.Get("engine.world_stirs"), "cyan");
                 await WorldInitializerSystem.Instance.InitializeWorld(100);
-                terminal.WriteLine("History has been written. Your adventure begins!", "bright_green");
+                terminal.WriteLine(Loc.Get("engine.history_written"), "bright_green");
             }
         }
 
@@ -3327,7 +3394,7 @@ public partial class GameEngine
         // Check if player is allowed to play
         if (!currentPlayer.Allowed)
         {
-            terminal.WriteLine("You are not allowed to play today!", "red");
+            terminal.WriteLine(Loc.Get("engine.not_allowed"), "red");
             await Task.Delay(2000);
             return;
         }
@@ -3335,7 +3402,7 @@ public partial class GameEngine
         // Check daily limits (but not in endless mode)
         if (dailyManager.CurrentMode != DailyCycleMode.Endless && !await CheckDailyLimits())
         {
-            terminal.WriteLine($"You have used all your turns for today! ({currentPlayer.TurnsRemaining} left)", "red");
+            terminal.WriteLine(Loc.Get("engine.turns_used", currentPlayer.TurnsRemaining), "red");
             await Task.Delay(2000);
             return;
         }
@@ -3548,6 +3615,7 @@ public partial class GameEngine
             SkipIntimateScenes = playerData.SkipIntimateScenes,
             ScreenReaderMode = playerData.ScreenReaderMode,
             CompactMode = playerData.CompactMode,
+            Language = playerData.Language ?? "en",
             ColorTheme = playerData.ColorTheme,
             AutoLevelUp = playerData.AutoLevelUp,
             AutoEquipDisabled = playerData.AutoEquipDisabled,
@@ -3723,27 +3791,33 @@ public partial class GameEngine
         // Restore player inventory (dungeon loot items)
         if (playerData.Inventory != null && playerData.Inventory.Count > 0)
         {
-            player.Inventory = playerData.Inventory.Select(itemData => new Item
+            player.Inventory = playerData.Inventory.Select(itemData =>
             {
-                Name = itemData.Name,
-                Value = itemData.Value,
-                Type = itemData.Type,
-                Attack = itemData.Attack,
-                Armor = itemData.Armor,
-                Strength = itemData.Strength,
-                Dexterity = itemData.Dexterity,
-                Wisdom = itemData.Wisdom,
-                Defence = itemData.Defence,
-                HP = itemData.HP,
-                Mana = itemData.Mana,
-                Charisma = itemData.Charisma,
-                MinLevel = itemData.MinLevel,
-                IsCursed = itemData.IsCursed,
-                Cursed = itemData.Cursed,
-                IsIdentified = itemData.IsIdentified,
-                Shop = itemData.Shop,
-                Dungeon = itemData.Dungeon,
-                Description = itemData.Description?.ToList() ?? new List<string>()
+                var item = new Item
+                {
+                    Name = itemData.Name,
+                    Value = itemData.Value,
+                    Type = itemData.Type,
+                    Attack = itemData.Attack,
+                    Armor = itemData.Armor,
+                    Strength = itemData.Strength,
+                    Dexterity = itemData.Dexterity,
+                    Wisdom = itemData.Wisdom,
+                    Defence = itemData.Defence,
+                    HP = itemData.HP,
+                    Mana = itemData.Mana,
+                    Charisma = itemData.Charisma,
+                    MinLevel = itemData.MinLevel,
+                    IsCursed = itemData.IsCursed,
+                    Cursed = itemData.Cursed,
+                    IsIdentified = itemData.IsIdentified,
+                    Shop = itemData.Shop,
+                    Dungeon = itemData.Dungeon,
+                    Description = itemData.Description?.ToList() ?? new List<string>()
+                };
+                if (itemData.LootEffects != null)
+                    item.LootEffects = itemData.LootEffects.Select(e => (e.EffectType, e.Value)).ToList();
+                return item;
             }).ToList();
         }
 
@@ -3980,26 +4054,32 @@ public partial class GameEngine
         var playerKey = (player is Player pp ? pp.RealName : player.Name2) ?? player.Name2;
         if (playerData.ChestContents != null && playerData.ChestContents.Count > 0)
         {
-            var chestItems = playerData.ChestContents.Select(data => new global::Item
+            var chestItems = playerData.ChestContents.Select(data =>
             {
-                Name = data.Name,
-                Value = data.Value,
-                Type = data.Type,
-                Attack = data.Attack,
-                Armor = data.Armor,
-                Strength = data.Strength,
-                Dexterity = data.Dexterity,
-                Wisdom = data.Wisdom,
-                Defence = data.Defence,
-                HP = data.HP,
-                Mana = data.Mana,
-                Charisma = data.Charisma,
-                MinLevel = data.MinLevel,
-                IsCursed = data.IsCursed,
-                IsIdentified = data.IsIdentified,
-                Shop = data.Shop,
-                Dungeon = data.Dungeon,
-                Description = data.Description?.ToList() ?? new List<string>()
+                var chestItem = new global::Item
+                {
+                    Name = data.Name,
+                    Value = data.Value,
+                    Type = data.Type,
+                    Attack = data.Attack,
+                    Armor = data.Armor,
+                    Strength = data.Strength,
+                    Dexterity = data.Dexterity,
+                    Wisdom = data.Wisdom,
+                    Defence = data.Defence,
+                    HP = data.HP,
+                    Mana = data.Mana,
+                    Charisma = data.Charisma,
+                    MinLevel = data.MinLevel,
+                    IsCursed = data.IsCursed,
+                    IsIdentified = data.IsIdentified,
+                    Shop = data.Shop,
+                    Dungeon = data.Dungeon,
+                    Description = data.Description?.ToList() ?? new List<string>()
+                };
+                if (data.LootEffects != null)
+                    chestItem.LootEffects = data.LootEffects.Select(e => (e.EffectType, e.Value)).ToList();
+                return chestItem;
             }).ToList();
             UsurperRemake.Locations.HomeLocation.PlayerChests[playerKey] = chestItems;
         }
@@ -4146,8 +4226,18 @@ public partial class GameEngine
                 session.ScreenReaderMode = player.ScreenReaderMode;
         }
 
-        // Sync compact mode from player save to global
+        // Sync compact mode and language from player save to global
         GameConfig.CompactMode = player.CompactMode;
+        // If the player actively chose a language on the main menu this session, keep it
+        // and update their character to match. Otherwise restore from save.
+        if (_languageSetThisSession.Value)
+        {
+            player.Language = GameConfig.Language;
+        }
+        else
+        {
+            GameConfig.Language = player.Language ?? "en";
+        }
 
         return player;
     }
@@ -4928,22 +5018,22 @@ public partial class GameEngine
         var playerName = UsurperRemake.BBS.DoorMode.IsOnlineMode
             ? (UsurperRemake.BBS.DoorMode.GetPlayerName()?.ToLowerInvariant() ?? currentPlayer.Name2 ?? currentPlayer.Name1)
             : (currentPlayer.Name2 ?? currentPlayer.Name1);
-        terminal.WriteLine("Saving game...", "yellow");
+        terminal.WriteLine(Loc.Get("save.saving"), "yellow");
         
         var success = await SaveSystem.Instance.SaveGame(playerName, currentPlayer);
         
         if (success)
         {
-            terminal.WriteLine("Game saved successfully!", "green");
+            terminal.WriteLine(Loc.Get("save.saved"), "green");
         }
         else
         {
-            terminal.WriteLine("Failed to save game!", "red");
+            terminal.WriteLine(Loc.Get("engine.save_failed"), "red");
         }
-        
+
         await Task.Delay(1000);
     }
-    
+
     /// <summary>
     /// Create new player using comprehensive character creation system
     /// Based on Pascal USERHUNC.PAS implementation
@@ -4960,10 +5050,10 @@ public partial class GameEngine
             {
                 // Character creation was aborted
                 terminal.WriteLine("");
-                terminal.WriteLine("Character creation was cancelled.", "yellow");
-                terminal.WriteLine("You must create a character to play Usurper.", "white");
-                
-                var retry = await terminal.GetInputAsync("Would you like to try again? (Y/N): ");
+                terminal.WriteLine(Loc.Get("engine.creation_cancelled"), "yellow");
+                terminal.WriteLine(Loc.Get("engine.must_create"), "white");
+
+                var retry = await terminal.GetInputAsync(Loc.Get("engine.retry_prompt"));
                 if (retry.ToUpper() == "Y")
                 {
                     return await CreateNewPlayer(playerName); // Retry
@@ -4977,16 +5067,16 @@ public partial class GameEngine
         }
         catch (OperationCanceledException)
         {
-            terminal.WriteLine("Character creation aborted by user.", "red");
+            terminal.WriteLine(Loc.Get("engine.creation_aborted"), "red");
             return null;
         }
         catch (Exception ex)
         {
-            terminal.WriteLine($"An error occurred during character creation: {ex.Message}", "red");
+            terminal.WriteLine(Loc.Get("engine.creation_error", ex.Message), "red");
             UsurperRemake.Systems.DebugLogger.Instance.LogError("CRASH", $"Character creation error:\n{ex}");
 
-            terminal.WriteLine("Please try again.", "yellow");
-            var retry = await terminal.GetInputAsync("Would you like to try again? (Y/N): ");
+            terminal.WriteLine(Loc.Get("engine.please_try_again"), "yellow");
+            var retry = await terminal.GetInputAsync(Loc.Get("engine.retry_prompt"));
             if (retry.ToUpper() == "Y")
             {
                 return await CreateNewPlayer(playerName); // Retry
@@ -5010,10 +5100,10 @@ public partial class GameEngine
     private void UpdateStatusLine()
     {
         var statusText = $"[{currentPlayer.DisplayName}] " +
-                        $"Level: {currentPlayer.Level} " +
-                        $"HP: {currentPlayer.HP}/{currentPlayer.MaxHP} " +
-                        $"Gold: {currentPlayer.Gold} " +
-                        $"Turns: {currentPlayer.TurnsLeft}";
+                        $"{Loc.Get("ui.level")}: {currentPlayer.Level} " +
+                        $"{Loc.Get("combat.bar_hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP} " +
+                        $"{Loc.Get("ui.gold")}: {currentPlayer.Gold} " +
+                        Loc.Get("engine.turns_label", currentPlayer.TurnsLeft);
         
         terminal.SetStatusLine(statusText);
     }
@@ -5067,18 +5157,18 @@ public partial class GameEngine
         terminal.SetColor("bright_red");
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("YOU HAVE DIED!");
+            terminal.WriteLine(Loc.Get("engine.you_have_died"));
         }
         else
         {
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-            terminal.WriteLine("                        YOU HAVE DIED!                          ");
+            terminal.WriteLine($"                        {Loc.Get("engine.you_have_died")}                          ");
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("Your vision fades to black as death claims you...");
+        terminal.WriteLine(Loc.Get("engine.death_vision"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
@@ -5086,9 +5176,9 @@ public partial class GameEngine
         if (currentPlayer.Resurrections > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You have {currentPlayer.Resurrections} resurrection(s) available!");
+            terminal.WriteLine(Loc.Get("engine.resurrections_available", currentPlayer.Resurrections));
             terminal.WriteLine("");
-            var resurrect = await terminal.GetInput("Use a resurrection to avoid penalties? (Y/N): ");
+            var resurrect = await terminal.GetInput(Loc.Get("engine.use_resurrection_prompt"));
 
             if (resurrect.ToUpper().StartsWith("Y"))
             {
@@ -5097,8 +5187,8 @@ public partial class GameEngine
                 currentPlayer.HP = currentPlayer.MaxHP;
                 terminal.SetColor("bright_green");
                 terminal.WriteLine("");
-                terminal.WriteLine("Divine light surrounds you!");
-                terminal.WriteLine("You have been fully resurrected with no penalties!");
+                terminal.WriteLine(Loc.Get("engine.divine_light"));
+                terminal.WriteLine(Loc.Get("engine.resurrected_no_penalty"));
                 await Task.Delay(2500);
 
                 // Return to the Inn
@@ -5110,7 +5200,7 @@ public partial class GameEngine
 
         // Apply death penalties
         terminal.SetColor("red");
-        terminal.WriteLine("Death Penalties Applied:");
+        terminal.WriteLine(Loc.Get("engine.death_penalties"));
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("─────────────────────────");
 
@@ -5127,10 +5217,10 @@ public partial class GameEngine
 
         terminal.SetColor("yellow");
         if (expLoss > 0)
-            terminal.WriteLine($"  - Lost {expLoss:N0} experience points");
+            terminal.WriteLine(Loc.Get("engine.lost_exp", expLoss.ToString("N0")));
         if (goldLoss > 0)
-            terminal.WriteLine($"  - Lost {goldLoss:N0} gold (dropped upon death)");
-        terminal.WriteLine($"  - Monster defeats: {currentPlayer.MDefeats}");
+            terminal.WriteLine(Loc.Get("engine.lost_gold", goldLoss.ToString("N0")));
+        terminal.WriteLine(Loc.Get("engine.monster_defeats", currentPlayer.MDefeats));
         terminal.WriteLine("");
 
         // Resurrect player at the Inn with half HP
@@ -5142,8 +5232,8 @@ public partial class GameEngine
         currentPlayer.PoisonTurns = 0;
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("You wake up at the Inn, nursed back to health by the innkeeper.");
-        terminal.WriteLine($"Your wounds have partially healed. (HP: {currentPlayer.HP}/{currentPlayer.MaxHP})");
+        terminal.WriteLine(Loc.Get("engine.wake_at_inn"));
+        terminal.WriteLine(Loc.Get("engine.wounds_healed", currentPlayer.HP, currentPlayer.MaxHP));
         terminal.WriteLine("");
 
         // Online news: player death
@@ -5155,7 +5245,7 @@ public partial class GameEngine
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("\"You're lucky to be alive, friend. Rest up and try again.\"");
+        terminal.WriteLine(Loc.Get("engine.innkeeper_quote"));
         terminal.WriteLine("");
 
         await terminal.PressAnyKey();
@@ -5165,7 +5255,7 @@ public partial class GameEngine
 
         // Continue playing - don't mark as deleted!
         terminal.SetColor("green");
-        terminal.WriteLine("Your adventure continues...");
+        terminal.WriteLine(Loc.Get("engine.adventure_continues"));
         await Task.Delay(1500);
     }
     
@@ -5176,15 +5266,15 @@ public partial class GameEngine
     {
         terminal.ClearScreen();
         terminal.SetColor("gray");
-        terminal.WriteLine("You are in PRISON!");
+        terminal.WriteLine(Loc.Get("engine.in_prison"));
         if (!GameConfig.ScreenReaderMode)
             terminal.WriteLine("═══════════════════");
         terminal.WriteLine("");
-        terminal.WriteLine($"Days remaining: {currentPlayer.DaysInPrison}");
+        terminal.WriteLine(Loc.Get("engine.days_remaining", currentPlayer.DaysInPrison));
         terminal.WriteLine("");
-        terminal.WriteLine("1. Wait it out");
-        terminal.WriteLine("2. Attempt escape");
-        terminal.WriteLine("3. Quit");
+        terminal.WriteLine(Loc.Get("engine.prison_wait"));
+        terminal.WriteLine(Loc.Get("engine.prison_escape"));
+        terminal.WriteLine(Loc.Get("engine.prison_quit"));
         
         var choice = await terminal.GetMenuChoice();
         
@@ -5192,7 +5282,7 @@ public partial class GameEngine
         {
             case 0: // Wait
                 currentPlayer.DaysInPrison--;
-                terminal.WriteLine("You wait patiently...", "gray");
+                terminal.WriteLine(Loc.Get("engine.wait_patiently"), "gray");
                 await Task.Delay(2000);
                 break;
                 
@@ -5203,7 +5293,7 @@ public partial class GameEngine
                 }
                 else
                 {
-                    terminal.WriteLine("You have no escape attempts left!", "red");
+                    terminal.WriteLine(Loc.Get("ui.no_escape_attempts"), "red");
                     await Task.Delay(2000);
                 }
                 break;
@@ -5221,7 +5311,7 @@ public partial class GameEngine
     {
         currentPlayer.PrisonEscapes--;
         
-        terminal.WriteLine("You attempt to escape...", "yellow");
+        terminal.WriteLine(Loc.Get("engine.attempt_escape"), "yellow");
         await Task.Delay(1000);
         
         // Escape chance based on stats
@@ -5230,13 +5320,13 @@ public partial class GameEngine
         
         if (roll <= escapeChance)
         {
-            terminal.WriteLine("You successfully escape!", "green");
+            terminal.WriteLine(Loc.Get("engine.escape_success"), "green");
             currentPlayer.DaysInPrison = 0;
             currentPlayer.Location = 1; // Return to main street
         }
         else
         {
-            terminal.WriteLine("You are caught trying to escape!", "red");
+            terminal.WriteLine(Loc.Get("engine.escape_caught"), "red");
             currentPlayer.DaysInPrison += 2; // Extra penalty
         }
         
@@ -5244,11 +5334,249 @@ public partial class GameEngine
     }
     
     /// <summary>
+    /// Run world sim catch-up after loading a single-player save.
+    /// Fast-forwards the world simulation based on how long the player was away,
+    /// up to CatchUpMaxDays (7 days). Shows a progress bar and narrative summary.
+    /// </summary>
+    private async Task RunWorldSimCatchUp(DateTime saveTime)
+    {
+        // Only for single-player — online mode has 24/7 world sim
+        if (UsurperRemake.BBS.DoorMode.IsOnlineMode) return;
+        if (worldSimulator == null) return;
+
+        // Guard against old saves that don't have SaveTime (defaults to DateTime.MinValue)
+        // Without this, upgrading to v0.60.0 would trigger a full 7-day catch-up for every player
+        if (saveTime == default || saveTime.Year < 2020) return;
+
+        var absence = DateTime.Now - saveTime;
+        if (absence.TotalMinutes < GameConfig.CatchUpMinAbsenceMinutes) return;
+
+        // Cap at max days
+        double absenceDays = Math.Min(absence.TotalDays, GameConfig.CatchUpMaxDays);
+        int totalTicks = (int)(absenceDays * GameConfig.CatchUpTicksPerDay);
+        totalTicks = Math.Min(totalTicks, GameConfig.CatchUpMaxTicks);
+
+        if (totalTicks <= 0) return;
+
+        // Show catch-up header
+        terminal.WriteLine("", "white");
+        if (!GameConfig.ScreenReaderMode)
+            terminal.WriteLine("═══════════════════════════════════════", "bright_cyan");
+
+        string timeDesc;
+        if (absenceDays >= 1.0)
+            timeDesc = $"{absenceDays:F1} days";
+        else if (absence.TotalHours >= 1.0)
+            timeDesc = $"{absence.TotalHours:F1} hours";
+        else
+            timeDesc = $"{(int)absence.TotalMinutes} minutes";
+
+        terminal.WriteLine($"  While you were away ({timeDesc})...", "bright_yellow");
+        terminal.WriteLine($"  The world continued without you.", "cyan");
+        if (!GameConfig.ScreenReaderMode)
+            terminal.WriteLine("═══════════════════════════════════════", "bright_cyan");
+        terminal.WriteLine("", "white");
+
+        // Set up catch-up buffer to collect news events
+        // Cap at 10k entries to prevent unbounded memory growth
+        const int maxBufferSize = 10000;
+        var catchUpEvents = new List<string>();
+        NewsSystem.Instance.SetCatchUpBuffer(catchUpEvents, maxBufferSize);
+
+        // Stop background sim and wait for it to fully stop.
+        // StopSimulation() sets isRunning = false; the background loop checks this
+        // between SimulateStep() calls. We wait up to 5 seconds for the loop to exit.
+        worldSimulator.StopSimulation();
+        for (int wait = 0; wait < 50; wait++)
+        {
+            await Task.Delay(100);
+            // Background loop exits when isRunning is false between iterations
+            // 5 seconds is more than enough for one 30-second SimulateStep cycle
+        }
+
+        try
+        {
+            worldSimulator.IsCatchUpMode = true;
+            worldSimulator.SetActive(true); // Mark as running so SimulateStep() works
+
+            int ticksPerDay = GameConfig.CatchUpTicksPerDay;
+            int progressInterval = GameConfig.CatchUpProgressInterval;
+            bool isBBS = UsurperRemake.BBS.DoorMode.IsInDoorMode;
+
+            for (int tick = 0; tick <= totalTicks; tick++)
+            {
+                try
+                {
+                    worldSimulator.SimulateStep();
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Instance.LogError("CATCHUP", $"Sim step {tick} error: {ex.Message}");
+                }
+
+                // Daily reset every CatchUpTicksPerDay ticks
+                if (tick > 0 && tick % ticksPerDay == 0)
+                {
+                    dailyManager.RunCatchUpDailyReset();
+                }
+
+                // Progress bar update
+                if (tick % progressInterval == 0 || tick == totalTicks)
+                {
+                    int pct = (int)((tick + 1) * 100L / (totalTicks + 1));
+                    if (GameConfig.ScreenReaderMode || isBBS)
+                    {
+                        // BBS and screen reader: use WriteLine (no \r support)
+                        if (tick % (progressInterval * 5) == 0 || tick == totalTicks)
+                            terminal.WriteLine($"  Simulating... {pct}%", "gray");
+                    }
+                    else
+                    {
+                        int barWidth = 30;
+                        int filled = pct * barWidth / 100;
+                        string bar = new string('█', filled) + new string('░', barWidth - filled);
+                        terminal.Write($"\r  [{bar}] {pct}% ", "bright_cyan");
+                    }
+                }
+            }
+
+            // Finish progress bar
+            if (!GameConfig.ScreenReaderMode && !isBBS)
+                terminal.WriteLine("", "white");
+        }
+        finally
+        {
+            // Always clean up catch-up state, even on exception
+            worldSimulator.IsCatchUpMode = false;
+            worldSimulator.SetActive(false);
+            NewsSystem.Instance.ClearCatchUpBuffer();
+        }
+
+        // Show narrative summary
+        await ShowCatchUpSummary(catchUpEvents);
+
+        // Restart normal background simulation
+        worldSimulator.StartSimulation();
+    }
+
+    /// <summary>
+    /// Display a categorized narrative summary of what happened during catch-up.
+    /// </summary>
+    private async Task ShowCatchUpSummary(List<string> events)
+    {
+        if (events.Count == 0)
+        {
+            terminal.WriteLine("  The realm was quiet in your absence.", "gray");
+            terminal.WriteLine("", "white");
+            await terminal.PressAnyKey();
+            return;
+        }
+
+        // Categorize events using case-insensitive matching
+        var deaths = new List<string>();
+        var births = new List<string>();
+        var political = new List<string>();
+        var social = new List<string>();
+        var settlement = new List<string>();
+        var worldEvents = new List<string>();
+
+        foreach (var evt in events)
+        {
+            // Strip timestamp prefix if present (e.g., "[14:32] ")
+            string clean = evt;
+            if (clean.StartsWith("[") && clean.Length > 7 && clean[6] == ']')
+                clean = clean.Substring(8).Trim();
+
+            // Skip internal markers (day separators, etc.)
+            if (clean.Contains("═══") || clean.IndexOf("New Day", StringComparison.OrdinalIgnoreCase) >= 0 || string.IsNullOrWhiteSpace(clean))
+                continue;
+
+            if (clean.IndexOf("slain", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                clean.IndexOf("passed away", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                clean.IndexOf("soul moves on", StringComparison.OrdinalIgnoreCase) >= 0)
+                deaths.Add(clean);
+            else if (clean.IndexOf("proud parents", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("come of age", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("born", StringComparison.OrdinalIgnoreCase) >= 0)
+                births.Add(clean);
+            else if (clean.IndexOf("king", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("proclaims", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("throne", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("treasury", StringComparison.OrdinalIgnoreCase) >= 0)
+                political.Add(clean);
+            else if (clean.IndexOf("married", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("divorced", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("affair", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("birthday", StringComparison.OrdinalIgnoreCase) >= 0)
+                social.Add(clean);
+            else if (clean.IndexOf("settlement", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("outskirts", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("constructed", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("building", StringComparison.OrdinalIgnoreCase) >= 0)
+                settlement.Add(clean);
+            else if (clean.IndexOf("level", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("quest", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     clean.IndexOf("team", StringComparison.OrdinalIgnoreCase) >= 0)
+                worldEvents.Add(clean);
+            else
+                worldEvents.Add(clean); // Default bucket
+        }
+
+        int maxPerCat = GameConfig.CatchUpMaxEventsPerCategory;
+
+        terminal.WriteLine("", "white");
+        if (!GameConfig.ScreenReaderMode)
+            terminal.WriteLine("─── News from the Realm ───", "bright_yellow");
+        else
+            terminal.WriteLine("--- News from the Realm ---", "bright_yellow");
+        terminal.WriteLine("", "white");
+
+        ShowCatchUpCategory("Deaths & Departures", deaths, maxPerCat, "red");
+        ShowCatchUpCategory("Births & Coming of Age", births, maxPerCat, "bright_green");
+        ShowCatchUpCategory("Royal Affairs", political, maxPerCat, "bright_yellow");
+        ShowCatchUpCategory("Love & Scandal", social, maxPerCat, "bright_magenta");
+        ShowCatchUpCategory("The Outskirts", settlement, maxPerCat, "cyan");
+        ShowCatchUpCategory("World Events", worldEvents, maxPerCat, "white");
+
+        terminal.WriteLine($"  Total events: {events.Count}", "gray");
+        terminal.WriteLine("", "white");
+
+        await terminal.PressAnyKey();
+    }
+
+    /// <summary>
+    /// Display a single category of catch-up events.
+    /// </summary>
+    private void ShowCatchUpCategory(string title, List<string> events, int max, string color)
+    {
+        if (events.Count == 0) return;
+
+        terminal.WriteLine($"  {title}:", color);
+
+        // Show the last N events (most recent)
+        var toShow = events.Count > max ? events.Skip(events.Count - max).ToList() : events;
+        foreach (var evt in toShow)
+        {
+            // Strip emoji/symbol prefixes for cleaner display
+            string display = evt;
+            while (display.Length > 0 && !char.IsLetterOrDigit(display[0]) && display[0] != '[')
+                display = display.Substring(1);
+            if (string.IsNullOrWhiteSpace(display)) display = evt;
+            terminal.WriteLine($"    - {display}", "gray");
+        }
+
+        if (events.Count > max)
+            terminal.WriteLine($"    ...and {events.Count - max} more", "dark_gray");
+
+        terminal.WriteLine("", "white");
+    }
+
+    /// <summary>
     /// Quit game and save
     /// </summary>
     private async Task QuitGame()
     {
-        terminal.WriteLine("Saving game...", "yellow");
+        terminal.WriteLine(Loc.Get("save.saving"), "yellow");
 
         // Track session end telemetry
         if (currentPlayer != null)
@@ -5274,16 +5602,16 @@ public partial class GameEngine
                 var success = await SaveSystem.Instance.SaveGame(playerName, currentPlayer);
                 if (success)
                 {
-                    terminal.WriteLine("Game saved successfully!", "bright_green");
+                    terminal.WriteLine(Loc.Get("save.saved"), "bright_green");
                 }
                 else
                 {
-                    terminal.WriteLine("Warning: Save may not have completed.", "yellow");
+                    terminal.WriteLine(Loc.Get("engine.save_not_completed"), "yellow");
                 }
             }
             catch (Exception ex)
             {
-                terminal.WriteLine($"Save error: {ex.Message}", "red");
+                terminal.WriteLine(Loc.Get("engine.save_error", ex.Message), "red");
             }
         }
 
@@ -5304,7 +5632,7 @@ public partial class GameEngine
             try { OnlineChatSystem.Instance!.Shutdown(); } catch { }
         }
 
-        terminal.WriteLine("Goodbye!", "green");
+        terminal.WriteLine(Loc.Get("engine.goodbye"), "green");
         await Task.Delay(1000);
 
         // Mark as intentional exit so bootstrap doesn't show warning
@@ -5355,7 +5683,7 @@ public partial class GameEngine
         if (GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_white");
-            terminal.WriteLine("SUPPORT USURPER REBORN");
+            terminal.WriteLine(Loc.Get("engine.support_title"));
         }
         else
         {
@@ -5363,7 +5691,7 @@ public partial class GameEngine
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
             terminal.Write("║");
             terminal.SetColor("bright_white");
-            terminal.Write("                         SUPPORT USURPER REBORN                              ");
+            { string t = Loc.Get("engine.support_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.Write(new string(' ', l) + t + new string(' ', r)); }
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("║");
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
@@ -5371,39 +5699,39 @@ public partial class GameEngine
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("  Usurper Reborn is a free, open-source game released under the GPL v2");
-        terminal.WriteLine("  license. It is developed by a solo developer in his spare time as a");
-        terminal.WriteLine("  love letter to the classic BBS door games of the early 1990s.");
+        terminal.WriteLine(Loc.Get("engine.support_desc_1"));
+        terminal.WriteLine(Loc.Get("engine.support_desc_2"));
+        terminal.WriteLine(Loc.Get("engine.support_desc_3"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine(GameConfig.ScreenReaderMode ? "  How You Can Help" : "  ─── How You Can Help ───");
+        terminal.WriteLine(GameConfig.ScreenReaderMode ? Loc.Get("engine.support_how_sr") : Loc.Get("engine.support_how_visual"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.Write("  Sponsor the Developer");
+        terminal.Write(Loc.Get("engine.support_sponsor"));
         terminal.SetColor("white");
-        terminal.WriteLine("  If you enjoy the game and want to support its");
-        terminal.WriteLine("  continued development, consider sponsoring on GitHub:");
+        terminal.WriteLine(Loc.Get("engine.support_sponsor_desc"));
+        terminal.WriteLine(Loc.Get("engine.support_sponsor_desc2"));
         terminal.SetColor("bright_green");
         terminal.WriteLine("  https://github.com/sponsors/binary-knight");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.Write("  Star the Repository");
+        terminal.Write(Loc.Get("engine.support_star"));
         terminal.SetColor("white");
-        terminal.WriteLine("   If you don't want to donate, that's totally fine!");
-        terminal.WriteLine("  A star on the GitHub repo goes a long way and helps others");
-        terminal.WriteLine("  discover the game:");
+        terminal.WriteLine(Loc.Get("engine.support_star_desc"));
+        terminal.WriteLine(Loc.Get("engine.support_star_desc2"));
+        terminal.WriteLine(Loc.Get("engine.support_star_desc3"));
         terminal.SetColor("bright_green");
         terminal.WriteLine("  https://github.com/binary-knight/usurper-reborn");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.Write("  Buy on Steam");
+        terminal.Write(Loc.Get("engine.support_steam"));
         terminal.SetColor("white");
-        terminal.WriteLine("           When the game launches on Steam in March 2026,");
-        terminal.WriteLine("  purchasing a copy is another great way to show your support.");
+        terminal.WriteLine(Loc.Get("engine.support_steam_desc"));
+        terminal.WriteLine(Loc.Get("engine.support_steam_desc2"));
         terminal.WriteLine("");
 
         if (!GameConfig.ScreenReaderMode)
@@ -5414,8 +5742,8 @@ public partial class GameEngine
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("  Thank you for playing. Every bit of support — whether a sponsorship,");
-        terminal.WriteLine("  a star, a bug report, or just playing the game — means the world.");
+        terminal.WriteLine(Loc.Get("engine.support_thanks_1"));
+        terminal.WriteLine(Loc.Get("engine.support_thanks_2"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
@@ -5432,27 +5760,27 @@ public partial class GameEngine
 
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("BBS LIST - Play Usurper Reborn Online!", "bright_white");
+            terminal.WriteLine(Loc.Get("engine.bbs_list_title"), "bright_white");
         }
         else
         {
             terminal.SetColor("bright_cyan");
             terminal.WriteLine("+=============================================================================+");
             terminal.SetColor("bright_white");
-            terminal.WriteLine("|                 BBS LIST - Play Usurper Reborn Online!                      |");
+            { string t = Loc.Get("engine.bbs_list_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("|" + new string(' ', l) + t + new string(' ', r) + "|"); }
             terminal.SetColor("bright_cyan");
             terminal.WriteLine("+=============================================================================+");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("  The following BBSes are running Usurper Reborn as a door game.");
-        terminal.WriteLine("  Connect via telnet or SSH to play online!");
+        terminal.WriteLine(Loc.Get("engine.bbs_list_desc_1"));
+        terminal.WriteLine(Loc.Get("engine.bbs_list_desc_2"));
         terminal.WriteLine("");
 
         // Column headers
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  BBS Name                       Software    Address");
+        terminal.WriteLine(Loc.Get("engine.bbs_list_header"));
         if (!GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("darkgray");
@@ -5500,19 +5828,19 @@ public partial class GameEngine
         terminal.WriteLine("");
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("  Are you a SysOp running Usurper Reborn on your BBS?");
+        terminal.WriteLine(Loc.Get("engine.bbs_sysop_question"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  Get listed here! Open an issue or discussion at:");
+        terminal.WriteLine(Loc.Get("engine.bbs_get_listed"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("    https://github.com/binary-knight/usurper-reborn");
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Include your BBS name, address, and software. We'd love to add you!");
+        terminal.WriteLine(Loc.Get("engine.bbs_include_info"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("                         [Press Enter to return]");
+        terminal.WriteLine($"                         {Loc.Get("engine.press_enter_return")}");
         await terminal.WaitForKey();
     }
 
@@ -5568,84 +5896,84 @@ public partial class GameEngine
 
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("CREDITS", "bright_yellow");
+            terminal.WriteLine(Loc.Get("engine.credits_title"), "bright_yellow");
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("+=============================================================================+");
-            terminal.WriteLine("|                              CREDITS                                        |");
+            { string t = Loc.Get("engine.credits_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("|" + new string(' ', l) + t + new string(' ', r) + "|"); }
             terminal.WriteLine("+=============================================================================+");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("                         USURPER REBORN");
-        terminal.WriteLine("                    A Modern Tribute to a Classic");
+        terminal.WriteLine($"                         {Loc.Get("engine.credits_subtitle")}");
+        terminal.WriteLine($"                    {Loc.Get("engine.credits_tagline")}");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  Original Game:");
+        terminal.WriteLine(Loc.Get("engine.credits_original_game"));
         terminal.SetColor("white");
-        terminal.WriteLine("    Usurper: Halls of Avarice (1993)");
+        terminal.WriteLine(Loc.Get("engine.credits_original_name"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  ORIGINAL CREATORS:");
+        terminal.WriteLine(Loc.Get("engine.credits_original_creators"));
         terminal.SetColor("cyan");
-        terminal.WriteLine("    Jakob Dangarden          - Original Game Creator (1993)");
-        terminal.WriteLine("    Rick Parrish             - Source Code Preservation & Porting");
-        terminal.WriteLine("    Daniel Zingaro           - Bug Fixing & Code Quality");
+        terminal.WriteLine(Loc.Get("engine.credits_jakob"));
+        terminal.WriteLine(Loc.Get("engine.credits_rick"));
+        terminal.WriteLine(Loc.Get("engine.credits_daniel"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine("  USURPER REBORN:");
+        terminal.WriteLine(Loc.Get("engine.credits_reborn"));
         terminal.SetColor("cyan");
-        terminal.WriteLine("    Jason Knight             - Creator of Usurper Reborn");
+        terminal.WriteLine(Loc.Get("engine.credits_jason"));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("    Built with C# / .NET 8.0");
+        terminal.WriteLine(Loc.Get("engine.credits_built_with"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_red");
-        terminal.WriteLine("  ANSI ART:");
+        terminal.WriteLine(Loc.Get("engine.credits_ansi_art"));
         terminal.SetColor("cyan");
-        terminal.WriteLine("    xbit (x-bit.org)          - Race & Class Portrait Art");
-        terminal.WriteLine("    Sudden Death              - rez2ans ANSI Conversion Tool");
-        terminal.WriteLine("    Cozmo / Lunatics Unleashed - ANSI Art Knowledge & Guidance");
+        terminal.WriteLine(Loc.Get("engine.credits_xbit"));
+        terminal.WriteLine(Loc.Get("engine.credits_sudden_death"));
+        terminal.WriteLine(Loc.Get("engine.credits_cozmo"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  CONTRIBUTORS:");
+        terminal.WriteLine(Loc.Get("engine.credits_contributors"));
         terminal.SetColor("cyan");
-        terminal.WriteLine("    fastfinge                 - Code Contributions");
+        terminal.WriteLine(Loc.Get("engine.credits_fastfinge"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("  SPECIAL THANKS:");
+        terminal.WriteLine(Loc.Get("engine.credits_special_thanks"));
         terminal.SetColor("gray");
-        terminal.WriteLine("    The BBS community of the 1980s and 1990s");
-        terminal.WriteLine("    All the SysOps who kept the boards running");
-        terminal.WriteLine("    Every player who dialed in to explore Durunghins");
-        terminal.WriteLine("    The Break Into Chat wiki for preserving BBS history");
+        terminal.WriteLine(Loc.Get("engine.credits_bbs_community"));
+        terminal.WriteLine(Loc.Get("engine.credits_sysops"));
+        terminal.WriteLine(Loc.Get("engine.credits_players"));
+        terminal.WriteLine(Loc.Get("engine.credits_wiki"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  LICENSE:");
+        terminal.WriteLine(Loc.Get("engine.credits_license"));
         terminal.SetColor("gray");
-        terminal.WriteLine("    The original Usurper was released under the GNU GPL");
-        terminal.WriteLine("    This remake honors that open source tradition");
+        terminal.WriteLine(Loc.Get("engine.credits_license_1"));
+        terminal.WriteLine(Loc.Get("engine.credits_license_2"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("  COMMUNITY:");
+        terminal.WriteLine(Loc.Get("engine.credits_community"));
         terminal.SetColor("gray");
-        terminal.WriteLine("    Join us on Discord: https://discord.gg/EZhwgDT6Ta");
+        terminal.WriteLine(Loc.Get("engine.credits_discord"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("                         [Press Enter to return]");
+        terminal.WriteLine($"                         {Loc.Get("engine.press_enter_return")}");
         await terminal.WaitForKey();
     }
 
@@ -5659,33 +5987,33 @@ public partial class GameEngine
         // Page 1: The Golden Age
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("THE STORY SO FAR...", "bright_yellow");
+            terminal.WriteLine(Loc.Get("engine.story_title"), "bright_yellow");
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║                         THE STORY SO FAR...                                  ║");
+            { string t = Loc.Get("engine.story_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("║" + new string(' ', l) + t + new string(' ', r) + "║"); }
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("                           ~ The Golden Age ~");
+        terminal.WriteLine($"                           {Loc.Get("engine.story_golden_age")}");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("  Long ago, in an age now lost to memory, the world was watched over by the");
-        terminal.WriteLine("  Seven Divine - gods of immense power who guided mortalkind with wisdom and");
-        terminal.WriteLine("  grace. Under their benevolent gaze, civilizations flourished. The god of");
-        terminal.WriteLine("  war taught honor in battle. The goddess of love blessed every union. The");
-        terminal.WriteLine("  god of light ensured truth prevailed over deception.");
+        terminal.WriteLine(Loc.Get("engine.story_golden_1"));
+        terminal.WriteLine(Loc.Get("engine.story_golden_2"));
+        terminal.WriteLine(Loc.Get("engine.story_golden_3"));
+        terminal.WriteLine(Loc.Get("engine.story_golden_4"));
+        terminal.WriteLine(Loc.Get("engine.story_golden_5"));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  It was an age of miracles. An age of heroes. An age of hope.");
+        terminal.WriteLine(Loc.Get("engine.story_golden_6"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("                              [Press Enter]");
+        terminal.WriteLine($"                              {Loc.Get("engine.press_enter")}");
         await terminal.WaitForKey();
 
         // Page 2: The Sundering
@@ -5693,37 +6021,37 @@ public partial class GameEngine
         if (GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("THE STORY SO FAR...");
+            terminal.WriteLine(Loc.Get("engine.story_title"));
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║                         THE STORY SO FAR...                                  ║");
+            { string t = Loc.Get("engine.story_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("║" + new string(' ', l) + t + new string(' ', r) + "║"); }
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_red");
-        terminal.WriteLine("                            ~ The Sundering ~");
+        terminal.WriteLine($"                            {Loc.Get("engine.story_sundering")}");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("  Then came the Sundering - a cataclysm whose cause remains unknown. Some say");
-        terminal.WriteLine("  mortals grew too proud and turned away from the gods. Others whisper of a");
-        terminal.WriteLine("  betrayal among the Divine themselves. Whatever the truth, the result was");
-        terminal.WriteLine("  catastrophic.");
+        terminal.WriteLine(Loc.Get("engine.story_sundering_1"));
+        terminal.WriteLine(Loc.Get("engine.story_sundering_2"));
+        terminal.WriteLine(Loc.Get("engine.story_sundering_3"));
+        terminal.WriteLine(Loc.Get("engine.story_sundering_4"));
         terminal.WriteLine("");
         terminal.SetColor("red");
-        terminal.WriteLine("  The Seven were corrupted. Twisted. Imprisoned in realms of their own making.");
+        terminal.WriteLine(Loc.Get("engine.story_sundering_5"));
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("  The god of war became rage incarnate, drowning in endless bloodshed. The");
-        terminal.WriteLine("  goddess of love withered into jealousy and obsession. The god of light");
-        terminal.WriteLine("  faded to barely a whisper, truth dying with each passing lie.");
+        terminal.WriteLine(Loc.Get("engine.story_sundering_6"));
+        terminal.WriteLine(Loc.Get("engine.story_sundering_7"));
+        terminal.WriteLine(Loc.Get("engine.story_sundering_8"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("                              [Press Enter]");
+        terminal.WriteLine($"                              {Loc.Get("engine.press_enter")}");
         await terminal.WaitForKey();
 
         // Page 3: The Age of Avarice
@@ -5731,40 +6059,40 @@ public partial class GameEngine
         if (GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("THE STORY SO FAR...");
+            terminal.WriteLine(Loc.Get("engine.story_title"));
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║                         THE STORY SO FAR...                                  ║");
+            { string t = Loc.Get("engine.story_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("║" + new string(' ', l) + t + new string(' ', r) + "║"); }
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("                          ~ The Age of Avarice ~");
+        terminal.WriteLine($"                          {Loc.Get("engine.story_avarice")}");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("  Centuries have passed. The Old Gods are now mere legends - cautionary tales");
-        terminal.WriteLine("  told to frighten children. In their absence, mortals have created new gods");
-        terminal.WriteLine("  to worship, pale echoes of the Divine that once were.");
+        terminal.WriteLine(Loc.Get("engine.story_avarice_1"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_2"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_3"));
         terminal.WriteLine("");
-        terminal.WriteLine("  And in this godless age, a new power has risen: AVARICE.");
+        terminal.WriteLine(Loc.Get("engine.story_avarice_4"));
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("  The Halls of Avarice - a sprawling underground complex where adventurers");
-        terminal.WriteLine("  seek fortune, glory, and power. Where the strong prey upon the weak. Where");
-        terminal.WriteLine("  gold is the only god that matters.");
+        terminal.WriteLine(Loc.Get("engine.story_avarice_5"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_6"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_7"));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("  Some come seeking treasure. Some come seeking fame. Some come to escape");
-        terminal.WriteLine("  their past. And some... some hear whispers in the dark. Ancient voices");
-        terminal.WriteLine("  calling from the depths. Promising power. Demanding sacrifice.");
+        terminal.WriteLine(Loc.Get("engine.story_avarice_8"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_9"));
+        terminal.WriteLine(Loc.Get("engine.story_avarice_10"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("                              [Press Enter]");
+        terminal.WriteLine($"                              {Loc.Get("engine.press_enter")}");
         await terminal.WaitForKey();
 
         // Page 4: Your Story Begins
@@ -5772,42 +6100,42 @@ public partial class GameEngine
         if (GameConfig.ScreenReaderMode)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("THE STORY SO FAR...");
+            terminal.WriteLine(Loc.Get("engine.story_title"));
         }
         else
         {
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║                         THE STORY SO FAR...                                  ║");
+            { string t = Loc.Get("engine.story_title"); int l = (78 - t.Length) / 2; int r = 78 - t.Length - l; terminal.WriteLine("║" + new string(' ', l) + t + new string(' ', r) + "║"); }
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine("                          ~ Your Story Begins ~");
+        terminal.WriteLine($"                          {Loc.Get("engine.story_begins")}");
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("  You arrive at the gates of the realm with little more than the clothes on");
-        terminal.WriteLine("  your back and a hunger for something more. The bustling Main Street awaits,");
-        terminal.WriteLine("  filled with shops, taverns, and opportunities for those bold enough to");
-        terminal.WriteLine("  seize them.");
+        terminal.WriteLine(Loc.Get("engine.story_begins_1"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_2"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_3"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_4"));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("  Will you delve into the deadly Dungeons in search of treasure and glory?");
-        terminal.WriteLine("  Will you find love on the cobblestones of this dangerous town?");
-        terminal.WriteLine("  Will you rise to become a champion... or fall to become a cautionary tale?");
+        terminal.WriteLine(Loc.Get("engine.story_begins_5"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_6"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_7"));
         terminal.WriteLine("");
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("  And perhaps, if you grow strong enough, you may discover what truly lurks");
-        terminal.WriteLine("  in the deepest halls. You may learn the fate of the Old Gods. You may even");
-        terminal.WriteLine("  have the chance to save them... or destroy them forever.");
+        terminal.WriteLine(Loc.Get("engine.story_begins_8"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_9"));
+        terminal.WriteLine(Loc.Get("engine.story_begins_10"));
         terminal.WriteLine("");
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  The choice, adventurer, is yours.");
+        terminal.WriteLine(Loc.Get("engine.story_begins_11"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("                         [Press Enter to return]");
+        terminal.WriteLine($"                         {Loc.Get("engine.press_enter_return")}");
         await terminal.WaitForKey();
     }
     
@@ -5825,7 +6153,7 @@ public partial class GameEngine
         terminal.SetColor("white");
         terminal.WriteLine(content);
         terminal.WriteLine("");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.WaitForKey();
     }
 
@@ -5960,37 +6288,37 @@ public partial class GameEngine
         terminal.WriteLine("");
         if (GameConfig.ScreenReaderMode)
         {
-            terminal.WriteLine("HELP IMPROVE USURPER REBORN");
+            terminal.WriteLine(Loc.Get("engine.telemetry_title"));
         }
         else
         {
             terminal.WriteLine("╔══════════════════════════════════════════════════════════════╗");
-            terminal.WriteLine("║              HELP IMPROVE USURPER REBORN                     ║");
+            { string t = Loc.Get("engine.telemetry_title"); int l = (62 - t.Length) / 2; int r = 62 - t.Length - l; terminal.WriteLine("║" + new string(' ', l) + t + new string(' ', r) + "║"); }
             terminal.WriteLine("╚══════════════════════════════════════════════════════════════╝");
         }
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine("During this alpha testing phase, we can collect anonymous");
-        terminal.WriteLine("gameplay statistics to help improve game balance and identify bugs.");
+        terminal.WriteLine(Loc.Get("engine.telemetry_desc_1"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_desc_2"));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("What we collect:");
-        terminal.WriteLine("  - Combat statistics (victories, defeats, damage dealt)");
-        terminal.WriteLine("  - Player milestones (level ups, boss defeats)");
-        terminal.WriteLine("  - Feature usage (which areas you visit most)");
-        terminal.WriteLine("  - Errors and crashes");
+        terminal.WriteLine(Loc.Get("engine.telemetry_collect"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_collect_1"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_collect_2"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_collect_3"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_collect_4"));
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine("What we DON'T collect:");
-        terminal.WriteLine("  - Your real name or identifying information");
-        terminal.WriteLine("  - Your IP address");
-        terminal.WriteLine("  - Chat messages or custom text");
+        terminal.WriteLine(Loc.Get("engine.telemetry_not_collect"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_not_1"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_not_2"));
+        terminal.WriteLine(Loc.Get("engine.telemetry_not_3"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("You can disable this at any time from the Settings menu.");
+        terminal.WriteLine(Loc.Get("engine.telemetry_disable_hint"));
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.Write("Would you like to help us improve the game? [Y/N]: ");
+        terminal.Write(Loc.Get("engine.telemetry_prompt"));
 
         var response = await terminal.GetInput("");
         if (response.Trim().ToUpper() == "Y" || response.Trim().ToUpper() == "YES")
@@ -5998,7 +6326,7 @@ public partial class GameEngine
             TelemetrySystem.Instance.Enable();
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine("Thank you! Your feedback will help make Usurper Reborn better.");
+            terminal.WriteLine(Loc.Get("engine.telemetry_thanks"));
             terminal.WriteLine("");
 
             // Track session start first
@@ -6031,7 +6359,7 @@ public partial class GameEngine
             TelemetrySystem.Instance.Disable();
             terminal.SetColor("gray");
             terminal.WriteLine("");
-            terminal.WriteLine("No problem! You can enable telemetry later in Settings if you change your mind.");
+            terminal.WriteLine(Loc.Get("engine.telemetry_declined"));
             terminal.WriteLine("");
         }
 

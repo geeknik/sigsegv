@@ -57,67 +57,67 @@ public class TeamCornerLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        WriteBoxHeader("ADVENTURERS TEAM CORNER", "bright_magenta");
+        WriteBoxHeader(Loc.Get("team_corner.header"), "bright_magenta");
         terminal.WriteLine("");
 
         // Atmospheric description
         terminal.SetColor("white");
-        terminal.WriteLine("A smoky back room filled with rough-hewn tables. Team banners hang from the");
-        terminal.WriteLine("rafters, and the walls are covered with bounties, challenges, and team records.");
+        terminal.WriteLine(Loc.Get("team.desc_line1"));
+        terminal.WriteLine(Loc.Get("team.desc_line2"));
         terminal.WriteLine("");
 
         // Show player's team status
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Your Team: {currentPlayer.Team}");
-            terminal.WriteLine($"Turf Control: {(currentPlayer.CTurf ? "YES - You own this town!" : "No")}");
+            terminal.WriteLine(Loc.Get("team.your_team", currentPlayer.Team));
+            terminal.WriteLine(currentPlayer.CTurf ? Loc.Get("team.turf_control_yes") : Loc.Get("team.turf_control_no"));
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You are not a member of any team. Create or join one to gain power!");
+            terminal.WriteLine(Loc.Get("team.no_team_hint"));
             terminal.WriteLine("");
         }
 
         // Menu options
         terminal.SetColor("cyan");
-        terminal.WriteLine("Team Information:");
+        terminal.WriteLine(Loc.Get("team.section_info"));
         terminal.SetColor("white");
-        WriteMenuOption("T", "Team Rankings", "P", "Password Change");
-        WriteMenuOption("I", "Info on Teams", "E", "Examine Member");
-        WriteMenuOption("Y", "Your Team Status", "", "");
+        WriteMenuOption("T", Loc.Get("team.menu_rankings"), "P", Loc.Get("team.menu_password"));
+        WriteMenuOption("I", Loc.Get("team.menu_info"), "E", Loc.Get("team.menu_examine"));
+        WriteMenuOption("Y", Loc.Get("team.menu_your_status"), "", "");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Team Actions:");
+        terminal.WriteLine(Loc.Get("team.section_actions"));
         terminal.SetColor("white");
-        WriteMenuOption("C", "Create Team", "J", "Join Team");
-        WriteMenuOption("Q", "Quit Team", "A", "Apply for Membership");
-        WriteMenuOption("N", "Recruit NPC", "2", "Sack Member");
-        WriteMenuOption("G", "Equip Member", "", "");
+        WriteMenuOption("C", Loc.Get("team.menu_create"), "J", Loc.Get("team.menu_join"));
+        WriteMenuOption("Q", Loc.Get("team.menu_quit"), "A", Loc.Get("team.menu_apply"));
+        WriteMenuOption("N", Loc.Get("team.menu_recruit_npc"), "2", Loc.Get("team.menu_sack"));
+        WriteMenuOption("G", Loc.Get("team.menu_equip"), "", "");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Communication:");
+        terminal.WriteLine(Loc.Get("team.section_comm"));
         terminal.SetColor("white");
-        WriteMenuOption("M", "Message Teammates", "!", "Resurrect Teammate");
+        WriteMenuOption("M", Loc.Get("team.menu_message"), "!", Loc.Get("team.menu_resurrect"));
         if (DoorMode.IsOnlineMode)
         {
-            WriteMenuOption("W", "Recruit Player Ally", "", "");
+            WriteMenuOption("W", Loc.Get("team.menu_recruit_player"), "", "");
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Online Features:");
+            terminal.WriteLine(Loc.Get("team.section_online"));
             terminal.SetColor("white");
-            WriteMenuOption("B", "Team Battle (War)", "H", "Team Headquarters");
+            WriteMenuOption("B", Loc.Get("team.menu_battle"), "H", Loc.Get("team.menu_hq"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("Navigation:");
+        terminal.WriteLine(Loc.Get("team.section_nav"));
         terminal.SetColor("white");
-        WriteMenuOption("R", "Return to Main Street", "S", "Status");
+        WriteMenuOption("R", Loc.Get("team.menu_return"), "S", Loc.Get("team.menu_status"));
         terminal.WriteLine("");
     }
 
@@ -125,59 +125,59 @@ public class TeamCornerLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine("Adventurers Team Corner");
+        terminal.WriteLine(Loc.Get("team.sr_title"));
         terminal.WriteLine("");
 
         // Team status
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"Your Team: {currentPlayer.Team}");
-            terminal.WriteLine($"Turf Control: {(currentPlayer.CTurf ? "Yes" : "No")}");
+            terminal.WriteLine(Loc.Get("team.your_team", currentPlayer.Team));
+            terminal.WriteLine(currentPlayer.CTurf ? Loc.Get("team.sr_turf_yes") : Loc.Get("team.sr_turf_no"));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You are not in a team.");
+            terminal.WriteLine(Loc.Get("team.sr_no_team"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Team Information:");
-        WriteSRMenuOption("T", "Team Rankings");
-        WriteSRMenuOption("I", "Info on Teams");
-        WriteSRMenuOption("Y", "Your Team Status");
-        WriteSRMenuOption("P", "Password Change");
-        WriteSRMenuOption("E", "Examine Member");
+        terminal.WriteLine(Loc.Get("team.sr_info_section"));
+        WriteSRMenuOption("T", Loc.Get("team_corner.rankings"));
+        WriteSRMenuOption("I", Loc.Get("team_corner.info"));
+        WriteSRMenuOption("Y", Loc.Get("team_corner.your_status"));
+        WriteSRMenuOption("P", Loc.Get("team_corner.password"));
+        WriteSRMenuOption("E", Loc.Get("team_corner.examine"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Team Actions:");
-        WriteSRMenuOption("C", "Create Team");
-        WriteSRMenuOption("J", "Join Team");
-        WriteSRMenuOption("Q", "Quit Team");
-        WriteSRMenuOption("A", "Apply for Membership");
-        WriteSRMenuOption("N", "Recruit NPC");
-        WriteSRMenuOption("2", "Sack Member");
-        WriteSRMenuOption("G", "Equip Member");
+        terminal.WriteLine(Loc.Get("team.sr_actions_section"));
+        WriteSRMenuOption("C", Loc.Get("team_corner.create"));
+        WriteSRMenuOption("J", Loc.Get("team_corner.join"));
+        WriteSRMenuOption("Q", Loc.Get("team_corner.quit"));
+        WriteSRMenuOption("A", Loc.Get("team_corner.apply"));
+        WriteSRMenuOption("N", Loc.Get("team_corner.recruit_npc"));
+        WriteSRMenuOption("2", Loc.Get("team_corner.sack"));
+        WriteSRMenuOption("G", Loc.Get("team_corner.equip"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Communication:");
-        WriteSRMenuOption("M", "Message Teammates");
-        WriteSRMenuOption("!", "Resurrect Teammate");
+        terminal.WriteLine(Loc.Get("team.sr_comm_section"));
+        WriteSRMenuOption("M", Loc.Get("team_corner.message"));
+        WriteSRMenuOption("!", Loc.Get("team_corner.resurrect"));
         if (DoorMode.IsOnlineMode)
         {
-            WriteSRMenuOption("W", "Recruit Player Ally");
+            WriteSRMenuOption("W", Loc.Get("team_corner.recruit_player"));
             terminal.SetColor("cyan");
-            terminal.WriteLine("Online Features:");
-            WriteSRMenuOption("B", "Team Battle (War)");
-            WriteSRMenuOption("H", "Team Headquarters");
+            terminal.WriteLine(Loc.Get("team.sr_online_section"));
+            WriteSRMenuOption("B", Loc.Get("team_corner.battle"));
+            WriteSRMenuOption("H", Loc.Get("team_corner.headquarters"));
         }
         terminal.WriteLine("");
 
-        WriteSRMenuOption("R", "Return to Main Street");
-        WriteSRMenuOption("S", "Status");
+        WriteSRMenuOption("R", Loc.Get("team_corner.return"));
+        WriteSRMenuOption("S", Loc.Get("marketplace.status"));
         terminal.WriteLine("");
     }
 
@@ -215,40 +215,40 @@ public class TeamCornerLocation : BaseLocation
     private void DisplayLocationBBS()
     {
         terminal.ClearScreen();
-        ShowBBSHeader("ADVENTURERS TEAM CORNER");
+        ShowBBSHeader(Loc.Get("team_corner.header"));
 
         // 1-line team status
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("bright_cyan");
-            terminal.Write($" Team: {currentPlayer.Team}");
+            terminal.Write(Loc.Get("team.bbs_team_label", currentPlayer.Team));
             if (currentPlayer.CTurf)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.Write(" *CONTROLS TOWN*");
+                terminal.Write(Loc.Get("team.bbs_controls_town"));
             }
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine(" You are not in a team. Create or join one!");
+            terminal.WriteLine(Loc.Get("team.bbs_no_team"));
         }
         terminal.WriteLine("");
 
         // Menu rows (3 rows for all options)
         terminal.SetColor("cyan");
-        terminal.WriteLine(" Info:");
-        ShowBBSMenuRow(("T", "bright_yellow", "Rankings"), ("P", "bright_yellow", "Password"), ("I", "bright_yellow", "Info"), ("E", "bright_yellow", "Examine"), ("Y", "bright_yellow", "YourTeam"));
+        terminal.WriteLine(Loc.Get("team.bbs_info"));
+        ShowBBSMenuRow(("T", "bright_yellow", Loc.Get("team.bbs_rankings")), ("P", "bright_yellow", Loc.Get("team.bbs_password")), ("I", "bright_yellow", Loc.Get("team.bbs_info")), ("E", "bright_yellow", Loc.Get("team.bbs_examine")), ("Y", "bright_yellow", Loc.Get("team.bbs_your_team")));
         terminal.SetColor("cyan");
-        terminal.WriteLine(" Actions:");
-        ShowBBSMenuRow(("C", "bright_yellow", "Create"), ("J", "bright_yellow", "Join"), ("Q", "bright_yellow", "QuitTeam"), ("A", "bright_yellow", "Apply"), ("N", "bright_yellow", "RecruitNPC"));
-        ShowBBSMenuRow(("2", "bright_yellow", "SackMember"), ("G", "bright_yellow", "EquipMbr"), ("M", "bright_yellow", "Message"), ("!", "bright_yellow", "Resurrect"));
+        terminal.WriteLine(Loc.Get("team.bbs_actions"));
+        ShowBBSMenuRow(("C", "bright_yellow", Loc.Get("team.bbs_create")), ("J", "bright_yellow", Loc.Get("team.bbs_join")), ("Q", "bright_yellow", Loc.Get("team.bbs_quit_team")), ("A", "bright_yellow", Loc.Get("team.bbs_apply")), ("N", "bright_yellow", Loc.Get("team.bbs_recruit_npc")));
+        ShowBBSMenuRow(("2", "bright_yellow", Loc.Get("team.bbs_sack_member")), ("G", "bright_yellow", Loc.Get("team.bbs_equip_mbr")), ("M", "bright_yellow", Loc.Get("team.bbs_message")), ("!", "bright_yellow", Loc.Get("team.bbs_resurrect")));
         if (DoorMode.IsOnlineMode)
         {
-            ShowBBSMenuRow(("W", "bright_yellow", "RecruitAlly"), ("B", "bright_yellow", "TeamBattle"), ("H", "bright_yellow", "HQ"));
+            ShowBBSMenuRow(("W", "bright_yellow", Loc.Get("team.bbs_recruit_ally")), ("B", "bright_yellow", Loc.Get("team.bbs_team_battle")), ("H", "bright_yellow", Loc.Get("team.bbs_hq")));
         }
-        ShowBBSMenuRow(("R", "bright_yellow", "MainStreet"));
+        ShowBBSMenuRow(("R", "bright_yellow", Loc.Get("team.bbs_main_street")));
 
         ShowBBSFooter();
     }
@@ -357,7 +357,7 @@ public class TeamCornerLocation : BaseLocation
                 return false;
 
             default:
-                terminal.WriteLine("Invalid choice! The gang leader shakes his head.", "red");
+                terminal.WriteLine(Loc.Get("team.invalid_choice"), "red");
                 await Task.Delay(1500);
                 return false;
         }
@@ -371,7 +371,7 @@ public class TeamCornerLocation : BaseLocation
     private async Task ShowTeamRankings()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("TEAM RANKINGS", "bright_magenta");
+        WriteBoxHeader(Loc.Get("team_corner.rankings_header"), "bright_magenta");
         terminal.WriteLine("");
 
         // Get all teams from NPCs, then merge in the player's team
@@ -458,13 +458,13 @@ public class TeamCornerLocation : BaseLocation
         if (teamGroups.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("No teams have been formed yet.");
-            terminal.WriteLine("Be the first to create a team!");
+            terminal.WriteLine(Loc.Get("team.no_teams_yet"));
+            terminal.WriteLine(Loc.Get("team.be_first"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"{"Rank",-5} {"Team Name",-24} {"Mbrs",-6} {"Power",-8} {"Avg Lvl",-8} {"Turf",-5}");
+            terminal.WriteLine($"{Loc.Get("team.rank_col_rank"),-5} {Loc.Get("team.rank_col_name"),-24} {Loc.Get("team.rank_col_mbrs"),-6} {Loc.Get("team.rank_col_power"),-8} {Loc.Get("team.rank_col_avg_lvl"),-8} {Loc.Get("team.rank_col_turf"),-5}");
             if (!IsScreenReader)
             {
                 terminal.SetColor("darkgray");
@@ -482,19 +482,19 @@ public class TeamCornerLocation : BaseLocation
                     terminal.SetColor("white");
 
                 string turfMark = team.ControlsTurf ? "*" : "-";
-                string nameDisplay = team.IsPlayerTeam ? $"{team.TeamName} (you)" : team.TeamName;
+                string nameDisplay = team.IsPlayerTeam ? $"{team.TeamName} {Loc.Get("team.you_suffix")}" : team.TeamName;
                 terminal.WriteLine($"{rank,-5} {nameDisplay,-24} {team.MemberCount,-6} {team.TotalPower,-8} {team.AverageLevel,-8} {turfMark,-5}");
                 rank++;
             }
 
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("* = Controls the town turf");
+            terminal.WriteLine(Loc.Get("team.turf_legend"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -505,7 +505,7 @@ public class TeamCornerLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Which team do you want info on? ");
+        terminal.Write(Loc.Get("team.which_team_info"));
         terminal.SetColor("white");
         string teamName = await terminal.ReadLineAsync();
 
@@ -513,14 +513,14 @@ public class TeamCornerLocation : BaseLocation
             return;
 
         terminal.ClearScreen();
-        WriteSectionHeader($"Team Information: {teamName}", "bright_cyan");
+        WriteSectionHeader(Loc.Get("team.info_header", teamName), "bright_cyan");
         terminal.WriteLine("");
 
         await ShowTeamMembers(teamName, false);
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -533,39 +533,39 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteSectionHeader($"Team Status: {currentPlayer.Team}", "bright_cyan");
+        WriteSectionHeader(Loc.Get("team.status_header", currentPlayer.Team), "bright_cyan");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Team Name: {currentPlayer.Team}");
+        terminal.WriteLine(Loc.Get("team.team_name_label", currentPlayer.Team));
 
         if (currentPlayer.CTurf)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Town Control: YES - Your team owns this town!");
+            terminal.WriteLine(Loc.Get("team.town_control_yes"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Town Control: NO");
+            terminal.WriteLine(Loc.Get("team.town_control_no"));
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Team Record: {currentPlayer.TeamRec} days");
+        terminal.WriteLine(Loc.Get("team.team_record", currentPlayer.TeamRec));
         terminal.WriteLine("");
 
         await ShowTeamMembers(currentPlayer.Team, true);
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -574,7 +574,7 @@ public class TeamCornerLocation : BaseLocation
     /// </summary>
     private async Task ShowTeamMembers(string teamName, bool detailed)
     {
-        WriteSectionHeader("Team Members", "cyan");
+        WriteSectionHeader(Loc.Get("team_corner.members"), "cyan");
 
         // Get NPCs in this team
         var allNPCs = NPCSpawnSystem.Instance.ActiveNPCs;
@@ -599,10 +599,10 @@ public class TeamCornerLocation : BaseLocation
         if (!hasMembers)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"No other members found in team '{teamName}'.");
+            terminal.WriteLine(Loc.Get("team.no_other_members", teamName));
             if (currentPlayer.Team == teamName)
             {
-                terminal.WriteLine("(You are the only member!)");
+                terminal.WriteLine(Loc.Get("team.only_member"));
             }
             return;
         }
@@ -610,7 +610,7 @@ public class TeamCornerLocation : BaseLocation
         if (detailed)
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"{"Name",-20} {"Class",-12} {"Lvl",-5} {"HP",-12} {"Location",-15} {"Status",-8}");
+            terminal.WriteLine($"{Loc.Get("team.detail_col_name"),-20} {Loc.Get("team.detail_col_class"),-12} {Loc.Get("team.detail_col_lvl"),-5} {Loc.Get("team.detail_col_hp"),-12} {Loc.Get("team.detail_col_location"),-15} {Loc.Get("team.detail_col_status"),-8}");
             if (!IsScreenReader)
             {
                 terminal.SetColor("darkgray");
@@ -622,7 +622,7 @@ public class TeamCornerLocation : BaseLocation
             {
                 terminal.SetColor("bright_cyan");
                 string className = pm.ClassId >= 0 ? ((CharacterClass)pm.ClassId).ToString() : "?";
-                string onlineStatus = pm.IsOnline ? "Online" : "Offline";
+                string onlineStatus = pm.IsOnline ? Loc.Get("team.status_online") : Loc.Get("team.status_offline");
                 terminal.WriteLine($"{pm.DisplayName,-20} {className,-12} {pm.Level,-5} {"?",-12} {"?",-15} {onlineStatus,-8}");
             }
 
@@ -638,14 +638,14 @@ public class TeamCornerLocation : BaseLocation
                 else
                     terminal.SetColor("red");
 
-                string status = member.IsAlive ? "Alive" : (member.IsPermaDead ? "Gone" : "Dead");
+                string status = member.IsAlive ? Loc.Get("team.status_alive") : (member.IsPermaDead ? Loc.Get("team.status_gone") : Loc.Get("team.status_dead_label"));
                 terminal.WriteLine($"{member.DisplayName,-20} {member.Class,-12} {member.Level,-5} {hpDisplay,-12} {location,-15} {status,-8}");
             }
 
             terminal.WriteLine("");
             terminal.SetColor("cyan");
             int totalCount = teamMembers.Count + playerMembers.Count;
-            terminal.WriteLine($"Total: {totalCount} members ({playerMembers.Count} players, {teamMembers.Count} NPCs)");
+            terminal.WriteLine(Loc.Get("team.total_members", totalCount, playerMembers.Count, teamMembers.Count));
         }
         else
         {
@@ -653,7 +653,7 @@ public class TeamCornerLocation : BaseLocation
             foreach (var pm in playerMembers)
             {
                 string className = pm.ClassId >= 0 ? ((CharacterClass)pm.ClassId).ToString() : "?";
-                string onlineTag = pm.IsOnline ? " [ONLINE]" : "";
+                string onlineTag = pm.IsOnline ? Loc.Get("team.online_tag") : "";
                 terminal.SetColor("bright_cyan");
                 terminal.WriteLine($"  {pm.DisplayName} - Level {pm.Level} {className}{onlineTag}");
             }
@@ -661,7 +661,7 @@ public class TeamCornerLocation : BaseLocation
             // Show NPC members
             foreach (var member in teamMembers)
             {
-                string status = member.IsAlive ? "" : " (Dead)";
+                string status = member.IsAlive ? "" : Loc.Get("team.member_dead_tag");
                 terminal.SetColor("white");
                 terminal.WriteLine($"  {member.DisplayName} - Level {member.Level} {member.Class}{status}");
             }
@@ -686,8 +686,8 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"You are already a member of {currentPlayer.Team}!");
-            terminal.WriteLine("You must quit your current team first.");
+            terminal.WriteLine(Loc.Get("team.already_in_team", currentPlayer.Team));
+            terminal.WriteLine(Loc.Get("team.quit_current_first"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -699,8 +699,8 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"Creating a gang costs {creationCost:N0} gold!");
-            terminal.WriteLine($"You only have {currentPlayer.Gold:N0} gold.");
+            terminal.WriteLine(Loc.Get("team.creation_cost", $"{creationCost:N0}"));
+            terminal.WriteLine(Loc.Get("team.you_only_have", $"{currentPlayer.Gold:N0}"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -708,20 +708,20 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Creating a new gang...");
+        terminal.WriteLine(Loc.Get("team.creating_gang"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Registration fee: {creationCost:N0} gold");
+        terminal.WriteLine(Loc.Get("team.registration_fee", $"{creationCost:N0}"));
         terminal.WriteLine("");
 
         // Get team name
         terminal.SetColor("white");
-        terminal.Write("Enter gang name (max 40 chars): ");
+        terminal.Write(Loc.Get("team.enter_gang_name"));
         string teamName = await terminal.ReadLineAsync();
 
         if (string.IsNullOrEmpty(teamName) || teamName.Length > 40)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid team name!");
+            terminal.WriteLine(Loc.Get("team.invalid_team_name"));
             await Task.Delay(2000);
             return;
         }
@@ -731,7 +731,7 @@ public class TeamCornerLocation : BaseLocation
         if (allNPCs.Any(n => n.Team == teamName))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("A team with that name already exists!");
+            terminal.WriteLine(Loc.Get("team.team_name_exists"));
             await Task.Delay(2000);
             return;
         }
@@ -743,20 +743,20 @@ public class TeamCornerLocation : BaseLocation
             if (backend != null && backend.IsTeamNameTaken(teamName))
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("A player team with that name already exists!");
+                terminal.WriteLine(Loc.Get("team.player_team_exists"));
                 await Task.Delay(2000);
                 return;
             }
         }
 
         // Get password
-        terminal.Write("Enter gang password (max 20 chars): ");
+        terminal.Write(Loc.Get("team.enter_gang_password"));
         string password = await terminal.ReadLineAsync();
 
         if (string.IsNullOrEmpty(password) || password.Length > 20)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid password!");
+            terminal.WriteLine(Loc.Get("team.invalid_password"));
             await Task.Delay(2000);
             return;
         }
@@ -787,10 +787,10 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Gang '{teamName}' created successfully!");
-        terminal.WriteLine($"You are now the leader of {teamName}!");
+        terminal.WriteLine(Loc.Get("team.gang_created", teamName));
+        terminal.WriteLine(Loc.Get("team.now_leader", teamName));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Paid {creationCost:N0} gold in registration fees.");
+        terminal.WriteLine(Loc.Get("team.paid_registration", $"{creationCost:N0}"));
         terminal.WriteLine("");
 
         // Generate news
@@ -800,7 +800,7 @@ public class TeamCornerLocation : BaseLocation
                 $"{currentPlayer.DisplayName} formed a new team: '{teamName}'!", "team");
 
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -813,7 +813,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"You are already a member of {currentPlayer.Team}!");
+            terminal.WriteLine(Loc.Get("team.already_in_team", currentPlayer.Team));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -821,7 +821,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Which gang would you like to join? ");
+        terminal.Write(Loc.Get("team.which_gang_join"));
         terminal.SetColor("white");
         string teamName = await terminal.ReadLineAsync();
 
@@ -835,7 +835,7 @@ public class TeamCornerLocation : BaseLocation
             if (backend != null)
             {
                 terminal.SetColor("cyan");
-                terminal.Write("Enter password: ");
+                terminal.Write(Loc.Get("team.enter_password"));
                 terminal.SetColor("white");
                 string password = await terminal.ReadLineAsync();
 
@@ -851,7 +851,7 @@ public class TeamCornerLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"Correct! You are now a member of {teamName}!");
+                    terminal.WriteLine(Loc.Get("team.joined_team", teamName));
                     terminal.WriteLine("");
 
                     NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} joined the team '{teamName}'!");
@@ -860,7 +860,7 @@ public class TeamCornerLocation : BaseLocation
                             $"{currentPlayer.DisplayName} joined the team '{teamName}'!", "team");
 
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine("Press Enter to continue...");
+                    terminal.WriteLine(Loc.Get("ui.press_enter"));
                     await terminal.ReadKeyAsync();
                     return;
                 }
@@ -868,7 +868,7 @@ public class TeamCornerLocation : BaseLocation
                 {
                     terminal.WriteLine("");
                     terminal.SetColor("red");
-                    terminal.WriteLine("Wrong password! Access denied.");
+                    terminal.WriteLine(Loc.Get("team.wrong_password"));
                     terminal.WriteLine("");
                     await Task.Delay(2000);
                     return;
@@ -884,13 +884,13 @@ public class TeamCornerLocation : BaseLocation
         if (teamMember == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No active team found with that name!");
+            terminal.WriteLine(Loc.Get("team.no_active_team"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Enter password: ");
+        terminal.Write(Loc.Get("team.enter_password"));
         terminal.SetColor("white");
         string npcPassword = await terminal.ReadLineAsync();
 
@@ -904,7 +904,7 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Correct! You are now a member of {teamName}!");
+            terminal.WriteLine(Loc.Get("team.joined_team", teamName));
             terminal.WriteLine("");
 
             NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} joined the team '{teamName}'!");
@@ -913,14 +913,14 @@ public class TeamCornerLocation : BaseLocation
                     $"{currentPlayer.DisplayName} joined the team '{teamName}'!", "team");
 
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
         }
         else
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("Wrong password! Access denied.");
+            terminal.WriteLine(Loc.Get("team.wrong_password"));
             terminal.WriteLine("");
             await Task.Delay(2000);
         }
@@ -935,7 +935,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team!");
+            terminal.WriteLine(Loc.Get("team.not_in_team_excl"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -943,7 +943,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.Write($"Really quit {currentPlayer.Team}? (Y/N): ");
+        terminal.Write(Loc.Get("team.confirm_quit", currentPlayer.Team));
         string response = await terminal.ReadLineAsync();
 
         if (response?.ToUpper().StartsWith("Y") == true)
@@ -968,7 +968,7 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("You have left the team!");
+            terminal.WriteLine(Loc.Get("team.left_team"));
             terminal.WriteLine("");
 
             NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} left the team '{oldTeam}'!");
@@ -977,7 +977,7 @@ public class TeamCornerLocation : BaseLocation
                     $"{currentPlayer.DisplayName} left the team '{oldTeam}'!", "team");
 
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
         }
     }
@@ -991,8 +991,8 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You must be in a team to recruit members!");
-            terminal.WriteLine("Create a team first with the (C)reate team option.");
+            terminal.WriteLine(Loc.Get("team.must_be_in_team_recruit"));
+            terminal.WriteLine(Loc.Get("team.create_first_hint"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1006,19 +1006,19 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"Your team is full! (Max {MaxTeamSize} members)");
+            terminal.WriteLine(Loc.Get("team.team_full", MaxTeamSize));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("NPC RECRUITMENT", "bright_magenta");
+        WriteBoxHeader(Loc.Get("team_corner.npc_recruit_header"), "bright_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Team: {currentPlayer.Team}");
-        terminal.WriteLine($"Current Size: {currentTeamSize}/{MaxTeamSize}");
+        terminal.WriteLine(Loc.Get("team.team_label", currentPlayer.Team));
+        terminal.WriteLine(Loc.Get("team.current_size", currentTeamSize, MaxTeamSize));
         terminal.WriteLine("");
 
         // Find NPCs that are not in any team and are in town locations
@@ -1034,19 +1034,19 @@ public class TeamCornerLocation : BaseLocation
         if (availableNPCs.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("No NPCs available for recruitment right now.");
-            terminal.WriteLine("Try again later - NPCs move around the world!");
+            terminal.WriteLine(Loc.Get("team.no_npcs_available"));
+            terminal.WriteLine(Loc.Get("team.try_again_later"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Available Recruits:");
+        terminal.WriteLine(Loc.Get("team.available_recruits"));
         terminal.SetColor("white");
-        terminal.WriteLine($"{"#",-3} {"Name",-18} {"Class",-12} {"Lvl",-5} {"Cost",-12} {"Wage/Day",-10}");
+        terminal.WriteLine($"{Loc.Get("team.col_num"),-3} {Loc.Get("team.col_name"),-18} {Loc.Get("team.col_class"),-12} {Loc.Get("team.col_level"),-5} {Loc.Get("team.col_cost"),-12} {Loc.Get("team.col_wage"),-10}");
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
@@ -1065,10 +1065,10 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("team.your_gold", $"{currentPlayer.Gold:N0}"));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Enter number to recruit (0 to cancel): ");
+        terminal.Write(Loc.Get("team.enter_number_recruit"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1081,8 +1081,8 @@ public class TeamCornerLocation : BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("red");
-                terminal.WriteLine($"You don't have enough gold to recruit {recruit.DisplayName}!");
-                terminal.WriteLine($"You need {cost:N0} gold, but only have {currentPlayer.Gold:N0}.");
+                terminal.WriteLine(Loc.Get("ui.not_enough_gold_recruit", recruit.DisplayName));
+                terminal.WriteLine(Loc.Get("team.need_gold_recruit", $"{cost:N0}", $"{currentPlayer.Gold:N0}"));
             }
             else
             {
@@ -1094,14 +1094,14 @@ public class TeamCornerLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{recruit.DisplayName} has joined your team!");
-                terminal.WriteLine($"You paid {cost:N0} gold for recruitment.");
+                terminal.WriteLine(Loc.Get("team.npc_joined", recruit.DisplayName));
+                terminal.WriteLine(Loc.Get("team.paid_recruitment", $"{cost:N0}"));
                 long wage = recruit.Level * GameConfig.NpcDailyWagePerLevel;
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Daily wage: {wage:N0} gold/day (deducted automatically)");
+                terminal.WriteLine(Loc.Get("team.daily_wage", $"{wage:N0}"));
                 terminal.WriteLine("");
                 terminal.SetColor("bright_cyan");
-                terminal.WriteLine($"\"{recruit.DisplayName} says: 'I'll fight alongside you, boss!'\"");
+                terminal.WriteLine(Loc.Get("team.recruit_quote", recruit.DisplayName));
 
                 NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} recruited {recruit.DisplayName} into team '{currentPlayer.Team}'!");
             }
@@ -1109,12 +1109,12 @@ public class TeamCornerLocation : BaseLocation
         else if (choice != 0 && !string.IsNullOrEmpty(input))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid choice.");
+            terminal.WriteLine(Loc.Get("team.invalid_choice_generic"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -1144,7 +1144,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1152,7 +1152,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Examine which team member? (enter ? to see your team)");
+        terminal.WriteLine(Loc.Get("team.examine_prompt"));
         terminal.Write(": ");
         terminal.SetColor("white");
         string memberName = await terminal.ReadLineAsync();
@@ -1161,7 +1161,7 @@ public class TeamCornerLocation : BaseLocation
         {
             await ShowTeamMembers(currentPlayer.Team, true);
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -1175,7 +1175,7 @@ public class TeamCornerLocation : BaseLocation
         if (member == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"No team member named '{memberName}' found.");
+            terminal.WriteLine(Loc.Get("team.member_not_found", memberName));
             await Task.Delay(2000);
             return;
         }
@@ -1186,38 +1186,38 @@ public class TeamCornerLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Class: {member.Class}");
-        terminal.WriteLine($"Race: {member.Race}");
-        terminal.WriteLine($"Level: {member.Level}");
+        terminal.WriteLine($"{Loc.Get("status.class")}: {member.Class}");
+        terminal.WriteLine($"{Loc.Get("status.race")}: {member.Race}");
+        terminal.WriteLine($"{Loc.Get("ui.level")}: {member.Level}");
 
         if (member.IsAlive)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Status: Alive");
+            terminal.WriteLine(Loc.Get("team.status_label_alive"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Status: Dead");
+            terminal.WriteLine(Loc.Get("team.status_label_dead"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"HP: {member.HP}/{member.MaxHP}");
-        terminal.WriteLine($"Mana: {member.Mana}/{member.MaxMana}");
-        terminal.WriteLine($"Gold: {member.Gold:N0}");
+        terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {member.HP}/{member.MaxHP}");
+        terminal.WriteLine($"{Loc.Get("ui.mana_label")}: {member.Mana}/{member.MaxMana}");
+        terminal.WriteLine($"{Loc.Get("ui.gold")}: {member.Gold:N0}");
         terminal.WriteLine("");
 
-        terminal.WriteLine($"Strength: {member.Strength,-6} Defence: {member.Defence,-6}");
-        terminal.WriteLine($"Agility:  {member.Agility,-6} Stamina: {member.Stamina,-6}");
-        terminal.WriteLine($"Weapon Power: {member.WeapPow,-6} Armor Power: {member.ArmPow,-6}");
+        terminal.WriteLine($"  STR: {member.Strength}  DEX: {member.Dexterity}  AGI: {member.Agility}  CON: {member.Constitution}");
+        terminal.WriteLine($"  INT: {member.Intelligence}  WIS: {member.Wisdom}  CHA: {member.Charisma}  DEF: {member.Defence}");
+        terminal.WriteLine($"  STA: {member.Stamina}  WeapPow: {member.WeapPow}  ArmPow: {member.ArmPow}");
         terminal.WriteLine("");
 
-        terminal.WriteLine($"Location: {member.CurrentLocation ?? "Unknown"}");
+        terminal.WriteLine($"{Loc.Get("ui.location")}: {member.CurrentLocation ?? "Unknown"}");
         terminal.WriteLine("");
 
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -1230,7 +1230,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1238,7 +1238,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Enter current password: ");
+        terminal.Write(Loc.Get("team.enter_current_password"));
         terminal.SetColor("white");
         string currentPassword = await terminal.ReadLineAsync();
 
@@ -1246,14 +1246,14 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("Wrong password!");
+            terminal.WriteLine(Loc.Get("team.wrong_password_short"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Enter new password: ");
+        terminal.Write(Loc.Get("team.enter_new_password"));
         terminal.SetColor("white");
         string newPassword = await terminal.ReadLineAsync();
 
@@ -1271,13 +1271,13 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Password changed successfully!");
+            terminal.WriteLine(Loc.Get("team.password_changed"));
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid password!");
+            terminal.WriteLine(Loc.Get("team.invalid_password"));
         }
 
         await Task.Delay(2000);
@@ -1292,7 +1292,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1300,7 +1300,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Message to team members:");
+        terminal.WriteLine(Loc.Get("team.message_prompt"));
         terminal.Write(": ");
         terminal.SetColor("white");
         string message = await terminal.ReadLineAsync();
@@ -1309,9 +1309,9 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Message sent to team!");
+            terminal.WriteLine(Loc.Get("team.message_sent"));
             terminal.SetColor("white");
-            terminal.WriteLine($"Your message: \"{message}\"");
+            terminal.WriteLine(Loc.Get("team.your_message", message));
             terminal.WriteLine("");
 
             // Could integrate with mail system here
@@ -1329,7 +1329,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1337,7 +1337,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Who must be SACKED? (enter ? to see your team)");
+        terminal.WriteLine(Loc.Get("team.sack_prompt"));
         terminal.Write(": ");
         terminal.SetColor("white");
         string memberName = await terminal.ReadLineAsync();
@@ -1346,7 +1346,7 @@ public class TeamCornerLocation : BaseLocation
         {
             await ShowTeamMembers(currentPlayer.Team, true);
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -1361,13 +1361,13 @@ public class TeamCornerLocation : BaseLocation
             if (member == null)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"No team member named '{memberName}' found.");
+                terminal.WriteLine(Loc.Get("team.member_not_found", memberName));
                 await Task.Delay(2000);
                 return;
             }
 
             terminal.SetColor("yellow");
-            terminal.Write($"Really sack {member.DisplayName}? (Y/N): ");
+            terminal.Write(Loc.Get("team.confirm_sack", member.DisplayName));
             string response = await terminal.ReadLineAsync();
 
             if (response?.ToUpper().StartsWith("Y") == true)
@@ -1378,13 +1378,13 @@ public class TeamCornerLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{member.DisplayName} has been sacked from the team!");
+                terminal.WriteLine(Loc.Get("team.member_sacked", member.DisplayName));
                 terminal.WriteLine("");
 
                 NewsSystem.Instance.Newsy(true, $"{member.DisplayName} was kicked out of team '{currentPlayer.Team}'!");
 
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("Press Enter to continue...");
+                terminal.WriteLine(Loc.Get("ui.press_enter"));
                 await terminal.ReadKeyAsync();
             }
         }
@@ -1399,7 +1399,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1422,18 +1422,18 @@ public class TeamCornerLocation : BaseLocation
             if (permadeadMembers.Count > 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("No team members can be resurrected.");
+                terminal.WriteLine(Loc.Get("team.no_resurrectables"));
                 terminal.SetColor("darkgray");
                 foreach (var pd in permadeadMembers)
                 {
-                    string reason = pd.IsAgedDeath ? "died of old age" : "permanently slain";
+                    string reason = pd.IsAgedDeath ? Loc.Get("team.permadead_reason_age") : Loc.Get("team.permadead_reason_slain");
                     terminal.WriteLine($"  {pd.DisplayName} — {reason}");
                 }
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("All your team members are alive!");
+                terminal.WriteLine(Loc.Get("team.all_alive"));
             }
             terminal.WriteLine("");
             await Task.Delay(2000);
@@ -1442,7 +1442,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Dead Team Members:");
+        terminal.WriteLine(Loc.Get("team.dead_members_header"));
         for (int i = 0; i < deadMembers.Count; i++)
         {
             var dead = deadMembers[i];
@@ -1453,7 +1453,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Enter number to resurrect (0 to cancel): ");
+        terminal.Write(Loc.Get("team.enter_number_resurrect"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1465,7 +1465,7 @@ public class TeamCornerLocation : BaseLocation
             if (currentPlayer.Gold < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You need {cost:N0} gold to resurrect {toResurrect.DisplayName}!");
+                terminal.WriteLine(Loc.Get("team.need_gold_resurrect", $"{cost:N0}", toResurrect.DisplayName));
             }
             else
             {
@@ -1475,8 +1475,8 @@ public class TeamCornerLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{toResurrect.DisplayName} has been resurrected!");
-                terminal.WriteLine($"Cost: {cost:N0} gold");
+                terminal.WriteLine(Loc.Get("team.member_resurrected", toResurrect.DisplayName));
+                terminal.WriteLine(Loc.Get("team.resurrect_cost", $"{cost:N0}"));
 
                 NewsSystem.Instance.Newsy(true, $"{toResurrect.DisplayName} was resurrected by their team '{currentPlayer.Team}'!");
             }
@@ -1484,7 +1484,7 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -1498,8 +1498,8 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You must be in a team to recruit player allies!");
-            terminal.WriteLine("Create or join a team first.");
+            terminal.WriteLine(Loc.Get("team.must_be_in_team_allies"));
+            terminal.WriteLine(Loc.Get("team.create_join_first"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1515,25 +1515,25 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("No other players found on your team.");
-            terminal.WriteLine("Recruit other players to join your team first!");
+            terminal.WriteLine(Loc.Get("team.no_other_players"));
+            terminal.WriteLine(Loc.Get("team.recruit_players_first"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("RECRUIT PLAYER ALLY", "bright_magenta");
+        WriteBoxHeader(Loc.Get("team_corner.player_recruit_header"), "bright_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Team: {currentPlayer.Team}");
+        terminal.WriteLine(Loc.Get("team.team_label", currentPlayer.Team));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Available Player Allies:");
+        terminal.WriteLine(Loc.Get("team.available_player_allies"));
         terminal.SetColor("white");
-        terminal.WriteLine($"{"#",-3} {"Name",-18} {"Class",-12} {"Level",-6} {"Status",-10}");
+        terminal.WriteLine($"{Loc.Get("team.col_num"),-3} {Loc.Get("team.col_name"),-18} {Loc.Get("team.col_class"),-12} {Loc.Get("team.col_level_full"),-6} {Loc.Get("team.col_status"),-10}");
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
@@ -1545,17 +1545,17 @@ public class TeamCornerLocation : BaseLocation
         {
             var tm = teammates[i];
             string className = tm.ClassId >= 0 ? ((CharacterClass)tm.ClassId).ToString() : "Unknown";
-            string status = tm.IsOnline ? "Online" : "Offline";
+            string status = tm.IsOnline ? Loc.Get("team.status_online") : Loc.Get("team.status_offline");
             terminal.WriteLine($"{i + 1,-3} {tm.DisplayName,-18} {className,-12} {tm.Level,-6} {status,-10}");
         }
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("Their echo fights alongside you in the dungeon.");
+        terminal.WriteLine(Loc.Get("team.echo_description"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("Select ally (0 to cancel): ");
+        terminal.Write(Loc.Get("team.select_ally"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1568,7 +1568,7 @@ public class TeamCornerLocation : BaseLocation
             if (partyNames.Contains(selected.DisplayName, StringComparer.OrdinalIgnoreCase))
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"{selected.DisplayName}'s echo is already in your party!");
+                terminal.WriteLine(Loc.Get("team.echo_already_in_party", selected.DisplayName));
                 await Task.Delay(2000);
                 return;
             }
@@ -1579,14 +1579,14 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"{selected.DisplayName}'s echo will join your next dungeon run!");
+            terminal.WriteLine(Loc.Get("team.echo_will_join", selected.DisplayName));
             terminal.SetColor("gray");
-            terminal.WriteLine("They'll fight as AI-controlled allies with their real stats.");
+            terminal.WriteLine(Loc.Get("team.echo_ai_note"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -1603,7 +1603,7 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You don't belong to a team.");
+            terminal.WriteLine(Loc.Get("team.not_in_team"));
             terminal.WriteLine("");
             await Task.Delay(2000);
             return;
@@ -1619,18 +1619,18 @@ public class TeamCornerLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your team has no living NPC members to equip.");
+            terminal.WriteLine(Loc.Get("team.no_living_members"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("EQUIP TEAM MEMBER", "bright_cyan");
+        WriteBoxHeader(Loc.Get("team_corner.equip_header"), "bright_cyan");
         terminal.WriteLine("");
 
         // List team members
         terminal.SetColor("white");
-        terminal.WriteLine("Team Members:");
+        terminal.WriteLine(Loc.Get("team.team_members_label"));
         terminal.WriteLine("");
 
         for (int i = 0; i < teamMembers.Count; i++)
@@ -1646,14 +1646,14 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select member to equip (0 to cancel): ");
+        terminal.Write(Loc.Get("team.select_member_equip"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int memberIdx) || memberIdx < 1 || memberIdx > teamMembers.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -1674,47 +1674,47 @@ public class TeamCornerLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteSectionHeader($"EQUIPMENT: {target.DisplayName.ToUpper()}", "bright_cyan");
+            WriteSectionHeader(Loc.Get("team.equip_header_label", target.DisplayName.ToUpper()), "bright_cyan");
             terminal.WriteLine("");
 
             // Show target's stats
             terminal.SetColor("white");
-            terminal.WriteLine($"  Level: {target.Level}  Class: {target.Class}  Race: {target.Race}");
-            terminal.WriteLine($"  HP: {target.HP}/{target.MaxHP}  Mana: {target.Mana}/{target.MaxMana}");
-            terminal.WriteLine($"  STR: {target.Strength}  DEX: {target.Dexterity}  AGI: {target.Agility}  CON: {target.Constitution}");
-            terminal.WriteLine($"  INT: {target.Intelligence}  WIS: {target.Wisdom}  CHA: {target.Charisma}  DEF: {target.Defence}");
+            terminal.WriteLine(Loc.Get("team.examine_level", target.Level, target.Class, target.Race));
+            terminal.WriteLine(Loc.Get("team.examine_hp", target.HP, target.MaxHP, target.Mana, target.MaxMana));
+            terminal.WriteLine(Loc.Get("team.examine_stats1", target.Strength, target.Dexterity, target.Agility, target.Constitution));
+            terminal.WriteLine(Loc.Get("team.examine_stats2", target.Intelligence, target.Wisdom, target.Charisma, target.Defence));
             terminal.WriteLine("");
 
             // Show current equipment
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Current Equipment:");
+            terminal.WriteLine(Loc.Get("team.current_equipment"));
             terminal.SetColor("white");
 
-            DisplayEquipmentSlot(target, EquipmentSlot.MainHand, "Main Hand");
-            DisplayEquipmentSlot(target, EquipmentSlot.OffHand, "Off Hand");
-            DisplayEquipmentSlot(target, EquipmentSlot.Head, "Head");
-            DisplayEquipmentSlot(target, EquipmentSlot.Body, "Body");
-            DisplayEquipmentSlot(target, EquipmentSlot.Arms, "Arms");
-            DisplayEquipmentSlot(target, EquipmentSlot.Hands, "Hands");
-            DisplayEquipmentSlot(target, EquipmentSlot.Legs, "Legs");
-            DisplayEquipmentSlot(target, EquipmentSlot.Feet, "Feet");
-            DisplayEquipmentSlot(target, EquipmentSlot.Cloak, "Cloak");
-            DisplayEquipmentSlot(target, EquipmentSlot.Neck, "Neck");
-            DisplayEquipmentSlot(target, EquipmentSlot.LFinger, "Left Ring");
-            DisplayEquipmentSlot(target, EquipmentSlot.RFinger, "Right Ring");
+            DisplayEquipmentSlot(target, EquipmentSlot.MainHand, Loc.Get("team.slot_main_hand"));
+            DisplayEquipmentSlot(target, EquipmentSlot.OffHand, Loc.Get("team.slot_off_hand"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Head, Loc.Get("team.slot_head"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Body, Loc.Get("team.slot_body"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Arms, Loc.Get("team.slot_arms"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Hands, Loc.Get("team.slot_hands"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Legs, Loc.Get("team.slot_legs"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Feet, Loc.Get("team.slot_feet"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Cloak, Loc.Get("team.slot_cloak"));
+            DisplayEquipmentSlot(target, EquipmentSlot.Neck, Loc.Get("team.slot_neck"));
+            DisplayEquipmentSlot(target, EquipmentSlot.LFinger, Loc.Get("team.slot_left_ring"));
+            DisplayEquipmentSlot(target, EquipmentSlot.RFinger, Loc.Get("team.slot_right_ring"));
             terminal.WriteLine("");
 
             // Show options
             terminal.SetColor("cyan");
-            terminal.WriteLine("Options:");
-            WriteSRMenuOption("E", "Equip item from your inventory");
-            WriteSRMenuOption("U", "Unequip item from them");
-            WriteSRMenuOption("T", "Take all their equipment");
-            WriteSRMenuOption("Q", "Done / Return");
+            terminal.WriteLine(Loc.Get("team.options_label"));
+            WriteSRMenuOption("E", Loc.Get("team_corner.equip_item"));
+            WriteSRMenuOption("U", Loc.Get("team_corner.unequip_item"));
+            WriteSRMenuOption("T", Loc.Get("team_corner.take_all"));
+            WriteSRMenuOption("Q", Loc.Get("team_corner.done"));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Choice: ");
+            terminal.Write(Loc.Get("ui.choice"));
             terminal.SetColor("white");
 
             var choice = (await terminal.ReadLineAsync()).ToUpper().Trim();
@@ -1759,12 +1759,12 @@ public class TeamCornerLocation : BaseLocation
                 if (mainHand?.Handedness == WeaponHandedness.TwoHanded)
                 {
                     terminal.SetColor("darkgray");
-                    terminal.WriteLine("(using 2H weapon)");
+                    terminal.WriteLine(Loc.Get("team.offhand_2h"));
                     return;
                 }
             }
             terminal.SetColor("darkgray");
-            terminal.WriteLine("(empty)");
+            terminal.WriteLine(Loc.Get("team.offhand_empty"));
         }
     }
 
@@ -1774,7 +1774,7 @@ public class TeamCornerLocation : BaseLocation
     private async Task EquipItemToCharacter(Character target)
     {
         terminal.ClearScreen();
-        WriteSectionHeader($"EQUIP ITEM TO {target.DisplayName.ToUpper()}", "bright_cyan");
+        WriteSectionHeader(Loc.Get("team.equip_to_header", target.DisplayName.ToUpper()), "bright_cyan");
         terminal.WriteLine("");
 
         // Collect equippable items from player's inventory and equipped items
@@ -1802,14 +1802,14 @@ public class TeamCornerLocation : BaseLocation
         if (equipmentItems.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no equipment to give.");
+            terminal.WriteLine(Loc.Get("ui.no_equipment_to_give"));
             await Task.Delay(2000);
             return;
         }
 
         // Display available items
         terminal.SetColor("white");
-        terminal.WriteLine("Available equipment:");
+        terminal.WriteLine(Loc.Get("team.available_equipment"));
         terminal.WriteLine("");
 
         for (int i = 0; i < equipmentItems.Count; i++)
@@ -1848,14 +1848,14 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select item (0 to cancel): ");
+        terminal.Write(Loc.Get("team.select_item"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int itemIdx) || itemIdx < 1 || itemIdx > equipmentItems.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -1866,7 +1866,7 @@ public class TeamCornerLocation : BaseLocation
         if (!selectedItem.CanEquip(target, out string equipReason))
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"{target.DisplayName} cannot use this item: {equipReason}");
+            terminal.WriteLine(Loc.Get("team.cannot_use_item", target.DisplayName, equipReason));
             await Task.Delay(2000);
             return;
         }
@@ -1880,20 +1880,20 @@ public class TeamCornerLocation : BaseLocation
             if (IsScreenReader)
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine("Which hand? M for Main hand, O for Off hand.");
+                terminal.WriteLine(Loc.Get("team.which_hand_sr"));
             }
             else
             {
                 terminal.SetColor("cyan");
-                terminal.Write("Which hand? [");
+                terminal.Write(Loc.Get("team.which_hand_visual"));
                 terminal.SetColor("bright_yellow");
                 terminal.Write("M");
                 terminal.SetColor("cyan");
-                terminal.Write("]ain hand or [");
+                terminal.Write(Loc.Get("team.which_hand_main"));
                 terminal.SetColor("bright_yellow");
                 terminal.Write("O");
                 terminal.SetColor("cyan");
-                terminal.WriteLine("]ff hand?");
+                terminal.WriteLine(Loc.Get("team.which_hand_off"));
             }
             terminal.Write(": ");
             terminal.SetColor("white");
@@ -1942,7 +1942,7 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{target.DisplayName} equipped {selectedItem.Name}!");
+            terminal.WriteLine(Loc.Get("team.equipped_success", target.DisplayName, selectedItem.Name));
             if (!string.IsNullOrEmpty(message))
             {
                 terminal.SetColor("yellow");
@@ -1955,7 +1955,7 @@ public class TeamCornerLocation : BaseLocation
             var legacyItem = ConvertEquipmentToItem(selectedItem);
             currentPlayer.Inventory.Add(legacyItem);
             terminal.SetColor("red");
-            terminal.WriteLine($"Failed to equip: {message}");
+            terminal.WriteLine(Loc.Get("team.equip_failed", message));
         }
 
         await Task.Delay(2000);
@@ -1967,7 +1967,7 @@ public class TeamCornerLocation : BaseLocation
     private async Task UnequipItemFromCharacter(Character target)
     {
         terminal.ClearScreen();
-        WriteSectionHeader($"UNEQUIP FROM {target.DisplayName.ToUpper()}", "bright_cyan");
+        WriteSectionHeader(Loc.Get("team.unequip_header", target.DisplayName.ToUpper()), "bright_cyan");
         terminal.WriteLine("");
 
         // Get all equipped slots
@@ -1985,13 +1985,13 @@ public class TeamCornerLocation : BaseLocation
         if (equippedSlots.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{target.DisplayName} has no equipment to unequip.");
+            terminal.WriteLine(Loc.Get("team.no_equipment_unequip", target.DisplayName));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("Equipped items:");
+        terminal.WriteLine(Loc.Get("team.equipped_items"));
         terminal.WriteLine("");
 
         for (int i = 0; i < equippedSlots.Count; i++)
@@ -2013,14 +2013,14 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Select slot to unequip (0 to cancel): ");
+        terminal.Write(Loc.Get("team.select_slot_unequip"));
         terminal.SetColor("white");
 
         var input = await terminal.ReadLineAsync();
         if (!int.TryParse(input, out int slotIdx) || slotIdx < 1 || slotIdx > equippedSlots.Count)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -2031,7 +2031,7 @@ public class TeamCornerLocation : BaseLocation
         if (selectedItem.IsCursed)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"The {selectedItem.Name} is cursed and cannot be removed!");
+            terminal.WriteLine(Loc.Get("team.cursed_cannot_remove", selectedItem.Name));
             await Task.Delay(2000);
             return;
         }
@@ -2046,14 +2046,14 @@ public class TeamCornerLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Took {unequipped.Name} from {target.DisplayName}.");
+            terminal.WriteLine(Loc.Get("team.took_item", unequipped.Name, target.DisplayName));
             terminal.SetColor("gray");
-            terminal.WriteLine("Item added to your inventory.");
+            terminal.WriteLine(Loc.Get("team.item_added_inventory"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Failed to unequip item.");
+            terminal.WriteLine(Loc.Get("team.unequip_failed"));
         }
 
         await Task.Delay(2000);
@@ -2066,15 +2066,15 @@ public class TeamCornerLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Take ALL equipment from {target.DisplayName}?");
-        terminal.Write("This will leave them with nothing. Confirm (Y/N): ");
+        terminal.WriteLine(Loc.Get("team.take_all_confirm", target.DisplayName));
+        terminal.Write(Loc.Get("team.take_all_warning"));
         terminal.SetColor("white");
 
         var confirm = await terminal.ReadLineAsync();
         if (!confirm.ToUpper().StartsWith("Y"))
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Cancelled.");
+            terminal.WriteLine(Loc.Get("ui.cancelled"));
             await Task.Delay(1000);
             return;
         }
@@ -2110,18 +2110,18 @@ public class TeamCornerLocation : BaseLocation
         if (itemsTaken > 0)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Took {itemsTaken} item{(itemsTaken != 1 ? "s" : "")} from {target.DisplayName}.");
+            terminal.WriteLine(Loc.Get("team.took_items_count", itemsTaken, target.DisplayName));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{target.DisplayName} had no equipment to take.");
+            terminal.WriteLine(Loc.Get("team.no_equipment_take", target.DisplayName));
         }
 
         if (cursedItems.Count > 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Could not remove cursed items: {string.Join(", ", cursedItems)}");
+            terminal.WriteLine(Loc.Get("team.cursed_not_removed", string.Join(", ", cursedItems)));
         }
 
         await Task.Delay(2000);
@@ -2189,7 +2189,7 @@ public class TeamCornerLocation : BaseLocation
         if (string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  You must be in a team to wage war!");
+            terminal.WriteLine($"\n  {Loc.Get("team.war_must_be_in_team")}");
             await Task.Delay(2000);
             return;
         }
@@ -2197,16 +2197,16 @@ public class TeamCornerLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("TEAM WARS", "bright_red");
+            WriteBoxHeader(Loc.Get("team_corner.wars_header"), "bright_red");
             terminal.SetColor("white");
-            terminal.WriteLine($"  Your Team: {currentPlayer.Team}");
+            terminal.WriteLine(Loc.Get("team.your_team_war_label", currentPlayer.Team));
             terminal.WriteLine("");
 
-            WriteSRMenuOption("C", "Challenge a Team");
-            WriteSRMenuOption("H", "War History");
-            WriteSRMenuOption("Q", "Back");
+            WriteSRMenuOption("C", Loc.Get("team_corner.challenge"));
+            WriteSRMenuOption("H", Loc.Get("team_corner.war_history"));
+            WriteSRMenuOption("Q", Loc.Get("ui.cancel"));
             terminal.SetColor("white");
-            terminal.Write("\n  Choice: ");
+            terminal.Write(Loc.Get("team.choice_label"));
             string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
             if (input == "Q" || input == "") break;
@@ -2222,7 +2222,7 @@ public class TeamCornerLocation : BaseLocation
         if (backend.HasActiveTeamWar(myTeam))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  Your team already has an active war!");
+            terminal.WriteLine($"\n  {Loc.Get("team.active_war_exists")}");
             await Task.Delay(2000);
             return;
         }
@@ -2233,15 +2233,15 @@ public class TeamCornerLocation : BaseLocation
         if (opponents.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  No other teams to challenge.");
+            terminal.WriteLine($"\n  {Loc.Get("team.no_other_teams")}");
             await Task.Delay(2000);
             return;
         }
 
         terminal.WriteLine("");
-        WriteSectionHeader("CHOOSE OPPONENT TEAM", "bright_yellow");
+        WriteSectionHeader(Loc.Get("team_corner.choose_opponent"), "bright_yellow");
         terminal.SetColor("darkgray");
-        terminal.WriteLine($"  {"#",-4} {"Team",-25} {"Members",-10}");
+        terminal.WriteLine($"  {Loc.Get("team.col_num"),-4} {Loc.Get("team.col_team"),-25} {Loc.Get("team.col_members"),-10}");
         if (!IsScreenReader)
             terminal.WriteLine("  " + new string('─', 40));
 
@@ -2256,7 +2256,7 @@ public class TeamCornerLocation : BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.Write("\n  Challenge team #: ");
+        terminal.Write(Loc.Get("team.challenge_team_num"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > opponents.Count) return;
 
@@ -2264,15 +2264,15 @@ public class TeamCornerLocation : BaseLocation
         long wager = Math.Max(1000, currentPlayer.Level * 200);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\n  War wager: {wager:N0} gold (winner takes all)");
-        terminal.Write("  Confirm war against " + enemyTeam.TeamName + "? (Y/N): ");
+        terminal.WriteLine(Loc.Get("team.war_wager", $"{wager:N0}"));
+        terminal.Write(Loc.Get("team.confirm_war", enemyTeam.TeamName));
         string confirm = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
         if (confirm != "Y") return;
 
         if (currentPlayer.Gold < wager)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Not enough gold for the war wager!");
+            terminal.WriteLine(Loc.Get("team.not_enough_gold_wager"));
             await Task.Delay(1500);
             return;
         }
@@ -2286,7 +2286,7 @@ public class TeamCornerLocation : BaseLocation
         if (myMembers.Count == 0 || enemyMembers.Count == 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  One of the teams has no members!");
+            terminal.WriteLine(Loc.Get("team.no_members_war"));
             currentPlayer.Gold += wager; // refund
             await Task.Delay(1500);
             return;
@@ -2300,7 +2300,7 @@ public class TeamCornerLocation : BaseLocation
         }
 
         terminal.ClearScreen();
-        WriteSectionHeader($"TEAM WAR: {myTeam} vs {enemyTeam.TeamName}", "bright_red");
+        WriteSectionHeader(Loc.Get("team.war_title", myTeam, enemyTeam.TeamName), "bright_red");
         terminal.WriteLine("");
 
         int myWins = 0, enemyWins = 0;
@@ -2331,11 +2331,11 @@ public class TeamCornerLocation : BaseLocation
             if (myWin) myWins++; else enemyWins++;
 
             terminal.SetColor(myWin ? "bright_green" : "bright_red");
-            terminal.Write($"  Round {i + 1}: ");
+            terminal.Write(Loc.Get("team.round_label", i + 1));
             terminal.SetColor("white");
             terminal.Write($"{mySummary.DisplayName} (Lv{mySummary.Level}) vs {enemySummary.DisplayName} (Lv{enemySummary.Level}) ");
             terminal.SetColor(myWin ? "bright_green" : "bright_red");
-            terminal.WriteLine(myWin ? $"- {mySummary.DisplayName} WINS!" : $"- {enemySummary.DisplayName} WINS!");
+            terminal.WriteLine(myWin ? Loc.Get("team.fighter_wins", mySummary.DisplayName) : Loc.Get("team.fighter_wins", enemySummary.DisplayName));
 
             await backend.UpdateTeamWarScore(warId, myWin);
             await Task.Delay(800);
@@ -2350,24 +2350,24 @@ public class TeamCornerLocation : BaseLocation
         {
             long reward = wager * 2;
             currentPlayer.Gold += reward;
-            WriteSectionHeader("YOUR TEAM WINS!", "bright_green");
+            WriteSectionHeader(Loc.Get("team_corner.your_team_wins"), "bright_green");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Score: {myWins} - {enemyWins}");
-            terminal.WriteLine($"  War spoils: {reward:N0} gold!");
+            terminal.WriteLine(Loc.Get("team.war_score", myWins, enemyWins));
+            terminal.WriteLine(Loc.Get("team.war_spoils", $"{reward:N0}"));
         }
         else
         {
-            WriteSectionHeader("YOUR TEAM LOSES!", "bright_red");
+            WriteSectionHeader(Loc.Get("team_corner.your_team_loses"), "bright_red");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Score: {myWins} - {enemyWins}");
-            terminal.WriteLine($"  Lost {wager:N0} gold in war wager.");
+            terminal.WriteLine(Loc.Get("team.war_score", myWins, enemyWins));
+            terminal.WriteLine(Loc.Get("team.war_lost_gold", $"{wager:N0}"));
         }
 
         if (UsurperRemake.Systems.OnlineStateManager.IsActive)
         {
             string winner = weWon ? myTeam : enemyTeam.TeamName;
             _ = UsurperRemake.Systems.OnlineStateManager.Instance!.AddNews(
-                $"Team {winner} won the war between {myTeam} and {enemyTeam.TeamName}! ({myWins}-{enemyWins})", "team_war");
+                Loc.Get("team.news_war_result", winner, myTeam, enemyTeam.TeamName, myWins, enemyWins), "team_war");
         }
 
         await terminal.PressAnyKey();
@@ -2380,12 +2380,12 @@ public class TeamCornerLocation : BaseLocation
 
         terminal.ClearScreen();
         terminal.WriteLine("");
-        WriteSectionHeader("WAR HISTORY", "bright_red");
+        WriteSectionHeader(Loc.Get("team_corner.war_history_header"), "bright_red");
 
         if (wars.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("  No wars fought yet.");
+            terminal.WriteLine(Loc.Get("team.no_wars_yet"));
         }
         else
         {
@@ -2398,11 +2398,11 @@ public class TeamCornerLocation : BaseLocation
                 bool weWon = ourWins > theirWins;
 
                 terminal.SetColor(weWon ? "bright_green" : "bright_red");
-                terminal.Write($"  {(weWon ? "WIN" : "LOSS")} ");
+                terminal.Write($"  {(weWon ? Loc.Get("team.war_win") : Loc.Get("team.war_loss"))} ");
                 terminal.SetColor("white");
-                terminal.Write($"vs {opponent} ");
+                terminal.Write(Loc.Get("team.war_vs", opponent));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"({ourWins}-{theirWins}) {war.GoldWagered:N0}g");
+                terminal.WriteLine(Loc.Get("team.war_record", ourWins, theirWins, $"{war.GoldWagered:N0}"));
             }
         }
 
@@ -2413,13 +2413,13 @@ public class TeamCornerLocation : BaseLocation
     // Team Headquarters
     // ═══════════════════════════════════════════════════════════════════════════
 
-    private static readonly Dictionary<string, (string Name, string Description, long BaseCost)> UpgradeDefinitions = new()
+    private static readonly Dictionary<string, (string NameKey, string DescKey, long BaseCost)> UpgradeDefinitions = new()
     {
-        ["armory"]   = ("Armory",          "+5% attack per level",       5000),
-        ["barracks"] = ("Barracks",        "+5% defense per level",      5000),
-        ["training"] = ("Training Grounds", "+5% XP bonus per level",    8000),
-        ["vault"]    = ("Vault",           "+50,000 vault capacity/lv",  3000),
-        ["infirmary"]= ("Infirmary",       "+10% healing per level",     4000),
+        ["armory"]   = ("team.upgrade_armory",    "team.upgrade_armory_desc",    5000),
+        ["barracks"] = ("team.upgrade_barracks",  "team.upgrade_barracks_desc",  5000),
+        ["training"] = ("team.upgrade_training",  "team.upgrade_training_desc",  8000),
+        ["vault"]    = ("team.upgrade_vault",     "team.upgrade_vault_desc",     3000),
+        ["infirmary"]= ("team.upgrade_infirmary", "team.upgrade_infirmary_desc", 4000),
     };
 
     private async Task TeamHeadquartersMenu()
@@ -2430,7 +2430,7 @@ public class TeamCornerLocation : BaseLocation
         if (string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  You must be in a team to access headquarters!");
+            terminal.WriteLine($"\n  {Loc.Get("team.hq_must_be_in_team")}");
             await Task.Delay(2000);
             return;
         }
@@ -2440,7 +2440,7 @@ public class TeamCornerLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader($"TEAM HEADQUARTERS - {teamName}", "bright_cyan");
+            WriteBoxHeader(Loc.Get("team.hq_title", teamName), "bright_cyan");
             terminal.WriteLine("");
 
             // Show upgrades
@@ -2449,7 +2449,7 @@ public class TeamCornerLocation : BaseLocation
             int vaultLevel = backend.GetTeamUpgradeLevel(teamName, "vault");
             long vaultCapacity = 50000 + (vaultLevel * 50000);
 
-            WriteSectionHeader("Facilities", "bright_yellow");
+            WriteSectionHeader(Loc.Get("team_corner.facilities"), "bright_yellow");
             terminal.WriteLine("");
 
             int idx = 1;
@@ -2462,25 +2462,25 @@ public class TeamCornerLocation : BaseLocation
                 terminal.SetColor("bright_yellow");
                 terminal.Write($"  {idx}. ");
                 terminal.SetColor("white");
-                terminal.Write($"{def.Name,-22} ");
+                terminal.Write($"{Loc.Get(def.NameKey),-22} ");
                 terminal.SetColor(level > 0 ? "bright_green" : "gray");
-                terminal.Write($"Lv {level,-4} ");
+                terminal.Write($"{Loc.Get("team.facility_lv", level),-7} ");
                 terminal.SetColor("gray");
-                terminal.WriteLine($"({def.Description})  [Upgrade: {nextCost:N0}g]");
+                terminal.WriteLine($"({Loc.Get(def.DescKey)})  {Loc.Get("team.facility_upgrade_cost", $"{nextCost:N0}")}");
                 idx++;
             }
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"  Team Vault: {vaultGold:N0} / {vaultCapacity:N0} gold");
+            terminal.WriteLine(Loc.Get("team.vault_display", $"{vaultGold:N0}", $"{vaultCapacity:N0}"));
             terminal.WriteLine("");
 
-            WriteSRMenuOption("U", "Upgrade Facility");
-            WriteSRMenuOption("D", "Deposit Gold");
-            WriteSRMenuOption("W", "Withdraw Gold");
-            WriteSRMenuOption("Q", "Back");
+            WriteSRMenuOption("U", Loc.Get("team_corner.upgrade"));
+            WriteSRMenuOption("D", Loc.Get("team_corner.deposit"));
+            WriteSRMenuOption("W", Loc.Get("team_corner.withdraw"));
+            WriteSRMenuOption("Q", Loc.Get("ui.cancel"));
             terminal.SetColor("white");
-            terminal.Write("\n  Choice: ");
+            terminal.Write(Loc.Get("team.choice_label"));
             string input = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
             if (input == "Q" || input == "") break;
@@ -2499,7 +2499,7 @@ public class TeamCornerLocation : BaseLocation
         var keys = UpgradeDefinitions.Keys.ToList();
 
         terminal.SetColor("white");
-        terminal.Write("\n  Upgrade # (1-5): ");
+        terminal.Write(Loc.Get("team.upgrade_num_prompt"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!int.TryParse(input, out int choice) || choice < 1 || choice > keys.Count) return;
 
@@ -2510,7 +2510,7 @@ public class TeamCornerLocation : BaseLocation
         if (currentLevel >= 10)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("  Maximum level reached!");
+            terminal.WriteLine(Loc.Get("team.max_level_reached"));
             await Task.Delay(1500);
             return;
         }
@@ -2521,17 +2521,17 @@ public class TeamCornerLocation : BaseLocation
         long vaultGold = await backend.GetTeamVaultGold(teamName);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  Upgrade {def.Name} to Lv {currentLevel + 1} costs {cost:N0} gold.");
-        terminal.WriteLine($"  Team vault has {vaultGold:N0}g, you have {currentPlayer.Gold:N0}g.");
-        terminal.Write("  Pay from [");
+        terminal.WriteLine(Loc.Get("team.upgrade_cost_info", Loc.Get(def.NameKey), currentLevel + 1, $"{cost:N0}"));
+        terminal.WriteLine(Loc.Get("team.vault_and_gold", $"{vaultGold:N0}", $"{currentPlayer.Gold:N0}"));
+        terminal.Write(Loc.Get("team.pay_from_prompt"));
         terminal.SetColor("bright_yellow");
         terminal.Write("V");
         terminal.SetColor("yellow");
-        terminal.Write("]ault or [");
+        terminal.Write(Loc.Get("team.pay_vault"));
         terminal.SetColor("bright_yellow");
         terminal.Write("P");
         terminal.SetColor("yellow");
-        terminal.Write("]ersonal gold? ");
+        terminal.Write(Loc.Get("team.pay_personal"));
         string payChoice = (await terminal.ReadLineAsync())?.Trim().ToUpper() ?? "";
 
         if (payChoice == "V")
@@ -2539,19 +2539,19 @@ public class TeamCornerLocation : BaseLocation
             if (vaultGold < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  Not enough gold in vault!");
+                terminal.WriteLine(Loc.Get("team.vault_not_enough"));
                 await Task.Delay(1500);
                 return;
             }
             bool withdrawn = await backend.WithdrawFromTeamVault(teamName, cost);
-            if (!withdrawn) { terminal.SetColor("red"); terminal.WriteLine("  Failed!"); await Task.Delay(1500); return; }
+            if (!withdrawn) { terminal.SetColor("red"); terminal.WriteLine(Loc.Get("team.failed_generic")); await Task.Delay(1500); return; }
         }
         else if (payChoice == "P")
         {
             if (currentPlayer.Gold < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("  Not enough personal gold!");
+                terminal.WriteLine(Loc.Get("team.personal_not_enough"));
                 await Task.Delay(1500);
                 return;
             }
@@ -2561,7 +2561,7 @@ public class TeamCornerLocation : BaseLocation
 
         await backend.UpgradeTeamFacility(teamName, key, cost);
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"\n  {def.Name} upgraded to Level {currentLevel + 1}!");
+        terminal.WriteLine(Loc.Get("team.facility_upgraded", Loc.Get(def.NameKey), currentLevel + 1));
         await Task.Delay(2000);
     }
 
@@ -2575,13 +2575,13 @@ public class TeamCornerLocation : BaseLocation
         if (space <= 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  Vault is full! Upgrade it for more capacity.");
+            terminal.WriteLine(Loc.Get("team.vault_full"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.Write($"\n  Deposit how much? (max {Math.Min(space, currentPlayer.Gold):N0}): ");
+        terminal.Write(Loc.Get("team.deposit_prompt", $"{Math.Min(space, currentPlayer.Gold):N0}"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!long.TryParse(input, out long amount) || amount <= 0) return;
 
@@ -2591,7 +2591,7 @@ public class TeamCornerLocation : BaseLocation
         currentPlayer.Gold -= amount;
         await backend.DepositToTeamVault(teamName, amount);
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"  Deposited {amount:N0} gold into the team vault!");
+        terminal.WriteLine(Loc.Get("team.deposited", $"{amount:N0}"));
         await Task.Delay(1500);
     }
 
@@ -2601,13 +2601,13 @@ public class TeamCornerLocation : BaseLocation
         if (currentVault <= 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\n  The vault is empty.");
+            terminal.WriteLine(Loc.Get("team.vault_empty"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.Write($"\n  Withdraw how much? (vault has {currentVault:N0}): ");
+        terminal.Write(Loc.Get("team.withdraw_prompt", $"{currentVault:N0}"));
         string input = (await terminal.ReadLineAsync())?.Trim() ?? "";
         if (!long.TryParse(input, out long amount) || amount <= 0) return;
 
@@ -2617,12 +2617,12 @@ public class TeamCornerLocation : BaseLocation
         {
             currentPlayer.Gold += amount;
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"  Withdrew {amount:N0} gold from the team vault!");
+            terminal.WriteLine(Loc.Get("team.withdrew", $"{amount:N0}"));
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  Withdrawal failed.");
+            terminal.WriteLine(Loc.Get("team.withdrawal_failed"));
         }
         await Task.Delay(1500);
     }

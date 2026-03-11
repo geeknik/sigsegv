@@ -56,7 +56,7 @@ public partial class PrisonLocation : BaseLocation
         // Check if player is actually imprisoned
         if (player.DaysInPrison <= 0)
         {
-            await terminal.WriteLineAsync("You are not imprisoned! Returning to Main Street.");
+            await terminal.WriteLineAsync(Loc.Get("prison.not_imprisoned"));
             await Task.Delay(1000);
             // Navigate player to Main Street properly
             throw new LocationExitException(GameLocation.MainStreet);
@@ -77,9 +77,9 @@ public partial class PrisonLocation : BaseLocation
             if (player.DaysInPrison <= 0)
             {
                 await terminal.WriteLineAsync();
-                await terminal.WriteColorLineAsync("The guards open your cell door.", TerminalEmulator.ColorGreen);
-                await terminal.WriteLineAsync("\"Your sentence has been served. You are free to go.\"");
-                await terminal.WriteColorLineAsync("You are FREE!", TerminalEmulator.ColorGreen);
+                await terminal.WriteColorLineAsync(Loc.Get("prison.guards_open"), TerminalEmulator.ColorGreen);
+                await terminal.WriteLineAsync(Loc.Get("prison.sentence_served"));
+                await terminal.WriteColorLineAsync(Loc.Get("prison.you_are_free"), TerminalEmulator.ColorGreen);
                 player.CellDoorOpen = false;
                 player.RescuedBy = "";
                 player.HP = Math.Max(player.HP, player.MaxHP / 2); // Restore some health
@@ -89,7 +89,7 @@ public partial class PrisonLocation : BaseLocation
                 if (darknessReduction > 0)
                 {
                     player.Darkness -= darknessReduction;
-                    await terminal.WriteColorLineAsync($"Your time served has reduced your dark reputation. (-{darknessReduction} Darkness)", "bright_green");
+                    await terminal.WriteColorLineAsync(Loc.Get("prison.darkness_reduced", darknessReduction), "bright_green");
                 }
                 await Task.Delay(1500);
                 throw new LocationExitException(GameLocation.MainStreet);
@@ -143,23 +143,23 @@ public partial class PrisonLocation : BaseLocation
     private async Task HandleCellDoorOpen(Character player)
     {
         await terminal.WriteLineAsync();
-        await terminal.WriteColorLineAsync("The cell door swings open!", TerminalEmulator.ColorGreen);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.cell_door_open"), TerminalEmulator.ColorGreen);
         await terminal.WriteLineAsync();
 
         if (!string.IsNullOrEmpty(player.RescuedBy))
         {
             await terminal.WriteColorAsync(player.RescuedBy, TerminalEmulator.ColorCyan);
-            await terminal.WriteLineAsync(" broke you out of prison!");
-            await terminal.WriteLineAsync("You owe them your freedom!");
+            await terminal.WriteLineAsync(Loc.Get("prison.broke_out"));
+            await terminal.WriteLineAsync(Loc.Get("prison.owe_freedom"));
         }
         else
         {
-            await terminal.WriteLineAsync("Someone has unlocked your cell!");
+            await terminal.WriteLineAsync(Loc.Get("prison.someone_unlocked"));
         }
 
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("You walk out of your cell.");
-        await terminal.WriteColorLineAsync("You are FREE!", TerminalEmulator.ColorGreen);
+        await terminal.WriteLineAsync(Loc.Get("prison.walk_out"));
+        await terminal.WriteColorLineAsync(Loc.Get("prison.you_are_free"), TerminalEmulator.ColorGreen);
 
         // Reset player state
         player.HP = player.MaxHP;
@@ -198,14 +198,14 @@ public partial class PrisonLocation : BaseLocation
                 }
                 
                 await terminal.WriteLineAsync();
-                await terminal.WriteAsync("Royal Prison (");
+                await terminal.WriteAsync(Loc.Get("prison.prompt_prefix"));
                 await terminal.WriteColorAsync("?", TerminalEmulator.ColorYellow);
-                await terminal.WriteAsync(" for menu) :");
+                await terminal.WriteAsync(Loc.Get("prison.prompt_suffix"));
             }
             else
             {
                 await terminal.WriteLineAsync();
-                await terminal.WriteAsync("Royal Prison (W,M,N,D,O,S,E,A,Q,?) :");
+                await terminal.WriteAsync(Loc.Get("prison.prompt_expert"));
             }
         }
         else
@@ -226,56 +226,56 @@ public partial class PrisonLocation : BaseLocation
         if (!IsScreenReader)
         {
             await terminal.WriteColorLineAsync("IIIIIIIIIIIIIIIIIIIIIIII", TerminalEmulator.ColorCyan);
-            await terminal.WriteColorLineAsync("III The Royal Prison III", TerminalEmulator.ColorCyan);
+            await terminal.WriteColorLineAsync($"III {Loc.Get("prison.title")} III", TerminalEmulator.ColorCyan);
             await terminal.WriteColorLineAsync("IIIIIIIIIIIIIIIIIIIIIIII", TerminalEmulator.ColorCyan);
         }
         else
         {
-            await terminal.WriteColorLineAsync("The Royal Prison", TerminalEmulator.ColorCyan);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.title"), TerminalEmulator.ColorCyan);
         }
         await terminal.WriteLineAsync();
         
         // Prison atmosphere description
-        await terminal.WriteLineAsync("You wake up cold and aching.");
-        await terminal.WriteLineAsync("Horrifying screams from the torture-chamber nearby make You");
-        await terminal.WriteLineAsync("shudder with fear.");
-        await terminal.WriteLineAsync("The Sheriff and his henchmen can be heard chatting in the");
-        await terminal.WriteLineAsync("corridor outside.");
+        await terminal.WriteLineAsync(Loc.Get("prison.atmo1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.atmo2"));
+        await terminal.WriteLineAsync(Loc.Get("prison.atmo3"));
+        await terminal.WriteLineAsync(Loc.Get("prison.atmo4"));
+        await terminal.WriteLineAsync(Loc.Get("prison.atmo5"));
         await terminal.WriteLineAsync();
         
         // Menu options
         if (IsScreenReader)
         {
-            await terminal.WriteLineAsync("W. Who else is here");
-            await terminal.WriteLineAsync("D. Demand to be released!");
-            await terminal.WriteLineAsync("O. Open cell door");
-            await terminal.WriteLineAsync("E. Escape!");
-            await terminal.WriteLineAsync("S. Status");
-            await terminal.WriteLineAsync("A. Activities - Exercise!");
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_who"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_demand"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_open"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_escape"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_status"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_activities"));
 
             var currentPlayer = gameEngine?.CurrentPlayer;
             if (currentPlayer != null && CanMeetVex(currentPlayer))
             {
-                await terminal.WriteLineAsync("V. Voice in the darkness (A peculiar prisoner whispers...)");
+                await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_vex"));
             }
 
-            await terminal.WriteLineAsync("Q. Quit");
+            await terminal.WriteLineAsync(Loc.Get("prison.sr_menu_quit"));
         }
         else
         {
-            await terminal.WriteLineAsync("(W)ho else is here          (D)emand to be released!");
-            await terminal.WriteLineAsync("(O)pen cell door            (E)scape!");
-            await terminal.WriteLineAsync("(S)tatus                    (A)ctivities - Exercise!");
+            await terminal.WriteLineAsync(Loc.Get("prison.menu_row1"));
+            await terminal.WriteLineAsync(Loc.Get("prison.menu_row2"));
+            await terminal.WriteLineAsync(Loc.Get("prison.menu_row3"));
 
             // Check for Vex companion availability - get player from game engine
             var currentPlayer = gameEngine?.CurrentPlayer;
             if (currentPlayer != null && CanMeetVex(currentPlayer))
             {
                 await terminal.WriteColorAsync("(V)", TerminalEmulator.ColorYellow);
-                await terminal.WriteColorLineAsync("oice in the darkness     (A peculiar prisoner whispers...)", TerminalEmulator.ColorCyan);
+                await terminal.WriteColorLineAsync(Loc.Get("prison.menu_vex_suffix"), TerminalEmulator.ColorCyan);
             }
 
-            await terminal.WriteLineAsync("(Q)uit");
+            await terminal.WriteLineAsync(Loc.Get("prison.menu_quit"));
         }
     }
 
@@ -342,17 +342,17 @@ public partial class PrisonLocation : BaseLocation
         await terminal.ClearScreenAsync();
         if (IsScreenReader)
         {
-            await terminal.WriteColorLineAsync("PRISON ACTIVITIES", TerminalEmulator.ColorCyan);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.activities_header"), TerminalEmulator.ColorCyan);
         }
         else
         {
             await terminal.WriteColorLineAsync("═══════════════════════════════════════", TerminalEmulator.ColorCyan);
-            await terminal.WriteColorLineAsync("           PRISON ACTIVITIES           ", TerminalEmulator.ColorCyan);
+            await terminal.WriteColorLineAsync($"           {Loc.Get("prison.activities_header")}           ", TerminalEmulator.ColorCyan);
             await terminal.WriteColorLineAsync("═══════════════════════════════════════", TerminalEmulator.ColorCyan);
         }
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("While imprisoned, you can pass the time");
-        await terminal.WriteLineAsync("with activities that improve your body and mind.");
+        await terminal.WriteLineAsync(Loc.Get("prison.activities_intro1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.activities_intro2"));
         await terminal.WriteLineAsync();
 
         var activities = PrisonActivitySystem.Instance.GetAvailableActivities();
@@ -369,7 +369,7 @@ public partial class PrisonLocation : BaseLocation
         }
 
         await terminal.WriteLineAsync();
-        await terminal.WriteAsync("Choose activity (0 to cancel): ");
+        await terminal.WriteAsync(Loc.Get("prison.choose_activity"));
         string input = await terminal.ReadLineAsync();
 
         if (int.TryParse(input, out int choice) && choice >= 1 && choice <= activities.Count)
@@ -380,7 +380,7 @@ public partial class PrisonLocation : BaseLocation
             await terminal.WriteLineAsync();
             await terminal.WriteColorLineAsync(result, TerminalEmulator.ColorGreen);
             await terminal.WriteLineAsync();
-            await terminal.WriteAsync("Press Enter to continue...");
+            await terminal.WriteAsync(Loc.Get("ui.press_enter"));
             await terminal.GetCharAsync();
         }
 
@@ -403,20 +403,20 @@ public partial class PrisonLocation : BaseLocation
     private async Task ShowCharacterStatus(Character player)
     {
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("=== PRISONER STATUS ===");
-        await terminal.WriteLineAsync($"Name: {player.DisplayName}");
-        await terminal.WriteLineAsync($"Level: {player.Level}");
-        await terminal.WriteLineAsync($"Health: {player.HP}/{player.MaxHP}");
-        await terminal.WriteLineAsync($"Days remaining in prison: {player.DaysInPrison}");
-        await terminal.WriteLineAsync($"Escape attempts left: {player.PrisonEscapes}");
-        
+        await terminal.WriteLineAsync($"=== {Loc.Get("prison.title")} ===");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.name_label")}: {player.DisplayName}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.level")}: {player.Level}");
+        await terminal.WriteLineAsync($"{Loc.Get("ui.health_label")}: {player.HP}/{player.MaxHP}");
+        await terminal.WriteLineAsync(Loc.Get("prison.days_remaining", player.DaysInPrison));
+        await terminal.WriteLineAsync(Loc.Get("prison.escape_attempts", player.PrisonEscapes));
+
         if (player.DaysInPrison == 1)
-            await terminal.WriteLineAsync("You will likely be released tomorrow.");
+            await terminal.WriteLineAsync(Loc.Get("prison.released_tomorrow"));
         else
-            await terminal.WriteLineAsync($"You have {player.DaysInPrison} days left to serve.");
+            await terminal.WriteLineAsync(Loc.Get("prison.days_left", player.DaysInPrison));
             
         await terminal.WriteLineAsync();
-        await terminal.WriteAsync("Press Enter to continue...");
+        await terminal.WriteAsync(Loc.Get("ui.press_enter"));
         await terminal.GetCharAsync();
     }
     
@@ -425,7 +425,7 @@ public partial class PrisonLocation : BaseLocation
         await terminal.WriteLineAsync();
         await terminal.WriteLineAsync();
 
-        bool confirmed = await terminal.ConfirmAsync("QUIT game and rest for the night", false);
+        bool confirmed = await terminal.ConfirmAsync(Loc.Get("prison.quit_confirm"), false);
         if (!confirmed)
         {
             // Don't quit, continue prison loop
@@ -434,8 +434,8 @@ public partial class PrisonLocation : BaseLocation
 
         // Player is logging out - display sleep message
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("You cover yourself with some hay and try to get some sleep.");
-        await terminal.WriteLineAsync("It will be a long and cold night with the rats...");
+        await terminal.WriteLineAsync(Loc.Get("prison.sleep_hay"));
+        await terminal.WriteLineAsync(Loc.Get("prison.long_cold_night"));
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
@@ -455,8 +455,8 @@ public partial class PrisonLocation : BaseLocation
         else
         {
             await terminal.WriteLineAsync();
-            await terminal.WriteColorLineAsync("You try to open the Iron door, but it's impossible.", TerminalEmulator.ColorRed);
-            await terminal.WriteColorLineAsync("You are trapped in here! Perhaps you should try to escape.", TerminalEmulator.ColorRed);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.iron_door"), TerminalEmulator.ColorRed);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.trapped"), TerminalEmulator.ColorRed);
             await Task.Delay(1000);
         }
     }
@@ -465,13 +465,13 @@ public partial class PrisonLocation : BaseLocation
     {
         await terminal.WriteLineAsync();
         await terminal.WriteLineAsync();
-        await terminal.WriteColorAsync("You clear your throat : ", TerminalEmulator.ColorWhite);
-        await terminal.WriteColorLineAsync("Let me out of here please....!", TerminalEmulator.ColorCyan);
-        
+        await terminal.WriteColorAsync(Loc.Get("prison.clear_throat"), TerminalEmulator.ColorWhite);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.let_me_out"), TerminalEmulator.ColorCyan);
+
         await Task.Delay(GameConfig.PrisonGuardResponseDelay);
         await terminal.WriteLineAsync();
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("After a moment you hear a dark voice cry out :");
+        await terminal.WriteLineAsync(Loc.Get("prison.dark_voice"));
         
         // Random guard response (Pascal: case random(5))
         var random = new System.Random();
@@ -485,7 +485,7 @@ public partial class PrisonLocation : BaseLocation
         };
         
         await terminal.WriteColorLineAsync(response, TerminalEmulator.ColorMagenta);
-        await terminal.WriteLineAsync("(You will probably be released tomorrow)");
+        await terminal.WriteLineAsync(Loc.Get("prison.released_probably"));
     }
     
     private async Task<bool> HandleEscapeAttempt(Character player)
@@ -495,13 +495,13 @@ public partial class PrisonLocation : BaseLocation
         if (player.PrisonEscapes < 1)
         {
             await terminal.WriteLineAsync();
-            await terminal.WriteColorLineAsync("You have no escape attempts left! Try again tomorrow.", TerminalEmulator.ColorRed);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.no_escapes"), TerminalEmulator.ColorRed);
             await Task.Delay(1000);
             return false;
         }
 
         await terminal.WriteLineAsync();
-        bool confirmed = await terminal.ConfirmAsync("Jail-Break", true);
+        bool confirmed = await terminal.ConfirmAsync(Loc.Get("prison.jailbreak_confirm"), true);
 
         if (!confirmed)
         {
@@ -522,20 +522,20 @@ public partial class PrisonLocation : BaseLocation
 
         if (!success)
         {
-            await terminal.WriteColorLineAsync("You failed!", TerminalEmulator.ColorRed);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.escape_failed"), TerminalEmulator.ColorRed);
 
             // Generate news about failed escape
             NewsSystem.Instance.Newsy(true, $"{player.DisplayName} failed to escape from the Royal Prison!");
 
-            await terminal.WriteLineAsync("The guards heard your escape attempt!");
-            await terminal.WriteLineAsync("Your sentence has been extended by 1 day!");
+            await terminal.WriteLineAsync(Loc.Get("prison.guards_heard"));
+            await terminal.WriteLineAsync(Loc.Get("prison.sentence_extended"));
             player.DaysInPrison++;
             await Task.Delay(1500);
             return false;
         }
         else
         {
-            await terminal.WriteColorLineAsync("Success! You are FREE!", TerminalEmulator.ColorGreen);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.escape_success"), TerminalEmulator.ColorGreen);
 
             // Generate news about successful escape
             NewsSystem.Instance.Newsy(true, $"{player.DisplayName} has escaped from the Royal Prison!");
@@ -548,8 +548,8 @@ public partial class PrisonLocation : BaseLocation
             player.DaysInPrison = 0;
             player.CellDoorOpen = false;
 
-            await terminal.WriteLineAsync("You have successfully escaped from prison!");
-            await terminal.WriteLineAsync("You are now free to return to your adventures!");
+            await terminal.WriteLineAsync(Loc.Get("prison.escaped_message"));
+            await terminal.WriteLineAsync(Loc.Get("prison.free_return"));
             await Task.Delay(1500);
 
             // Navigate to Main Street
@@ -561,7 +561,7 @@ public partial class PrisonLocation : BaseLocation
     {
         await terminal.WriteLineAsync();
         await terminal.WriteLineAsync();
-        await terminal.WriteColorLineAsync("Prisoners", TerminalEmulator.ColorWhite);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.prisoners_header"), TerminalEmulator.ColorWhite);
         await terminal.WriteColorLineAsync("=========", TerminalEmulator.ColorWhite);
         
         // List other prisoners
@@ -569,7 +569,7 @@ public partial class PrisonLocation : BaseLocation
         
         if (prisoners.Count == 0)
         {
-            await terminal.WriteColorLineAsync("You are the only prisoner here right now!", TerminalEmulator.ColorCyan);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.only_prisoner"), TerminalEmulator.ColorCyan);
         }
         else
         {
@@ -581,11 +581,10 @@ public partial class PrisonLocation : BaseLocation
         
         // Show player's remaining time
         await terminal.WriteLineAsync();
-        string dayStr = player.DaysInPrison == 1 ? "day" : "days";
-        await terminal.WriteLineAsync($"You have {player.DaysInPrison} {dayStr} left in prison.");
+        await terminal.WriteLineAsync(Loc.Get("prison.days_left_info", player.DaysInPrison));
         
         await terminal.WriteLineAsync();
-        await terminal.WriteAsync("Press Enter to continue...");
+        await terminal.WriteAsync(Loc.Get("ui.press_enter"));
         await terminal.GetCharAsync();
     }
     
@@ -609,26 +608,25 @@ public partial class PrisonLocation : BaseLocation
     private async Task ShowPrisonerInfo(Character prisoner)
     {
         await terminal.WriteColorAsync(prisoner.DisplayName, TerminalEmulator.ColorCyan);
-        await terminal.WriteAsync($" the {GetRaceDisplay(prisoner.Race)}");
-        
+        await terminal.WriteAsync($" {Loc.Get("prison.the_race", GetRaceDisplay(prisoner.Race))}");
+
         // Show if online/offline/dead
         if (await IsPlayerOnline(prisoner))
         {
-            await terminal.WriteColorAsync(" (awake)", TerminalEmulator.ColorGreen);
+            await terminal.WriteColorAsync(Loc.Get("prison.awake"), TerminalEmulator.ColorGreen);
         }
         else if (prisoner.HP < 1)
         {
-            await terminal.WriteColorAsync(" (dead)", TerminalEmulator.ColorRed);
+            await terminal.WriteColorAsync(Loc.Get("prison.dead"), TerminalEmulator.ColorRed);
         }
         else
         {
-            await terminal.WriteAsync(" (sleeping)");
+            await terminal.WriteAsync(Loc.Get("prison.sleeping"));
         }
-        
+
         // Show days left
         int daysLeft = prisoner.DaysInPrison > 0 ? prisoner.DaysInPrison : 1;
-        string dayStr = daysLeft == 1 ? "day" : "days";
-        await terminal.WriteLineAsync($" ({daysLeft} {dayStr} left)");
+        await terminal.WriteLineAsync(Loc.Get("prison.days_left_parens", daysLeft));
     }
     
     private string GetRaceDisplay(CharacterRace race)
@@ -646,13 +644,13 @@ public partial class PrisonLocation : BaseLocation
     {
         var commands = new List<string>
         {
-            "? - Show menu",
-            "W - Who else is here",
-            "D - Demand to be released",
-            "O - Try to open cell door",
-            "E - Attempt escape",
-            "S - Show status",
-            "Q - Quit game"
+            Loc.Get("prison.cmd_menu"),
+            Loc.Get("prison.cmd_who"),
+            Loc.Get("prison.cmd_demand"),
+            Loc.Get("prison.cmd_open"),
+            Loc.Get("prison.cmd_escape"),
+            Loc.Get("prison.cmd_status"),
+            Loc.Get("prison.cmd_quit")
         };
 
         return Task.FromResult(commands);
@@ -667,8 +665,7 @@ public partial class PrisonLocation : BaseLocation
     public Task<string> GetLocationStatus(Character player)
     {
         int daysLeft = player.DaysInPrison;
-        string dayStr = daysLeft == 1 ? "day" : "days";
-        return Task.FromResult($"Imprisoned - {daysLeft} {dayStr} remaining, {player.PrisonEscapes} escape attempts left");
+        return Task.FromResult(Loc.Get("prison.location_status", daysLeft, player.PrisonEscapes));
     }
 
     #region Vex Companion Recruitment
@@ -682,7 +679,7 @@ public partial class PrisonLocation : BaseLocation
         if (!CanMeetVex(player))
         {
             await terminal.WriteLineAsync();
-            await terminal.WriteColorLineAsync("You don't see anyone unusual nearby.", TerminalEmulator.ColorDarkGray);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.no_one_unusual"), TerminalEmulator.ColorDarkGray);
             await Task.Delay(1500);
             return false;
         }
@@ -692,22 +689,22 @@ public partial class PrisonLocation : BaseLocation
 
         await terminal.ClearScreenAsync();
         await terminal.WriteLineAsync();
-        WriteBoxHeader("VOICE IN THE DARKNESS", "cyan", 66);
+        WriteBoxHeader(Loc.Get("prison.voice_darkness"), "cyan", 66);
         terminal.WriteLine("");
         await Task.Delay(1000);
 
-        await terminal.WriteLineAsync("A voice drifts from the cell next to yours:");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_voice"));
         await terminal.WriteLineAsync();
         await Task.Delay(500);
 
-        await terminal.WriteColorLineAsync("\"Psst. Hey. You. The one with the look of someone", TerminalEmulator.ColorYellow);
-        await terminal.WriteColorLineAsync(" who doesn't belong here.\"", TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_psst1"), TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_psst2"), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteLineAsync("You peer through the bars. In the adjacent cell,");
-        await terminal.WriteLineAsync("a lean figure lounges against the wall with improbable comfort.");
-        await terminal.WriteLineAsync("He's grinning - actually grinning - in a place like this.");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_peer1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_peer2"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_peer3"));
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
@@ -716,9 +713,9 @@ public partial class PrisonLocation : BaseLocation
         await terminal.WriteLineAsync();
         await Task.Delay(2000);
 
-        await terminal.WriteLineAsync("He produces a bent piece of metal from nowhere.");
-        await terminal.WriteLineAsync("\"I've been picking locks since before I could walk.\"");
-        await terminal.WriteLineAsync("\"Which is good, because I probably won't be walking much longer.\"");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_metal"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_locks1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_locks2"));
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
@@ -728,21 +725,21 @@ public partial class PrisonLocation : BaseLocation
         await Task.Delay(1500);
 
         // Show his details
-        await terminal.WriteColorLineAsync($"This is {vex.Name}, {vex.Title}.", TerminalEmulator.ColorYellow);
-        await terminal.WriteColorLineAsync($"Role: {vex.CombatRole}", TerminalEmulator.ColorYellow);
-        await terminal.WriteColorLineAsync($"Abilities: {string.Join(", ", vex.Abilities)}", TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_intro", vex.Name, vex.Title), TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_role", vex.CombatRole), TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_abilities", string.Join(", ", vex.Abilities)), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
 
         await terminal.WriteColorLineAsync(vex.BackstoryBrief, TerminalEmulator.ColorDarkGray);
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteColorLineAsync("[E] Let him help you escape (and recruit him)", TerminalEmulator.ColorGreen);
-        await terminal.WriteColorLineAsync("[T] Talk more about his \"condition\"", TerminalEmulator.ColorCyan);
-        await terminal.WriteColorLineAsync("[L] Leave him be", TerminalEmulator.ColorDarkGray);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_menu_escape"), TerminalEmulator.ColorGreen);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_menu_talk"), TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_menu_leave"), TerminalEmulator.ColorDarkGray);
         await terminal.WriteLineAsync();
 
-        await terminal.WriteAsync("Your choice: ");
+        await terminal.WriteAsync(Loc.Get("ui.your_choice"));
         string choice = await terminal.ReadLineAsync();
 
         switch (choice.ToUpper())
@@ -756,9 +753,9 @@ public partial class PrisonLocation : BaseLocation
 
             default:
                 await terminal.WriteLineAsync();
-                await terminal.WriteColorLineAsync("You shake your head and return to your own cell.", TerminalEmulator.ColorDarkGray);
+                await terminal.WriteColorLineAsync(Loc.Get("prison.vex_shake_head"), TerminalEmulator.ColorDarkGray);
                 await terminal.WriteLineAsync();
-                await terminal.WriteColorLineAsync("\"Your loss!\" he calls cheerfully.", TerminalEmulator.ColorYellow);
+                await terminal.WriteColorLineAsync(Loc.Get("prison.vex_your_loss"), TerminalEmulator.ColorYellow);
                 await terminal.WriteColorAsync($"\"{vex.DialogueHints[2]}\"", TerminalEmulator.ColorCyan);
                 await terminal.WriteLineAsync();
                 await Task.Delay(2000);
@@ -779,50 +776,50 @@ public partial class PrisonLocation : BaseLocation
         var companionSystem = UsurperRemake.Systems.CompanionSystem.Instance;
 
         await terminal.WriteLineAsync();
-        await terminal.WriteColorLineAsync("\"Excellent choice!\" Vex grins wider.", TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_excellent"), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
         await Task.Delay(1000);
 
-        await terminal.WriteLineAsync("He works the lock with practiced ease.");
-        await terminal.WriteLineAsync("*click* *click* *clack*");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_works_lock"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_clicks"));
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteLineAsync("\"You know what the trick is?\" he whispers.");
-        await terminal.WriteLineAsync("\"It's not about forcing things. It's about listening.\"");
-        await terminal.WriteLineAsync("\"Every lock wants to be opened. You just have to ask nicely.\"");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_trick1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_trick2"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_trick3"));
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteColorLineAsync("*CLICK*", TerminalEmulator.ColorGreen);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_click_loud"), TerminalEmulator.ColorGreen);
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("Your cell door swings silently open.");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_door_open"));
         await terminal.WriteLineAsync();
         await Task.Delay(1000);
 
-        await terminal.WriteLineAsync("Vex is already beside you, moving like smoke.");
-        await terminal.WriteColorLineAsync("\"Come on. I know a way out. Built this place's sewers", TerminalEmulator.ColorYellow);
-        await terminal.WriteColorLineAsync(" for a job once. Long story.\"", TerminalEmulator.ColorYellow);
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_smoke"));
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_sewers1"), TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_sewers2"), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteLineAsync("As you move through the dark passages, he talks.");
-        await terminal.WriteLineAsync("It's compulsive - like he can't stand silence.");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_passages1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_passages2"));
         await terminal.WriteLineAsync();
         await Task.Delay(1000);
 
-        await terminal.WriteColorLineAsync("\"I'm dying, by the way,\" he mentions casually.", TerminalEmulator.ColorCyan);
-        await terminal.WriteColorLineAsync("\"Wasting disease. Got maybe a month left.\"", TerminalEmulator.ColorCyan);
-        await terminal.WriteColorLineAsync("\"So I figure - might as well spend it doing something fun.\"", TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_dying1"), TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_dying2"), TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_dying3"), TerminalEmulator.ColorCyan);
         await terminal.WriteLineAsync();
         await Task.Delay(2000);
 
-        await terminal.WriteLineAsync("He glances at you, and for just a moment,");
-        await terminal.WriteLineAsync("the mask slips. You see something real beneath the jokes.");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_glance1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_glance2"));
         await terminal.WriteLineAsync();
         await Task.Delay(1000);
 
-        await terminal.WriteColorLineAsync("\"You seem interesting. Mind if I tag along?\"", TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_tag_along"), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
@@ -832,10 +829,10 @@ public partial class PrisonLocation : BaseLocation
 
         if (success)
         {
-            await terminal.WriteColorLineAsync($"{vex.Name} has joined you as a companion!", TerminalEmulator.ColorGreen);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.vex_joined", vex.Name), TerminalEmulator.ColorGreen);
             await terminal.WriteLineAsync();
-            await terminal.WriteColorLineAsync("WARNING: Vex is dying. His time is limited.", TerminalEmulator.ColorRed);
-            await terminal.WriteColorLineAsync("Make the most of the days you have together.", TerminalEmulator.ColorYellow);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.vex_warning_dying"), TerminalEmulator.ColorRed);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.vex_make_most"), TerminalEmulator.ColorYellow);
             await terminal.WriteLineAsync();
 
             // Generate news
@@ -847,14 +844,14 @@ public partial class PrisonLocation : BaseLocation
         player.DaysInPrison = 0;
         player.CellDoorOpen = false;
 
-        await terminal.WriteColorLineAsync("You emerge from the sewers into the night air.", TerminalEmulator.ColorWhite);
-        await terminal.WriteColorLineAsync("You are FREE!", TerminalEmulator.ColorGreen);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_emerge"), TerminalEmulator.ColorWhite);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_free"), TerminalEmulator.ColorGreen);
         await terminal.WriteLineAsync();
 
         // Mark encounter as complete
         StoryProgressionSystem.Instance.SetStoryFlag("vex_prison_encounter_complete", true);
 
-        await terminal.WriteAsync("Press Enter to continue...");
+        await terminal.WriteAsync(Loc.Get("ui.press_enter"));
         await terminal.GetCharAsync();
 
         // Navigate to Main Street
@@ -867,7 +864,7 @@ public partial class PrisonLocation : BaseLocation
     private async Task TalkToVex(Character player, UsurperRemake.Systems.Companion vex)
     {
         await terminal.WriteLineAsync();
-        await terminal.WriteLineAsync("\"The condition?\" He laughs, but there's an edge to it.");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_condition"));
         await terminal.WriteLineAsync();
         await Task.Delay(1000);
 
@@ -875,31 +872,31 @@ public partial class PrisonLocation : BaseLocation
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteColorLineAsync("\"Born with it. Wasting disease. No cure.\"", TerminalEmulator.ColorCyan);
-        await terminal.WriteColorLineAsync("\"Every healer I've seen says the same thing:\"", TerminalEmulator.ColorCyan);
-        await terminal.WriteColorLineAsync("\"'Sorry, nothing we can do. Go enjoy your time.'\"", TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_born1"), TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_born2"), TerminalEmulator.ColorCyan);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_born3"), TerminalEmulator.ColorCyan);
         await terminal.WriteLineAsync();
         await Task.Delay(2000);
 
-        await terminal.WriteLineAsync("He spins his lockpick between his fingers.");
-        await terminal.WriteLineAsync("\"So I did. Became the best thief in the kingdom.\"");
-        await terminal.WriteLineAsync("\"Stole from kings. Robbed temples. Picked pockets at my own funeral.\"");
-        await terminal.WriteLineAsync("\"...That last one was a practice run.\"");
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_lockpick"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_best_thief1"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_best_thief2"));
+        await terminal.WriteLineAsync(Loc.Get("prison.vex_best_thief3"));
         await terminal.WriteLineAsync();
         await Task.Delay(2000);
 
         if (!string.IsNullOrEmpty(vex.PersonalQuestDescription))
         {
-            await terminal.WriteColorLineAsync($"Personal Quest: {vex.PersonalQuestName}", TerminalEmulator.ColorMagenta);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.vex_personal_quest", vex.PersonalQuestName), TerminalEmulator.ColorMagenta);
             await terminal.WriteColorLineAsync($"\"{vex.PersonalQuestDescription}\"", TerminalEmulator.ColorMagenta);
             await terminal.WriteLineAsync();
         }
 
-        await terminal.WriteColorLineAsync("\"Life's too short to take seriously. Trust me, I know.\"", TerminalEmulator.ColorYellow);
+        await terminal.WriteColorLineAsync(Loc.Get("prison.vex_too_short"), TerminalEmulator.ColorYellow);
         await terminal.WriteLineAsync();
         await Task.Delay(1500);
 
-        await terminal.WriteAsync("Let him help you escape? (Y/N): ");
+        await terminal.WriteAsync(Loc.Get("prison.vex_escape_prompt"));
         string answer = await terminal.ReadLineAsync();
 
         if (answer.ToUpper() == "Y")
@@ -909,7 +906,7 @@ public partial class PrisonLocation : BaseLocation
         else
         {
             await terminal.WriteLineAsync();
-            await terminal.WriteColorLineAsync("\"Suit yourself. Offer stands if you change your mind.\"", TerminalEmulator.ColorYellow);
+            await terminal.WriteColorLineAsync(Loc.Get("prison.vex_suit_yourself"), TerminalEmulator.ColorYellow);
             await Task.Delay(1500);
         }
     }

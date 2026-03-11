@@ -336,8 +336,8 @@ namespace UsurperRemake.Systems
             if (OceanPhilosophySystem.Instance.AwakeningLevel >= 3)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("A distant understanding stirs within you...", "dark_cyan");
-                terminal.WriteLine("The wave that crashes against you was once part of the same ocean.", "cyan");
+                terminal.WriteLine(Loc.Get("betrayal.ocean_understanding"), "dark_cyan");
+                terminal.WriteLine(Loc.Get("betrayal.ocean_wave_crashes"), "cyan");
                 OceanPhilosophySystem.Instance.GainInsight(5);
             }
 
@@ -363,18 +363,18 @@ namespace UsurperRemake.Systems
 
             if (profile.IsSacrifice)
             {
-                UIHelper.WriteBoxHeader(terminal, "A   S A C R I F I C E", "bright_yellow", 64);
+                UIHelper.WriteBoxHeader(terminal, Loc.Get("betrayal.header_sacrifice"), "bright_yellow", 64);
             }
             else
             {
-                UIHelper.WriteBoxHeader(terminal, "B E T R A Y A L", "dark_red", 64);
+                UIHelper.WriteBoxHeader(terminal, Loc.Get("betrayal.header_betrayal"), "dark_red", 64);
             }
             terminal.WriteLine("");
 
             await Task.Delay(1500);
 
-            terminal.WriteLine($"  {profile.NPCName} turns to face you.", "white");
-            terminal.WriteLine("  Something in their eyes has changed.", "gray");
+            terminal.WriteLine($"  {Loc.Get("betrayal.turns_to_face", profile.NPCName)}", "white");
+            terminal.WriteLine($"  {Loc.Get("betrayal.eyes_changed")}", "gray");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
@@ -395,7 +395,7 @@ namespace UsurperRemake.Systems
                 if (!GameConfig.ScreenReaderMode)
                     terminal.WriteLine("  ─────────────────────────────────────────────", "dark_gray");
                 terminal.WriteLine("");
-                terminal.WriteLine("  [You begin to understand their reasons...]", "dark_cyan");
+                terminal.WriteLine($"  {Loc.Get("betrayal.understand_reasons")}", "dark_cyan");
                 terminal.WriteLine("");
 
                 foreach (var motivation in profile.Motivations)
@@ -409,22 +409,22 @@ namespace UsurperRemake.Systems
 
             if (profile.IsSacrifice)
             {
-                terminal.WriteLine("  This was not malice. This was love.", "bright_yellow");
-                terminal.WriteLine("  A love willing to pay the ultimate price.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("betrayal.sacrifice_not_malice")}", "bright_yellow");
+                terminal.WriteLine($"  {Loc.Get("betrayal.sacrifice_ultimate_price")}", "yellow");
             }
             else if (profile.CanBeForgiven)
             {
-                terminal.WriteLine("  Perhaps... this doesn't have to be the end.", "cyan");
-                terminal.WriteLine("  Understanding might still bridge this chasm.", "dark_cyan");
+                terminal.WriteLine($"  {Loc.Get("betrayal.perhaps_not_end")}", "cyan");
+                terminal.WriteLine($"  {Loc.Get("betrayal.understanding_bridge")}", "dark_cyan");
             }
             else
             {
-                terminal.WriteLine("  Some wounds cut too deep to heal.", "dark_red");
-                terminal.WriteLine("  What is broken cannot always be mended.", "red");
+                terminal.WriteLine($"  {Loc.Get("betrayal.wounds_too_deep")}", "dark_red");
+                terminal.WriteLine($"  {Loc.Get("betrayal.broken_not_mended")}", "red");
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace UsurperRemake.Systems
             var activeBetrayal = activeBetrays.FirstOrDefault(b => b.NPCId == npcId);
             if (activeBetrayal == null || !activeBetrayal.CanBeResolved)
             {
-                terminal.WriteLine("Some betrayals cannot be forgiven.", "red");
+                terminal.WriteLine(Loc.Get("betrayal.cannot_forgive"), "red");
                 return false;
             }
 
@@ -484,8 +484,8 @@ namespace UsurperRemake.Systems
 
             if (!canForgive)
             {
-                terminal.WriteLine("The conditions for forgiveness have not yet been met.", "yellow");
-                terminal.WriteLine($"Path to redemption: {profile.RedemptionPath ?? "Unknown"}", "gray");
+                terminal.WriteLine(Loc.Get("betrayal.conditions_not_met"), "yellow");
+                terminal.WriteLine(Loc.Get("betrayal.path_to_redemption", profile.RedemptionPath ?? Loc.Get("ui.none")), "gray");
                 return false;
             }
 
@@ -503,8 +503,8 @@ namespace UsurperRemake.Systems
             // Ocean philosophy - forgiveness is letting go
             OceanPhilosophySystem.Instance.ExperienceMoment(AwakeningMoment.ForgaveBetrayerMercy);
             terminal.WriteLine("");
-            terminal.WriteLine("In forgiving, you release yourself from the weight of resentment.", "bright_cyan");
-            terminal.WriteLine("The wave forgives the shore for breaking it.", "cyan");
+            terminal.WriteLine(Loc.Get("betrayal.forgive_release"), "bright_cyan");
+            terminal.WriteLine(Loc.Get("betrayal.wave_forgives_shore"), "cyan");
 
             OnBetrayalForgiven?.Invoke(npcId);
             return true;
@@ -547,43 +547,43 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "F O R G I V E N E S S", "bright_green", 64);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("betrayal.header_forgiveness"), "bright_green", 64);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine($"  You approach {profile.NPCName}.", "white");
-            terminal.WriteLine("  They flinch, expecting anger. Expecting justice.", "gray");
+            terminal.WriteLine($"  {Loc.Get("betrayal.approach_npc", profile.NPCName)}", "white");
+            terminal.WriteLine($"  {Loc.Get("betrayal.flinch_expecting")}", "gray");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  \"I understand why you did what you did.\"", "bright_yellow");
-            terminal.WriteLine("  \"I don't agree. I may never agree.\"", "yellow");
-            terminal.WriteLine("  \"But I choose to let go of this weight.\"", "yellow");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.forgive_understand")}\"", "bright_yellow");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.forgive_disagree")}\"", "yellow");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.forgive_let_go")}\"", "yellow");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine($"  {profile.NPCName}'s eyes widen.", "white");
-            terminal.WriteLine("  For a moment, neither of you speak.", "gray");
+            terminal.WriteLine($"  {Loc.Get("betrayal.eyes_widen", profile.NPCName)}", "white");
+            terminal.WriteLine($"  {Loc.Get("betrayal.neither_speak")}", "gray");
             terminal.WriteLine("");
 
-            terminal.WriteLine("  \"I... I don't deserve this.\"", "cyan");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.dont_deserve")}\"", "cyan");
             terminal.WriteLine("");
 
-            terminal.WriteLine("  \"Perhaps not. But we rarely get what we deserve.\"", "bright_yellow");
-            terminal.WriteLine("  \"We get what we choose to give.\"", "yellow");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.perhaps_not")}\"", "bright_yellow");
+            terminal.WriteLine($"  \"{Loc.Get("betrayal.choose_to_give")}\"", "yellow");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("  Something shifts between you.", "bright_white");
-            terminal.WriteLine("  Not reconciliation. Not yet.", "white");
-            terminal.WriteLine("  But a door that was closed... is now open.", "green");
+            terminal.WriteLine($"  {Loc.Get("betrayal.something_shifts")}", "bright_white");
+            terminal.WriteLine($"  {Loc.Get("betrayal.not_reconciliation")}", "white");
+            terminal.WriteLine($"  {Loc.Get("betrayal.door_now_open")}", "green");
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -599,27 +599,27 @@ namespace UsurperRemake.Systems
 
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "R E V E N G E", "dark_red", 64);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("betrayal.header_revenge"), "dark_red", 64);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("  You have chosen the path of vengeance.", "red");
-            terminal.WriteLine("  An eye for an eye. Blood for blood.", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("betrayal.path_vengeance")}", "red");
+            terminal.WriteLine($"  {Loc.Get("betrayal.eye_for_eye")}", "dark_red");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
             if (betrayalProfiles.TryGetValue(npcId, out var profile))
             {
-                terminal.WriteLine($"  {profile.NPCName} falls before you.", "gray");
-                terminal.WriteLine("  Their last breath carries no plea for mercy.", "dark_gray");
-                terminal.WriteLine("  They knew this was coming.", "dark_gray");
+                terminal.WriteLine($"  {Loc.Get("betrayal.falls_before_you", profile.NPCName)}", "gray");
+                terminal.WriteLine($"  {Loc.Get("betrayal.no_plea_mercy")}", "dark_gray");
+                terminal.WriteLine($"  {Loc.Get("betrayal.knew_coming")}", "dark_gray");
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  The debt is paid.", "dark_red");
-            terminal.WriteLine("  But the weight... the weight remains.", "gray");
+            terminal.WriteLine($"  {Loc.Get("betrayal.debt_paid")}", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("betrayal.weight_remains")}", "gray");
 
             // Apply consequences
             player.Darkness += 200;
@@ -634,11 +634,11 @@ namespace UsurperRemake.Systems
 
             // Ocean philosophy - revenge is grasping
             terminal.WriteLine("");
-            terminal.WriteLine("Violence begets violence. The wave crashes, but the ocean remains.", "dark_cyan");
+            terminal.WriteLine(Loc.Get("betrayal.violence_begets"), "dark_cyan");
             OceanPhilosophySystem.Instance.GainInsight(-5); // Negative insight
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
 
             OnBetrayalRevenged?.Invoke(npcId);
         }

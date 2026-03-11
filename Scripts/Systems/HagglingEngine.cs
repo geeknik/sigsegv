@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Threading.Tasks;
 
@@ -24,9 +25,9 @@ public static class HagglingEngine
     {
         terminal.SetColor("bright_yellow");
         if (!GameConfig.ScreenReaderMode)
-            terminal.WriteLine("═══ HAGGLE ═══");
+            terminal.WriteLine($"═══ {Loc.Get("haggle.header")} ═══");
         else
-            terminal.WriteLine("HAGGLE");
+            terminal.WriteLine(Loc.Get("haggle.header"));
         terminal.WriteLine("");
         
         // Check if player has haggling attempts left
@@ -40,8 +41,8 @@ public static class HagglingEngine
         if (shopType == ShopType.Weapon && player.Race == CharacterRace.Troll)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Hey! I've already given you a discount!");
-            terminal.WriteLine("Don't expect any more! Get out!");
+            terminal.WriteLine(Loc.Get("haggle.troll_already_discount"));
+            terminal.WriteLine(Loc.Get("haggle.troll_get_out"));
             await Task.Delay(2000);
             return originalCost;
         }
@@ -51,12 +52,12 @@ public static class HagglingEngine
         
         // Get player's offer
         terminal.SetColor("yellow");
-        terminal.Write("Alright, give me an offer: ");
+        terminal.Write(Loc.Get("haggle.give_offer"));
         
         var offerInput = await terminal.GetInput("");
         if (!long.TryParse(offerInput, out long offer) || offer <= 0 || offer >= originalCost)
         {
-            terminal.WriteLine("That's not a serious offer!", "red");
+            terminal.WriteLine(Loc.Get("haggle.not_serious"), "red");
             await Task.Delay(1500);
             return originalCost;
         }
@@ -72,9 +73,9 @@ public static class HagglingEngine
         
         // Haggling succeeded!
         terminal.SetColor("green");
-        terminal.WriteLine($"Alright {player.DisplayName}! You've got a deal!");
+        terminal.WriteLine(Loc.Get("haggle.got_deal", player.DisplayName));
         
-        var confirm = await terminal.GetInput("Accept this price? (Y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("haggle.accept_price"));
         if (confirm.ToUpper() == "Y")
         {
             return offer;
@@ -156,41 +157,41 @@ public static class HagglingEngine
         switch (shopType)
         {
             case ShopType.Weapon:
-                terminal.WriteLine($"You are making me very angry {player.DisplayName}!");
-                terminal.WriteLine("Accept my offer or leave!");
+                terminal.WriteLine(Loc.Get("haggle.weapon_angry", player.DisplayName));
+                terminal.WriteLine(Loc.Get("haggle.accept_or_leave"));
                 terminal.WriteLine("");
-                terminal.WriteLine($"{shopkeeperName}'s face turns unhealthy red...");
+                terminal.WriteLine(Loc.Get("haggle.weapon_face_red", shopkeeperName));
                 break;
-                
+
             case ShopType.Armor:
-                terminal.WriteLine($"Damn you {player.DisplayName}!");
-                terminal.WriteLine("Accept my offer or leave!");
+                terminal.WriteLine(Loc.Get("haggle.armor_damn", player.DisplayName));
+                terminal.WriteLine(Loc.Get("haggle.accept_or_leave"));
                 terminal.WriteLine("");
-                terminal.WriteLine($"{shopkeeperName} seems to be quite upset with your behaviour.");
+                terminal.WriteLine(Loc.Get("haggle.armor_upset", shopkeeperName));
                 break;
         }
         
         terminal.WriteLine("");
-        terminal.WriteLine("What are you going to do? Insist once more or leave?");
-        
-        var choice = await terminal.GetInput("Insist? (Y/N): ");
+        terminal.WriteLine(Loc.Get("haggle.insist_or_leave"));
+
+        var choice = await terminal.GetInput(Loc.Get("haggle.insist_prompt"));
         
         if (choice.ToUpper() == "Y")
         {
             // Player gets kicked out!
             terminal.SetColor("bright_red");
-            terminal.WriteLine("You have been kicked out!");
-            
+            terminal.WriteLine(Loc.Get("haggle.kicked_out"));
+
             // Create news entry (placeholder for news system)
             string shopName = shopType == ShopType.Weapon ? "Weaponshop" : "Armor Shop";
-            terminal.WriteLine($"[NEWS] {player.DisplayName} was kicked out from the {shopName}!");
+            terminal.WriteLine(Loc.Get("haggle.kicked_news", player.DisplayName, shopName));
             
             await Task.Delay(3000);
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("End of discussion.");
+            terminal.WriteLine(Loc.Get("haggle.end_discussion"));
             await Task.Delay(1500);
         }
     }
@@ -205,13 +206,13 @@ public static class HagglingEngine
         switch (shopType)
         {
             case ShopType.Weapon:
-                terminal.WriteLine("Haha! You think you're funny huh!?");
-                terminal.WriteLine("Get out of here before I get nasty!");
+                terminal.WriteLine(Loc.Get("haggle.weapon_fail_1"));
+                terminal.WriteLine(Loc.Get("haggle.weapon_fail_2"));
                 break;
-                
+
             case ShopType.Armor:
-                terminal.WriteLine("Stop kidding around and get out, so I can");
-                terminal.WriteLine("do some serious business!");
+                terminal.WriteLine(Loc.Get("haggle.armor_fail_1"));
+                terminal.WriteLine(Loc.Get("haggle.armor_fail_2"));
                 break;
         }
         

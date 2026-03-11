@@ -2121,12 +2121,12 @@ public static class ClassAbilitySystem
         while (true)
         {
             terminal.ClearScreen();
-            UIHelper.WriteSectionHeader(terminal, "COMBAT ABILITIES", "bright_yellow");
-            terminal.WriteLine($"Class: {player.Class} | Level: {player.Level} | Stamina: {player.MaxCombatStamina}", "cyan");
+            UIHelper.WriteSectionHeader(terminal, Loc.Get("ability.header"), "bright_yellow");
+            terminal.WriteLine($"{Loc.Get("status.class")}: {player.Class} | {Loc.Get("ui.level")}: {player.Level} | {Loc.Get("ui.stat_stamina")}: {player.MaxCombatStamina}", "cyan");
             terminal.WriteLine("");
 
             // Show current quickbar
-            terminal.WriteLine("  Your Quickbar:", "bright_white");
+            terminal.WriteLine($"  {Loc.Get("ability.your_quickbar")}:", "bright_white");
             for (int i = 0; i < 9; i++)
             {
                 var slotId = player.Quickbar[i];
@@ -2151,7 +2151,7 @@ public static class ClassAbilitySystem
                         // Invalid ability in slot - clear it
                         player.Quickbar[i] = null;
                         terminal.SetColor("darkgray");
-                        terminal.WriteLine($"  [{i + 1}] --- empty ---");
+                        terminal.WriteLine($"  [{i + 1}] --- {Loc.Get("ui.empty").ToLower()} ---");
                     }
                 }
                 else
@@ -2169,7 +2169,7 @@ public static class ClassAbilitySystem
             terminal.WriteLine("");
             if (unequipped.Count > 0)
             {
-                terminal.WriteLine("  Available Abilities:", "bright_white");
+                terminal.WriteLine($"  {Loc.Get("ability.available")}:", "bright_white");
                 for (int i = 0; i < unequipped.Count; i++)
                 {
                     char letter = (char)('a' + i);
@@ -2196,11 +2196,11 @@ public static class ClassAbilitySystem
             if (locked.Count > 0)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("  Locked (level too low):", "darkgray");
+                terminal.WriteLine($"  {Loc.Get("ability.locked")}:", "darkgray");
                 foreach (var ability in locked)
                 {
                     terminal.SetColor("darkgray");
-                    terminal.Write($"      {ability.Name,-24} ({ability.StaminaCost} ST) Requires Lv{ability.LevelRequired}");
+                    terminal.Write($"      {ability.Name,-24} ({ability.StaminaCost} ST) {Loc.Get("ability.requires_lv", ability.LevelRequired)}");
                     if (!string.IsNullOrEmpty(ability.Description))
                         terminal.Write($"  {ability.Description}");
                     terminal.WriteLine("");
@@ -2209,8 +2209,8 @@ public static class ClassAbilitySystem
 
             terminal.WriteLine("");
             terminal.WriteLine(GameConfig.ScreenReaderMode
-                ? "1-9. Equip or change slot, C. Clear a slot, A. Auto-fill, X. Exit"
-                : "[1-9] Equip/change slot  [C] Clear a slot  [A] Auto-fill  [X] Exit", "bright_yellow");
+                ? Loc.Get("ability.menu_sr")
+                : Loc.Get("ability.menu_visual"), "bright_yellow");
             var input = await terminal.GetInput("> ");
             if (string.IsNullOrWhiteSpace(input)) continue;
 
@@ -2222,7 +2222,7 @@ public static class ClassAbilitySystem
             {
                 // Auto-fill: populate quickbar with available abilities in level order
                 GameEngine.AutoPopulateQuickbar(player);
-                terminal.WriteLine("Quickbar auto-filled!", "bright_green");
+                terminal.WriteLine(Loc.Get("ability.auto_filled"), "bright_green");
                 await SaveSystem.Instance.AutoSave(player);
                 await Task.Delay(800);
                 continue;
@@ -2230,7 +2230,7 @@ public static class ClassAbilitySystem
 
             if (cmd == "C")
             {
-                terminal.Write("Clear which slot? (1-9): ", "yellow");
+                terminal.Write(Loc.Get("ability.clear_slot_prompt"), "yellow");
                 var clearInput = await terminal.GetInput("");
                 if (int.TryParse(clearInput.Trim(), out int clearSlot) && clearSlot >= 1 && clearSlot <= 9)
                 {
@@ -2239,7 +2239,7 @@ public static class ClassAbilitySystem
                     {
                         var clearedAbility = GetAbility(clearedId);
                         player.Quickbar[clearSlot - 1] = null;
-                        terminal.WriteLine($"Removed {clearedAbility?.Name ?? clearedId} from slot {clearSlot}.", "cyan");
+                        terminal.WriteLine(Loc.Get("ability.removed_from_slot", clearedAbility?.Name ?? clearedId, clearSlot), "cyan");
                         await SaveSystem.Instance.AutoSave(player);
                         await Task.Delay(800);
                     }
@@ -2252,7 +2252,7 @@ public static class ClassAbilitySystem
             {
                 if (unequipped.Count == 0)
                 {
-                    terminal.WriteLine("All abilities are already on your quickbar!", "yellow");
+                    terminal.WriteLine(Loc.Get("ability.all_equipped"), "yellow");
                     await Task.Delay(800);
                     continue;
                 }
@@ -2261,11 +2261,11 @@ public static class ClassAbilitySystem
                 if (currentInSlot != null)
                 {
                     var currentAbility = GetAbility(currentInSlot);
-                    terminal.WriteLine($"Slot {slotNum} has: {currentAbility?.Name ?? currentInSlot}. Pick a replacement:", "cyan");
+                    terminal.WriteLine(Loc.Get("ability.slot_has_pick", slotNum, currentAbility?.Name ?? currentInSlot), "cyan");
                 }
                 else
                 {
-                    terminal.WriteLine($"Pick an ability for slot {slotNum}:", "cyan");
+                    terminal.WriteLine(Loc.Get("ability.pick_for_slot", slotNum), "cyan");
                 }
 
                 for (int i = 0; i < unequipped.Count; i++)
@@ -2287,7 +2287,7 @@ public static class ClassAbilitySystem
                 terminal.SetColor("darkgray");
                 terminal.Write("] ");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Cancel");
+                terminal.WriteLine(Loc.Get("ability.cancel"));
 
                 var pick = await terminal.GetInput("> ");
                 if (string.IsNullOrWhiteSpace(pick) || pick.Trim() == "0") continue;
@@ -2306,7 +2306,7 @@ public static class ClassAbilitySystem
                     }
 
                     player.Quickbar[slotNum - 1] = chosen.Id;
-                    terminal.WriteLine($"Equipped {chosen.Name} to slot {slotNum}!", "bright_green");
+                    terminal.WriteLine(Loc.Get("ability.equipped_to_slot", chosen.Name, slotNum), "bright_green");
                     await SaveSystem.Instance.AutoSave(player);
                     await Task.Delay(800);
                 }

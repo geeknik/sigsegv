@@ -291,7 +291,7 @@ public partial class RelationshipSystem
 
         if (character1.IntimacyActs < 1)
         {
-            message = "You have no intimacy acts left today!";
+            message = Loc.Get("ui.no_intimacy_acts");
             return false;
         }
 

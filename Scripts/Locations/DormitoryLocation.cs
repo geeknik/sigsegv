@@ -36,23 +36,23 @@ public class DormitoryLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        WriteBoxHeader("THE DORMITORY", "bright_cyan");
+        WriteBoxHeader(Loc.Get("dormitory.header"), "bright_cyan");
         terminal.WriteLine("");
 
         // Atmosphere
         terminal.SetColor("white");
-        terminal.Write("Rows of creaky wooden bunks line the walls. The warm, stale air is thick ");
-        terminal.WriteLine("with");
-        terminal.Write("the smell of sweat and cheap ale. ");
+        terminal.Write(Loc.Get("dormitory.desc1"));
+        terminal.WriteLine(Loc.Get("dormitory.desc2"));
+        terminal.Write(Loc.Get("dormitory.desc3"));
         terminal.SetColor("gray");
-        terminal.WriteLine("A few snoring lumps stir under thin blankets.");
+        terminal.WriteLine(Loc.Get("dormitory.desc4"));
         terminal.WriteLine("");
 
         ShowNPCsInLocation();
 
         // Menu
         terminal.SetColor("cyan");
-        terminal.WriteLine("What would you like to do?");
+        terminal.WriteLine(Loc.Get("dormitory.what_to_do"));
         terminal.WriteLine("");
 
         if (DoorMode.IsOnlineMode)
@@ -65,7 +65,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ist sleepers       ");
+            terminal.Write(Loc.Get("dormitory.list_sleepers"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -74,7 +74,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("xamine          ");
+            terminal.Write(Loc.Get("dormitory.examine_menu"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -83,7 +83,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine($"o to sleep ({GameConfig.DormitorySleepCost}g, logout)");
+            terminal.WriteLine(Loc.Get("dormitory.go_sleep_online", GameConfig.DormitorySleepCost));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -93,7 +93,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ill a sleeper      ");
+            terminal.Write(Loc.Get("dormitory.kill_sleeper"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -102,7 +102,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ake guests      ");
+            terminal.Write(Loc.Get("dormitory.wake_guests"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -111,7 +111,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("tatus");
+            terminal.WriteLine(Loc.Get("dormitory.status_menu"));
 
             // Row 3
             terminal.SetColor("darkgray");
@@ -121,7 +121,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn to Anchor Road");
+            terminal.WriteLine(Loc.Get("dormitory.return_anchor"));
         }
         else
         {
@@ -133,7 +133,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ist sleepers       ");
+            terminal.Write(Loc.Get("dormitory.list_sleepers"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -142,7 +142,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("xamine          ");
+            terminal.Write(Loc.Get("dormitory.examine_menu"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -151,7 +151,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("o to sleep");
+            terminal.WriteLine(Loc.Get("dormitory.go_sleep"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -161,7 +161,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("ake the guests     ");
+            terminal.Write(Loc.Get("dormitory.wake_guests_sp"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -170,7 +170,7 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("tatus           ");
+            terminal.Write(Loc.Get("dormitory.status_menu_sp"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -179,14 +179,14 @@ public class DormitoryLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn");
+            terminal.WriteLine(Loc.Get("dormitory.return_short"));
         }
         terminal.WriteLine("");
 
         if (DoorMode.IsOnlineMode)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("  WARNING: Sleeping here leaves you vulnerable to attack!");
+            terminal.WriteLine(Loc.Get("dormitory.sleep_warning"));
             terminal.WriteLine("");
         }
 
@@ -260,20 +260,20 @@ public class DormitoryLocation : BaseLocation
         RefreshSleepers();
         terminal.ClearScreen();
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Sleeping Guests");
+        terminal.WriteLine(Loc.Get("dormitory.sleeping_guests"));
         terminal.SetColor("cyan");
 
         // Show NPC sleepers
         if (sleepers.Count == 0 && !DoorMode.IsOnlineMode)
         {
-            terminal.WriteLine("No one is asleep right now.");
+            terminal.WriteLine(Loc.Get("dormitory.no_sleepers"));
         }
         else
         {
             int idx = 1;
             foreach (var npc in sleepers)
             {
-                terminal.WriteLine($"{idx,3}. {npc.Name2} (Lvl {npc.Level})");
+                terminal.WriteLine($"{idx,3}. {npc.Name2} ({Loc.Get("common.lvl")} {npc.Level})");
                 idx++;
             }
 
@@ -284,10 +284,10 @@ public class DormitoryLocation : BaseLocation
                 if (dormNPCs.Count > 0)
                 {
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("\n  Sleeping NPCs:");
+                    terminal.WriteLine($"\n{Loc.Get("dormitory.sleeping_npcs")}");
                     foreach (var npcName in dormNPCs)
                     {
-                        terminal.WriteLine($"  {idx,3}. {npcName} [SLEEPING NPC]", "yellow");
+                        terminal.WriteLine($"  {idx,3}. {npcName} {Loc.Get("dormitory.sleeping_npc_tag")}", "yellow");
                         idx++;
                     }
                 }
@@ -303,17 +303,17 @@ public class DormitoryLocation : BaseLocation
                     if (dormSleepers.Count > 0)
                     {
                         terminal.SetColor("dark_red");
-                        terminal.WriteLine("\n  Vulnerable Players:");
+                        terminal.WriteLine($"\n{Loc.Get("dormitory.vulnerable_players")}");
                         foreach (var s in dormSleepers)
                         {
-                            terminal.WriteLine($"  {idx,3}. {s.Username} [SLEEPING]", "red");
+                            terminal.WriteLine($"  {idx,3}. {s.Username} {Loc.Get("dormitory.sleeping_tag")}", "red");
                             idx++;
                         }
                     }
                 }
             }
         }
-        terminal.WriteLine("\nPress Enter...");
+        terminal.WriteLine(Loc.Get("dormitory.press_enter"));
         await terminal.WaitForKeyPress();
     }
 
@@ -322,11 +322,11 @@ public class DormitoryLocation : BaseLocation
         RefreshSleepers();
         if (sleepers.Count == 0)
         {
-            terminal.WriteLine("Nobody to examine.", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.nobody_examine"), "gray");
             await Task.Delay(1500);
             return;
         }
-        var input = await terminal.GetInput("Enter sleeper number or name: ");
+        var input = await terminal.GetInput(Loc.Get("dormitory.enter_sleeper"));
         NPC? npc = null;
         if (int.TryParse(input, out int num) && num >= 1 && num <= sleepers.Count)
             npc = sleepers[num - 1];
@@ -335,7 +335,7 @@ public class DormitoryLocation : BaseLocation
 
         if (npc == null)
         {
-            terminal.WriteLine("No such sleeper.", "red");
+            terminal.WriteLine(Loc.Get("dormitory.no_such_sleeper"), "red");
             await Task.Delay(1500);
             return;
         }
@@ -350,7 +350,7 @@ public class DormitoryLocation : BaseLocation
         }
         terminal.SetColor("white");
         terminal.WriteLine(npc.GetDisplayInfo());
-        terminal.WriteLine("\nPress Enter...");
+        terminal.WriteLine(Loc.Get("dormitory.press_enter"));
         await terminal.WaitForKeyPress();
     }
 
@@ -363,13 +363,13 @@ public class DormitoryLocation : BaseLocation
         }
 
         // Single-player: classic behavior
-        var confirm = await terminal.GetInput("Stay here for the night? (y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("dormitory.stay_night"));
         if (!confirm.Equals("Y", StringComparison.OrdinalIgnoreCase))
             return;
 
         terminal.ClearScreen();
         terminal.SetColor("white");
-        terminal.WriteLine("You claim a free bunk and drift into uneasy sleep...");
+        terminal.WriteLine(Loc.Get("dormitory.claim_bunk"));
         await Task.Delay(1500);
 
         currentPlayer.HP = currentPlayer.MaxHP;
@@ -381,7 +381,7 @@ public class DormitoryLocation : BaseLocation
             await DailySystemManager.Instance.ForceDailyReset();
         }
 
-        terminal.WriteLine("You awaken refreshed, ready for a new day of adventure.", "green");
+        terminal.WriteLine(Loc.Get("dormitory.awaken_refreshed"), "green");
         await Task.Delay(1500);
 
         await NavigateToLocation(GameLocation.MainStreet);
@@ -391,12 +391,12 @@ public class DormitoryLocation : BaseLocation
     {
         int cost = GameConfig.DormitorySleepCost;
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\n  Cost: {cost}g for a bunk bed.");
+        terminal.WriteLine($"\n{Loc.Get("dormitory.cost_bunk", cost)}");
         terminal.SetColor("red");
-        terminal.WriteLine("  WARNING: You are vulnerable to attack while sleeping here!");
+        terminal.WriteLine(Loc.Get("dormitory.sleep_vulnerable"));
         terminal.SetColor("white");
 
-        var confirm = await terminal.GetInput($"Sleep here for the night and log out? (y/N): ");
+        var confirm = await terminal.GetInput(Loc.Get("dormitory.sleep_logout"));
         if (!confirm.Equals("Y", StringComparison.OrdinalIgnoreCase))
             return;
 
@@ -409,19 +409,19 @@ public class DormitoryLocation : BaseLocation
             long shortfall = cost - currentPlayer.Gold;
             currentPlayer.Gold = 0;
             currentPlayer.BankGold -= shortfall;
-            terminal.WriteLine($"  ({shortfall:N0}g withdrawn from your bank account)", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.bank_withdrawn", shortfall.ToString("N0")), "gray");
         }
         else
         {
-            terminal.WriteLine("You can't afford even this flea-ridden bunk.", "red");
-            terminal.WriteLine($"  (Checked gold on hand: {currentPlayer.Gold:N0} and bank: {currentPlayer.BankGold:N0})", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.cant_afford"), "red");
+            terminal.WriteLine(Loc.Get("dormitory.checked_gold", currentPlayer.Gold.ToString("N0"), currentPlayer.BankGold.ToString("N0")), "gray");
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("white");
-        terminal.WriteLine("You claim a bunk and pull the thin blanket over yourself...");
+        terminal.WriteLine(Loc.Get("dormitory.claim_thin_blanket"));
         await Task.Delay(1000);
 
         // Restore HP/Mana/Stamina
@@ -446,9 +446,9 @@ public class DormitoryLocation : BaseLocation
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine("You drift into uneasy sleep... (logging out)");
+        terminal.WriteLine(Loc.Get("dormitory.drift_uneasy"));
         terminal.SetColor("red");
-        terminal.WriteLine("Anyone could slit your throat in the night.");
+        terminal.WriteLine(Loc.Get("dormitory.slit_throat"));
         await Task.Delay(2000);
 
         throw new LocationExitException(GameLocation.NoWhere);
@@ -459,7 +459,7 @@ public class DormitoryLocation : BaseLocation
         var backend = SaveSystem.Instance.Backend as SqlSaveBackend;
         if (backend == null)
         {
-            terminal.WriteLine("Not available.", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.not_available"), "gray");
             await Task.Delay(1000);
             return;
         }
@@ -474,14 +474,14 @@ public class DormitoryLocation : BaseLocation
 
         if (sleepingNPCNames.Count == 0 && dormPlayerSleepers.Count == 0)
         {
-            terminal.WriteLine("No vulnerable sleepers in the dormitory.", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.no_vulnerable"), "gray");
             await Task.Delay(1500);
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine("Dormitory — Vulnerable Sleepers");
+        terminal.WriteLine(Loc.Get("dormitory.vulnerable_title"));
         terminal.WriteLine("");
 
         // Build combined target list (skip NPCs on the player's team or spouse/lover)
@@ -503,8 +503,8 @@ public class DormitoryLocation : BaseLocation
                 continue;
             if (npc != null && Math.Abs(npc.Level - attackerLevel) > 5)
                 continue;
-            string lvlStr = npc != null ? $" (Lvl {npc.Level})" : "";
-            terminal.WriteLine($"  {targets.Count + 1}. {npcName}{lvlStr} [SLEEPING NPC]", "yellow");
+            string lvlStr = npc != null ? $" ({Loc.Get("common.lvl")} {npc.Level})" : "";
+            terminal.WriteLine($"  {targets.Count + 1}. {npcName}{lvlStr} {Loc.Get("dormitory.sleeping_npc_tag")}", "yellow");
             targets.Add((npcName, true));
         }
         foreach (var s in dormPlayerSleepers)
@@ -519,12 +519,12 @@ public class DormitoryLocation : BaseLocation
             if (Math.Abs(targetLevel - attackerLevel) > 5)
                 continue;
 
-            terminal.WriteLine($"  {targets.Count + 1}. {s.Username} (Lvl {targetLevel}) [SLEEPING PLAYER]", "red");
+            terminal.WriteLine($"  {targets.Count + 1}. {s.Username} ({Loc.Get("common.lvl")} {targetLevel}) {Loc.Get("dormitory.sleeping_player_tag")}", "red");
             targets.Add((s.Username, false));
         }
 
         terminal.SetColor("white");
-        var input = await terminal.GetInput("\nWho do you attack? (number or name, blank to cancel): ");
+        var input = await terminal.GetInput($"\n{Loc.Get("dormitory.who_attack")}");
         if (string.IsNullOrWhiteSpace(input)) return;
 
         (string name, bool isNPC) chosen = default;
@@ -539,7 +539,7 @@ public class DormitoryLocation : BaseLocation
 
         if (chosen.name == null)
         {
-            terminal.WriteLine("No such sleeper.", "red");
+            terminal.WriteLine(Loc.Get("dormitory.no_such_sleeper"), "red");
             await Task.Delay(1000);
             return;
         }
@@ -559,14 +559,14 @@ public class DormitoryLocation : BaseLocation
         var npc = NPCSpawnSystem.Instance.GetNPCByName(npcName);
         if (npc == null || !npc.IsAlive || npc.IsDead)
         {
-            terminal.WriteLine("They are no longer here.", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.no_longer_here"), "gray");
             await Task.Delay(1000);
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"\n  You creep toward {npcName}'s bunk, weapon drawn...\n");
+        terminal.WriteLine($"\n  {Loc.Get("dormitory.creep_toward_npc", npcName)}\n");
         await Task.Delay(1500);
 
         // Darkness penalty for attacking a sleeping NPC
@@ -593,11 +593,11 @@ public class DormitoryLocation : BaseLocation
             {
                 currentPlayer.Gold += stolenGold;
                 npc.Gold -= stolenGold;
-                terminal.WriteLine($"You rifle through their belongings and steal {stolenGold:N0} gold!", "yellow");
+                terminal.WriteLine(Loc.Get("dormitory.steal_gold", stolenGold), "yellow");
             }
 
             terminal.SetColor("dark_red");
-            terminal.WriteLine($"\nYou leave {npcName}'s body in the bunk.");
+            terminal.WriteLine($"\n{Loc.Get("dormitory.leave_body", npcName)}");
 
             // Record murder memory on the NPC (they'll come for revenge when they respawn)
             npc.Memory?.RecordEvent(new MemoryEvent
@@ -616,7 +616,7 @@ public class DormitoryLocation : BaseLocation
                 var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
                 factionSystem?.ModifyReputation(npc.NPCFaction.Value, -200);
                 terminal.SetColor("red");
-                terminal.WriteLine($"Your standing with {UsurperRemake.Systems.FactionSystem.Factions[npc.NPCFaction.Value].Name} has plummeted! (-200)");
+                terminal.WriteLine(Loc.Get("dormitory.faction_plummeted", UsurperRemake.Systems.FactionSystem.Factions[npc.NPCFaction.Value].Name));
             }
 
             // Witness memories for other NPCs at this location
@@ -645,7 +645,7 @@ public class DormitoryLocation : BaseLocation
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{npcName} fought you off even half-asleep!");
+            terminal.WriteLine(Loc.Get("dormitory.fought_off_npc", npcName));
             WorldSimulator.WakeUpNPC(npcName);
             await Task.Delay(2000);
         }
@@ -662,14 +662,14 @@ public class DormitoryLocation : BaseLocation
         var victimSave = await backend.ReadGameData(target.Username);
         if (victimSave?.Player == null)
         {
-            terminal.WriteLine("Could not load their data.", "red");
+            terminal.WriteLine(Loc.Get("dormitory.could_not_load"), "red");
             await Task.Delay(1000);
             return;
         }
 
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"\n  You creep toward {target.Username}'s bunk, weapon drawn...\n");
+        terminal.WriteLine($"\n  {Loc.Get("dormitory.creep_toward_player", target.Username)}\n");
         await Task.Delay(1500);
 
         // No guards in dormitory — fight the sleeper directly
@@ -691,13 +691,13 @@ public class DormitoryLocation : BaseLocation
             {
                 currentPlayer.Gold += stolenGold;
                 await backend.DeductGoldFromPlayer(target.Username, stolenGold);
-                terminal.WriteLine($"You rifle through their belongings and steal {stolenGold:N0} gold!", "yellow");
+                terminal.WriteLine(Loc.Get("dormitory.steal_gold", stolenGold), "yellow");
             }
 
             // Steal 1 random item
             string stolenItemName = await StealRandomItem(backend, target.Username, victimSave);
             if (stolenItemName != null)
-                terminal.WriteLine($"You also take their {stolenItemName}!", "yellow");
+                terminal.WriteLine(Loc.Get("dormitory.also_take_item", stolenItemName), "yellow");
 
             // Apply XP loss to victim
             long xpLoss = (long)(victimSave.Player.Experience * GameConfig.SleeperXPLossPercent / 100.0);
@@ -724,13 +724,13 @@ public class DormitoryLocation : BaseLocation
                 $"{currentPlayer.Name2} murdered you in your sleep! They stole {stolenGold:N0} gold{(stolenItemName != null ? $" and your {stolenItemName}" : "")}.");
 
             terminal.SetColor("dark_red");
-            terminal.WriteLine($"\nYou leave {target.Username}'s lifeless body in the bunk.");
+            terminal.WriteLine($"\n{Loc.Get("dormitory.leave_lifeless", target.Username)}");
             await Task.Delay(2000);
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{target.Username} fought you off even in their sleep!");
+            terminal.WriteLine(Loc.Get("dormitory.fought_off_player", target.Username));
             await Task.Delay(2000);
         }
         await terminal.WaitForKeyPress();
@@ -805,7 +805,7 @@ public class DormitoryLocation : BaseLocation
     {
         if (currentPlayer.DarkNr <= 0)
         {
-            terminal.WriteLine("You feel too righteous to cause such mischief today.", "yellow");
+            terminal.WriteLine(Loc.Get("dormitory.too_righteous"), "yellow");
             await Task.Delay(1500);
             return;
         }
@@ -813,12 +813,12 @@ public class DormitoryLocation : BaseLocation
         RefreshSleepers();
         if (sleepers.Count == 0)
         {
-            terminal.WriteLine("There is no one to disturb.", "gray");
+            terminal.WriteLine(Loc.Get("dormitory.no_one_disturb"), "gray");
             await Task.Delay(1500);
             return;
         }
 
-        terminal.WriteLine("You let out a thunderous shout!", "yellow");
+        terminal.WriteLine(Loc.Get("dormitory.thunderous_shout"), "yellow");
         await Task.Delay(1000);
         currentPlayer.Darkness += 10;
         currentPlayer.DarkNr -= 1;
@@ -829,18 +829,18 @@ public class DormitoryLocation : BaseLocation
         foreach (var npc in angry)
         {
             if (!currentPlayer.IsAlive) break;
-            terminal.WriteLine($"{npc.Name2} wakes up furious and attacks you!", "red");
+            terminal.WriteLine(Loc.Get("dormitory.wakes_furious", npc.Name2), "red");
             await Task.Delay(1000);
 
             var result = await combatEngine.PlayerVsPlayer(currentPlayer, npc);
             if (!currentPlayer.IsAlive)
             {
-                terminal.WriteLine("You were knocked out!", "red");
+                terminal.WriteLine(Loc.Get("dormitory.knocked_out"), "red");
                 break;
             }
             else
             {
-                terminal.WriteLine($"You subdued {npc.Name2}.", "green");
+                terminal.WriteLine(Loc.Get("dormitory.subdued", npc.Name2), "green");
                 npc.HP = Math.Max(1, npc.HP - 10);
             }
         }

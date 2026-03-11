@@ -47,12 +47,12 @@ namespace UsurperRemake.Locations
                 term.SetColor("bright_red");
                 if (player.ScreenReaderMode)
                 {
-                    term.WriteLine("ENTRY DENIED!");
+                    term.WriteLine(Loc.Get("church.entry_denied"));
                 }
                 else
                 {
                     term.WriteLine("╔══════════════════════════════════════════════════════════════════════════════╗");
-                    { const string t = "ENTRY DENIED!"; int l = (78 - t.Length) / 2, r = 78 - t.Length - l; term.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
+                    { string t = Loc.Get("church.entry_denied"); int l = (78 - t.Length) / 2, r = 78 - t.Length - l; term.WriteLine($"║{new string(' ', l)}{t}{new string(' ', r)}║"); }
                     term.WriteLine("╚══════════════════════════════════════════════════════════════════════════════╝");
                 }
                 term.WriteLine("");
@@ -60,11 +60,11 @@ namespace UsurperRemake.Locations
                 term.WriteLine(reason);
                 term.WriteLine("");
                 term.SetColor("gray");
-                term.WriteLine("The holy wards surrounding this sacred place repel those of dark alignment.");
-                term.WriteLine("Perhaps confession at a neutral shrine could help cleanse your soul...");
+                term.WriteLine(Loc.Get("church.holy_wards"));
+                term.WriteLine(Loc.Get("church.cleanse_soul"));
                 term.WriteLine("");
                 term.SetColor("yellow");
-                term.Write("Press Enter to return to the street...");
+                term.Write(Loc.Get("church.press_return"));
                 await term.GetKeyInput();
                 throw new LocationExitException(GameLocation.MainStreet);
             }
@@ -168,37 +168,37 @@ namespace UsurperRemake.Locations
                 return;
             }
 
-            WriteBoxHeader("CHURCH OF GOOD DEEDS", "bright_cyan");
+            WriteBoxHeader(Loc.Get("church.header"), "bright_cyan");
             terminal.WriteLine("");
             
             // Church description
             terminal.SetColor("white");
-            terminal.WriteLine("You stand in a magnificent cathedral with soaring arches and stained glass");
-            terminal.WriteLine("windows casting colorful light across the stone floor. The air is filled");
-            terminal.WriteLine("with the scent of incense and the soft murmur of prayers. Candles flicker");
-            terminal.WriteLine("on the altar, and religious artifacts line the walls.");
+            terminal.WriteLine(Loc.Get("church.desc1"));
+            terminal.WriteLine(Loc.Get("church.desc2"));
+            terminal.WriteLine(Loc.Get("church.desc3"));
+            terminal.WriteLine(Loc.Get("church.desc4"));
             terminal.WriteLine("");
-            
+
             // Current player status
             terminal.SetColor("cyan");
-            terminal.WriteLine($"Your current chivalry: {currentPlayer.Chivalry}");
-            terminal.WriteLine($"Your current darkness: {currentPlayer.Darkness}");
-            terminal.WriteLine($"Your moral alignment: {GetAlignmentDescription(currentPlayer)}");
+            terminal.WriteLine(Loc.Get("church.chivalry", currentPlayer.Chivalry));
+            terminal.WriteLine(Loc.Get("church.darkness", currentPlayer.Darkness));
+            terminal.WriteLine(Loc.Get("church.alignment", GetAlignmentDescription(currentPlayer)));
             terminal.WriteLine("");
-            
+
             // Church staff greeting
             terminal.SetColor("yellow");
             if (currentPlayer.Chivalry > currentPlayer.Darkness)
             {
-                terminal.WriteLine($"{bishopName} nods approvingly at your righteous presence.");
+                terminal.WriteLine(Loc.Get("church.bishop_approves", bishopName));
             }
             else if (currentPlayer.Darkness > currentPlayer.Chivalry)
             {
-                terminal.WriteLine($"{bishopName} looks concerned about the darkness in your soul.");
+                terminal.WriteLine(Loc.Get("church.bishop_concerned", bishopName));
             }
             else
             {
-                terminal.WriteLine($"{bishopName} welcomes you to this sacred place.");
+                terminal.WriteLine(Loc.Get("church.bishop_welcomes", bishopName));
             }
             terminal.WriteLine("");
 
@@ -206,7 +206,7 @@ namespace UsurperRemake.Locations
 
             // Menu options
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Church Services Available:");
+            terminal.WriteLine(Loc.Get("church.services_title"));
             if (!IsScreenReader)
                 terminal.WriteLine("─────────────────────────");
 
@@ -217,7 +217,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Make a donation to the Church");
+            terminal.WriteLine(Loc.Get("church.donate"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -226,7 +226,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Purchase a blessing for your soul");
+            terminal.WriteLine(Loc.Get("church.blessing"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -235,7 +235,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Seek healing services");
+            terminal.WriteLine(Loc.Get("church.healing"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -244,7 +244,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Arrange a marriage ceremony");
+            terminal.WriteLine(Loc.Get("church.marriage"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -253,7 +253,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Confess your sins");
+            terminal.WriteLine(Loc.Get("church.confess"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -262,7 +262,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("View church records");
+            terminal.WriteLine(Loc.Get("church.records"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -271,7 +271,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Speak with the Bishop");
+            terminal.WriteLine(Loc.Get("church.bishop"));
 
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
@@ -281,7 +281,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("red");
-            terminal.WriteLine("Return to Main Street");
+            terminal.WriteLine(Loc.Get("church.return"));
             terminal.WriteLine("");
             
             // Status line (basic)
@@ -290,34 +290,34 @@ namespace UsurperRemake.Locations
 
         private void DisplayLocationSR()
         {
-            terminal.WriteLine("CHURCH OF GOOD DEEDS");
+            terminal.WriteLine(Loc.Get("church.header"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("A magnificent cathedral with soaring arches and stained glass windows.");
+            terminal.WriteLine(Loc.Get("church.sr_desc"));
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine($"Chivalry: {currentPlayer.Chivalry}  Darkness: {currentPlayer.Darkness}  Alignment: {GetAlignmentDescription(currentPlayer)}");
+            terminal.WriteLine(Loc.Get("church.sr_alignment_line", currentPlayer.Chivalry, currentPlayer.Darkness, GetAlignmentDescription(currentPlayer)));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
             if (currentPlayer.Chivalry > currentPlayer.Darkness)
-                terminal.WriteLine($"{bishopName} nods approvingly at your righteous presence.");
+                terminal.WriteLine(Loc.Get("church.bishop_approves", bishopName));
             else if (currentPlayer.Darkness > currentPlayer.Chivalry)
-                terminal.WriteLine($"{bishopName} looks concerned about the darkness in your soul.");
+                terminal.WriteLine(Loc.Get("church.bishop_concerned", bishopName));
             else
-                terminal.WriteLine($"{bishopName} welcomes you to this sacred place.");
+                terminal.WriteLine(Loc.Get("church.bishop_welcomes", bishopName));
             terminal.WriteLine("");
             ShowNPCsInLocation();
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Church Services:");
-            WriteSRMenuOption("C", "Make a donation to the Church");
-            WriteSRMenuOption("B", "Purchase a blessing");
-            WriteSRMenuOption("H", "Seek healing services");
-            WriteSRMenuOption("M", "Arrange a marriage ceremony");
-            WriteSRMenuOption("F", "Confess your sins");
-            WriteSRMenuOption("V", "View church records");
-            WriteSRMenuOption("S", "Speak with the Bishop");
+            terminal.WriteLine(Loc.Get("church.sr_services_title"));
+            WriteSRMenuOption("C", Loc.Get("church.donate"));
+            WriteSRMenuOption("B", Loc.Get("church.blessing"));
+            WriteSRMenuOption("H", Loc.Get("church.healing"));
+            WriteSRMenuOption("M", Loc.Get("church.marriage"));
+            WriteSRMenuOption("F", Loc.Get("church.confess"));
+            WriteSRMenuOption("V", Loc.Get("church.records"));
+            WriteSRMenuOption("S", Loc.Get("church.bishop"));
             terminal.WriteLine("");
-            WriteSRMenuOption("R", "Return to Main Street");
+            WriteSRMenuOption("R", Loc.Get("church.return"));
             terminal.WriteLine("");
             ShowStatusLine();
         }
@@ -327,24 +327,24 @@ namespace UsurperRemake.Locations
         /// </summary>
         private void DisplayLocationBBS()
         {
-            ShowBBSHeader("CHURCH OF GOOD DEEDS");
+            ShowBBSHeader(Loc.Get("church.header"));
             // 1-line alignment info
             terminal.SetColor("gray");
-            terminal.Write($" Alignment: ");
+            terminal.Write(Loc.Get("church.bbs_alignment"));
             terminal.SetColor("cyan");
             terminal.Write(GetAlignmentDescription(currentPlayer));
             terminal.SetColor("gray");
-            terminal.Write($"  Chivalry:");
+            terminal.Write(Loc.Get("church.bbs_chivalry"));
             terminal.SetColor("bright_green");
             terminal.Write($"{currentPlayer.Chivalry}");
             terminal.SetColor("gray");
-            terminal.Write($"  Darkness:");
+            terminal.Write(Loc.Get("church.bbs_darkness"));
             terminal.SetColor("red");
             terminal.WriteLine($"{currentPlayer.Darkness}");
             ShowBBSNPCs();
             // Menu rows
-            ShowBBSMenuRow(("C", "bright_green", "Donate"), ("B", "bright_yellow", "Blessing"), ("H", "bright_cyan", "Heal"), ("M", "bright_magenta", "Marriage"));
-            ShowBBSMenuRow(("F", "cyan", "Confess"), ("V", "yellow", "Records"), ("S", "magenta", "Bishop"), ("R", "bright_red", "Return"));
+            ShowBBSMenuRow(("C", "bright_green", Loc.Get("church.bbs_donate")), ("B", "bright_yellow", Loc.Get("church.bbs_blessing")), ("H", "bright_cyan", Loc.Get("church.bbs_heal")), ("M", "bright_magenta", Loc.Get("church.bbs_marriage")));
+            ShowBBSMenuRow(("F", "cyan", Loc.Get("church.bbs_confess")), ("V", "yellow", Loc.Get("church.bbs_records")), ("S", "magenta", Loc.Get("church.bbs_bishop")), ("R", "bright_red", Loc.Get("church.bbs_return")));
             ShowBBSFooter();
         }
 
@@ -356,36 +356,36 @@ namespace UsurperRemake.Locations
             terminal.WriteLine("");
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"You have {currentPlayer.Gold:N0} {GameConfig.MoneyType}.");
-            terminal.WriteLine("How much do you want to give to the Church?");
-            
-            var input = await terminal.GetInput("Amount: ");
+            terminal.WriteLine(Loc.Get("church.donate_have_gold", currentPlayer.Gold.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.donate_how_much"));
+
+            var input = await terminal.GetInput(Loc.Get("church.donate_amount_prompt"));
             if (!long.TryParse(input, out long amount))
             {
-                terminal.WriteLine("Invalid amount.", "red");
+                terminal.WriteLine(Loc.Get("church.donate_invalid"), "red");
                 await Task.Delay(1500);
                 return;
             }
-            
+
             if (amount <= 0)
             {
-                terminal.WriteLine("The Church appreciates your presence, if not your generosity.", "yellow");
+                terminal.WriteLine(Loc.Get("church.donate_zero"), "yellow");
                 await Task.Delay(2000);
                 return;
             }
-            
+
             if (amount > currentPlayer.Gold)
             {
-                terminal.WriteLine("Scoundrel! You don't have that much!", "red");
+                terminal.WriteLine(Loc.Get("church.donate_no_gold"), "red");
                 await Task.Delay(2000);
                 return;
             }
-            
+
             // Confirm donation
-            var confirm = await terminal.GetInput($"Donate {amount:N0} {GameConfig.MoneyType} to the Church? (Y/N): ");
+            var confirm = await terminal.GetInput(Loc.Get("church.donate_confirm", amount.ToString("N0"), GameConfig.MoneyType));
             if (confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("Perhaps another time then.", "gray");
+                terminal.WriteLine(Loc.Get("church.donate_cancelled"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -406,17 +406,17 @@ namespace UsurperRemake.Locations
             
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Your contribution of {amount:N0} {GameConfig.MoneyType} is appreciated.");
-            terminal.WriteLine("Your virtue and support from the Church increase.");
+            terminal.WriteLine(Loc.Get("church.donate_appreciated", amount.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.donate_virtue"));
             terminal.WriteLine("");
-            terminal.WriteLine($"You are blessed by {bishopName}.");
-            terminal.WriteLine($"You gain {chivalryGain} chivalry points!");
+            terminal.WriteLine(Loc.Get("church.donate_blessed_by", bishopName));
+            terminal.WriteLine(Loc.Get("church.donate_chivalry_gain", chivalryGain));
 
             // Church donations are light actions - increase Faith standing
             int faithGain = Math.Max(1, (int)(amount / 100));
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheFaith, faithGain);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"Your piety has been noted. (+{faithGain} Faith standing)");
+            terminal.WriteLine(Loc.Get("church.donate_faith_gain", faithGain));
 
             // Create news entry
             await CreateNewsEntry("Good-Doer", $"{currentPlayer.DisplayName} donated money to the Church.", "");
@@ -434,42 +434,42 @@ namespace UsurperRemake.Locations
             
             if (currentPlayer.Darkness < 1)
             {
-                terminal.WriteLine("Your soul is in no need of salvation (lucky you).", "bright_green");
+                terminal.WriteLine(Loc.Get("church.blessing_pure"), "bright_green");
                 await Task.Delay(2000);
                 return;
             }
-            
+
             terminal.SetColor("white");
-            terminal.WriteLine($"You have {currentPlayer.Gold:N0} {GameConfig.MoneyType}.");
-            terminal.WriteLine("How much do you want to give for a blessing?");
-            
-            var input = await terminal.GetInput("Amount: ");
+            terminal.WriteLine(Loc.Get("church.donate_have_gold", currentPlayer.Gold.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.blessing_how_much"));
+
+            var input = await terminal.GetInput(Loc.Get("church.donate_amount_prompt"));
             if (!long.TryParse(input, out long amount))
             {
-                terminal.WriteLine("Invalid amount.", "red");
+                terminal.WriteLine(Loc.Get("church.donate_invalid"), "red");
                 await Task.Delay(1500);
                 return;
             }
-            
+
             if (amount <= 0)
             {
-                terminal.WriteLine("The Church cannot provide salvation without proper offering.", "yellow");
+                terminal.WriteLine(Loc.Get("church.blessing_no_offering"), "yellow");
                 await Task.Delay(2000);
                 return;
             }
-            
+
             if (amount > currentPlayer.Gold)
             {
-                terminal.WriteLine("You don't have that much gold!", "red");
+                terminal.WriteLine(Loc.Get("church.blessing_no_gold"), "red");
                 await Task.Delay(2000);
                 return;
             }
-            
+
             // Confirm blessing purchase
-            var confirm = await terminal.GetInput($"Purchase blessing for {amount:N0} {GameConfig.MoneyType}? (Y/N): ");
+            var confirm = await terminal.GetInput(Loc.Get("church.blessing_confirm", amount.ToString("N0"), GameConfig.MoneyType));
             if (confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("Your soul remains as it was.", "gray");
+                terminal.WriteLine(Loc.Get("church.blessing_cancelled"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -491,20 +491,20 @@ namespace UsurperRemake.Locations
             
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"Your contribution of {amount:N0} {GameConfig.MoneyType} gives you salvation.");
-            terminal.WriteLine("Your dark soul lightens.");
+            terminal.WriteLine(Loc.Get("church.blessing_contribution", amount.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.blessing_lightens"));
             terminal.WriteLine("");
-            terminal.WriteLine($"{bishopName} performs a sacred ritual over you.");
-            terminal.WriteLine("Divine light surrounds you!");
-            terminal.WriteLine($"You gain {chivalryGain} chivalry points!");
-            terminal.WriteLine($"Your darkness decreases by {Math.Max(1L, darknessReduction)} points!");
-            terminal.WriteLine("You are blessed for 7 days!");
+            terminal.WriteLine(Loc.Get("church.blessing_ritual", bishopName));
+            terminal.WriteLine(Loc.Get("church.blessing_divine_light"));
+            terminal.WriteLine(Loc.Get("church.blessing_chivalry", chivalryGain));
+            terminal.WriteLine(Loc.Get("church.blessing_darkness_decrease", Math.Max(1L, darknessReduction)));
+            terminal.WriteLine(Loc.Get("church.blessing_days"));
 
             // Blessings are light actions - increase Faith standing
             int faithGain = Math.Max(1, (int)(amount / 75));
             UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheFaith, faithGain);
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"The Faith recognizes your devotion. (+{faithGain} Faith standing)");
+            terminal.WriteLine(Loc.Get("church.blessing_faith", faithGain));
 
             // Create news entry
             await CreateNewsEntry("Blessed", $"{currentPlayer.DisplayName} purchased a blessing.", "");
@@ -518,7 +518,7 @@ namespace UsurperRemake.Locations
         private async Task ProcessHealingServices()
         {
             terminal.WriteLine("");
-            WriteSectionHeader("CHURCH HEALING SERVICES", "bright_cyan");
+            WriteSectionHeader(Loc.Get("church.healing_services"), "bright_cyan");
             terminal.WriteLine("");
             
             bool needsHealing = currentPlayer.HP < currentPlayer.MaxHP ||
@@ -528,55 +528,55 @@ namespace UsurperRemake.Locations
             
             if (!needsHealing)
             {
-                terminal.WriteLine("You are in perfect health, both body and soul.", "bright_green");
-                terminal.WriteLine($"{priestName} blesses you for your good fortune.");
+                terminal.WriteLine(Loc.Get("church.heal_perfect"), "bright_green");
+                terminal.WriteLine(Loc.Get("church.heal_blessed", priestName));
                 await Task.Delay(2500);
                 return;
             }
-            
+
             // Calculate healing cost based on player level and conditions
             long healingCost = CalculateHealingCost(currentPlayer);
-            
-            terminal.WriteLine($"{priestName} examines you carefully...", "white");
+
+            terminal.WriteLine(Loc.Get("church.heal_examines", priestName), "white");
             await Task.Delay(1500);
-            
+
             terminal.WriteLine("");
-            terminal.WriteLine("Available healing services:", "yellow");
+            terminal.WriteLine(Loc.Get("church.heal_available"), "yellow");
             
             if (currentPlayer.HP < currentPlayer.MaxHP)
             {
-                terminal.WriteLine($"- Restore health: {healingCost / 2:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_restore_hp", (healingCost / 2).ToString("N0"), GameConfig.MoneyType));
             }
-            
+
             if (currentPlayer.Blind)
             {
-                terminal.WriteLine($"- Cure blindness: {healingCost:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_blindness", healingCost.ToString("N0"), GameConfig.MoneyType));
             }
-            
+
             if (currentPlayer.Plague)
             {
-                terminal.WriteLine($"- Cure plague: {healingCost * 2:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_plague", (healingCost * 2).ToString("N0"), GameConfig.MoneyType));
             }
-            
+
             if (currentPlayer.Smallpox)
             {
-                terminal.WriteLine($"- Cure smallpox: {healingCost:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_smallpox", healingCost.ToString("N0"), GameConfig.MoneyType));
             }
-            
+
             if (currentPlayer.Measles)
             {
-                terminal.WriteLine($"- Cure measles: {healingCost:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_measles", healingCost.ToString("N0"), GameConfig.MoneyType));
             }
-            
+
             if (currentPlayer.Leprosy)
             {
-                terminal.WriteLine($"- Cure leprosy: {healingCost * 3:N0} {GameConfig.MoneyType}");
+                terminal.WriteLine(Loc.Get("church.heal_leprosy", (healingCost * 3).ToString("N0"), GameConfig.MoneyType));
             }
-            
-            terminal.WriteLine($"- Complete healing (all conditions): {healingCost * 3:N0} {GameConfig.MoneyType}");
+
+            terminal.WriteLine(Loc.Get("church.heal_complete", (healingCost * 3).ToString("N0"), GameConfig.MoneyType));
             terminal.WriteLine("");
-            
-            var choice = await terminal.GetInput("What healing do you seek? (H)ealth, (B)lindness, (P)lague, (S)mallpox, (M)easles, (L)eprosy, (A)ll, (N)one: ");
+
+            var choice = await terminal.GetInput(Loc.Get("church.heal_prompt"));
             
             await ProcessHealingChoice(choice.ToUpper(), healingCost);
         }
@@ -596,7 +596,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.HP < currentPlayer.MaxHP)
                     {
                         cost = baseCost / 2;
-                        service = "health restoration";
+                        service = Loc.Get("church.service_health");
                         canHeal = true;
                     }
                     break;
@@ -605,7 +605,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.Blind)
                     {
                         cost = baseCost;
-                        service = "blindness cure";
+                        service = Loc.Get("church.service_blindness");
                         canHeal = true;
                     }
                     break;
@@ -614,7 +614,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.Plague)
                     {
                         cost = baseCost * 2;
-                        service = "plague cure";
+                        service = Loc.Get("church.service_plague");
                         canHeal = true;
                     }
                     break;
@@ -623,7 +623,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.Smallpox)
                     {
                         cost = baseCost;
-                        service = "smallpox cure";
+                        service = Loc.Get("church.service_smallpox");
                         canHeal = true;
                     }
                     break;
@@ -632,7 +632,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.Measles)
                     {
                         cost = baseCost;
-                        service = "measles cure";
+                        service = Loc.Get("church.service_measles");
                         canHeal = true;
                     }
                     break;
@@ -641,42 +641,42 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.Leprosy)
                     {
                         cost = baseCost * 3;
-                        service = "leprosy cure";
+                        service = Loc.Get("church.service_leprosy");
                         canHeal = true;
                     }
                     break;
                     
                 case "A":
                     cost = baseCost * 3;
-                    service = "complete healing";
+                    service = Loc.Get("church.service_complete");
                     canHeal = true;
                     break;
                     
                 case "N":
-                    terminal.WriteLine("May the gods watch over you.", "yellow");
+                    terminal.WriteLine(Loc.Get("church.heal_gods_watch"), "yellow");
                     await Task.Delay(1500);
                     return;
             }
-            
+
             if (!canHeal)
             {
-                terminal.WriteLine("You don't need that particular healing.", "yellow");
+                terminal.WriteLine(Loc.Get("church.heal_not_needed"), "yellow");
                 await Task.Delay(1500);
                 return;
             }
-            
+
             if (currentPlayer.Gold < cost)
             {
-                terminal.WriteLine($"You need {cost:N0} {GameConfig.MoneyType} for {service}.", "red");
-                terminal.WriteLine("Return when you have sufficient funds.", "gray");
+                terminal.WriteLine(Loc.Get("church.heal_need_gold", cost.ToString("N0"), GameConfig.MoneyType, service), "red");
+                terminal.WriteLine(Loc.Get("church.heal_return_funds"), "gray");
                 await Task.Delay(2000);
                 return;
             }
-            
-            var confirm = await terminal.GetInput($"Pay {cost:N0} {GameConfig.MoneyType} for {service}? (Y/N): ");
+
+            var confirm = await terminal.GetInput(Loc.Get("church.heal_pay_confirm", cost.ToString("N0"), GameConfig.MoneyType, service));
             if (confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("Perhaps another time.", "gray");
+                terminal.WriteLine(Loc.Get("church.heal_cancelled"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -686,42 +686,42 @@ namespace UsurperRemake.Locations
             currentPlayer.HealingsReceived += 1; // Track healings received
             
             terminal.WriteLine("");
-            terminal.WriteLine($"{priestName} begins a sacred healing ritual...", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.heal_ritual", priestName), "bright_yellow");
             await Task.Delay(2000);
-            
+
             // Apply healing based on choice
             switch (choice)
             {
                 case "H":
                     currentPlayer.HP = currentPlayer.MaxHP;
-                    terminal.WriteLine("Your wounds close and your strength returns!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_wounds_close"), "bright_green");
                     break;
                     
                 case "B":
                     currentPlayer.Blind = false;
-                    terminal.WriteLine("Your sight is restored! The world comes back into focus!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_sight_restored"), "bright_green");
                     break;
-                    
+
                 case "P":
                     currentPlayer.Plague = false;
-                    terminal.WriteLine("The plague leaves your body! You feel purified!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_plague_cured"), "bright_green");
                     break;
-                    
+
                 case "S":
                     currentPlayer.Smallpox = false;
-                    terminal.WriteLine("The smallpox is cured! Your skin clears!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_smallpox_cured"), "bright_green");
                     break;
-                    
+
                 case "M":
                     currentPlayer.Measles = false;
-                    terminal.WriteLine("The measles fade away! You feel healthy again!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_measles_cured"), "bright_green");
                     break;
-                    
+
                 case "L":
                     currentPlayer.Leprosy = false;
-                    terminal.WriteLine("The leprosy is banished! Your body is made whole!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_leprosy_cured"), "bright_green");
                     break;
-                    
+
                 case "A":
                     currentPlayer.HP = currentPlayer.MaxHP;
                     currentPlayer.Blind = false;
@@ -729,14 +729,15 @@ namespace UsurperRemake.Locations
                     currentPlayer.Smallpox = false;
                     currentPlayer.Measles = false;
                     currentPlayer.Leprosy = false;
-                    terminal.WriteLine("Divine light fills your body! All ailments are cured!", "bright_white");
-                    terminal.WriteLine("You are completely restored!", "bright_green");
+                    terminal.WriteLine(Loc.Get("church.heal_all_cured"), "bright_white");
+                    terminal.WriteLine(Loc.Get("church.heal_completely_restored"), "bright_green");
                     break;
             }
-            
+
             // Grant small chivalry bonus for seeking healing
-            currentPlayer.Chivalry += Random.Shared.Next(1, 4);
-            terminal.WriteLine($"Your faith in divine healing grants you wisdom! (+{Random.Shared.Next(1, 4)} chivalry)", "cyan");
+            int chivGain = Random.Shared.Next(1, 4);
+            currentPlayer.Chivalry += chivGain;
+            terminal.WriteLine(Loc.Get("church.heal_faith_wisdom", chivGain), "cyan");
             
             await Task.Delay(3000);
         }
@@ -747,21 +748,21 @@ namespace UsurperRemake.Locations
         private async Task ProcessMarriageCeremony()
         {
             terminal.WriteLine("");
-            terminal.WriteLine("=== MARRIAGE CEREMONIES ===", "bright_magenta");
+            terminal.WriteLine(Loc.Get("church.marriage_title"), "bright_magenta");
             terminal.WriteLine("");
 
             if (currentPlayer.IsMarried)
             {
-                terminal.WriteLine($"You are already married to {currentPlayer.SpouseName}!", "yellow");
-                terminal.WriteLine("The Church does not perform ceremonies for those already wed.", "white");
+                terminal.WriteLine(Loc.Get("church.marriage_already", currentPlayer.SpouseName), "yellow");
+                terminal.WriteLine(Loc.Get("church.marriage_no_perform"), "white");
                 await Task.Delay(2500);
                 return;
             }
 
-            terminal.WriteLine($"{bishopName} approaches with a warm smile.", "white");
+            terminal.WriteLine(Loc.Get("church.marriage_bishop_smile", bishopName), "white");
             terminal.WriteLine("");
-            terminal.WriteLine("\"Ah, seeking the blessed union of marriage!\"", "bright_yellow");
-            terminal.WriteLine("\"This is one of the Church's most sacred ceremonies.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.marriage_seeking"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.marriage_sacred"), "bright_yellow");
             terminal.WriteLine("");
 
             // Show eligible marriage candidates (NPCs in love with player)
@@ -769,8 +770,8 @@ namespace UsurperRemake.Locations
 
             if (eligibleNPCs.Count == 0)
             {
-                terminal.WriteLine("\"For marriage, both hearts must burn with love.\"", "bright_yellow");
-                terminal.WriteLine("\"Let me consult the spirits and see where your heart stands...\"", "bright_yellow");
+                terminal.WriteLine(Loc.Get("church.marriage_hearts_burn"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("church.marriage_consult"), "bright_yellow");
                 terminal.WriteLine("");
 
                 // Show the player's closest romantic relationships so they know how far they are
@@ -792,8 +793,8 @@ namespace UsurperRemake.Locations
                     prospects.Sort((a, b) => (a.playerFeeling + a.npcFeeling).CompareTo(b.playerFeeling + b.npcFeeling));
                     int shown = Math.Min(prospects.Count, 5);
 
-                    terminal.WriteLine("  Your closest relationships:", "cyan");
-                    terminal.WriteLine("  Name                     You → Them    Them → You", "darkgray");
+                    terminal.WriteLine(Loc.Get("church.marriage_closest"), "cyan");
+                    terminal.WriteLine(Loc.Get("church.marriage_header_row"), "darkgray");
                     if (!IsScreenReader)
                         terminal.WriteLine("  ─────────────────────────────────────────────────────", "darkgray");
                     for (int i = 0; i < shown; i++)
@@ -811,48 +812,48 @@ namespace UsurperRemake.Locations
                     // Check if anyone is close and give specific advice
                     var closest = prospects[0];
                     if (closest.playerFeeling <= GameConfig.RelationLove && closest.npcFeeling <= GameConfig.RelationPassion)
-                        terminal.WriteLine($"\"Ah, {closest.npc.Name2} is nearly ready! Keep courting at Love Street.\"", "bright_yellow");
+                        terminal.WriteLine(Loc.Get("church.marriage_nearly_ready", closest.npc.Name2), "bright_yellow");
                     else if (closest.playerFeeling <= GameConfig.RelationPassion || closest.npcFeeling <= GameConfig.RelationPassion)
-                        terminal.WriteLine("\"Passion stirs, but love has not yet bloomed. Visit Love Street.\"", "bright_yellow");
+                        terminal.WriteLine(Loc.Get("church.marriage_passion_stirs"), "bright_yellow");
                     else
-                        terminal.WriteLine("\"These bonds need much nurturing before wedding bells ring.\"", "bright_yellow");
+                        terminal.WriteLine(Loc.Get("church.marriage_need_nurturing"), "bright_yellow");
                 }
                 else
                 {
-                    terminal.WriteLine("\"I sense no romantic connections in your heart at all.\"", "bright_yellow");
+                    terminal.WriteLine(Loc.Get("church.marriage_no_connections"), "bright_yellow");
                 }
 
                 terminal.WriteLine("");
-                terminal.WriteLine("How to reach marriage:", "white");
-                terminal.WriteLine("  1. Visit Love Street [X] — compliments, drinks, dates, and gifts", "gray");
-                terminal.WriteLine("  2. Intimate scenes deepen bonds on both sides", "gray");
-                terminal.WriteLine("  3. Love potions at the Magic Shop [M] give a boost", "gray");
-                terminal.WriteLine("  4. Both you AND your partner must reach 'In Love' status", "gray");
-                terminal.WriteLine("  Note: Regular talking [0] only builds up to Friendship.", "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_how_to"), "white");
+                terminal.WriteLine(Loc.Get("church.marriage_step1"), "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_step2"), "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_step3"), "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_step4"), "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_step_note"), "gray");
                 await terminal.PressAnyKey();
                 return;
             }
 
-            terminal.WriteLine("\"I see there are those who would marry you:\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.marriage_those_who_would"), "bright_yellow");
             terminal.WriteLine("");
 
             for (int i = 0; i < eligibleNPCs.Count; i++)
             {
                 var npc = eligibleNPCs[i];
-                terminal.WriteLine($"  {i + 1}. {npc.Name2} ({npc.Class}, Level {npc.Level})", "bright_cyan");
+                terminal.WriteLine($"  {i + 1}. {npc.Name2} ({npc.Class}, {Loc.Get("ui.level")} {npc.Level})", "bright_cyan");
             }
             terminal.WriteLine("");
 
-            terminal.WriteLine("Marriage ceremony services:", "cyan");
-            terminal.WriteLine($"- Standard ceremony: {GameConfig.MarriageCost:N0} {GameConfig.MoneyType}");
-            terminal.WriteLine($"- Elaborate ceremony: {GameConfig.MarriageCost * 2:N0} {GameConfig.MoneyType}");
-            terminal.WriteLine($"- Royal ceremony: {GameConfig.MarriageCost * 5:N0} {GameConfig.MoneyType}");
+            terminal.WriteLine(Loc.Get("church.marriage_services"), "cyan");
+            terminal.WriteLine(Loc.Get("church.marriage_standard", GameConfig.MarriageCost.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.marriage_elaborate", (GameConfig.MarriageCost * 2).ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.marriage_royal", (GameConfig.MarriageCost * 5).ToString("N0"), GameConfig.MoneyType));
             terminal.WriteLine("");
 
-            var partnerInput = await terminal.GetInput("Who do you wish to marry? (Enter number or name, or Q to cancel): ");
+            var partnerInput = await terminal.GetInput(Loc.Get("church.marriage_who_prompt"));
             if (string.IsNullOrWhiteSpace(partnerInput) || partnerInput.ToUpper() == "Q")
             {
-                terminal.WriteLine("\"Come back when you are ready.\"", "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_come_back"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -871,13 +872,13 @@ namespace UsurperRemake.Locations
 
             if (targetNPC == null)
             {
-                terminal.WriteLine($"\"{partnerInput}\" is not among those who would marry you.", "red");
-                terminal.WriteLine("You can only marry someone who is in love with you.", "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_not_among", partnerInput), "red");
+                terminal.WriteLine(Loc.Get("church.marriage_only_love"), "gray");
                 await Task.Delay(2000);
                 return;
             }
 
-            var ceremonyType = await terminal.GetInput("What type of ceremony? (S)tandard, (E)laborate, (R)oyal: ");
+            var ceremonyType = await terminal.GetInput(Loc.Get("church.marriage_type_prompt"));
 
             long ceremonyCost = ceremonyType.ToUpper() switch
             {
@@ -888,15 +889,15 @@ namespace UsurperRemake.Locations
 
             if (currentPlayer.Gold < ceremonyCost)
             {
-                terminal.WriteLine($"You need {ceremonyCost:N0} {GameConfig.MoneyType} for this ceremony.", "red");
+                terminal.WriteLine(Loc.Get("church.marriage_need_gold", ceremonyCost.ToString("N0"), GameConfig.MoneyType), "red");
                 await Task.Delay(2000);
                 return;
             }
 
-            var confirm = await terminal.GetInput($"Proceed with marriage to {targetNPC.Name2} for {ceremonyCost:N0} {GameConfig.MoneyType}? (Y/N): ");
+            var confirm = await terminal.GetInput(Loc.Get("church.marriage_proceed", targetNPC.Name2, ceremonyCost.ToString("N0"), GameConfig.MoneyType));
             if (confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("Perhaps when you're more certain.", "gray");
+                terminal.WriteLine(Loc.Get("church.marriage_more_certain"), "gray");
                 await Task.Delay(1500);
                 return;
             }
@@ -911,7 +912,7 @@ namespace UsurperRemake.Locations
                 // Refund if marriage failed
                 currentPlayer.Gold += ceremonyCost;
                 terminal.WriteLine("");
-                terminal.WriteLine($"{bishopName} frowns and shakes his head.", "yellow");
+                terminal.WriteLine(Loc.Get("church.marriage_bishop_frowns", bishopName), "yellow");
                 terminal.WriteLine($"\"{marriageMessage}\"", "bright_yellow");
                 await Task.Delay(2500);
                 return;
@@ -919,10 +920,10 @@ namespace UsurperRemake.Locations
 
             // Marriage ceremony display
             terminal.WriteLine("");
-            terminal.WriteLine("=== WEDDING CEREMONY ===", "bright_white");
+            terminal.WriteLine(Loc.Get("church.wedding_title"), "bright_white");
             await Task.Delay(1000);
 
-            terminal.WriteLine($"{bishopName} begins the sacred ceremony...", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.wedding_begins", bishopName), "bright_yellow");
             await Task.Delay(2000);
 
             terminal.WriteLine("");
@@ -931,22 +932,22 @@ namespace UsurperRemake.Locations
             await Task.Delay(2000);
 
             terminal.WriteLine("");
-            terminal.WriteLine($"You are now married to {targetNPC.Name2}!", "bright_green");
-            terminal.WriteLine("The Church bells ring in celebration!", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.wedding_married", targetNPC.Name2), "bright_green");
+            terminal.WriteLine(Loc.Get("church.wedding_bells"), "bright_yellow");
 
             // Marriage bonuses
             currentPlayer.Chivalry += 10;
             currentPlayer.Charisma += 5;
 
-            terminal.WriteLine($"Your chivalry increases by 10!", "cyan");
-            terminal.WriteLine($"Your charm increases by 5!", "cyan");
+            terminal.WriteLine(Loc.Get("church.wedding_chivalry"), "cyan");
+            terminal.WriteLine(Loc.Get("church.wedding_charm"), "cyan");
 
             // Inform about children possibility
             if (currentPlayer.Sex != targetNPC.Sex)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("\"May your union be blessed with children!\"", "bright_yellow");
-                terminal.WriteLine("(Visit the Love Corner for intimate moments)", "gray");
+                terminal.WriteLine(Loc.Get("church.wedding_children"), "bright_yellow");
+                terminal.WriteLine(Loc.Get("church.wedding_love_corner"), "gray");
             }
 
             // Create news entry
@@ -988,37 +989,37 @@ namespace UsurperRemake.Locations
         private async Task ProcessConfession()
         {
             terminal.WriteLine("");
-            WriteSectionHeader("CONFESSION", "bright_blue");
+            WriteSectionHeader(Loc.Get("church.confession"), "bright_blue");
             terminal.WriteLine("");
             
-            terminal.WriteLine($"{priestName} leads you to a private confessional booth.", "white");
+            terminal.WriteLine(Loc.Get("church.confess_leads", priestName), "white");
             terminal.WriteLine("");
-            terminal.WriteLine("\"Speak, my child, and unburden your soul.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.confess_speak"), "bright_yellow");
             terminal.WriteLine("");
-            
+
             if (currentPlayer.Darkness <= 0)
             {
-                terminal.WriteLine("\"Your soul is pure, you have no need for confession.\"", "bright_green");
-                terminal.WriteLine("\"Go forth and continue your righteous path.\"", "bright_green");
+                terminal.WriteLine(Loc.Get("church.confess_pure"), "bright_green");
+                terminal.WriteLine(Loc.Get("church.confess_righteous"), "bright_green");
                 await Task.Delay(2500);
                 return;
             }
-            
-            terminal.WriteLine($"Your current darkness: {currentPlayer.Darkness}", "red");
-            terminal.WriteLine($"Confession can reduce your darkness by up to {Math.Min(currentPlayer.Darkness, 10)} points.", "cyan");
+
+            terminal.WriteLine(Loc.Get("church.confess_darkness", currentPlayer.Darkness), "red");
+            terminal.WriteLine(Loc.Get("church.confess_reduce", Math.Min(currentPlayer.Darkness, 10)), "cyan");
             terminal.WriteLine("");
-            
-            var confess = await terminal.GetInput("Do you wish to confess your sins? (Y/N): ");
+
+            var confess = await terminal.GetInput(Loc.Get("church.confess_prompt"));
             if (confess.ToUpper() != "Y")
             {
-                terminal.WriteLine("\"Return when you are ready to face your sins.\"", "gray");
+                terminal.WriteLine(Loc.Get("church.confess_return"), "gray");
                 await Task.Delay(1500);
                 return;
             }
             
             // Confession process
             terminal.WriteLine("");
-            terminal.WriteLine("You begin to confess your sins...", "white");
+            terminal.WriteLine(Loc.Get("church.confess_begin"), "white");
             await Task.Delay(2000);
             
             long darknessReduction = Math.Min(currentPlayer.Darkness, Random.Shared.Next(5, 11));
@@ -1029,12 +1030,12 @@ namespace UsurperRemake.Locations
             currentPlayer.Chivalry += chivalryGain;
             
             terminal.WriteLine("");
-            terminal.WriteLine("\"Your sins are forgiven, my child.\"", "bright_yellow");
-            terminal.WriteLine("\"Go forth and sin no more.\"", "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.confess_forgiven"), "bright_yellow");
+            terminal.WriteLine(Loc.Get("church.confess_sin_no_more"), "bright_yellow");
             terminal.WriteLine("");
-            terminal.WriteLine($"Your darkness decreases by {darknessReduction} points!", "bright_green");
-            terminal.WriteLine($"Your chivalry increases by {chivalryGain} points!", "cyan");
-            terminal.WriteLine("You feel spiritually cleansed!", "bright_white");
+            terminal.WriteLine(Loc.Get("church.confess_darkness_decrease", darknessReduction), "bright_green");
+            terminal.WriteLine(Loc.Get("church.confess_chivalry_increase", chivalryGain), "cyan");
+            terminal.WriteLine(Loc.Get("church.confess_cleansed"), "bright_white");
 
             await Task.Delay(3000);
 
@@ -1043,26 +1044,26 @@ namespace UsurperRemake.Locations
             {
                 terminal.WriteLine("");
                 terminal.SetColor("dark_red");
-                terminal.WriteLine($"{priestName} pauses. His expression darkens.");
+                terminal.WriteLine(Loc.Get("church.blood_pauses", priestName));
                 await Task.Delay(2000);
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("\"Wait. There is something else. Something deeper.\"");
-                terminal.WriteLine("\"I sense blood on your soul. Not just sin. Death.\"");
+                terminal.WriteLine(Loc.Get("church.blood_something_else"));
+                terminal.WriteLine(Loc.Get("church.blood_sense_blood"));
                 terminal.WriteLine("");
                 await Task.Delay(2000);
 
                 long absolveCost = GameConfig.BloodConfessionBaseCost + (long)(currentPlayer.MurderWeight * GameConfig.BloodConfessionCostPerWeight);
                 terminal.SetColor("white");
-                terminal.WriteLine($"\"Blood absolution requires a donation of {absolveCost:N0} gold.\"");
-                terminal.WriteLine($"\"It will not erase what you've done. But it may ease the weight.\"");
+                terminal.WriteLine(Loc.Get("church.blood_cost", absolveCost.ToString("N0")));
+                terminal.WriteLine(Loc.Get("church.blood_not_erase"));
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"  Your murder weight: {currentPlayer.MurderWeight:F1}");
-                terminal.WriteLine($"  Absolution cost: {absolveCost:N0} gold");
-                terminal.WriteLine($"  Weight reduced by: {GameConfig.MurderWeightConfessionReduction:F1}");
+                terminal.WriteLine(Loc.Get("church.blood_murder_weight", currentPlayer.MurderWeight.ToString("F1")));
+                terminal.WriteLine(Loc.Get("church.blood_absolution_cost", absolveCost.ToString("N0")));
+                terminal.WriteLine(Loc.Get("church.blood_weight_reduced_by", GameConfig.MurderWeightConfessionReduction.ToString("F1")));
                 terminal.WriteLine("");
 
-                var absolve = await terminal.GetInput("Accept blood absolution? (Y/N): ");
+                var absolve = await terminal.GetInput(Loc.Get("church.blood_accept"));
                 if (absolve.Trim().ToUpper() == "Y")
                 {
                     if (currentPlayer.Gold >= absolveCost)
@@ -1075,26 +1076,26 @@ namespace UsurperRemake.Locations
 
                         terminal.WriteLine("");
                         terminal.SetColor("bright_white");
-                        terminal.WriteLine($"{priestName} places his hands on your head.");
+                        terminal.WriteLine(Loc.Get("church.blood_hands", priestName));
                         await Task.Delay(1500);
                         terminal.SetColor("bright_cyan");
-                        terminal.WriteLine("\"The blood does not wash away. But the weight... the weight can be shared.\"");
+                        terminal.WriteLine(Loc.Get("church.blood_shared"));
                         terminal.WriteLine("");
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"Murder weight reduced by {reduction:F1}! (Now {currentPlayer.MurderWeight:F1})");
+                        terminal.WriteLine(Loc.Get("church.blood_reduced", reduction.ToString("F1"), currentPlayer.MurderWeight.ToString("F1")));
                         terminal.SetColor("yellow");
-                        terminal.WriteLine($"(-{absolveCost:N0} gold)");
+                        terminal.WriteLine(Loc.Get("church.blood_gold_cost", absolveCost.ToString("N0")));
                     }
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine($"You don't have enough gold. ({currentPlayer.Gold:N0}/{absolveCost:N0})");
+                        terminal.WriteLine(Loc.Get("ui.not_enough_gold_amount", $"{currentPlayer.Gold:N0}", $"{absolveCost:N0}"));
                     }
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("\"The weight remains, then. Return when you are ready.\"");
+                    terminal.WriteLine(Loc.Get("church.blood_remains"));
                 }
                 await Task.Delay(2500);
             }
@@ -1106,30 +1107,30 @@ namespace UsurperRemake.Locations
         private async Task DisplayChurchRecords()
         {
             terminal.WriteLine("");
-            WriteSectionHeader("CHURCH RECORDS", "bright_cyan");
+            WriteSectionHeader(Loc.Get("church.records"), "bright_cyan");
             terminal.WriteLine("");
             
-            terminal.WriteLine("Church Records and Statistics:", "white");
+            terminal.WriteLine(Loc.Get("church.records_title"), "white");
             if (!IsScreenReader)
                 terminal.WriteLine("─────────────────────────────", "white");
             terminal.WriteLine("");
-            
+
             // Player's church history
-            terminal.WriteLine("Your Church History:", "yellow");
-            terminal.WriteLine($"- Total donations made: {currentPlayer.ChurchDonations:N0} {GameConfig.MoneyType}");
-            terminal.WriteLine($"- Blessings received: {currentPlayer.BlessingsReceived}");
-            terminal.WriteLine($"- Healings received: {currentPlayer.HealingsReceived}");
-            terminal.WriteLine($"- Current chivalry: {currentPlayer.Chivalry}");
-            terminal.WriteLine($"- Current darkness: {currentPlayer.Darkness}");
-            terminal.WriteLine($"- Moral alignment: {GetAlignmentDescription(currentPlayer)}");
+            terminal.WriteLine(Loc.Get("church.records_history"), "yellow");
+            terminal.WriteLine(Loc.Get("church.records_donations", currentPlayer.ChurchDonations.ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.records_blessings", currentPlayer.BlessingsReceived));
+            terminal.WriteLine(Loc.Get("church.records_healings", currentPlayer.HealingsReceived));
+            terminal.WriteLine(Loc.Get("church.records_chivalry", currentPlayer.Chivalry));
+            terminal.WriteLine(Loc.Get("church.records_darkness", currentPlayer.Darkness));
+            terminal.WriteLine(Loc.Get("church.records_alignment", GetAlignmentDescription(currentPlayer)));
             terminal.WriteLine("");
-            
+
             // Church statistics (placeholder for now)
-            terminal.WriteLine("Church Statistics:", "cyan");
-            terminal.WriteLine($"- Total church donations this month: {Random.Shared.Next(50000, 200001):N0} {GameConfig.MoneyType}");
-            terminal.WriteLine($"- Marriages performed this month: {Random.Shared.Next(5, 26)}");
-            terminal.WriteLine($"- Blessings given this month: {Random.Shared.Next(100, 501)}");
-            terminal.WriteLine($"- Souls saved from darkness: {Random.Shared.Next(50, 201)}");
+            terminal.WriteLine(Loc.Get("church.records_church_stats"), "cyan");
+            terminal.WriteLine(Loc.Get("church.records_month_donations", Random.Shared.Next(50000, 200001).ToString("N0"), GameConfig.MoneyType));
+            terminal.WriteLine(Loc.Get("church.records_month_marriages", Random.Shared.Next(5, 26)));
+            terminal.WriteLine(Loc.Get("church.records_month_blessings", Random.Shared.Next(100, 501)));
+            terminal.WriteLine(Loc.Get("church.records_month_souls", Random.Shared.Next(50, 201)));
             terminal.WriteLine("");
             
             await terminal.PressAnyKey();
@@ -1141,42 +1142,42 @@ namespace UsurperRemake.Locations
         private async Task SpeakWithBishop()
         {
             terminal.WriteLine("");
-            WriteSectionHeader("AUDIENCE WITH THE BISHOP", "bright_yellow");
+            WriteSectionHeader(Loc.Get("church.audience_bishop"), "bright_yellow");
             terminal.WriteLine("");
             
-            terminal.WriteLine($"{bishopName} approaches with a serene expression.", "white");
+            terminal.WriteLine(Loc.Get("church.bishop_approaches", bishopName), "white");
             terminal.WriteLine("");
-            
+
             // Bishop's response based on player's alignment
             if (currentPlayer.Chivalry > currentPlayer.Darkness * 2)
             {
-                terminal.WriteLine("\"Ah, a truly righteous soul stands before me!\"", "bright_green");
-                terminal.WriteLine("\"Your good deeds shine like a beacon in the darkness.\"", "bright_green");
-                terminal.WriteLine("\"Continue on your path of virtue, my child.\"", "bright_green");
-                
+                terminal.WriteLine(Loc.Get("church.bishop_righteous"), "bright_green");
+                terminal.WriteLine(Loc.Get("church.bishop_beacon"), "bright_green");
+                terminal.WriteLine(Loc.Get("church.bishop_continue"), "bright_green");
+
                 // Reward for high chivalry
                 if (Random.Shared.Next(1, 101) <= 25) // 25% chance
                 {
                     terminal.WriteLine("");
-                    terminal.WriteLine("\"As a reward for your righteousness, accept this blessing!\"", "bright_yellow");
+                    terminal.WriteLine(Loc.Get("church.bishop_reward"), "bright_yellow");
                     currentPlayer.DivineBlessing = Math.Max(currentPlayer.DivineBlessing, 3);
                     currentPlayer.Chivalry += 5;
-                    terminal.WriteLine("You receive a divine blessing for 3 days!", "bright_white");
-                    terminal.WriteLine("Your chivalry increases by 5!", "cyan");
+                    terminal.WriteLine(Loc.Get("church.bishop_blessing_days"), "bright_white");
+                    terminal.WriteLine(Loc.Get("church.bishop_chivalry5"), "cyan");
                 }
             }
             else if (currentPlayer.Darkness > currentPlayer.Chivalry * 2)
             {
-                terminal.WriteLine("\"I sense great darkness in your soul, child.\"", "red");
-                terminal.WriteLine("\"You must seek redemption before it's too late.\"", "red");
-                terminal.WriteLine("\"Consider making a donation or purchasing a blessing.\"", "yellow");
-                
+                terminal.WriteLine(Loc.Get("church.bishop_darkness_sense"), "red");
+                terminal.WriteLine(Loc.Get("church.bishop_redemption"), "red");
+                terminal.WriteLine(Loc.Get("church.bishop_consider"), "yellow");
+
                 // Chance for forced confession
                 if (Random.Shared.Next(1, 101) <= 30) // 30% chance
                 {
                     terminal.WriteLine("");
-                    terminal.WriteLine("\"In fact, I insist you confess your sins immediately!\"", "bright_red");
-                    var forceConfess = await terminal.GetInput("The Bishop strongly encourages confession. Confess now? (Y/N): ");
+                    terminal.WriteLine(Loc.Get("church.bishop_insist"), "bright_red");
+                    var forceConfess = await terminal.GetInput(Loc.Get("church.bishop_force_confess"));
                     if (forceConfess.ToUpper() == "Y")
                     {
                         await ProcessConfession();
@@ -1186,31 +1187,31 @@ namespace UsurperRemake.Locations
             }
             else
             {
-                terminal.WriteLine("\"Welcome, child. Your soul walks the line between light and dark.\"", "white");
-                terminal.WriteLine("\"Choose your path wisely, for each deed shapes your destiny.\"", "white");
-                terminal.WriteLine("\"The Church stands ready to guide you toward righteousness.\"", "cyan");
+                terminal.WriteLine(Loc.Get("church.bishop_neutral1"), "white");
+                terminal.WriteLine(Loc.Get("church.bishop_neutral2"), "white");
+                terminal.WriteLine(Loc.Get("church.bishop_neutral3"), "cyan");
             }
             
             terminal.WriteLine("");
-            terminal.WriteLine("Bishop's Wisdom:", "bright_yellow");
-            
+            terminal.WriteLine(Loc.Get("church.bishop_wisdom_title"), "bright_yellow");
+
             var wisdom = Random.Shared.Next(1, 6);
             switch (wisdom)
             {
                 case 1:
-                    terminal.WriteLine("\"Charity given in secret is worth twice that given in public.\"");
+                    terminal.WriteLine(Loc.Get("church.bishop_wisdom1"));
                     break;
                 case 2:
-                    terminal.WriteLine("\"A pure heart is more valuable than all the gold in the kingdom.\"");
+                    terminal.WriteLine(Loc.Get("church.bishop_wisdom2"));
                     break;
                 case 3:
-                    terminal.WriteLine("\"Those who help others will find help when they need it most.\"");
+                    terminal.WriteLine(Loc.Get("church.bishop_wisdom3"));
                     break;
                 case 4:
-                    terminal.WriteLine("\"Darkness flees from the light of good deeds.\"");
+                    terminal.WriteLine(Loc.Get("church.bishop_wisdom4"));
                     break;
                 case 5:
-                    terminal.WriteLine("\"The path to salvation is paved with acts of kindness.\"");
+                    terminal.WriteLine(Loc.Get("church.bishop_wisdom5"));
                     break;
             }
             
@@ -1244,19 +1245,19 @@ namespace UsurperRemake.Locations
         private string GetAlignmentDescription(Character player)
         {
             if (player.Chivalry > player.Darkness * 3)
-                return "Saintly";
+                return Loc.Get("church.align_saintly");
             else if (player.Chivalry > player.Darkness * 2)
-                return "Very Good";
+                return Loc.Get("church.align_very_good");
             else if (player.Chivalry > player.Darkness)
-                return "Good";
+                return Loc.Get("church.align_good");
             else if (player.Chivalry == player.Darkness)
-                return "Neutral";
+                return Loc.Get("church.align_neutral");
             else if (player.Darkness > player.Chivalry * 2)
-                return "Evil";
+                return Loc.Get("church.align_evil");
             else if (player.Darkness > player.Chivalry * 3)
-                return "Very Evil";
+                return Loc.Get("church.align_very_evil");
             else
-                return "Demonic";
+                return Loc.Get("church.align_demonic");
         }
         
         /// <summary>

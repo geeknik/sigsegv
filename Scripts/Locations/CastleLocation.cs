@@ -69,36 +69,36 @@ public class CastleLocation : BaseLocation
     private void DisplayRoyalCastleInterior()
     {
         // Header - standardized format
-        WriteBoxHeader("THE ROYAL CASTLE", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.header"), "bright_cyan");
         terminal.WriteLine("");
 
         // Royal greeting
         terminal.SetColor("cyan");
-        terminal.WriteLine("You have entered the Great Hall. Upon your arrival you are");
-        terminal.WriteLine("immediately surrounded by a flock of servants and advisors.");
+        terminal.WriteLine(Loc.Get("castle.royal_greeting_1"));
+        terminal.WriteLine(Loc.Get("castle.royal_greeting_2"));
         terminal.SetColor("white");
-        terminal.WriteLine("You greet your staff with a subtle nod.");
+        terminal.WriteLine(Loc.Get("castle.royal_greeting_3"));
         terminal.WriteLine("");
 
         // Royal treasury status
         terminal.SetColor("bright_green");
-        terminal.Write("The Royal Purse");
+        terminal.Write(Loc.Get("castle.treasury_label"));
         terminal.SetColor("white");
-        terminal.Write(" has ");
+        terminal.Write(Loc.Get("castle.treasury_has"));
         terminal.SetColor("bright_yellow");
         terminal.Write($"{currentKing.Treasury:N0}");
         terminal.SetColor("white");
-        terminal.WriteLine(" gold pieces.");
+        terminal.WriteLine(Loc.Get("castle.treasury_gold"));
 
         // Guard status
         terminal.SetColor("cyan");
-        terminal.Write("Royal Guards: ");
+        terminal.Write(Loc.Get("castle.guards_label"));
         terminal.SetColor("white");
         terminal.WriteLine($"{currentKing.Guards.Count}/{GameConfig.MaxRoyalGuards}");
 
         // Prisoners
         terminal.SetColor("red");
-        terminal.Write("Prisoners: ");
+        terminal.Write(Loc.Get("castle.prisoners_label"));
         terminal.SetColor("white");
         terminal.WriteLine($"{currentKing.Prisoners.Count}");
 
@@ -107,7 +107,7 @@ public class CastleLocation : BaseLocation
         if (unreadMail > 0)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"You have {unreadMail} unread messages!");
+            terminal.WriteLine(Loc.Get("castle.unread_mail", unreadMail));
         }
         terminal.WriteLine("");
 
@@ -120,34 +120,34 @@ public class CastleLocation : BaseLocation
     private void DisplayCastleExterior()
     {
         // Header - standardized format
-        WriteBoxHeader("OUTSIDE THE ROYAL CASTLE", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.header_outside"), "bright_cyan");
         terminal.WriteLine("");
 
         // Approach description
         terminal.SetColor("white");
-        terminal.WriteLine("You journey the winding road up to the gates of the Castle.");
-        terminal.WriteLine("Massive stone walls tower above you, and royal guards");
-        terminal.WriteLine("watch your approach with keen interest.");
+        terminal.WriteLine(Loc.Get("castle.approach_desc_1"));
+        terminal.WriteLine(Loc.Get("castle.approach_desc_2"));
+        terminal.WriteLine(Loc.Get("castle.approach_desc_3"));
         terminal.WriteLine("");
 
         // King status
         if (currentKing != null && currentKing.IsActive)
         {
             terminal.SetColor("white");
-            terminal.Write("The mighty ");
+            terminal.Write(Loc.Get("castle.the_mighty"));
             terminal.SetColor("bright_yellow");
             terminal.Write($"{currentKing.GetTitle()} {currentKing.Name}");
             terminal.SetColor("white");
-            terminal.WriteLine(" rules from within these walls.");
+            terminal.WriteLine(Loc.Get("castle.rules_from"));
             terminal.SetColor("cyan");
-            terminal.WriteLine($"Reign: {currentKing.TotalReign} days | Treasury: {currentKing.Treasury:N0} gold");
+            terminal.WriteLine(Loc.Get("castle.reign_treasury", currentKing.TotalReign, $"{currentKing.Treasury:N0}"));
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine("The kingdom appears to be in disarray!");
-            terminal.WriteLine("No monarch sits upon the throne...");
+            terminal.WriteLine(Loc.Get("castle.kingdom_disarray"));
+            terminal.WriteLine(Loc.Get("castle.no_monarch"));
             terminal.WriteLine("");
         }
 
@@ -162,29 +162,29 @@ public class CastleLocation : BaseLocation
     private void ShowRoyalMenu()
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine("Royal Commands:");
+        terminal.WriteLine(Loc.Get("castle.royal_commands"));
         terminal.WriteLine("");
 
         if (IsScreenReader)
         {
-            WriteSRMenuOption("P", "Prison Cells");
-            WriteSRMenuOption("O", "Orders");
-            WriteSRMenuOption("1", "Royal Mail");
-            WriteSRMenuOption("G", "Go to Sleep");
-            WriteSRMenuOption("C", "Check Security");
-            WriteSRMenuOption("H", "History of Monarchs");
-            WriteSRMenuOption("A", "Abdicate");
-            WriteSRMenuOption("M", "Magic");
-            WriteSRMenuOption("F", "Fiscal Matters");
-            WriteSRMenuOption("S", "Status");
-            WriteSRMenuOption("Q", "Quests");
-            WriteSRMenuOption("T", "The Royal Orphanage");
-            WriteSRMenuOption("W", "Wedding");
-            WriteSRMenuOption("U", "Court Politics");
-            WriteSRMenuOption("E", "Estate (Succession)");
-            WriteSRMenuOption("B", "Bodyguards (Dungeon Mercenaries)");
+            WriteSRMenuOption("P", Loc.Get("castle.prison_cells"));
+            WriteSRMenuOption("O", Loc.Get("castle.orders"));
+            WriteSRMenuOption("1", Loc.Get("castle.royal_mail"));
+            WriteSRMenuOption("G", Loc.Get("castle.sleep"));
+            WriteSRMenuOption("C", Loc.Get("castle.security"));
+            WriteSRMenuOption("H", Loc.Get("castle.history"));
+            WriteSRMenuOption("A", Loc.Get("castle.abdicate"));
+            WriteSRMenuOption("M", Loc.Get("castle.magic"));
+            WriteSRMenuOption("F", Loc.Get("castle.fiscal"));
+            WriteSRMenuOption("S", Loc.Get("castle.status"));
+            WriteSRMenuOption("Q", Loc.Get("castle.quests"));
+            WriteSRMenuOption("T", Loc.Get("castle.orphanage"));
+            WriteSRMenuOption("W", Loc.Get("castle.wedding"));
+            WriteSRMenuOption("U", Loc.Get("castle.court"));
+            WriteSRMenuOption("E", Loc.Get("castle.estate"));
+            WriteSRMenuOption("B", Loc.Get("castle.bodyguards"));
             terminal.WriteLine("");
-            WriteSRMenuOption("R", "Return to Town");
+            WriteSRMenuOption("R", Loc.Get("castle.return"));
             terminal.WriteLine("");
         }
         else
@@ -197,7 +197,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rison Cells       ");
+            terminal.Write(Loc.Get("castle.menu_prison_cells"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -206,7 +206,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rders             ");
+            terminal.Write(Loc.Get("castle.menu_orders"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -215,7 +215,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine(" Royal Mail");
+            terminal.WriteLine(Loc.Get("castle.menu_royal_mail"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -225,7 +225,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("o to Sleep        ");
+            terminal.Write(Loc.Get("castle.menu_go_sleep"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -234,7 +234,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("heck Security     ");
+            terminal.Write(Loc.Get("castle.menu_check_security"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -243,7 +243,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("istory of Monarchs");
+            terminal.WriteLine(Loc.Get("castle.menu_history"));
 
             // Row 3
             terminal.SetColor("darkgray");
@@ -253,7 +253,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("bdicate           ");
+            terminal.Write(Loc.Get("castle.menu_abdicate"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -262,7 +262,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("agic              ");
+            terminal.Write(Loc.Get("castle.menu_magic"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -271,7 +271,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("iscal Matters");
+            terminal.WriteLine(Loc.Get("castle.menu_fiscal"));
 
             // Row 4
             terminal.SetColor("darkgray");
@@ -281,7 +281,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("tatus             ");
+            terminal.Write(Loc.Get("castle.menu_status"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -290,7 +290,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("uests             ");
+            terminal.Write(Loc.Get("castle.menu_quests"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -299,7 +299,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("he Royal Orphanage");
+            terminal.WriteLine(Loc.Get("castle.menu_orphanage"));
 
             // Row 5 - Political systems
             terminal.SetColor("darkgray");
@@ -309,7 +309,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("edding            ");
+            terminal.Write(Loc.Get("castle.menu_wedding"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -318,7 +318,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("Court Politics    ");
+            terminal.Write(Loc.Get("castle.menu_court"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -327,7 +327,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("state (Succession)");
+            terminal.WriteLine(Loc.Get("castle.menu_estate"));
 
             // Row 6 - Royal Bodyguards
             terminal.SetColor("darkgray");
@@ -337,7 +337,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("odyguards (Dungeon Mercenaries)");
+            terminal.WriteLine(Loc.Get("castle.menu_bodyguards"));
 
             terminal.WriteLine("");
 
@@ -349,7 +349,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn to Town");
+            terminal.WriteLine(Loc.Get("castle.menu_return_town"));
             terminal.WriteLine("");
         }
 
@@ -362,44 +362,44 @@ public class CastleLocation : BaseLocation
     private void ShowCastleExteriorMenu()
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine("Options:");
+        terminal.WriteLine(Loc.Get("castle.options_label"));
         terminal.WriteLine("");
 
         if (IsScreenReader)
         {
-            WriteSRMenuOption("T", "The Royal Guard");
-            WriteSRMenuOption("P", "Prison");
-            WriteSRMenuOption("D", "Donate to Royal Purse");
-            WriteSRMenuOption("H", "History of Monarchs");
-            WriteSRMenuOption("S", "Seek Audience");
-            WriteSRMenuOption("A", "Apply for Royal Guard");
+            WriteSRMenuOption("T", Loc.Get("castle.royal_guard"));
+            WriteSRMenuOption("P", Loc.Get("castle.prison"));
+            WriteSRMenuOption("D", Loc.Get("castle.donate"));
+            WriteSRMenuOption("H", Loc.Get("castle.history"));
+            WriteSRMenuOption("S", Loc.Get("castle.seek_audience"));
+            WriteSRMenuOption("A", Loc.Get("castle.apply_guard"));
 
             if (currentKing != null && currentKing.IsActive)
             {
                 bool canChallenge = CanChallengeThrone();
-                WriteSRMenuOption("I", canChallenge ? "Infiltrate Castle (Challenge for Throne)" : "Infiltrate Castle (Not Available)", canChallenge);
+                WriteSRMenuOption("I", canChallenge ? Loc.Get("castle.infiltrate") : Loc.Get("castle.infiltrate_unavailable"), canChallenge);
             }
             else
             {
                 bool canClaim = currentPlayer.Level >= GameConfig.MinLevelKing;
-                WriteSRMenuOption("C", canClaim ? "Claim Empty Throne" : $"Claim Empty Throne (Requires Level {GameConfig.MinLevelKing})", canClaim);
+                WriteSRMenuOption("C", canClaim ? Loc.Get("castle.claim_empty_throne_sr") : Loc.Get("castle.claim_throne_requires_sr", GameConfig.MinLevelKing), canClaim);
             }
 
             if (UsurperRemake.BBS.DoorMode.IsOnlineMode && !string.IsNullOrEmpty(currentPlayer.Team))
-                WriteSRMenuOption("B", "Besiege the Castle (Team Siege)");
+                WriteSRMenuOption("B", Loc.Get("castle.besiege"));
 
             terminal.WriteLine("");
 
             var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
             if (factionSystem.PlayerFaction != UsurperRemake.Systems.Faction.TheCrown)
-                WriteSRMenuOption("J", "Join Royal Service");
+                WriteSRMenuOption("J", Loc.Get("castle.join_service"));
             else
-                terminal.WriteLine("You are a loyal servant of The Crown.");
+                terminal.WriteLine(Loc.Get("castle.loyal_servant"));
 
             if (FactionSystem.Instance?.HasCastleAccess() == true)
-                WriteSRMenuOption("L", "Royal Armory");
+                WriteSRMenuOption("L", Loc.Get("castle.armory"));
 
-            WriteSRMenuOption("R", "Return to Town");
+            WriteSRMenuOption("R", Loc.Get("castle.return"));
             terminal.WriteLine("");
         }
         else
@@ -412,7 +412,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("he Royal Guard    ");
+            terminal.Write(Loc.Get("castle.menu_ext_royal_guard"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -421,7 +421,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("rison             ");
+            terminal.Write(Loc.Get("castle.menu_ext_prison"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -430,7 +430,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("onate to Royal Purse");
+            terminal.WriteLine(Loc.Get("castle.menu_ext_donate"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -440,7 +440,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("istory of Monarchs ");
+            terminal.Write(Loc.Get("castle.menu_ext_history"));
 
             terminal.SetColor("darkgray");
             terminal.Write("[");
@@ -449,7 +449,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.Write("eek Audience       ");
+            terminal.Write(Loc.Get("castle.menu_ext_audience"));
 
             // Apply for Royal Guard option
             terminal.SetColor("darkgray");
@@ -459,7 +459,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("pply for Royal Guard");
+            terminal.WriteLine(Loc.Get("castle.menu_ext_apply_guard"));
 
             // Throne options - always show one of these
             if (currentKing != null && currentKing.IsActive)
@@ -475,12 +475,12 @@ public class CastleLocation : BaseLocation
                 if (CanChallengeThrone())
                 {
                     terminal.SetColor("bright_red");
-                    terminal.WriteLine("nfiltrate Castle (Challenge for Throne)");
+                    terminal.WriteLine(Loc.Get("castle.menu_infiltrate_challenge"));
                 }
                 else if (currentPlayer.Level < GameConfig.MinLevelKing)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"nfiltrate Castle (Requires Level {GameConfig.MinLevelKing})");
+                    terminal.WriteLine(Loc.Get("castle.menu_infiltrate_level_req", GameConfig.MinLevelKing));
                 }
                 else if (currentKing != null && currentKing.IsActive)
                 {
@@ -488,18 +488,18 @@ public class CastleLocation : BaseLocation
                     if (kLevel > 0 && kLevel - currentPlayer.Level > GameConfig.KingChallengeLevelRange)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine($"nfiltrate Castle (King Lv{kLevel}, need Lv{Math.Max(GameConfig.MinLevelKing, kLevel - GameConfig.KingChallengeLevelRange)}+)");
+                        terminal.WriteLine(Loc.Get("castle.menu_infiltrate_king_level", kLevel, Math.Max(GameConfig.MinLevelKing, kLevel - GameConfig.KingChallengeLevelRange)));
                     }
                     else
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine("nfiltrate Castle (Not Available)");
+                        terminal.WriteLine(Loc.Get("castle.menu_infiltrate_unavailable"));
                     }
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("nfiltrate Castle (Not Available)");
+                    terminal.WriteLine(Loc.Get("castle.menu_infiltrate_unavailable"));
                 }
             }
             else
@@ -515,12 +515,12 @@ public class CastleLocation : BaseLocation
                 if (currentPlayer.Level >= GameConfig.MinLevelKing)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("laim Empty Throne");
+                    terminal.WriteLine(Loc.Get("castle.menu_claim_throne"));
                 }
                 else
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine($"laim Empty Throne (Requires Level {GameConfig.MinLevelKing})");
+                    terminal.WriteLine(Loc.Get("castle.menu_claim_throne_level", GameConfig.MinLevelKing));
                 }
             }
 
@@ -534,7 +534,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_red");
-                terminal.WriteLine("esiege the Castle (Team Siege)");
+                terminal.WriteLine(Loc.Get("castle.menu_besiege"));
             }
 
             terminal.WriteLine("");
@@ -550,22 +550,22 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("bright_yellow");
-                terminal.Write("oin Royal Service ");
+                terminal.Write(Loc.Get("castle.menu_join_service"));
                 if (factionSystem.PlayerFaction == null)
                 {
                     terminal.SetColor("gray");
-                    terminal.WriteLine("(swear loyalty to The Crown...)");
+                    terminal.WriteLine(Loc.Get("castle.swear_loyalty"));
                 }
                 else
                 {
                     terminal.SetColor("dark_red");
-                    terminal.WriteLine("(you serve another...)");
+                    terminal.WriteLine(Loc.Get("castle.serve_another"));
                 }
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine(" You are a loyal servant of The Crown.");
+                terminal.WriteLine(Loc.Get("castle.loyal_servant"));
             }
 
             // Royal Armory (Crown only)
@@ -578,7 +578,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("yellow");
-                terminal.WriteLine(" Royal Armory");
+                terminal.WriteLine(Loc.Get("castle.menu_royal_armory"));
             }
 
             // Navigation
@@ -589,7 +589,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor("white");
-            terminal.WriteLine("eturn to Town");
+            terminal.WriteLine(Loc.Get("castle.menu_return_town"));
             terminal.WriteLine("");
         }
 
@@ -601,21 +601,21 @@ public class CastleLocation : BaseLocation
     /// </summary>
     private void DisplayRoyalCastleInteriorBBS()
     {
-        ShowBBSHeader("THE ROYAL CASTLE");
+        ShowBBSHeader(Loc.Get("castle.header"));
         // 1-line greeting + treasury
         terminal.SetColor("white");
-        terminal.Write(" Your Majesty! Treasury: ");
+        terminal.Write(Loc.Get("castle.bbs_majesty_treasury"));
         terminal.SetColor("bright_yellow");
         terminal.Write($"{currentKing.Treasury:N0}g");
         terminal.SetColor("gray");
-        terminal.Write($"  Guards: {currentKing.Guards.Count}/{GameConfig.MaxRoyalGuards}");
-        terminal.Write($"  Prisoners: {currentKing.Prisoners.Count}");
+        terminal.Write(Loc.Get("castle.bbs_guards", currentKing.Guards.Count, GameConfig.MaxRoyalGuards));
+        terminal.Write(Loc.Get("castle.bbs_prisoners", currentKing.Prisoners.Count));
         terminal.WriteLine("");
         int unreadMail = royalMail.Count(m => !m.IsRead);
         if (unreadMail > 0)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine($" You have {unreadMail} unread messages!");
+            terminal.WriteLine(Loc.Get("castle.unread_mail", unreadMail));
         }
         ShowBBSNPCs();
         // Menu rows
@@ -632,7 +632,7 @@ public class CastleLocation : BaseLocation
     /// </summary>
     private void DisplayCastleExteriorBBS()
     {
-        ShowBBSHeader("OUTSIDE THE ROYAL CASTLE");
+        ShowBBSHeader(Loc.Get("castle.header_outside"));
         // 1-line king status
         if (currentKing != null && currentKing.IsActive)
         {
@@ -641,12 +641,12 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write(currentKing.Name);
             terminal.SetColor("gray");
-            terminal.WriteLine($" rules. Reign: {currentKing.TotalReign}d | Treasury: {currentKing.Treasury:N0}g");
+            terminal.WriteLine(Loc.Get("castle.bbs_rules", currentKing.TotalReign, $"{currentKing.Treasury:N0}"));
         }
         else
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine(" No monarch sits upon the throne...");
+            terminal.WriteLine(" " + Loc.Get("castle.no_monarch"));
         }
         ShowBBSNPCs();
         // Menu rows
@@ -777,7 +777,7 @@ public class CastleLocation : BaseLocation
 
             default:
                 terminal.SetColor("red");
-                terminal.WriteLine("Invalid choice! Try again.");
+                terminal.WriteLine(Loc.Get("castle.invalid_choice"));
                 await Task.Delay(1000);
                 return false;
         }
@@ -823,17 +823,17 @@ public class CastleLocation : BaseLocation
                 {
                     terminal.SetColor("red");
                     if (currentPlayer.Level < GameConfig.MinLevelKing)
-                        terminal.WriteLine($"You must be at least level {GameConfig.MinLevelKing} to challenge for the throne!");
+                        terminal.WriteLine(Loc.Get("castle.level_req_throne", GameConfig.MinLevelKing));
                     else if (currentKing != null && currentKing.IsActive)
                     {
                         int kLevel = GetKingLevel();
                         if (kLevel > 0 && kLevel - currentPlayer.Level > GameConfig.KingChallengeLevelRange)
-                            terminal.WriteLine($"The {currentKing.GetTitle()} is level {kLevel}. You must be at least level {kLevel - GameConfig.KingChallengeLevelRange} to challenge!");
+                            terminal.WriteLine(Loc.Get("castle.king_level_challenge", currentKing.GetTitle(), kLevel, kLevel - GameConfig.KingChallengeLevelRange));
                         else
-                            terminal.WriteLine("You are not worthy to challenge for the throne!");
+                            terminal.WriteLine(Loc.Get("castle.not_worthy"));
                     }
                     else
-                        terminal.WriteLine("You are not worthy to challenge for the throne!");
+                        terminal.WriteLine(Loc.Get("castle.not_worthy"));
                     await Task.Delay(2000);
                 }
                 return false;
@@ -846,7 +846,7 @@ public class CastleLocation : BaseLocation
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("The throne is already occupied!");
+                    terminal.WriteLine(Loc.Get("castle.throne_occupied"));
                     await Task.Delay(2000);
                 }
                 return false;
@@ -865,7 +865,7 @@ public class CastleLocation : BaseLocation
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("Castle siege is only available in online mode!");
+                    terminal.WriteLine(Loc.Get("castle.siege_online_only"));
                     await Task.Delay(1500);
                 }
                 return false;
@@ -876,7 +876,7 @@ public class CastleLocation : BaseLocation
 
             default:
                 terminal.SetColor("red");
-                terminal.WriteLine("Invalid choice! Try again.");
+                terminal.WriteLine(Loc.Get("castle.invalid_choice"));
                 await Task.Delay(1000);
                 return false;
         }
@@ -889,29 +889,29 @@ public class CastleLocation : BaseLocation
     private async Task ViewRoyalGuard()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE ROYAL GUARD", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.royal_guard"), "bright_cyan");
         terminal.WriteLine("");
 
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("With no monarch on the throne, the Royal Guard has disbanded.");
-            terminal.WriteLine("The castle stands largely undefended...");
+            terminal.WriteLine(Loc.Get("castle.guard_disbanded"));
+            terminal.WriteLine(Loc.Get("castle.castle_undefended"));
         }
         else if (currentKing.Guards.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} has no Royal Guards!");
-            terminal.WriteLine("The castle relies only on its walls for defense.");
+            terminal.WriteLine(Loc.Get("castle.no_royal_guards", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.walls_only"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"The Royal Guard of {currentKing.GetTitle()} {currentKing.Name}:");
+            terminal.WriteLine(Loc.Get("castle.guard_of", currentKing.GetTitle(), currentKing.Name));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"#",-3} {"Name",-20} {"Rank",-15} {"Loyalty",-10}");
+            terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_rank"),-15} {Loc.Get("castle.header_loyalty"),-10}");
             WriteDivider(50);
 
             int i = 1;
@@ -923,7 +923,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write($"{i,-3} {guard.Name,-20} ");
                 terminal.SetColor("cyan");
-                terminal.Write($"{"Guard",-15} ");
+                terminal.Write($"{Loc.Get("castle.guard_rank"),-15} ");
                 terminal.SetColor(loyaltyColor);
                 terminal.WriteLine($"{guard.Loyalty}%");
                 i++;
@@ -931,12 +931,12 @@ public class CastleLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"Total Guards: {currentKing.Guards.Count}/{GameConfig.MaxRoyalGuards}");
+            terminal.WriteLine(Loc.Get("castle.total_guards", currentKing.Guards.Count, GameConfig.MaxRoyalGuards));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -947,23 +947,23 @@ public class CastleLocation : BaseLocation
     private async Task VisitPrison()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE ROYAL PRISON", "red");
+        WriteBoxHeader(Loc.Get("castle.royal_prison"), "red");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("You peer through the iron bars at the gloomy prison cells.");
-        terminal.WriteLine("The smell of damp stone fills your nostrils...");
+        terminal.WriteLine(Loc.Get("castle.prison_bars"));
+        terminal.WriteLine(Loc.Get("castle.prison_smell"));
         terminal.WriteLine("");
 
         if (currentKing == null || currentKing.Prisoners.Count == 0)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("The prison cells are empty.");
+            terminal.WriteLine(Loc.Get("castle.prison_empty"));
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"Name",-20} {"Crime",-20} {"Days Left",-10}");
+            terminal.WriteLine($"{Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_crime"),-20} {Loc.Get("castle.header_days_left"),-10}");
             WriteDivider(55);
 
             foreach (var prisoner in currentKing.Prisoners)
@@ -976,7 +976,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -986,26 +986,26 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("PRISON CELL MANAGEMENT", "bright_red");
+            WriteBoxHeader(Loc.Get("castle.prison_mgmt"), "bright_red");
             terminal.WriteLine("");
 
             if (currentKing.Prisoners.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The dungeons are empty. Justice reigns in your kingdom!");
+                terminal.WriteLine(Loc.Get("castle.dungeons_empty"));
                 terminal.WriteLine("");
             }
             else
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"{"#",-3} {"Name",-18} {"Crime",-18} {"Sentence",-10} {"Served",-8} {"Bail",-10}");
+                terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-18} {Loc.Get("castle.header_crime"),-18} {Loc.Get("castle.header_sentence"),-10} {Loc.Get("castle.header_served"),-8} {Loc.Get("castle.header_bail"),-10}");
                 WriteDivider(75);
 
                 int i = 1;
                 foreach (var prisoner in currentKing.Prisoners)
                 {
                     var p = prisoner.Value;
-                    string bailStr = p.BailAmount > 0 ? $"{p.BailAmount:N0}g" : "None";
+                    string bailStr = p.BailAmount > 0 ? $"{p.BailAmount:N0}g" : Loc.Get("ui.none");
                     terminal.SetColor("white");
                     terminal.WriteLine($"{i,-3} {p.CharacterName,-18} {p.Crime,-18} {p.Sentence,-10} {p.DaysServed,-8} {bailStr,-10}");
                     i++;
@@ -1014,25 +1014,25 @@ public class CastleLocation : BaseLocation
             }
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Commands:");
+            terminal.WriteLine(Loc.Get("castle.prison_commands"));
             if (IsScreenReader)
             {
-                WriteSRMenuOption("I", "Imprison someone");
-                WriteSRMenuOption("P", "Pardon prisoner");
-                WriteSRMenuOption("E", "Execute prisoner");
-                WriteSRMenuOption("S", "Set bail amount");
-                WriteSRMenuOption("R", "Return");
+                WriteSRMenuOption("I", Loc.Get("castle.imprison"));
+                WriteSRMenuOption("P", Loc.Get("castle.pardon"));
+                WriteSRMenuOption("E", Loc.Get("castle.execute"));
+                WriteSRMenuOption("S", Loc.Get("castle.set_bail"));
+                WriteSRMenuOption("R", Loc.Get("castle.return"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("(I)mprison someone  (P)ardon prisoner  (E)xecute prisoner");
-                terminal.WriteLine("(S)et bail amount   (R)eturn");
+                terminal.WriteLine(Loc.Get("castle.prison_menu_text_1"));
+                terminal.WriteLine(Loc.Get("castle.prison_menu_text_2"));
             }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Your decree: ");
+            terminal.Write(Loc.Get("castle.your_decree"));
             terminal.SetColor("white");
             string input = await terminal.ReadLineAsync();
 
@@ -1093,14 +1093,14 @@ public class CastleLocation : BaseLocation
         if (targets.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There is no one to imprison.");
+            terminal.WriteLine(Loc.Get("castle.no_one_imprison"));
             await Task.Delay(1500);
             return;
         }
 
         // Show numbered list
         terminal.SetColor("cyan");
-        terminal.WriteLine($"{"#",-4} {"Name",-20} {"Type",-20}");
+        terminal.WriteLine($"{Loc.Get("castle.header_num"),-4} {Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_type"),-20}");
         WriteDivider(44);
 
         for (int i = 0; i < targets.Count; i++)
@@ -1111,7 +1111,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("# to imprison (or 0 to cancel): ");
+        terminal.Write(Loc.Get("castle.imprison_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1121,13 +1121,13 @@ public class CastleLocation : BaseLocation
         var target = targets[idx - 1];
 
         terminal.SetColor("cyan");
-        terminal.Write("Crime committed: ");
+        terminal.Write(Loc.Get("castle.crime_committed"));
         terminal.SetColor("white");
         string crime = await terminal.ReadLineAsync();
-        if (string.IsNullOrEmpty(crime)) crime = "General Misconduct";
+        if (string.IsNullOrEmpty(crime)) crime = Loc.Get("castle.general_misconduct");
 
         terminal.SetColor("cyan");
-        terminal.Write("Sentence (days): ");
+        terminal.Write(Loc.Get("castle.sentence_days"));
         terminal.SetColor("white");
         string sentenceStr = await terminal.ReadLineAsync();
 
@@ -1171,7 +1171,7 @@ public class CastleLocation : BaseLocation
             PersistRoyalCourtToWorldState();
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{target.Name} has been imprisoned for {sentence} days!");
+        terminal.WriteLine(Loc.Get("castle.imprisoned_confirm", target.Name, sentence));
         NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} imprisoned {target.Name} for {crime}!");
 
         await Task.Delay(2000);
@@ -1182,14 +1182,14 @@ public class CastleLocation : BaseLocation
         if (currentKing.Prisoners.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There are no prisoners to pardon.");
+            terminal.WriteLine(Loc.Get("castle.no_prisoners_pardon"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Prisoner # to pardon: ");
+        terminal.Write(Loc.Get("castle.pardon_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1197,7 +1197,7 @@ public class CastleLocation : BaseLocation
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > keys.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid selection.");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"));
             await Task.Delay(1500);
             return;
         }
@@ -1231,13 +1231,13 @@ public class CastleLocation : BaseLocation
             }
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{name} has been pardoned and released!");
+            terminal.WriteLine(Loc.Get("castle.pardoned_confirm", name));
             NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} pardoned {name}!");
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("That person is not in the dungeon.");
+            terminal.WriteLine(Loc.Get("castle.not_in_dungeon"));
         }
 
         await Task.Delay(2000);
@@ -1248,16 +1248,16 @@ public class CastleLocation : BaseLocation
         if (currentKing.Prisoners.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There are no prisoners to execute.");
+            terminal.WriteLine(Loc.Get("castle.no_prisoners_execute"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("bright_red");
-        terminal.WriteLine("WARNING: Executions greatly increase your Darkness!");
+        terminal.WriteLine(Loc.Get("castle.execution_warning"));
         terminal.SetColor("cyan");
-        terminal.Write("Prisoner # to execute: ");
+        terminal.Write(Loc.Get("castle.execute_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1265,14 +1265,14 @@ public class CastleLocation : BaseLocation
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > keys.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid selection.");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"));
             await Task.Delay(1500);
             return;
         }
 
         string name = keys[idx - 1];
         terminal.SetColor("cyan");
-        terminal.Write($"Execute {name}? Are you SURE? (Y/N): ");
+        terminal.Write(Loc.Get("castle.execute_confirm_prompt", name));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
@@ -1311,14 +1311,14 @@ public class CastleLocation : BaseLocation
             }
 
             terminal.SetColor("red");
-            terminal.WriteLine($"{name} has been executed!");
-            terminal.WriteLine("Your darkness increases significantly...");
+            terminal.WriteLine(Loc.Get("castle.executed_confirm", name));
+            terminal.WriteLine(Loc.Get("castle.darkness_increases"));
             NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} executed {name}!");
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Execution cancelled.");
+            terminal.WriteLine(Loc.Get("castle.execution_cancelled"));
         }
 
         await Task.Delay(2000);
@@ -1329,14 +1329,14 @@ public class CastleLocation : BaseLocation
         if (currentKing.Prisoners.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There are no prisoners.");
+            terminal.WriteLine(Loc.Get("castle.no_prisoners_bail"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Prisoner # to set bail: ");
+        terminal.Write(Loc.Get("castle.bail_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1344,14 +1344,14 @@ public class CastleLocation : BaseLocation
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > keys.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid selection.");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"));
             await Task.Delay(1500);
             return;
         }
 
         string name = keys[idx - 1];
         terminal.SetColor("cyan");
-        terminal.Write($"Bail amount for {name} (0 for no bail): ");
+        terminal.Write(Loc.Get("castle.bail_amount_prompt", name));
         terminal.SetColor("white");
         string amountStr = await terminal.ReadLineAsync();
 
@@ -1360,9 +1360,9 @@ public class CastleLocation : BaseLocation
             currentKing.Prisoners[name].BailAmount = amount;
             terminal.SetColor("bright_green");
             if (amount > 0)
-                terminal.WriteLine($"Bail set to {amount:N0} gold for {name}.");
+                terminal.WriteLine(Loc.Get("castle.bail_set", amount.ToString("N0"), name));
             else
-                terminal.WriteLine($"No bail allowed for {name}.");
+                terminal.WriteLine(Loc.Get("castle.no_bail", name));
         }
 
         await Task.Delay(2000);
@@ -1375,7 +1375,7 @@ public class CastleLocation : BaseLocation
     private async Task ReadRoyalMail()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL MAIL", "bright_magenta");
+        WriteBoxHeader(Loc.Get("castle.royal_mail"), "bright_magenta");
         terminal.WriteLine("");
 
         // Generate some random mail if there's none
@@ -1387,18 +1387,18 @@ public class CastleLocation : BaseLocation
         if (royalMail.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Your inbox is empty.");
+            terminal.WriteLine(Loc.Get("castle.inbox_empty"));
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"#",-3} {"From",-20} {"Subject",-35} {"Status",-10}");
+            terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_from"),-20} {Loc.Get("castle.header_subject"),-35} {Loc.Get("castle.header_status"),-10}");
             WriteDivider(70);
 
             for (int i = 0; i < royalMail.Count; i++)
             {
                 var mail = royalMail[i];
-                string status = mail.IsRead ? "Read" : "NEW";
+                string status = mail.IsRead ? Loc.Get("castle.mail_status_read") : Loc.Get("castle.mail_status_new");
                 string statusColor = mail.IsRead ? "gray" : "bright_yellow";
 
                 terminal.SetColor("white");
@@ -1410,7 +1410,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Read message # (0 to return): ");
+        terminal.Write(Loc.Get("castle.read_message_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1421,8 +1421,8 @@ public class CastleLocation : BaseLocation
 
             terminal.ClearScreen();
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"From: {mail.Sender}");
-            terminal.WriteLine($"Subject: {mail.Subject}");
+            terminal.WriteLine(Loc.Get("castle.mail_from", mail.Sender));
+            terminal.WriteLine(Loc.Get("castle.mail_subject", mail.Subject));
             WriteDivider(60);
             terminal.SetColor("white");
             terminal.WriteLine("");
@@ -1430,21 +1430,21 @@ public class CastleLocation : BaseLocation
             terminal.WriteLine("");
 
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
         }
     }
 
     private void GenerateRandomMail()
     {
-        string[] senders = { "Royal Advisor", "Castle Steward", "High Priest", "Guild Master", "Merchant Lord", "Town Elder" };
-        string[] subjects = { "Treasury Report", "Kingdom Affairs", "Request for Audience", "Trade Proposal", "Security Concerns", "Festival Planning" };
+        string[] senders = { Loc.Get("castle.mail_sender_advisor"), Loc.Get("castle.mail_sender_steward"), Loc.Get("castle.mail_sender_priest"), Loc.Get("castle.mail_sender_guild"), Loc.Get("castle.mail_sender_merchant"), Loc.Get("castle.mail_sender_elder") };
+        string[] subjects = { Loc.Get("castle.mail_subj_treasury"), Loc.Get("castle.mail_subj_affairs"), Loc.Get("castle.mail_subj_audience"), Loc.Get("castle.mail_subj_trade"), Loc.Get("castle.mail_subj_security"), Loc.Get("castle.mail_subj_festival") };
         string[] bodies = {
-            "Your Majesty,\n\nThe treasury report for this quarter shows steady growth.\nOur financial situation remains stable.\n\nYour humble servant.",
-            "Your Highness,\n\nThe people speak highly of your rule.\nMorale in the kingdom is good.\n\nLong live the Crown!",
-            "Most Noble Sovereign,\n\nA delegation from a distant land requests an audience.\nThey bring gifts and proposals of trade.\n\nAwaiting your decision.",
-            "My Liege,\n\nThe castle walls require maintenance.\nI recommend allocating funds for repairs.\n\nYour faithful steward.",
-            "Your Royal Majesty,\n\nAll is well in the realm.\nThe guards report no incidents.\n\nMay your reign be long and prosperous."
+            Loc.Get("castle.mail_body_1"),
+            Loc.Get("castle.mail_body_2"),
+            Loc.Get("castle.mail_body_3"),
+            Loc.Get("castle.mail_body_4"),
+            Loc.Get("castle.mail_body_5")
         };
 
         // Add 1-3 random messages
@@ -1472,12 +1472,12 @@ public class CastleLocation : BaseLocation
     private async Task RoyalSleep()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE ROYAL CHAMBERS", "bright_blue");
+        WriteBoxHeader(Loc.Get("castle.royal_chambers"), "bright_blue");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("You retire to your opulent royal chambers.");
-        terminal.WriteLine("Servants draw a warm bath and prepare your bed.");
+        terminal.WriteLine(Loc.Get("castle.retire_chambers"));
+        terminal.WriteLine(Loc.Get("castle.servants_bath"));
         terminal.WriteLine("");
 
         await Task.Delay(1500);
@@ -1491,7 +1491,7 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.GroggoShadowBlessingDex > 0)
         {
             currentPlayer.Dexterity = Math.Max(1, currentPlayer.Dexterity - currentPlayer.GroggoShadowBlessingDex);
-            terminal.WriteLine("The Blessing of Shadows fades as you rest...", "gray");
+            terminal.WriteLine(Loc.Get("castle.shadow_blessing_fades"), "gray");
             currentPlayer.GroggoShadowBlessingDex = 0;
         }
 
@@ -1500,18 +1500,18 @@ public class CastleLocation : BaseLocation
             // Online mode: King sleeps in the castle (protected by royal guards) and logs out
             // Day does NOT increment — only the 7 PM ET maintenance reset does that
             terminal.SetColor("bright_green");
-            terminal.WriteLine("You rest peacefully in the royal chambers...");
+            terminal.WriteLine(Loc.Get("castle.rest_peacefully"));
             terminal.WriteLine("");
-            terminal.WriteLine($"HP restored to {currentPlayer.MaxHP}!");
-            terminal.WriteLine($"Mana restored to {currentPlayer.MaxMana}!");
+            terminal.WriteLine(Loc.Get("castle.hp_restored", currentPlayer.MaxHP));
+            terminal.WriteLine(Loc.Get("castle.mana_restored", currentPlayer.MaxMana));
             terminal.WriteLine("");
 
             // Show kingdom status
             terminal.SetColor("cyan");
-            terminal.WriteLine("=== Kingdom Status ===");
+            terminal.WriteLine(Loc.Get("castle.kingdom_status"));
             terminal.SetColor("white");
-            terminal.WriteLine($"Treasury Balance: {currentKing.Treasury:N0} gold");
-            terminal.WriteLine($"Days of Reign: {currentKing.TotalReign}");
+            terminal.WriteLine(Loc.Get("castle.treasury_balance", currentKing.Treasury.ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.days_reign", currentKing.TotalReign));
             terminal.WriteLine("");
 
             // Save game
@@ -1537,7 +1537,7 @@ public class CastleLocation : BaseLocation
             }
 
             terminal.SetColor("gray");
-            terminal.WriteLine("Your royal guards stand watch outside the chambers... (logging out)");
+            terminal.WriteLine(Loc.Get("castle.guards_watch"));
             await Task.Delay(2000);
 
             throw new LocationExitException(GameLocation.NoWhere);
@@ -1548,24 +1548,24 @@ public class CastleLocation : BaseLocation
             currentKing.ProcessDailyActivities();
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine("You rest peacefully through the night...");
+            terminal.WriteLine(Loc.Get("castle.rest_night"));
             terminal.WriteLine("");
-            terminal.WriteLine($"HP restored to {currentPlayer.MaxHP}!");
-            terminal.WriteLine($"Mana restored to {currentPlayer.MaxMana}!");
+            terminal.WriteLine(Loc.Get("castle.hp_restored", currentPlayer.MaxHP));
+            terminal.WriteLine(Loc.Get("castle.mana_restored", currentPlayer.MaxMana));
             terminal.WriteLine("");
 
             // Show daily report
             terminal.SetColor("cyan");
-            terminal.WriteLine("=== Daily Kingdom Report ===");
+            terminal.WriteLine(Loc.Get("castle.daily_report"));
             terminal.SetColor("white");
-            terminal.WriteLine($"Daily Income: {currentKing.CalculateDailyIncome():N0} gold");
-            terminal.WriteLine($"Daily Expenses: {currentKing.CalculateDailyExpenses():N0} gold");
-            terminal.WriteLine($"Treasury Balance: {currentKing.Treasury:N0} gold");
-            terminal.WriteLine($"Days of Reign: {currentKing.TotalReign}");
+            terminal.WriteLine(Loc.Get("castle.daily_income_label", currentKing.CalculateDailyIncome().ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.daily_expenses_label", currentKing.CalculateDailyExpenses().ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.treasury_balance", currentKing.Treasury.ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.days_reign", currentKing.TotalReign));
 
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
         }
     }
@@ -1577,33 +1577,33 @@ public class CastleLocation : BaseLocation
     private async Task CheckSecurity()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("SECURITY REPORT", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.security_report"), "bright_cyan");
         terminal.WriteLine("");
 
         // NPC Guard summary
         terminal.SetColor("cyan");
-        terminal.WriteLine("=== Royal Guard Status ===");
+        terminal.WriteLine(Loc.Get("castle.guard_status_header"));
         terminal.SetColor("white");
-        terminal.WriteLine($"NPC Guards: {currentKing.Guards.Count}/{King.MaxNPCGuards}");
+        terminal.WriteLine(Loc.Get("castle.npc_guards", currentKing.Guards.Count, King.MaxNPCGuards));
 
         if (currentKing.Guards.Count > 0)
         {
             int avgLoyalty = (int)currentKing.Guards.Average(g => g.Loyalty);
-            string loyaltyStatus = avgLoyalty > 80 ? "Excellent" : avgLoyalty > 60 ? "Good" : avgLoyalty > 40 ? "Fair" : "Poor";
-            terminal.WriteLine($"Average Loyalty: {avgLoyalty}% ({loyaltyStatus})");
-            terminal.WriteLine($"Daily Guard Costs: {currentKing.Guards.Sum(g => g.DailySalary):N0} gold");
+            string loyaltyStatus = avgLoyalty > 80 ? Loc.Get("castle.loyalty_excellent") : avgLoyalty > 60 ? Loc.Get("castle.loyalty_good") : avgLoyalty > 40 ? Loc.Get("castle.loyalty_fair") : Loc.Get("castle.loyalty_poor");
+            terminal.WriteLine(Loc.Get("castle.avg_loyalty", avgLoyalty, loyaltyStatus));
+            terminal.WriteLine(Loc.Get("castle.daily_guard_costs", currentKing.Guards.Sum(g => g.DailySalary).ToString("N0")));
             terminal.WriteLine("");
 
             // Individual guard listing
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"Name",-20} {"Loyalty",-12} {"Salary",-12} {"Status",-10}");
+            terminal.WriteLine($"{Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_loyalty"),-12} {Loc.Get("castle.header_salary"),-12} {Loc.Get("castle.header_status"),-10}");
             WriteDivider(55);
 
             foreach (var guard in currentKing.Guards)
             {
                 string loyaltyColor = guard.Loyalty > 80 ? "bright_green" :
                                      guard.Loyalty > 50 ? "yellow" : "red";
-                string status = guard.IsActive ? "Active" : "Inactive";
+                string status = guard.IsActive ? Loc.Get("castle.guard_active") : Loc.Get("castle.guard_inactive");
 
                 terminal.SetColor("white");
                 terminal.Write($"{guard.Name,-20} ");
@@ -1616,24 +1616,24 @@ public class CastleLocation : BaseLocation
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("No NPC guards currently employed.");
+            terminal.WriteLine(Loc.Get("castle.no_npc_guards"));
         }
 
         terminal.WriteLine("");
 
         // Monster Guard summary
         terminal.SetColor("bright_red");
-        terminal.WriteLine("=== Monster Guards ===");
+        terminal.WriteLine(Loc.Get("castle.monster_guards_header"));
         terminal.SetColor("white");
-        terminal.WriteLine($"Monster Guards: {currentKing.MonsterGuards.Count}/{King.MaxMonsterGuards}");
+        terminal.WriteLine(Loc.Get("castle.monster_guards_count", currentKing.MonsterGuards.Count, King.MaxMonsterGuards));
 
         if (currentKing.MonsterGuards.Count > 0)
         {
-            terminal.WriteLine($"Daily Feeding Costs: {currentKing.MonsterGuards.Sum(m => m.DailyFeedingCost):N0} gold");
+            terminal.WriteLine(Loc.Get("castle.daily_feeding_costs", currentKing.MonsterGuards.Sum(m => m.DailyFeedingCost).ToString("N0")));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"Name",-20} {"Level",-8} {"HP",-12} {"Strength",-10}");
+            terminal.WriteLine($"{Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_level"),-8} {Loc.Get("castle.header_hp"),-12} {Loc.Get("castle.header_strength"),-10}");
             WriteDivider(55);
 
             foreach (var monster in currentKing.MonsterGuards)
@@ -1645,49 +1645,49 @@ public class CastleLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("No monster guards currently protecting the castle.");
+            terminal.WriteLine(Loc.Get("castle.no_monster_guards"));
         }
 
         terminal.WriteLine("");
 
         // Security assessment
         terminal.SetColor("cyan");
-        terminal.WriteLine("=== Security Assessment ===");
+        terminal.WriteLine(Loc.Get("castle.security_assessment_header"));
         int securityLevel = CalculateSecurityLevel();
         string securityColor = securityLevel > 80 ? "bright_green" : securityLevel > 50 ? "yellow" : "red";
         terminal.SetColor(securityColor);
-        terminal.WriteLine($"Overall Security: {securityLevel}%");
+        terminal.WriteLine(Loc.Get("castle.overall_security", securityLevel));
         terminal.SetColor("white");
-        terminal.WriteLine($"Total Guards: {currentKing.TotalGuardCount} (Challengers fight monsters first, then NPC guards)");
+        terminal.WriteLine(Loc.Get("castle.total_guards_info", currentKing.TotalGuardCount));
 
         if (securityLevel < 50)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Your castle is vulnerable to attack!");
+            terminal.WriteLine(Loc.Get("castle.castle_vulnerable"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Guard Commands:");
+        terminal.WriteLine(Loc.Get("castle.guard_commands"));
         if (IsScreenReader)
         {
-            WriteSRMenuOption("H", "Hire NPC guard");
-            WriteSRMenuOption("M", "Monster guard");
-            WriteSRMenuOption("F", "Fire guard");
-            WriteSRMenuOption("P", "Pay bonus");
-            WriteSRMenuOption("D", "Dismiss monster");
-            WriteSRMenuOption("R", "Return");
+            WriteSRMenuOption("H", Loc.Get("castle.hire_guard"));
+            WriteSRMenuOption("M", Loc.Get("castle.monster_guard"));
+            WriteSRMenuOption("F", Loc.Get("castle.fire_guard"));
+            WriteSRMenuOption("P", Loc.Get("castle.pay_bonus"));
+            WriteSRMenuOption("D", Loc.Get("castle.dismiss_monster"));
+            WriteSRMenuOption("R", Loc.Get("castle.return"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine("(H)ire NPC guard    (M)onster guard    (F)ire guard");
-            terminal.WriteLine("(P)ay bonus         (D)ismiss monster  (R)eturn");
+            terminal.WriteLine(Loc.Get("castle.guard_menu_text_1"));
+            terminal.WriteLine(Loc.Get("castle.guard_menu_text_2"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("Command: ");
+        terminal.Write(Loc.Get("castle.command_prompt"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1743,26 +1743,26 @@ public class CastleLocation : BaseLocation
         if (currentKing.MonsterGuards.Count >= King.MaxMonsterGuards)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have the maximum number of monster guards!");
+            terminal.WriteLine(Loc.Get("castle.max_monster_guards"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("MONSTER GUARD MARKET", "bright_red");
+        WriteBoxHeader(Loc.Get("castle.monster_market"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("The Beast Master presents fearsome creatures for your moat defense.");
-        terminal.WriteLine("Challengers must defeat ALL monster guards before facing your NPC guards!");
+        terminal.WriteLine(Loc.Get("castle.beast_master_desc"));
+        terminal.WriteLine(Loc.Get("castle.challengers_must_defeat"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Treasury: {currentKing.Treasury:N0} gold");
-        terminal.WriteLine($"Current Monsters: {currentKing.MonsterGuards.Count}/{King.MaxMonsterGuards}");
+        terminal.WriteLine(Loc.Get("castle.treasury_display", currentKing.Treasury.ToString("N0")));
+        terminal.WriteLine(Loc.Get("castle.current_monsters", currentKing.MonsterGuards.Count, King.MaxMonsterGuards));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine($"{"#",-3} {"Name",-15} {"Lvl",-5} {"HP",-7} {"STR",-6} {"DEF",-6} {"Cost",-10} {"Feed/Day",-10}");
+        terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-15} {Loc.Get("castle.header_lvl"),-5} {Loc.Get("castle.header_hp"),-7} {Loc.Get("castle.header_str"),-6} {Loc.Get("castle.header_def"),-6} {Loc.Get("castle.header_cost"),-10} {Loc.Get("castle.header_feed"),-10}");
         WriteDivider(75);
 
         // Sort by level for easier selection
@@ -1786,10 +1786,10 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine("Note: Each additional monster costs +500g more than base price.");
+        terminal.WriteLine(Loc.Get("castle.monster_cost_note"));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Purchase which monster? (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.purchase_monster"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1800,15 +1800,15 @@ public class CastleLocation : BaseLocation
             if (currentKing.AddMonsterGuard(name, level, cost))
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"A {name} has been added to your castle defenses!");
-                terminal.WriteLine($"The beast now lurks in the moat, awaiting intruders...");
+                terminal.WriteLine(Loc.Get("castle.monster_added", name));
+                terminal.WriteLine(Loc.Get("castle.beast_lurks"));
                 NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} acquired a fearsome {name} to guard the castle!");
                 PersistRoyalCourtToWorldState();
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient funds in the treasury!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury"));
             }
         }
 
@@ -1820,26 +1820,26 @@ public class CastleLocation : BaseLocation
         if (currentKing.MonsterGuards.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no monster guards to dismiss.");
+            terminal.WriteLine(Loc.Get("castle.no_monster_dismiss"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Name of monster to dismiss: ");
+        terminal.Write(Loc.Get("castle.monster_dismiss_prompt"));
         terminal.SetColor("white");
         string name = await terminal.ReadLineAsync();
 
         if (currentKing.RemoveMonsterGuard(name))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"The {name} has been released from service.");
+            terminal.WriteLine(Loc.Get("castle.monster_released", name));
             PersistRoyalCourtToWorldState();
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No monster by that name found.");
+            terminal.WriteLine(Loc.Get("castle.no_monster_found"));
         }
 
         await Task.Delay(2000);
@@ -1850,7 +1850,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Count >= King.MaxNPCGuards)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You already have the maximum number of guards!");
+            terminal.WriteLine(Loc.Get("castle.max_guards"));
             await Task.Delay(2000);
             return;
         }
@@ -1858,7 +1858,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Treasury < GameConfig.GuardRecruitmentCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Insufficient funds! Need {GameConfig.GuardRecruitmentCost:N0} gold.");
+            terminal.WriteLine(Loc.Get("castle.insufficient_guard_funds", GameConfig.GuardRecruitmentCost.ToString("N0")));
             await Task.Delay(2000);
             return;
         }
@@ -1868,7 +1868,7 @@ public class CastleLocation : BaseLocation
         string guardName = firstNames[random.Next(firstNames.Length)];
 
         terminal.SetColor("cyan");
-        terminal.Write($"Hire {guardName}? Cost: {GameConfig.GuardRecruitmentCost:N0} gold (Y/N): ");
+        terminal.Write(Loc.Get("castle.hire_guard_confirm", guardName, GameConfig.GuardRecruitmentCost.ToString("N0")));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
@@ -1881,7 +1881,7 @@ public class CastleLocation : BaseLocation
             if (currentKing.AddGuard(guardName, CharacterAI.Computer, sex, guardSalary))
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{guardName} has joined the Royal Guard!");
+                terminal.WriteLine(Loc.Get("castle.guard_joined", guardName));
                 PersistRoyalCourtToWorldState();
             }
         }
@@ -1894,26 +1894,26 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no guards to dismiss.");
+            terminal.WriteLine(Loc.Get("castle.no_guards_dismiss"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Name of guard to dismiss: ");
+        terminal.Write(Loc.Get("castle.guard_dismiss_prompt"));
         terminal.SetColor("white");
         string name = await terminal.ReadLineAsync();
 
         if (currentKing.RemoveGuard(name))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{name} has been dismissed from the Royal Guard.");
+            terminal.WriteLine(Loc.Get("castle.guard_dismissed", name));
             PersistRoyalCourtToWorldState();
         }
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No guard by that name found.");
+            terminal.WriteLine(Loc.Get("castle.no_guard_found"));
         }
 
         await Task.Delay(2000);
@@ -1924,13 +1924,13 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have no guards to pay.");
+            terminal.WriteLine(Loc.Get("castle.no_guards_pay"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Bonus amount per guard: ");
+        terminal.Write(Loc.Get("castle.bonus_per_guard"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -1940,7 +1940,7 @@ public class CastleLocation : BaseLocation
             if (totalCost > currentKing.Treasury)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient funds in treasury!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury_bonus"));
             }
             else
             {
@@ -1950,8 +1950,8 @@ public class CastleLocation : BaseLocation
                     guard.Loyalty = Math.Min(100, guard.Loyalty + (int)(bonus / 100));
                 }
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"Paid {bonus:N0} gold bonus to each guard!");
-                terminal.WriteLine("Guard loyalty has increased!");
+                terminal.WriteLine(Loc.Get("castle.bonus_paid", bonus.ToString("N0")));
+                terminal.WriteLine(Loc.Get("castle.loyalty_increased"));
                 PersistRoyalCourtToWorldState();
             }
         }
@@ -1966,19 +1966,19 @@ public class CastleLocation : BaseLocation
     private async Task ShowMonarchHistory()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("HISTORY OF MONARCHS", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.history_monarchs"), "bright_yellow");
         terminal.WriteLine("");
 
         if (monarchHistory.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("The history books are empty. Your reign may be the first!");
+            terminal.WriteLine(Loc.Get("castle.history_empty"));
             terminal.WriteLine("");
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{"#",-3} {"Name",-25} {"Title",-8} {"Reign",-12} {"End",-15}");
+            terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-25} {Loc.Get("castle.header_title"),-8} {Loc.Get("castle.header_reign"),-12} {Loc.Get("castle.header_end"),-15}");
             WriteDivider(65);
 
             int i = 1;
@@ -1995,16 +1995,16 @@ public class CastleLocation : BaseLocation
         if (currentKing != null && currentKing.IsActive)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("=== CURRENT MONARCH ===");
+            terminal.WriteLine(Loc.Get("castle.current_monarch_header"));
             terminal.SetColor("white");
             terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name}");
-            terminal.WriteLine($"Reign: {currentKing.TotalReign} days");
-            terminal.WriteLine($"Coronation: {currentKing.CoronationDate:d}");
+            terminal.WriteLine(Loc.Get("castle.reign_days", currentKing.TotalReign));
+            terminal.WriteLine(Loc.Get("castle.coronation_date", currentKing.CoronationDate.ToString("d")));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -2015,42 +2015,42 @@ public class CastleLocation : BaseLocation
     private async Task CourtMagician()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE COURT MAGICIAN", "bright_magenta");
+        WriteBoxHeader(Loc.Get("castle.court_magician"), "bright_magenta");
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("An elderly wizard in flowing robes approaches you.");
+        terminal.WriteLine(Loc.Get("castle.wizard_approaches"));
         terminal.SetColor("white");
-        terminal.WriteLine("\"Greetings, Your Majesty. How may I serve the Crown?\"");
+        terminal.WriteLine(Loc.Get("castle.wizard_greeting"));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Magic Budget: {currentKing.MagicBudget:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.magic_budget", currentKing.MagicBudget.ToString("N0")));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Available Services:");
+        terminal.WriteLine(Loc.Get("castle.available_services"));
         if (IsScreenReader)
         {
-            WriteSRMenuOption("B", "Bless the Kingdom - 1,000 gold - Increase kingdom morale");
-            WriteSRMenuOption("D", "Detect Threats - 500 gold - Reveal potential dangers");
-            WriteSRMenuOption("P", "Protection Spell - 2,000 gold - Boost castle defenses");
-            WriteSRMenuOption("S", "Scry on Enemy - 1,500 gold - Learn about rivals");
-            WriteSRMenuOption("R", "Return");
+            WriteSRMenuOption("B", Loc.Get("castle.bless_kingdom"));
+            WriteSRMenuOption("D", Loc.Get("castle.detect_threats"));
+            WriteSRMenuOption("P", Loc.Get("castle.protection_spell"));
+            WriteSRMenuOption("S", Loc.Get("castle.scry_enemy"));
+            WriteSRMenuOption("R", Loc.Get("castle.return"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine("(B)less the Kingdom   - 1,000 gold - Increase kingdom morale");
-            terminal.WriteLine("(D)etect Threats      - 500 gold   - Reveal potential dangers");
-            terminal.WriteLine("(P)rotection Spell    - 2,000 gold - Boost castle defenses");
-            terminal.WriteLine("(S)cry on Enemy       - 1,500 gold - Learn about rivals");
-            terminal.WriteLine("(R)eturn");
+            terminal.WriteLine(Loc.Get("castle.bless_menu"));
+            terminal.WriteLine(Loc.Get("castle.detect_menu"));
+            terminal.WriteLine(Loc.Get("castle.protection_menu"));
+            terminal.WriteLine(Loc.Get("castle.scry_menu"));
+            terminal.WriteLine(Loc.Get("castle.return_menu"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("Your wish: ");
+        terminal.Write(Loc.Get("castle.your_wish"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -2079,7 +2079,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.MagicBudget < 1000)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Insufficient magic budget!");
+            terminal.WriteLine(Loc.Get("castle.insufficient_magic"));
             await Task.Delay(2000);
             return;
         }
@@ -2089,11 +2089,11 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("bright_yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("The wizard raises his staff and incants ancient words...");
+        terminal.WriteLine(Loc.Get("castle.wizard_incants"));
         await Task.Delay(1500);
         terminal.SetColor("bright_green");
-        terminal.WriteLine("A golden light spreads across the kingdom!");
-        terminal.WriteLine("The people feel blessed! Your chivalry increases!");
+        terminal.WriteLine(Loc.Get("castle.golden_light"));
+        terminal.WriteLine(Loc.Get("castle.people_blessed"));
 
         NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} blessed the kingdom with powerful magic!");
 
@@ -2105,7 +2105,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.MagicBudget < 500)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Insufficient magic budget!");
+            terminal.WriteLine(Loc.Get("castle.insufficient_magic"));
             await Task.Delay(2000);
             return;
         }
@@ -2114,7 +2114,7 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("bright_blue");
         terminal.WriteLine("");
-        terminal.WriteLine("The wizard gazes into a crystal ball...");
+        terminal.WriteLine(Loc.Get("castle.wizard_gazes"));
         await Task.Delay(1500);
 
         // Get potential threats (high darkness NPCs)
@@ -2126,17 +2126,17 @@ public class CastleLocation : BaseLocation
         if (threats.Count == 0)
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("\"I sense no significant threats to your realm, Your Majesty.\"");
+            terminal.WriteLine(Loc.Get("castle.no_threats"));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"I sense darkness in these individuals...\"");
+            terminal.WriteLine(Loc.Get("castle.sense_darkness"));
             terminal.WriteLine("");
             foreach (var threat in threats)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  - {threat.Name} (Level {threat.Level}) - Darkness: {threat.Darkness}");
+                terminal.WriteLine(Loc.Get("castle.threat_entry", threat.Name, threat.Level, threat.Darkness));
             }
         }
 
@@ -2148,7 +2148,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.MagicBudget < 2000)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Insufficient magic budget!");
+            terminal.WriteLine(Loc.Get("castle.insufficient_magic"));
             await Task.Delay(2000);
             return;
         }
@@ -2163,11 +2163,11 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("bright_cyan");
         terminal.WriteLine("");
-        terminal.WriteLine("The wizard weaves protective enchantments...");
+        terminal.WriteLine(Loc.Get("castle.wizard_enchants"));
         await Task.Delay(1500);
         terminal.SetColor("bright_green");
-        terminal.WriteLine("The castle glows with magical protection!");
-        terminal.WriteLine("Guard loyalty increased!");
+        terminal.WriteLine(Loc.Get("castle.castle_glows"));
+        terminal.WriteLine(Loc.Get("castle.guard_loyalty_up"));
 
         await Task.Delay(2500);
     }
@@ -2177,7 +2177,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.MagicBudget < 1500)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Insufficient magic budget!");
+            terminal.WriteLine(Loc.Get("castle.insufficient_magic"));
             await Task.Delay(2000);
             return;
         }
@@ -2186,7 +2186,7 @@ public class CastleLocation : BaseLocation
 
         terminal.SetColor("bright_blue");
         terminal.WriteLine("");
-        terminal.WriteLine("The wizard peers through the mists of time...");
+        terminal.WriteLine(Loc.Get("castle.wizard_peers"));
         await Task.Delay(1500);
 
         // Show info about a random powerful NPC
@@ -2198,17 +2198,17 @@ public class CastleLocation : BaseLocation
         {
             var target = targets[random.Next(targets.Count)];
             terminal.SetColor("cyan");
-            terminal.WriteLine($"\"I see {target.Name}...\"");
+            terminal.WriteLine(Loc.Get("castle.scry_see", target.Name));
             terminal.SetColor("white");
-            terminal.WriteLine($"  Level: {target.Level}");
-            terminal.WriteLine($"  Location: {target.CurrentLocation}");
-            terminal.WriteLine($"  Team: {(string.IsNullOrEmpty(target.Team) ? "None" : target.Team)}");
-            terminal.WriteLine($"  Gold: ~{target.Gold:N0}");
+            terminal.WriteLine(Loc.Get("castle.scry_level", target.Level));
+            terminal.WriteLine(Loc.Get("castle.scry_location", target.CurrentLocation));
+            terminal.WriteLine($"  {Loc.Get("ui.team")}: {(string.IsNullOrEmpty(target.Team) ? Loc.Get("ui.none") : target.Team)}");
+            terminal.WriteLine($"  {Loc.Get("ui.gold")}: ~{target.Gold:N0}");
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("\"The mists reveal nothing of note, Your Majesty.\"");
+            terminal.WriteLine(Loc.Get("castle.mists_nothing"));
         }
 
         await Task.Delay(3000);
@@ -2224,53 +2224,53 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("FISCAL MATTERS", "bright_yellow");
+            WriteBoxHeader(Loc.Get("castle.fiscal_matters"), "bright_yellow");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Royal Treasury: {currentKing.Treasury:N0} gold");
-            terminal.WriteLine($"Daily Citizen Tax: {currentKing.TaxRate} gold per citizen");
-            terminal.WriteLine($"Tax Alignment: {currentKing.TaxAlignment}");
+            terminal.WriteLine(Loc.Get("castle.royal_treasury", currentKing.Treasury.ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.daily_citizen_tax", currentKing.TaxRate));
+            terminal.WriteLine(Loc.Get("castle.tax_alignment_label", currentKing.TaxAlignment));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"King's Sales Tax: {currentKing.KingTaxPercent}% of all sales");
-            terminal.WriteLine($"City Team Tax:    {currentKing.CityTaxPercent}% of all sales");
+            terminal.WriteLine(Loc.Get("castle.king_sales_tax", currentKing.KingTaxPercent));
+            terminal.WriteLine(Loc.Get("castle.city_team_tax", currentKing.CityTaxPercent));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Sales Tax Revenue Today: {currentKing.DailyTaxRevenue:N0} gold");
+            terminal.WriteLine(Loc.Get("castle.sales_tax_revenue", currentKing.DailyTaxRevenue.ToString("N0")));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("=== Financial Summary ===");
+            terminal.WriteLine(Loc.Get("castle.financial_summary"));
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Daily Income:    {currentKing.CalculateDailyIncome():N0} gold");
+            terminal.WriteLine(Loc.Get("castle.daily_income", currentKing.CalculateDailyIncome().ToString("N0")));
             terminal.SetColor("red");
-            terminal.WriteLine($"Daily Expenses:  {currentKing.CalculateDailyExpenses():N0} gold");
+            terminal.WriteLine(Loc.Get("castle.daily_expenses", currentKing.CalculateDailyExpenses().ToString("N0")));
             terminal.SetColor("white");
             long netIncome = currentKing.CalculateDailyIncome() - currentKing.CalculateDailyExpenses();
             string netColor = netIncome >= 0 ? "bright_green" : "red";
             terminal.SetColor(netColor);
-            terminal.WriteLine($"Net Daily:       {netIncome:N0} gold");
+            terminal.WriteLine(Loc.Get("castle.net_daily", netIncome.ToString("N0")));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Options:");
+            terminal.WriteLine(Loc.Get("castle.options_label"));
             if (IsScreenReader)
             {
-                WriteSRMenuOption("T", "Tax Policy");
-                WriteSRMenuOption("B", "Budget Details");
-                WriteSRMenuOption("W", "Withdraw from Treasury");
-                WriteSRMenuOption("D", "Deposit to Treasury");
-                WriteSRMenuOption("R", "Return");
+                WriteSRMenuOption("T", Loc.Get("castle.tax_policy"));
+                WriteSRMenuOption("B", Loc.Get("castle.budget"));
+                WriteSRMenuOption("W", Loc.Get("castle.treasury_withdraw"));
+                WriteSRMenuOption("D", Loc.Get("castle.treasury_deposit"));
+                WriteSRMenuOption("R", Loc.Get("castle.return"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("(T)ax Policy        (B)udget Details    (W)ithdraw from Treasury");
-                terminal.WriteLine("(D)eposit to Treasury                   (R)eturn");
+                terminal.WriteLine(Loc.Get("castle.fiscal_menu_1"));
+                terminal.WriteLine(Loc.Get("castle.fiscal_menu_2"));
             }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Decision: ");
+            terminal.Write(Loc.Get("castle.decision_prompt"));
             terminal.SetColor("white");
             string input = await terminal.ReadLineAsync();
 
@@ -2301,16 +2301,16 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Tax Alignments:");
+        terminal.WriteLine(Loc.Get("castle.tax_alignments"));
         terminal.SetColor("white");
-        terminal.WriteLine("1. All citizens");
-        terminal.WriteLine("2. Good-aligned only");
-        terminal.WriteLine("3. Evil-aligned only");
-        terminal.WriteLine("4. Neutrals only");
+        terminal.WriteLine(Loc.Get("castle.tax_all"));
+        terminal.WriteLine(Loc.Get("castle.tax_good"));
+        terminal.WriteLine(Loc.Get("castle.tax_evil"));
+        terminal.WriteLine(Loc.Get("castle.tax_neutral"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("New tax alignment (1-4): ");
+        terminal.Write(Loc.Get("castle.new_tax_alignment"));
         terminal.SetColor("white");
         string alignInput = await terminal.ReadLineAsync();
 
@@ -2327,7 +2327,7 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("New daily citizen tax (gold per citizen, 0-1000): ");
+        terminal.Write(Loc.Get("castle.new_citizen_tax"));
         terminal.SetColor("white");
         string rateInput = await terminal.ReadLineAsync();
 
@@ -2335,18 +2335,18 @@ public class CastleLocation : BaseLocation
         {
             currentKing.TaxRate = Math.Min(rate, 1000);
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Citizen tax set to {currentKing.TaxRate} gold per citizen.");
+            terminal.WriteLine(Loc.Get("castle.citizen_tax_set", currentKing.TaxRate));
 
             if (rate > 100)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("Warning: High taxes may cause unrest!");
+                terminal.WriteLine(Loc.Get("castle.high_tax_warning"));
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write($"King's sales tax (0-25%, currently {currentKing.KingTaxPercent}%): ");
+        terminal.Write(Loc.Get("castle.king_sales_tax_prompt", currentKing.KingTaxPercent));
         terminal.SetColor("white");
         string kingTaxInput = await terminal.ReadLineAsync();
 
@@ -2354,17 +2354,17 @@ public class CastleLocation : BaseLocation
         {
             currentKing.KingTaxPercent = Math.Min(kingTax, 25);
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"King's sales tax set to {currentKing.KingTaxPercent}%.");
+            terminal.WriteLine(Loc.Get("castle.king_sales_tax_set", currentKing.KingTaxPercent));
 
             if (kingTax > 15)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine("Warning: High sales taxes may discourage trade!");
+                terminal.WriteLine(Loc.Get("castle.high_sales_warning"));
             }
         }
 
         terminal.SetColor("cyan");
-        terminal.Write($"City team tax (0-10%, currently {currentKing.CityTaxPercent}%): ");
+        terminal.Write(Loc.Get("castle.city_tax_prompt", currentKing.CityTaxPercent));
         terminal.SetColor("white");
         string cityTaxInput = await terminal.ReadLineAsync();
 
@@ -2372,7 +2372,7 @@ public class CastleLocation : BaseLocation
         {
             currentKing.CityTaxPercent = Math.Min(cityTax, 10);
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"City team tax set to {currentKing.CityTaxPercent}%.");
+            terminal.WriteLine(Loc.Get("castle.city_tax_set", currentKing.CityTaxPercent));
         }
 
         // Persist tax changes to world_state
@@ -2385,38 +2385,38 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("=== Income Breakdown ===");
+        terminal.WriteLine(Loc.Get("castle.income_breakdown"));
         terminal.SetColor("white");
 
         int npcCount = UsurperRemake.Systems.NPCSpawnSystem.Instance?.ActiveNPCs?.Count ?? 10;
         long citizenTaxIncome = currentKing.TaxRate * Math.Max(10, npcCount);
         long salesTaxIncome = currentKing.DailyTaxRevenue;
 
-        terminal.WriteLine($"Citizen Tax:       {citizenTaxIncome:N0} gold ({currentKing.TaxRate} x {Math.Max(10, npcCount)} citizens)");
-        terminal.WriteLine($"Sales Tax Revenue: {salesTaxIncome:N0} gold ({currentKing.KingTaxPercent}% of sales)");
+        terminal.WriteLine(Loc.Get("castle.citizen_tax_income", citizenTaxIncome.ToString("N0"), currentKing.TaxRate, Math.Max(10, npcCount)));
+        terminal.WriteLine(Loc.Get("castle.sales_tax_income", salesTaxIncome.ToString("N0"), currentKing.KingTaxPercent));
         WriteDivider(40);
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"Total Income:      {citizenTaxIncome + salesTaxIncome:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.total_income", (citizenTaxIncome + salesTaxIncome).ToString("N0")));
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("=== Expense Breakdown ===");
+        terminal.WriteLine(Loc.Get("castle.expense_breakdown"));
         terminal.SetColor("white");
 
         long guardCosts = currentKing.Guards.Sum(g => g.DailySalary);
         long orphanCosts = currentKing.Orphans.Count * GameConfig.OrphanCareCost;
         long baseCosts = 1000;
 
-        terminal.WriteLine($"Guard Salaries:    {guardCosts:N0} gold ({currentKing.Guards.Count} guards)");
-        terminal.WriteLine($"Orphanage Costs:   {orphanCosts:N0} gold ({currentKing.Orphans.Count} orphans)");
-        terminal.WriteLine($"Castle Maintenance: {baseCosts:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.guard_salaries", guardCosts.ToString("N0"), currentKing.Guards.Count));
+        terminal.WriteLine(Loc.Get("castle.orphanage_costs", orphanCosts.ToString("N0"), currentKing.Orphans.Count));
+        terminal.WriteLine(Loc.Get("castle.castle_maintenance", baseCosts.ToString("N0")));
         WriteDivider(40);
         terminal.SetColor("red");
-        terminal.WriteLine($"Total Expenses:    {guardCosts + orphanCosts + baseCosts:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.total_expenses", (guardCosts + orphanCosts + baseCosts).ToString("N0")));
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -2424,7 +2424,7 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write($"Withdraw how much? (Max: {currentKing.Treasury:N0}): ");
+        terminal.Write(Loc.Get("castle.withdraw_prompt", currentKing.Treasury.ToString("N0")));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -2433,7 +2433,7 @@ public class CastleLocation : BaseLocation
             if (amount > currentKing.Treasury)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("The treasury doesn't have that much!");
+                terminal.WriteLine(Loc.Get("castle.treasury_not_enough"));
             }
             else
             {
@@ -2441,7 +2441,7 @@ public class CastleLocation : BaseLocation
                 currentPlayer.Gold += amount;
                 DebugLogger.Instance.LogInfo("GOLD", $"TREASURY WITHDRAW: {currentPlayer.DisplayName} withdrew {amount:N0}g from treasury (gold now {currentPlayer.Gold:N0}, treasury now {currentKing.Treasury:N0})");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"Withdrew {amount:N0} gold from the treasury.");
+                terminal.WriteLine(Loc.Get("castle.withdrew_gold", amount.ToString("N0")));
                 PersistRoyalCourtToWorldState();
             }
         }
@@ -2453,7 +2453,7 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write($"Deposit how much? (You have: {currentPlayer.Gold:N0}): ");
+        terminal.Write(Loc.Get("castle.deposit_prompt", currentPlayer.Gold.ToString("N0")));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -2462,14 +2462,14 @@ public class CastleLocation : BaseLocation
             if (amount > currentPlayer.Gold)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You don't have that much gold!");
+                terminal.WriteLine(Loc.Get("castle.not_enough_gold"));
             }
             else
             {
                 currentPlayer.Gold -= amount;
                 currentKing.Treasury += amount;
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"Deposited {amount:N0} gold to the treasury.");
+                terminal.WriteLine(Loc.Get("castle.deposited_gold", $"{amount:N0}"));
                 PersistRoyalCourtToWorldState();
             }
         }
@@ -2487,41 +2487,41 @@ public class CastleLocation : BaseLocation
         while (!done)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("ROYAL ORDERS", "bright_yellow");
+            WriteBoxHeader(Loc.Get("castle.royal_orders"), "bright_yellow");
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("Issue decrees and manage the kingdom.");
+            terminal.WriteLine(Loc.Get("castle.orders_desc"));
             terminal.WriteLine("");
 
             if (!string.IsNullOrEmpty(currentKing.LastProclamation))
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine("Last Proclamation:");
+                terminal.WriteLine(Loc.Get("castle.last_proclamation"));
                 terminal.SetColor("gray");
                 terminal.WriteLine($"\"{currentKing.LastProclamation}\"");
                 terminal.WriteLine("");
             }
 
             terminal.SetColor("cyan");
-            terminal.WriteLine("Commands:");
+            terminal.WriteLine(Loc.Get("castle.commands"));
             if (IsScreenReader)
             {
-                WriteSRMenuOption("E", "Establishments");
-                WriteSRMenuOption("P", "Proclamation");
-                WriteSRMenuOption("B", "Bounty on someone");
-                WriteSRMenuOption("R", "Return");
+                WriteSRMenuOption("E", Loc.Get("castle.establishments"));
+                WriteSRMenuOption("P", Loc.Get("castle.proclamation"));
+                WriteSRMenuOption("B", Loc.Get("castle.bounty"));
+                WriteSRMenuOption("R", Loc.Get("castle.return"));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine("(E)stablishments    (P)roclamation     (B)ounty on someone");
-                terminal.WriteLine("(R)eturn");
+                terminal.WriteLine(Loc.Get("castle.orders_menu_line1"));
+                terminal.WriteLine(Loc.Get("castle.orders_menu_line2"));
             }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Orders: ");
+            terminal.Write(Loc.Get("castle.orders_prompt"));
             terminal.SetColor("white");
             string input = await terminal.ReadLineAsync();
 
@@ -2549,14 +2549,14 @@ public class CastleLocation : BaseLocation
     {
         terminal.ClearScreen();
         terminal.SetColor("cyan");
-        terminal.WriteLine("=== Establishment Status ===");
+        terminal.WriteLine(Loc.Get("castle.establishment_status"));
         terminal.WriteLine("");
 
         int i = 1;
         var establishments = currentKing.EstablishmentStatus.ToList();
         foreach (var est in establishments)
         {
-            string status = est.Value ? "OPEN" : "CLOSED";
+            string status = est.Value ? Loc.Get("castle.open") : Loc.Get("castle.closed");
             string statusColor = est.Value ? "bright_green" : "red";
 
             terminal.SetColor("white");
@@ -2568,7 +2568,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Toggle which establishment? (0 to return): ");
+        terminal.Write(Loc.Get("castle.toggle_establishment"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -2577,9 +2577,9 @@ public class CastleLocation : BaseLocation
             var key = establishments[choice - 1].Key;
             currentKing.EstablishmentStatus[key] = !currentKing.EstablishmentStatus[key];
 
-            string newStatus = currentKing.EstablishmentStatus[key] ? "opened" : "closed";
+            string newStatus = currentKing.EstablishmentStatus[key] ? Loc.Get("castle.opened") : Loc.Get("castle.closed_past");
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"The {key} is now {newStatus}!");
+            terminal.WriteLine(Loc.Get("castle.establishment_toggled", key, newStatus));
 
             NewsSystem.Instance.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} has {newStatus} the {key}!");
 
@@ -2591,8 +2591,8 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Issue a Royal Proclamation to all citizens.");
-        terminal.Write("Your decree: ");
+        terminal.WriteLine(Loc.Get("castle.issue_proclamation"));
+        terminal.Write(Loc.Get("castle.your_decree"));
         terminal.SetColor("white");
         string proclamation = await terminal.ReadLineAsync();
 
@@ -2603,9 +2603,9 @@ public class CastleLocation : BaseLocation
 
             terminal.SetColor("bright_yellow");
             terminal.WriteLine("");
-            terminal.WriteLine("HEAR YE, HEAR YE!");
+            terminal.WriteLine(Loc.Get("castle.hear_ye"));
             terminal.SetColor("white");
-            terminal.WriteLine($"By royal decree of {currentKing.GetTitle()} {currentKing.Name}:");
+            terminal.WriteLine(Loc.Get("castle.royal_decree", currentKing.GetTitle(), currentKing.Name));
             terminal.WriteLine($"\"{proclamation}\"");
 
             NewsSystem.Instance.Newsy(true, $"Royal Proclamation: \"{proclamation}\" - {currentKing.GetTitle()} {currentKing.Name}");
@@ -2618,14 +2618,14 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Name of the criminal: ");
+        terminal.Write(Loc.Get("castle.criminal_name"));
         terminal.SetColor("white");
         string name = await terminal.ReadLineAsync();
 
         if (string.IsNullOrEmpty(name)) return;
 
         terminal.SetColor("cyan");
-        terminal.Write("Bounty amount: ");
+        terminal.Write(Loc.Get("castle.bounty_amount"));
         terminal.SetColor("white");
         string amountStr = await terminal.ReadLineAsync();
 
@@ -2634,13 +2634,13 @@ public class CastleLocation : BaseLocation
             if (amount > currentKing.Treasury)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient funds in treasury!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury"));
             }
             else
             {
                 currentKing.Treasury -= amount;
                 terminal.SetColor("bright_red");
-                terminal.WriteLine($"A bounty of {amount:N0} gold has been placed on {name}!");
+                terminal.WriteLine(Loc.Get("castle.bounty_placed", $"{amount:N0}", name));
 
                 NewsSystem.Instance.Newsy(true, $"BOUNTY: {amount:N0} gold on {name} by order of {currentKing.GetTitle()} {currentKing.Name}!");
 
@@ -2683,7 +2683,7 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("THE ROYAL ORPHANAGE", "bright_cyan");
+            WriteBoxHeader(Loc.Get("castle.royal_orphanage"), "bright_cyan");
             terminal.WriteLine("");
 
             // Update ages for real orphans
@@ -2691,20 +2691,20 @@ public class CastleLocation : BaseLocation
                 o.Age = o.ComputedAge;
 
             terminal.SetColor("white");
-            terminal.WriteLine("You visit the children under royal protection.");
+            terminal.WriteLine(Loc.Get("castle.visit_orphans"));
             long dailyCost = currentKing.Orphans.Count * GameConfig.OrphanCareCost;
-            terminal.WriteLine($"Orphans: {currentKing.Orphans.Count}/{GameConfig.MaxRoyalOrphans}   Daily care cost: {dailyCost:N0} gold ({GameConfig.OrphanCareCost} per child)");
+            terminal.WriteLine(Loc.Get("castle.orphan_summary", currentKing.Orphans.Count, GameConfig.MaxRoyalOrphans, dailyCost.ToString("N0"), GameConfig.OrphanCareCost));
             terminal.WriteLine("");
 
             if (currentKing.Orphans.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("The orphanage is empty. Perhaps you could take in a child in need.");
+                terminal.WriteLine(Loc.Get("castle.orphanage_empty"));
             }
             else
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"{"#",-4} {"Name",-20} {"Age",-6} {"Sex",-8} {"Race",-10} {"Type",-10} {"Happy",-6}");
+                terminal.WriteLine($"{Loc.Get("castle.header_num"),-4} {Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_age"),-6} {Loc.Get("castle.header_sex"),-8} {Loc.Get("castle.header_race"),-10} {Loc.Get("castle.header_type"),-10} {Loc.Get("castle.header_happy"),-6}");
                 WriteDivider(66);
 
                 for (int i = 0; i < currentKing.Orphans.Count; i++)
@@ -2738,7 +2738,7 @@ public class CastleLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("Commands:");
+            terminal.WriteLine(Loc.Get("castle.commands"));
             long adoptCost = 500 + (currentKing.Orphans.Count * 100);
 
             // Show commission option if any real orphans are old enough
@@ -2746,35 +2746,35 @@ public class CastleLocation : BaseLocation
 
             if (IsScreenReader)
             {
-                WriteSRMenuOption("A", $"Adopt new orphan ({adoptCost:N0} gold from treasury)");
-                WriteSRMenuOption("V", "View orphan details");
+                WriteSRMenuOption("A", Loc.Get("castle.adopt_orphan", $"{adoptCost:N0}"));
+                WriteSRMenuOption("V", Loc.Get("castle.view_orphan"));
                 if (hasCommissionable)
-                    WriteSRMenuOption("C", $"Commission orphan (recruit age {GameConfig.OrphanCommissionAge}+, {GameConfig.OrphanCommissionCost:N0} gold)");
-                WriteSRMenuOption("G", "Give gifts (increase happiness)");
-                WriteSRMenuOption("R", "Return to Royal Menu");
+                    WriteSRMenuOption("C", Loc.Get("castle.commission_orphan", GameConfig.OrphanCommissionAge, $"{GameConfig.OrphanCommissionCost:N0}"));
+                WriteSRMenuOption("G", Loc.Get("castle.give_gifts"));
+                WriteSRMenuOption("R", Loc.Get("castle.return_royal"));
             }
             else
             {
                 terminal.SetColor("bright_yellow");
-                terminal.Write("  [A] "); terminal.SetColor("white"); terminal.WriteLine($"Adopt new orphan ({adoptCost:N0} gold from treasury)");
+                terminal.Write("  [A] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.adopt_orphan", $"{adoptCost:N0}"));
                 terminal.SetColor("bright_yellow");
-                terminal.Write("  [V] "); terminal.SetColor("white"); terminal.WriteLine("View orphan details");
+                terminal.Write("  [V] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.view_orphan_details"));
 
                 if (hasCommissionable)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.Write("  [C] "); terminal.SetColor("white"); terminal.WriteLine($"Commission orphan (recruit age {GameConfig.OrphanCommissionAge}+, {GameConfig.OrphanCommissionCost:N0} gold)");
+                    terminal.Write("  [C] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.commission_orphan", GameConfig.OrphanCommissionAge, $"{GameConfig.OrphanCommissionCost:N0}"));
                 }
 
                 terminal.SetColor("bright_yellow");
-                terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine("Give gifts (increase happiness)");
+                terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.give_gifts_desc"));
                 terminal.SetColor("bright_yellow");
-                terminal.Write("  [R] "); terminal.SetColor("white"); terminal.WriteLine("Return to Royal Menu");
+                terminal.Write("  [R] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.return_royal_menu"));
             }
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Action: ");
+            terminal.Write(Loc.Get("castle.action_prompt"));
             terminal.SetColor("white");
             string input = await terminal.ReadLineAsync();
 
@@ -2805,20 +2805,20 @@ public class CastleLocation : BaseLocation
         if (currentKing.Orphans.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("No orphans to view.");
+            terminal.WriteLine(Loc.Get("castle.no_orphans_view"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Orphan number: ");
+        terminal.Write(Loc.Get("castle.orphan_number"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > currentKing.Orphans.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid selection.");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"));
             await Task.Delay(1000);
             return;
         }
@@ -2828,38 +2828,38 @@ public class CastleLocation : BaseLocation
         terminal.SetColor("bright_cyan");
         terminal.WriteLine($"  === {orphan.Name} ===");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Age: {orphan.Age}   Sex: {(orphan.Sex == CharacterSex.Male ? "Boy" : "Girl")}   Happiness: {orphan.Happiness}%");
+        terminal.WriteLine(Loc.Get("castle.orphan_age_sex_happy", orphan.Age, orphan.Sex == CharacterSex.Male ? Loc.Get("castle.orphan_boy") : Loc.Get("castle.orphan_girl"), orphan.Happiness));
 
         if (orphan.IsRealOrphan)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("  Type: Orphaned (both parents deceased)");
+            terminal.WriteLine(Loc.Get("castle.orphan_type_orphaned"));
             terminal.SetColor("white");
-            terminal.WriteLine($"  Mother: {orphan.MotherName ?? "Unknown"}");
-            terminal.WriteLine($"  Father: {orphan.FatherName ?? "Unknown"}");
-            terminal.WriteLine($"  Race: {orphan.Race}");
+            terminal.WriteLine(Loc.Get("castle.orphan_mother", orphan.MotherName ?? "Unknown"));
+            terminal.WriteLine(Loc.Get("castle.orphan_father", orphan.FatherName ?? "Unknown"));
+            terminal.WriteLine(Loc.Get("castle.orphan_race", orphan.Race));
             string soulDesc = orphan.Soul > 200 ? "Pure-hearted" :
                               orphan.Soul > 100 ? "Good-natured" :
                               orphan.Soul < -200 ? "Dark-souled" :
                               orphan.Soul < -100 ? "Troubled" : "Neutral";
-            terminal.WriteLine($"  Temperament: {soulDesc} ({orphan.Soul:+0;-0;0})");
+            terminal.WriteLine(Loc.Get("castle.orphan_temperament", soulDesc, orphan.Soul.ToString("+0;-0;0")));
 
             if (orphan.Age >= GameConfig.OrphanCommissionAge)
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine($"  Status: Ready for commission (age {GameConfig.OrphanCommissionAge}+)");
+                terminal.WriteLine(Loc.Get("castle.orphan_ready", GameConfig.OrphanCommissionAge));
             }
         }
         else
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine("  Type: Adopted (taken in by the crown)");
+            terminal.WriteLine(Loc.Get("castle.orphan_type_adopted"));
         }
 
         terminal.SetColor("gray");
         terminal.WriteLine($"  \"{orphan.BackgroundStory}\"");
         terminal.SetColor("white");
-        terminal.WriteLine($"  Arrived: {orphan.ArrivalDate:yyyy-MM-dd}");
+        terminal.WriteLine(Loc.Get("castle.orphan_arrived", orphan.ArrivalDate.ToString("yyyy-MM-dd")));
 
         terminal.WriteLine("");
         await terminal.PressAnyKey();
@@ -2875,7 +2875,7 @@ public class CastleLocation : BaseLocation
         if (eligible.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"No real orphans age {GameConfig.OrphanCommissionAge}+ available for commission.");
+            terminal.WriteLine(Loc.Get("castle.orphan_no_eligible", GameConfig.OrphanCommissionAge));
             await Task.Delay(1500);
             return;
         }
@@ -2883,29 +2883,29 @@ public class CastleLocation : BaseLocation
         if (currentKing.Treasury < GameConfig.OrphanCommissionCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Insufficient treasury! Need {GameConfig.OrphanCommissionCost:N0} gold for training costs.");
+            terminal.WriteLine(Loc.Get("castle.orphan_insuff_treasury", GameConfig.OrphanCommissionCost.ToString("N0")));
             await Task.Delay(1500);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Eligible orphans for commission:");
+        terminal.WriteLine(Loc.Get("castle.eligible_orphans"));
         foreach (var (orphan, _) in eligible)
         {
             int displayIdx = currentKing.Orphans.IndexOf(orphan) + 1;
             terminal.SetColor("white");
-            terminal.WriteLine($"  {displayIdx}. {orphan.Name} (Age {orphan.Age}, {orphan.Race}, {(orphan.Sex == CharacterSex.Male ? "M" : "F")})");
+            terminal.WriteLine(Loc.Get("castle.orphan_entry", displayIdx, orphan.Name, orphan.Age, orphan.Race, orphan.Sex == CharacterSex.Male ? "M" : "F"));
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Select orphan number: ");
+        terminal.Write(Loc.Get("castle.select_orphan"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
         if (!int.TryParse(input, out int idx) || idx < 1 || idx > currentKing.Orphans.Count)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Invalid selection.");
+            terminal.WriteLine(Loc.Get("ui.invalid_selection"));
             await Task.Delay(1000);
             return;
         }
@@ -2914,26 +2914,26 @@ public class CastleLocation : BaseLocation
         if (!selected.IsRealOrphan || selected.Age < GameConfig.OrphanCommissionAge)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("That orphan is not eligible for commission.");
+            terminal.WriteLine(Loc.Get("castle.orphan_not_eligible"));
             await Task.Delay(1000);
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Commission {selected.Name} as:");
+        terminal.WriteLine(Loc.Get("castle.orphan_commission_as", selected.Name));
         terminal.SetColor("bright_yellow");
-        terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine("Royal Guard (free guard slot, high loyalty)");
+        terminal.Write("  [G] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.commission_guard"));
         terminal.SetColor("bright_yellow");
-        terminal.Write("  [M] "); terminal.SetColor("white"); terminal.WriteLine("Royal Mercenary (dungeon bodyguard, half cost)");
+        terminal.Write("  [M] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.commission_mercenary"));
         terminal.SetColor("bright_yellow");
-        terminal.Write("  [N] "); terminal.SetColor("white"); terminal.WriteLine("Release as NPC citizen");
+        terminal.Write("  [N] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("castle.commission_npc"));
         terminal.SetColor("bright_yellow");
-        terminal.Write("  [X] "); terminal.SetColor("white"); terminal.WriteLine("Cancel");
+        terminal.Write("  [X] "); terminal.SetColor("white"); terminal.WriteLine(Loc.Get("ui.cancel"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("Choice: ");
+        terminal.Write(Loc.Get("ui.choice"));
         terminal.SetColor("white");
         string choice = await terminal.ReadLineAsync();
 
@@ -2960,7 +2960,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Count >= King.MaxNPCGuards)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No guard slots available!");
+            terminal.WriteLine(Loc.Get("castle.no_guard_slots"));
             await Task.Delay(1500);
             return;
         }
@@ -2987,11 +2987,11 @@ public class CastleLocation : BaseLocation
         currentKing.Guards.Add(guard);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{orphan.Name} has been commissioned as a Royal Guard!");
+        terminal.WriteLine(Loc.Get("castle.commissioned_guard", orphan.Name));
         terminal.SetColor("white");
-        terminal.WriteLine("Loyalty: 90 (raised by the crown)");
+        terminal.WriteLine(Loc.Get("castle.loyalty_raised_crown"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Treasury: -{GameConfig.OrphanCommissionCost:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.orphan_treasury_minus", GameConfig.OrphanCommissionCost.ToString("N0")));
 
         currentPlayer.Chivalry += 10;
         PersistRoyalCourtToWorldState();
@@ -3003,7 +3003,7 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.RoyalMercenaries.Count >= GameConfig.MaxRoyalMercenaries)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("No mercenary slots available!");
+            terminal.WriteLine(Loc.Get("castle.no_merc_slots"));
             await Task.Delay(1500);
             return;
         }
@@ -3013,7 +3013,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Treasury < mercCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Insufficient treasury! Need {mercCost:N0} gold.");
+            terminal.WriteLine(Loc.Get("castle.orphan_merc_insuff", mercCost.ToString("N0")));
             await Task.Delay(1500);
             return;
         }
@@ -3032,11 +3032,11 @@ public class CastleLocation : BaseLocation
         currentPlayer.RoyalMercenaries.Add(merc);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{orphan.Name} has been commissioned as a Royal Mercenary ({role})!");
+        terminal.WriteLine(Loc.Get("castle.commissioned_merc", orphan.Name, role));
         terminal.SetColor("white");
-        terminal.WriteLine($"Level: {merc.Level}  HP: {merc.MaxHP}  STR: {merc.Strength}  DEF: {merc.Defence}");
+        terminal.WriteLine($"{Loc.Get("ui.level")}: {merc.Level}  {Loc.Get("combat.bar_hp")}: {merc.MaxHP}  {Loc.Get("ui.stat_str")}: {merc.Strength}  {Loc.Get("ui.stat_def")}: {merc.Defence}");
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Treasury: -{mercCost:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.orphan_treasury_minus", mercCost.ToString("N0")));
 
         currentPlayer.Chivalry += 10;
         PersistRoyalCourtToWorldState();
@@ -3052,11 +3052,11 @@ public class CastleLocation : BaseLocation
         WorldSimulator.Instance?.OrphanBecomesNPC(orphan);
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{orphan.Name} has been released into the world as a citizen!");
+        terminal.WriteLine(Loc.Get("castle.released_citizen", orphan.Name));
         terminal.SetColor("white");
-        terminal.WriteLine("They will make their own way, grateful for the crown's care.");
+        terminal.WriteLine(Loc.Get("castle.orphan_released"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Treasury: -{GameConfig.OrphanCommissionCost:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.orphan_treasury_minus", GameConfig.OrphanCommissionCost.ToString("N0")));
 
         currentPlayer.Chivalry += 5;
         PersistRoyalCourtToWorldState();
@@ -3078,7 +3078,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Orphans.Count >= GameConfig.MaxRoyalOrphans)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"The orphanage is full ({GameConfig.MaxRoyalOrphans} children).");
+            terminal.WriteLine(Loc.Get("castle.orphan_full", GameConfig.MaxRoyalOrphans));
             await Task.Delay(1500);
             return;
         }
@@ -3087,7 +3087,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Treasury < adoptCost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"Insufficient treasury funds! Need {adoptCost:N0} gold to cover intake costs.");
+            terminal.WriteLine(Loc.Get("castle.orphan_adopt_insuff", adoptCost.ToString("N0")));
             await Task.Delay(1500);
             return;
         }
@@ -3115,14 +3115,14 @@ public class CastleLocation : BaseLocation
         currentKing.Treasury -= adoptCost;
 
         terminal.SetColor("bright_green");
-        string sexStr = sex == CharacterSex.Male ? "boy" : "girl";
-        terminal.WriteLine($"{name}, a {orphan.Age}-year-old {sexStr}, has been taken into the Royal Orphanage.");
+        string sexStr = sex == CharacterSex.Male ? Loc.Get("castle.boy") : Loc.Get("castle.girl");
+        terminal.WriteLine(Loc.Get("castle.orphan_adopted", name, orphan.Age, sexStr));
         terminal.SetColor("gray");
         terminal.WriteLine($"  \"{orphan.BackgroundStory}\"");
         terminal.SetColor("bright_green");
-        terminal.WriteLine("Your compassion increases your standing with the people!");
+        terminal.WriteLine(Loc.Get("castle.compassion_standing"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Treasury: -{adoptCost:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.orphan_treasury_minus", adoptCost.ToString("N0")));
 
         currentPlayer.Chivalry += 15;
         PersistRoyalCourtToWorldState();
@@ -3135,15 +3135,15 @@ public class CastleLocation : BaseLocation
         if (currentKing.Orphans.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There are no orphans to gift.");
+            terminal.WriteLine(Loc.Get("castle.no_orphans_gift"));
             await Task.Delay(1500);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Treasury: {currentKing.Treasury:N0} gold");
+        terminal.WriteLine(Loc.Get("castle.orphan_treasury_balance", currentKing.Treasury.ToString("N0")));
         terminal.SetColor("cyan");
-        terminal.Write("Gift amount (gold): ");
+        terminal.Write(Loc.Get("castle.gift_amount"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -3152,7 +3152,7 @@ public class CastleLocation : BaseLocation
             if (amount > currentKing.Treasury)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient funds in treasury!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury"));
             }
             else
             {
@@ -3166,10 +3166,10 @@ public class CastleLocation : BaseLocation
                 }
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine("The children are delighted with your generosity!");
-                terminal.WriteLine($"Orphan happiness increased by {happinessBoost}%!");
+                terminal.WriteLine(Loc.Get("castle.children_delighted"));
+                terminal.WriteLine(Loc.Get("castle.orphan_happy_boost", happinessBoost));
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"Treasury: -{amount:N0} gold");
+                terminal.WriteLine(Loc.Get("castle.orphan_treasury_minus", amount.ToString("N0")));
 
                 currentPlayer.Chivalry += (int)Math.Min(50, amount / 200);
                 PersistRoyalCourtToWorldState();
@@ -3186,40 +3186,40 @@ public class CastleLocation : BaseLocation
     private async Task ArrangeRoyalMarriage()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL MARRIAGE", "bright_magenta");
+        WriteBoxHeader(Loc.Get("castle.royal_marriage"), "bright_magenta");
         terminal.WriteLine("");
 
         // Check if already married
         if (currentKing.Spouse != null)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"You are already married to {currentKing.Spouse.Name}.");
-            terminal.WriteLine($"Married on: {currentKing.Spouse.MarriageDate:d}");
-            terminal.WriteLine($"Spouse's happiness: {currentKing.Spouse.Happiness}%");
-            terminal.WriteLine($"Original faction: {currentKing.Spouse.OriginalFaction}");
+            terminal.WriteLine(Loc.Get("castle.already_married", currentKing.Spouse.Name));
+            terminal.WriteLine(Loc.Get("castle.married_on", currentKing.Spouse.MarriageDate.ToString("d")));
+            terminal.WriteLine(Loc.Get("castle.spouse_happiness", currentKing.Spouse.Happiness));
+            terminal.WriteLine(Loc.Get("castle.original_faction", currentKing.Spouse.OriginalFaction));
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("Options:");
+            terminal.WriteLine(Loc.Get("castle.options"));
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
             terminal.Write("G");
             terminal.SetColor("yellow");
-            terminal.WriteLine("]ift to spouse (improve happiness)");
+            terminal.WriteLine(Loc.Get("castle.gift_spouse_option"));
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
             terminal.Write("D");
             terminal.SetColor("yellow");
-            terminal.WriteLine("]ivorce (political consequences)");
+            terminal.WriteLine(Loc.Get("castle.divorce_option"));
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
             terminal.Write("R");
             terminal.SetColor("yellow");
-            terminal.WriteLine("]eturn");
+            terminal.WriteLine(Loc.Get("castle.return_option"));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write("Your choice: ");
+            terminal.Write(Loc.Get("ui.your_choice"));
             terminal.SetColor("white");
             string input = await terminal.ReadLineAsync();
 
@@ -3238,8 +3238,8 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("A royal marriage can secure alliances, fill the treasury with dowry,");
-        terminal.WriteLine("and produce heirs to continue your dynasty.");
+        terminal.WriteLine(Loc.Get("castle.marriage_desc_1"));
+        terminal.WriteLine(Loc.Get("castle.marriage_desc_2"));
         terminal.WriteLine("");
 
         // Find eligible NPCs for marriage
@@ -3259,18 +3259,18 @@ public class CastleLocation : BaseLocation
         if (eligibleNPCs == null || eligibleNPCs.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There are no suitable marriage candidates at this time.");
-            terminal.WriteLine("Candidates must be level 10+, not on a team, and not a story NPC.");
+            terminal.WriteLine(Loc.Get("castle.no_candidates"));
+            terminal.WriteLine(Loc.Get("castle.candidate_requirements"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Potential Marriage Candidates:");
+        terminal.WriteLine(Loc.Get("castle.potential_candidates"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"{"#",-3} {"Name",-20} {"Level",-8} {"Dowry",-12} {"Faction Benefit"}");
+        terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_level"),-8} {Loc.Get("castle.header_dowry"),-12} {Loc.Get("castle.header_faction_benefit")}");
         WriteDivider(70);
 
         int i = 1;
@@ -3281,13 +3281,13 @@ public class CastleLocation : BaseLocation
             var faction = DetermineFactionForNPC(npc);
 
             terminal.SetColor("white");
-            terminal.WriteLine($"{i,-3} {npc.Name,-20} {npc.Level,-8} {dowry:N0,-12} +20 {faction} relations");
+            terminal.WriteLine($"{i,-3} {npc.Name,-20} {npc.Level,-8} {dowry:N0,-12} {Loc.Get("castle.candidate_entry", "", faction).Trim()}");
             i++;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.Write("Propose to which candidate? (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.propose_candidate"));
         terminal.SetColor("white");
         string choice = await terminal.ReadLineAsync();
 
@@ -3318,7 +3318,7 @@ public class CastleLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("bright_magenta");
-        terminal.WriteLine($"You send a royal proposal to {candidate.Name}...");
+        terminal.WriteLine(Loc.Get("castle.send_proposal", candidate.Name));
         await Task.Delay(1500);
 
         // Acceptance chance based on player reputation and NPC personality
@@ -3380,11 +3380,11 @@ public class CastleLocation : BaseLocation
             }
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{candidate.Name} accepts your proposal!");
+            terminal.WriteLine(Loc.Get("castle.accepts_proposal", candidate.Name));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Dowry received: {dowry:N0} gold!");
-            terminal.WriteLine($"The {faction} faction's loyalty has increased!");
+            terminal.WriteLine(Loc.Get("castle.dowry_received", dowry.ToString("N0")));
+            terminal.WriteLine(Loc.Get("castle.faction_loyalty_up", faction));
             terminal.WriteLine("");
 
             NewsSystem.Instance?.Newsy(true,
@@ -3396,15 +3396,15 @@ public class CastleLocation : BaseLocation
         else
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"{candidate.Name} politely declines your proposal.");
-            terminal.WriteLine("Perhaps try again when you are more renowned...");
+            terminal.WriteLine(Loc.Get("castle.declines_proposal", candidate.Name));
+            terminal.WriteLine(Loc.Get("castle.try_more_renowned"));
         }
     }
 
     private async Task GiftToSpouse()
     {
         terminal.SetColor("cyan");
-        terminal.Write("Gift amount (gold): ");
+        terminal.Write(Loc.Get("castle.gift_amount"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -3413,7 +3413,7 @@ public class CastleLocation : BaseLocation
             if (amount > currentKing.Treasury)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient funds!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_funds"));
                 return;
             }
 
@@ -3422,19 +3422,19 @@ public class CastleLocation : BaseLocation
             currentKing.Spouse!.Happiness = Math.Min(100, currentKing.Spouse.Happiness + happinessBoost);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Your spouse is pleased! Happiness +{happinessBoost}%");
+            terminal.WriteLine(Loc.Get("castle.spouse_pleased", happinessBoost));
         }
     }
 
     private async Task DivorceSpouse()
     {
         terminal.SetColor("bright_red");
-        terminal.WriteLine("WARNING: Divorce will have serious political consequences!");
-        terminal.WriteLine($"The {currentKing.Spouse!.OriginalFaction} faction will turn against you.");
+        terminal.WriteLine(Loc.Get("castle.divorce_warning"));
+        terminal.WriteLine(Loc.Get("castle.faction_turn_against", currentKing.Spouse!.OriginalFaction));
         terminal.WriteLine("");
 
         terminal.SetColor("yellow");
-        terminal.Write("Are you sure you want to divorce? (Y/N): ");
+        terminal.Write(Loc.Get("ui.confirm_divorce"));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
@@ -3469,8 +3469,8 @@ public class CastleLocation : BaseLocation
                 RomanceTracker.Instance?.Divorce(spouseNPC.ID, "Royal divorce", playerInitiated: true);
 
             terminal.SetColor("red");
-            terminal.WriteLine($"You have divorced {spouseName}.");
-            terminal.WriteLine($"The {faction} faction is furious!");
+            terminal.WriteLine(Loc.Get("castle.divorced", spouseName));
+            terminal.WriteLine(Loc.Get("castle.faction_furious", faction));
 
             NewsSystem.Instance?.Newsy(true,
                 $"SCANDAL! {currentKing.GetTitle()} {currentKing.Name} has divorced {spouseName}!");
@@ -3480,7 +3480,7 @@ public class CastleLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Divorce cancelled.");
+            terminal.WriteLine(Loc.Get("castle.divorce_cancelled"));
         }
     }
 
@@ -3491,24 +3491,24 @@ public class CastleLocation : BaseLocation
     private async Task ViewCourtPolitics()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL COURT", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.royal_court"), "bright_cyan");
         terminal.WriteLine("");
 
         // Show court members
         terminal.SetColor("yellow");
-        terminal.WriteLine("COURT MEMBERS:");
+        terminal.WriteLine(Loc.Get("castle.court_members"));
         terminal.WriteLine("");
 
         if (currentKing.CourtMembers.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("The court has not yet been established.");
-            terminal.WriteLine("(Court members will appear as the kingdom develops)");
+            terminal.WriteLine(Loc.Get("castle.court_not_established"));
+            terminal.WriteLine(Loc.Get("castle.court_developing"));
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"{"Role",-18} {"Name",-25} {"Faction",-15} {"Loyalty",-10} {"Influence"}");
+            terminal.WriteLine($"{Loc.Get("castle.header_role"),-18} {Loc.Get("castle.header_name"),-25} {Loc.Get("castle.header_faction"),-15} {Loc.Get("castle.header_loyalty"),-10} {Loc.Get("castle.header_influence")}");
             WriteDivider(78);
 
             foreach (var member in currentKing.CourtMembers)
@@ -3533,7 +3533,7 @@ public class CastleLocation : BaseLocation
             {
                 terminal.SetColor("red");
                 terminal.WriteLine("");
-                terminal.WriteLine("* Some courtiers seem to be scheming...");
+                terminal.WriteLine(Loc.Get("castle.courtiers_scheming"));
             }
         }
 
@@ -3541,7 +3541,7 @@ public class CastleLocation : BaseLocation
 
         // Show active plots (if detected)
         terminal.SetColor("yellow");
-        terminal.WriteLine("INTELLIGENCE REPORTS:");
+        terminal.WriteLine(Loc.Get("castle.intel_reports"));
         terminal.WriteLine("");
 
         var discoveredPlots = currentKing.ActivePlots.Where(p => p.IsDiscovered).ToList();
@@ -3550,7 +3550,7 @@ public class CastleLocation : BaseLocation
             foreach (var plot in discoveredPlots)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"FOILED: {plot.PlotType} plot by {string.Join(", ", plot.Conspirators)}");
+                terminal.WriteLine(Loc.Get("castle.foiled_plot", plot.PlotType, string.Join(", ", plot.Conspirators)));
             }
         }
 
@@ -3559,20 +3559,20 @@ public class CastleLocation : BaseLocation
         if (secretPlots.Count > 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine($"Your spies report {secretPlots.Count} rumor(s) of intrigue...");
-            terminal.WriteLine("Use the Court Magician's 'Detect Threats' spell to investigate.");
+            terminal.WriteLine(Loc.Get("castle.spies_report", secretPlots.Count));
+            terminal.WriteLine(Loc.Get("castle.use_detect_threats"));
         }
         else if (discoveredPlots.Count == 0)
         {
             terminal.SetColor("green");
-            terminal.WriteLine("No plots detected. The court appears stable.");
+            terminal.WriteLine(Loc.Get("castle.no_plots"));
         }
 
         terminal.WriteLine("");
 
         // Show faction standing
         terminal.SetColor("yellow");
-        terminal.WriteLine("FACTION RELATIONS:");
+        terminal.WriteLine(Loc.Get("castle.faction_relations"));
         terminal.WriteLine("");
 
         var factionGroups = currentKing.CourtMembers
@@ -3582,8 +3582,8 @@ public class CastleLocation : BaseLocation
         foreach (var group in factionGroups)
         {
             int avgLoyalty = (int)group.Average(m => m.LoyaltyToKing);
-            string status = avgLoyalty >= 70 ? "Loyal" :
-                           avgLoyalty >= 40 ? "Neutral" : "Hostile";
+            string status = avgLoyalty >= 70 ? Loc.Get("castle.faction_loyal") :
+                           avgLoyalty >= 40 ? Loc.Get("castle.faction_neutral") : Loc.Get("castle.faction_hostile");
             string color = avgLoyalty >= 70 ? "bright_green" :
                           avgLoyalty >= 40 ? "yellow" : "red";
 
@@ -3603,19 +3603,19 @@ public class CastleLocation : BaseLocation
             {
                 if (IsScreenReader)
                 {
-                    WriteSRMenuOption("D", "Dismiss");
-                    WriteSRMenuOption("A", "Arrest Plotter");
-                    WriteSRMenuOption("B", "Bribe");
-                    WriteSRMenuOption("P", "Promote");
-                    WriteSRMenuOption("Q", "Quit");
+                    WriteSRMenuOption("D", Loc.Get("castle.dismiss_plotter"));
+                    WriteSRMenuOption("A", Loc.Get("castle.arrest_plotter"));
+                    WriteSRMenuOption("B", Loc.Get("castle.bribe_plotter"));
+                    WriteSRMenuOption("P", Loc.Get("castle.promote_plotter"));
+                    WriteSRMenuOption("Q", Loc.Get("ui.cancel"));
                 }
                 else
                 {
                     terminal.SetColor("cyan");
-                    terminal.WriteLine("[D]ismiss  [A]rrest Plotter  [B]ribe  [P]romote  [Q]uit");
+                    terminal.WriteLine(Loc.Get("castle.court_menu_visual"));
                 }
                 terminal.SetColor("white");
-                terminal.Write("Court action: ");
+                terminal.Write(Loc.Get("castle.court_action"));
                 string courtChoice = (await terminal.ReadLineAsync())?.ToUpper() ?? "";
 
                 switch (courtChoice)
@@ -3648,15 +3648,15 @@ public class CastleLocation : BaseLocation
     {
         terminal.SetColor("yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("Dismiss which court member?");
+        terminal.WriteLine(Loc.Get("castle.dismiss_which"));
         for (int i = 0; i < currentKing.CourtMembers.Count; i++)
         {
             var m = currentKing.CourtMembers[i];
             terminal.SetColor("white");
-            terminal.WriteLine($"  {i + 1}. {m.Name} ({m.Role}, {m.Faction})");
+            terminal.WriteLine(Loc.Get("castle.court_member_entry", i + 1, m.Name, m.Role, m.Faction));
         }
         terminal.SetColor("cyan");
-        terminal.Write("Number (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.number_cancel"));
         string input = await terminal.ReadLineAsync();
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= currentKing.CourtMembers.Count)
         {
@@ -3673,7 +3673,7 @@ public class CastleLocation : BaseLocation
                 npc.Brain.Memory.CharacterImpressions[currentPlayer.DisplayName] = -0.5f;
 
             terminal.SetColor("red");
-            terminal.WriteLine($"{member.Name} has been dismissed from the court!");
+            terminal.WriteLine(Loc.Get("castle.dismissed_from_court", member.Name));
             NewsSystem.Instance?.Newsy(false, $"{member.Name} has been dismissed from the royal court by {currentKing.GetTitle()} {currentKing.Name}.");
         }
         terminal.WriteLine("");
@@ -3685,29 +3685,29 @@ public class CastleLocation : BaseLocation
         if (discoveredPlots.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("No discovered plots. Use the Court Magician's 'Detect Threats' to find plotters.");
+            terminal.WriteLine(Loc.Get("castle.no_discovered_plots"));
             terminal.WriteLine("");
             return;
         }
 
         terminal.SetColor("yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("Arrest plotters from which conspiracy?");
+        terminal.WriteLine(Loc.Get("castle.arrest_which"));
         for (int i = 0; i < discoveredPlots.Count; i++)
         {
             var plot = discoveredPlots[i];
             terminal.SetColor("red");
-            terminal.WriteLine($"  {i + 1}. {plot.PlotType} by {string.Join(", ", plot.Conspirators)} (Trial cost: {GameConfig.ArrestTrialCost:N0}g)");
+            terminal.WriteLine(Loc.Get("castle.plot_entry", i + 1, plot.PlotType, string.Join(", ", plot.Conspirators), GameConfig.ArrestTrialCost.ToString("N0")));
         }
         terminal.SetColor("cyan");
-        terminal.Write("Number (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.number_cancel"));
         string input = await terminal.ReadLineAsync();
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= discoveredPlots.Count)
         {
             if (currentKing.Treasury < GameConfig.ArrestTrialCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient treasury funds for the trial!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_trial"));
                 terminal.WriteLine("");
                 return;
             }
@@ -3738,7 +3738,7 @@ public class CastleLocation : BaseLocation
             currentKing.ActivePlots.Remove(plot);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"The conspirators have been arrested and imprisoned! (-{GameConfig.ArrestTrialCost:N0}g)");
+            terminal.WriteLine(Loc.Get("castle.arrested", GameConfig.ArrestTrialCost.ToString("N0")));
             NewsSystem.Instance?.Newsy(true, $"{currentKing.GetTitle()} {currentKing.Name} has crushed a {plot.PlotType} conspiracy!");
         }
         terminal.WriteLine("");
@@ -3748,7 +3748,7 @@ public class CastleLocation : BaseLocation
     {
         terminal.SetColor("yellow");
         terminal.WriteLine("");
-        terminal.WriteLine("Bribe which court member to increase loyalty?");
+        terminal.WriteLine(Loc.Get("castle.bribe_which"));
         for (int i = 0; i < currentKing.CourtMembers.Count; i++)
         {
             var m = currentKing.CourtMembers[i];
@@ -3757,12 +3757,12 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("white");
             terminal.Write($"  {i + 1}. {m.Name,-20} ");
             terminal.SetColor(loyColor);
-            terminal.Write($"Loyalty: {m.LoyaltyToKing}% ");
+            terminal.Write(Loc.Get("castle.loyalty_label", m.LoyaltyToKing));
             terminal.SetColor("gray");
-            terminal.WriteLine($"(Cost: {cost:N0}g)");
+            terminal.WriteLine(Loc.Get("castle.cost_label", cost.ToString("N0")));
         }
         terminal.SetColor("cyan");
-        terminal.Write("Number (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.number_cancel"));
         string input = await terminal.ReadLineAsync();
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= currentKing.CourtMembers.Count)
         {
@@ -3772,7 +3772,7 @@ public class CastleLocation : BaseLocation
             if (currentKing.Treasury < cost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient treasury funds!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury"));
                 terminal.WriteLine("");
                 return;
             }
@@ -3794,12 +3794,12 @@ public class CastleLocation : BaseLocation
                         currentKing.ActivePlots.Remove(plotToRemove);
                 }
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{member.Name} has abandoned their scheming! (+{loyaltyGain} loyalty, -{cost:N0}g)");
+                terminal.WriteLine(Loc.Get("castle.bribe_abandoned", member.Name, loyaltyGain, cost.ToString("N0")));
             }
             else
             {
                 terminal.SetColor("green");
-                terminal.WriteLine($"{member.Name}'s loyalty increased to {member.LoyaltyToKing}%. (+{loyaltyGain} loyalty, -{cost:N0}g)");
+                terminal.WriteLine(Loc.Get("castle.bribe_loyalty_up", member.Name, member.LoyaltyToKing, loyaltyGain, cost.ToString("N0")));
             }
         }
         terminal.WriteLine("");
@@ -3809,22 +3809,22 @@ public class CastleLocation : BaseLocation
     {
         terminal.SetColor("yellow");
         terminal.WriteLine("");
-        terminal.WriteLine($"Promote which court member? (Cost: {GameConfig.PromoteCost:N0}g from treasury)");
+        terminal.WriteLine(Loc.Get("castle.promote_which", GameConfig.PromoteCost.ToString("N0")));
         for (int i = 0; i < currentKing.CourtMembers.Count; i++)
         {
             var m = currentKing.CourtMembers[i];
             terminal.SetColor("white");
-            terminal.WriteLine($"  {i + 1}. {m.Name} ({m.Role}, Influence: {m.Influence})");
+            terminal.WriteLine(Loc.Get("castle.promote_entry", i + 1, m.Name, m.Role, m.Influence));
         }
         terminal.SetColor("cyan");
-        terminal.Write("Number (0 to cancel): ");
+        terminal.Write(Loc.Get("castle.number_cancel"));
         string input = await terminal.ReadLineAsync();
         if (int.TryParse(input, out int idx) && idx > 0 && idx <= currentKing.CourtMembers.Count)
         {
             if (currentKing.Treasury < GameConfig.PromoteCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("Insufficient treasury funds!");
+                terminal.WriteLine(Loc.Get("castle.insufficient_treasury"));
                 terminal.WriteLine("");
                 return;
             }
@@ -3835,7 +3835,7 @@ public class CastleLocation : BaseLocation
             member.Influence = Math.Min(100, member.Influence + 5);
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{member.Name} has been promoted! (+{GameConfig.PromoteLoyaltyGain} loyalty, +5 influence, -{GameConfig.PromoteCost:N0}g)");
+            terminal.WriteLine(Loc.Get("castle.promoted", member.Name, GameConfig.PromoteLoyaltyGain, GameConfig.PromoteCost.ToString("N0")));
             NewsSystem.Instance?.Newsy(false, $"{member.Name} has been promoted in the royal court by {currentKing.GetTitle()} {currentKing.Name}.");
         }
         terminal.WriteLine("");
@@ -3848,31 +3848,31 @@ public class CastleLocation : BaseLocation
     private async Task ManageSuccession()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL SUCCESSION", "bright_green");
+        WriteBoxHeader(Loc.Get("castle.royal_succession"), "bright_green");
         terminal.WriteLine("");
 
         // Show current heirs
         terminal.SetColor("yellow");
-        terminal.WriteLine("HEIRS TO THE THRONE:");
+        terminal.WriteLine(Loc.Get("castle.heirs_title"));
         terminal.WriteLine("");
 
         if (currentKing.Heirs.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You have no heirs.");
+            terminal.WriteLine(Loc.Get("castle.no_heirs"));
             if (currentKing.Spouse == null)
             {
-                terminal.WriteLine("Consider arranging a royal marriage to produce heirs.");
+                terminal.WriteLine(Loc.Get("castle.consider_marriage"));
             }
             else
             {
-                terminal.WriteLine("A child may be born to your marriage in time.");
+                terminal.WriteLine(Loc.Get("castle.child_may_born"));
             }
         }
         else
         {
             terminal.SetColor("white");
-            terminal.WriteLine($"{"#",-3} {"Name",-20} {"Age",-6} {"Sex",-8} {"Claim",-10} {"Status"}");
+            terminal.WriteLine($"{Loc.Get("castle.header_num"),-3} {Loc.Get("castle.header_name"),-20} {Loc.Get("castle.header_age"),-6} {Loc.Get("castle.header_sex"),-8} {Loc.Get("castle.header_claim"),-10} {Loc.Get("castle.header_status")}");
             WriteDivider(60);
 
             int i = 1;
@@ -3897,24 +3897,24 @@ public class CastleLocation : BaseLocation
         if (!string.IsNullOrEmpty(currentKing.DesignatedHeir))
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"Current designated heir: {currentKing.DesignatedHeir}");
+            terminal.WriteLine(Loc.Get("castle.current_heir", currentKing.DesignatedHeir));
         }
         else
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("No heir has been officially designated.");
+            terminal.WriteLine(Loc.Get("castle.no_heir_designated"));
         }
 
         terminal.WriteLine("");
 
         // Options
         terminal.SetColor("cyan");
-        terminal.WriteLine("Options:");
+        terminal.WriteLine(Loc.Get("castle.options"));
         if (IsScreenReader)
         {
-            WriteSRMenuOption("D", "Designate an heir");
-            WriteSRMenuOption("N", "Name a new heir (adopt/legitimize)");
-            WriteSRMenuOption("R", "Return");
+            WriteSRMenuOption("D", Loc.Get("castle.designate_heir"));
+            WriteSRMenuOption("N", Loc.Get("castle.name_heir"));
+            WriteSRMenuOption("R", Loc.Get("castle.return"));
         }
         else
         {
@@ -3922,21 +3922,21 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("D");
             terminal.SetColor("cyan");
-            terminal.WriteLine("]esignate an heir");
+            terminal.WriteLine(Loc.Get("castle.designate_heir_option"));
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
             terminal.Write("N");
             terminal.SetColor("cyan");
-            terminal.WriteLine("]ame a new heir (adopt/legitimize)");
+            terminal.WriteLine(Loc.Get("castle.name_heir_option"));
             terminal.Write(" [");
             terminal.SetColor("bright_yellow");
             terminal.Write("R");
             terminal.SetColor("cyan");
-            terminal.WriteLine("]eturn");
+            terminal.WriteLine(Loc.Get("castle.return_option"));
         }
         terminal.WriteLine("");
 
-        terminal.Write("Your choice: ");
+        terminal.Write(Loc.Get("ui.your_choice"));
         terminal.SetColor("white");
         string choice = await terminal.ReadLineAsync();
 
@@ -3956,13 +3956,13 @@ public class CastleLocation : BaseLocation
         if (currentKing.Heirs.Count == 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You have no heirs to designate!");
+            terminal.WriteLine(Loc.Get("castle.no_heirs_designate"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Designate which heir? (number): ");
+        terminal.Write(Loc.Get("castle.designate_which"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -3983,8 +3983,8 @@ public class CastleLocation : BaseLocation
             currentKing.DesignatedHeir = heir.Name;
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{heir.Name} has been officially designated as your heir!");
-            terminal.WriteLine("Their claim to the throne has been strengthened.");
+            terminal.WriteLine(Loc.Get("castle.heir_designated", heir.Name));
+            terminal.WriteLine(Loc.Get("castle.claim_strengthened"));
 
             NewsSystem.Instance?.Newsy(false,
                 $"{currentKing.GetTitle()} {currentKing.Name} has named {heir.Name} as the royal heir!");
@@ -3996,20 +3996,20 @@ public class CastleLocation : BaseLocation
     private async Task CreateNewHeir()
     {
         terminal.SetColor("yellow");
-        terminal.WriteLine("You may legitimize a bastard child or adopt a ward as heir.");
-        terminal.WriteLine("This costs 5,000 gold and reduces claim strength of existing heirs.");
+        terminal.WriteLine(Loc.Get("castle.legitimize_desc"));
+        terminal.WriteLine(Loc.Get("castle.legitimize_cost"));
         terminal.WriteLine("");
 
         if (currentKing.Treasury < 5000)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Insufficient funds! (Need 5,000 gold)");
+            terminal.WriteLine(Loc.Get("castle.insufficient_5000"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Name of the new heir: ");
+        terminal.Write(Loc.Get("castle.new_heir_name"));
         terminal.SetColor("white");
         string name = await terminal.ReadLineAsync();
 
@@ -4039,7 +4039,7 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{name} has been added to the line of succession!");
+        terminal.WriteLine(Loc.Get("castle.heir_added", name));
 
         NewsSystem.Instance?.Newsy(false,
             $"{currentKing.GetTitle()} {currentKing.Name} has added {name} to the royal succession!");
@@ -4153,24 +4153,24 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("ROYAL BODYGUARDS", "bright_cyan");
+            WriteBoxHeader(Loc.Get("castle.royal_bodyguards"), "bright_cyan");
             terminal.WriteLine("");
 
             terminal.SetColor("gray");
-            terminal.WriteLine("Hire elite mercenaries to accompany you in the dungeon.");
-            terminal.WriteLine($"Maximum bodyguards: {GameConfig.MaxRoyalMercenaries}");
+            terminal.WriteLine(Loc.Get("castle.hire_mercs_desc"));
+            terminal.WriteLine(Loc.Get("castle.max_bodyguards", GameConfig.MaxRoyalMercenaries));
             terminal.WriteLine("");
 
             // Show current mercenaries
             if (currentPlayer.RoyalMercenaries.Count == 0)
             {
                 terminal.SetColor("darkgray");
-                terminal.WriteLine("You have no bodyguards in your employ.");
+                terminal.WriteLine(Loc.Get("castle.no_bodyguards"));
             }
             else
             {
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("Current Bodyguards:");
+                terminal.WriteLine(Loc.Get("castle.current_bodyguards"));
                 terminal.SetColor("gray");
 
                 for (int i = 0; i < currentPlayer.RoyalMercenaries.Count; i++)
@@ -4182,13 +4182,13 @@ public class CastleLocation : BaseLocation
                     terminal.SetColor("white");
                     terminal.Write($"  {i + 1}. {merc.Name}");
                     terminal.SetColor("gray");
-                    terminal.Write($" - Level {merc.Level} {merc.Class} ({merc.Role})");
+                    terminal.Write(Loc.Get("castle.merc_level_entry", merc.Level, merc.Class, merc.Role));
                     terminal.SetColor(hpColor);
-                    terminal.Write($" - HP: {merc.HP}/{merc.MaxHP}");
+                    terminal.Write(Loc.Get("castle.merc_hp_entry", merc.HP, merc.MaxHP));
                     if (merc.MaxMana > 0)
                     {
                         terminal.SetColor("bright_cyan");
-                        terminal.Write($" MP: {merc.Mana}/{merc.MaxMana}");
+                        terminal.Write(Loc.Get("castle.merc_mp", merc.Mana, merc.MaxMana));
                     }
                     terminal.WriteLine("");
                 }
@@ -4201,9 +4201,9 @@ public class CastleLocation : BaseLocation
             // Menu
             if (IsScreenReader)
             {
-                WriteSRMenuOption("H", $"Hire Mercenary ({hireCost:N0}g)");
-                WriteSRMenuOption("D", "Dismiss");
-                WriteSRMenuOption("R", "Return");
+                WriteSRMenuOption("H", Loc.Get("castle.hire_merc_btn", hireCost.ToString("N0")));
+                WriteSRMenuOption("D", Loc.Get("castle.dismiss_guard"));
+                WriteSRMenuOption("R", Loc.Get("castle.return"));
             }
             else
             {
@@ -4214,7 +4214,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write($"ire Mercenary ({hireCost:N0}g)   ");
+                terminal.Write(Loc.Get("castle.hire_merc_btn", hireCost.ToString("N0")));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
@@ -4223,7 +4223,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write("ismiss   ");
+                terminal.Write(Loc.Get("castle.dismiss_btn"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write("[");
@@ -4232,7 +4232,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine("eturn");
+                terminal.WriteLine(Loc.Get("castle.return_btn"));
             }
             terminal.WriteLine("");
 
@@ -4258,7 +4258,7 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.RoyalMercenaries.Count >= GameConfig.MaxRoyalMercenaries)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You already have {GameConfig.MaxRoyalMercenaries} bodyguards — the maximum allowed.");
+            terminal.WriteLine(Loc.Get("castle.max_bodyguards_already", GameConfig.MaxRoyalMercenaries));
             await terminal.PressAnyKey();
             return;
         }
@@ -4266,47 +4266,47 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.Gold < cost)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You need {cost:N0} gold to hire a mercenary. You have {currentPlayer.Gold:N0}g.");
+            terminal.WriteLine(Loc.Get("castle.need_gold_merc", cost.ToString("N0"), currentPlayer.Gold.ToString("N0")));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine("Choose a mercenary role:");
+        terminal.WriteLine(Loc.Get("castle.choose_merc_role"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
         terminal.Write("  1. ");
         terminal.SetColor("bright_red");
-        terminal.Write("Tank");
+        terminal.Write(Loc.Get("castle.role_tank"));
         terminal.SetColor("gray");
-        terminal.WriteLine("     - Warrior. High HP and defense, draws enemy attacks.");
+        terminal.WriteLine(Loc.Get("castle.role_tank_desc"));
 
         terminal.SetColor("white");
         terminal.Write("  2. ");
         terminal.SetColor("bright_green");
-        terminal.Write("Healer");
+        terminal.Write(Loc.Get("castle.role_healer"));
         terminal.SetColor("gray");
-        terminal.WriteLine("   - Cleric. Heals wounded party members, casts holy spells.");
+        terminal.WriteLine(Loc.Get("castle.role_healer_desc"));
 
         terminal.SetColor("white");
         terminal.Write("  3. ");
         terminal.SetColor("bright_magenta");
-        terminal.Write("DPS");
+        terminal.Write(Loc.Get("castle.role_dps"));
         terminal.SetColor("gray");
-        terminal.WriteLine("      - Ranger. High damage output with fast attacks.");
+        terminal.WriteLine(Loc.Get("castle.role_dps_desc"));
 
         terminal.SetColor("white");
         terminal.Write("  4. ");
         terminal.SetColor("bright_cyan");
-        terminal.Write("Support");
+        terminal.Write(Loc.Get("castle.role_support"));
         terminal.SetColor("gray");
-        terminal.WriteLine("  - Paladin. Balanced fighter with healing and combat spells.");
+        terminal.WriteLine(Loc.Get("castle.role_support_desc"));
 
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.Write("Choose (1-4, or R to cancel): ");
+        terminal.Write(Loc.Get("castle.choose_1_4"));
         string roleInput = await terminal.ReadLineAsync();
 
         string? role = roleInput?.Trim() switch
@@ -4327,15 +4327,15 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"{merc.Name} has been hired as your royal bodyguard!");
+        terminal.WriteLine(Loc.Get("castle.hired_bodyguard", merc.Name));
         terminal.SetColor("gray");
-        terminal.WriteLine($"  Role: {merc.Role} ({merc.Class})  Level: {merc.Level}");
-        terminal.WriteLine($"  HP: {merc.MaxHP}  STR: {merc.Strength}  DEF: {merc.Defence}");
-        terminal.WriteLine($"  Weapon Power: {merc.WeapPow}  Armor Power: {merc.ArmPow}");
+        terminal.WriteLine(Loc.Get("castle.merc_role", merc.Role, merc.Class, merc.Level));
+        terminal.WriteLine(Loc.Get("castle.merc_hp_str_def", merc.MaxHP, merc.Strength, merc.Defence));
+        terminal.WriteLine(Loc.Get("castle.merc_weap_arm", merc.WeapPow, merc.ArmPow));
         if (merc.MaxMana > 0)
-            terminal.WriteLine($"  Mana: {merc.MaxMana}  Potions: {merc.Healing}");
+            terminal.WriteLine(Loc.Get("castle.merc_mana_potions", merc.MaxMana, merc.Healing));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  Cost: {cost:N0} gold. Remaining: {currentPlayer.Gold:N0}g");
+        terminal.WriteLine(Loc.Get("castle.merc_cost", cost.ToString("N0"), currentPlayer.Gold.ToString("N0")));
         await terminal.PressAnyKey();
     }
 
@@ -4344,22 +4344,22 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.RoyalMercenaries.Count == 0)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("You have no bodyguards to dismiss.");
+            terminal.WriteLine(Loc.Get("castle.no_bodyguards_dismiss"));
             await terminal.PressAnyKey();
             return;
         }
 
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("Dismiss which bodyguard?");
+        terminal.WriteLine(Loc.Get("castle.dismiss_which_bodyguard"));
         for (int i = 0; i < currentPlayer.RoyalMercenaries.Count; i++)
         {
             var merc = currentPlayer.RoyalMercenaries[i];
             terminal.SetColor("white");
-            terminal.WriteLine($"  {i + 1}. {merc.Name} (Level {merc.Level} {merc.Role})");
+            terminal.WriteLine(Loc.Get("castle.dismiss_merc_entry", i + 1, merc.Name, merc.Level, merc.Role));
         }
         terminal.SetColor("gray");
-        terminal.Write("Choose (or R to cancel): ");
+        terminal.Write(Loc.Get("castle.choose_r_cancel"));
         string dismissInput = await terminal.ReadLineAsync();
 
         if (int.TryParse(dismissInput, out int idx) && idx >= 1 && idx <= currentPlayer.RoyalMercenaries.Count)
@@ -4368,7 +4368,7 @@ public class CastleLocation : BaseLocation
             currentPlayer.RoyalMercenaries.RemoveAt(idx - 1);
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{dismissed.Name} has been dismissed from your service.");
+            terminal.WriteLine(Loc.Get("castle.dismissed_merc", dismissed.Name));
             await terminal.PressAnyKey();
         }
     }
@@ -4380,11 +4380,11 @@ public class CastleLocation : BaseLocation
     private async Task RoyalQuests()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL BOUNTY BOARD", "bright_red");
+        WriteBoxHeader(Loc.Get("castle.royal_bounty"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("The King's personal bounty board displays wanted criminals and threats.");
+        terminal.WriteLine(Loc.Get("castle.bounty_board_desc"));
         terminal.WriteLine("");
 
         // Get bounties posted by the King
@@ -4393,15 +4393,15 @@ public class CastleLocation : BaseLocation
         if (bounties.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("No bounties have been posted by the Crown.");
+            terminal.WriteLine(Loc.Get("castle.no_bounties"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("The realm is at peace... for now.");
+            terminal.WriteLine(Loc.Get("castle.realm_at_peace"));
         }
         else
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine("WANTED:");
+            terminal.WriteLine(Loc.Get("castle.wanted"));
             WriteDivider(60);
 
             foreach (var bounty in bounties)
@@ -4411,19 +4411,19 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.WriteLine(bounty.Title ?? bounty.Comment ?? "Unknown Target");
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"    Reward: {bounty.GetRewardDescription()}");
+                terminal.WriteLine(Loc.Get("castle.reward_label", bounty.GetRewardDescription()));
                 terminal.SetColor("gray");
-                terminal.WriteLine($"    {bounty.Comment}");
+                terminal.WriteLine(Loc.Get("castle.comment_label", bounty.Comment));
                 terminal.WriteLine("");
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Visit the Quest Hall on Main Street to claim bounties.");
+        terminal.WriteLine(Loc.Get("castle.visit_quest_hall"));
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -4493,25 +4493,25 @@ public class CastleLocation : BaseLocation
     private async Task<bool> ChallengeThrone()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THRONE CHALLENGE", "bright_red");
+        WriteBoxHeader(Loc.Get("castle.throne_challenge"), "bright_red");
         terminal.WriteLine("");
 
         // RULE: King cannot be on a team - must leave team first
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("To challenge for the throne, you must abandon your team.");
-            terminal.WriteLine($"You are currently a member of '{currentPlayer.Team}'.");
+            terminal.WriteLine(Loc.Get("castle.must_leave_team_challenge"));
+            terminal.WriteLine(Loc.Get("castle.already_member", currentPlayer.Team));
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.Write("Leave your team to pursue the crown? (Y/N): ");
+            terminal.Write(Loc.Get("castle.leave_team_crown"));
             terminal.SetColor("white");
             string leaveConfirm = await terminal.ReadLineAsync();
 
             if (leaveConfirm?.ToUpper() != "Y")
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You decide to remain loyal to your team.");
+                terminal.WriteLine(Loc.Get("castle.remain_loyal_team"));
                 await Task.Delay(2000);
                 return false;
             }
@@ -4521,27 +4521,27 @@ public class CastleLocation : BaseLocation
             CityControlSystem.Instance.ForceLeaveTeam(currentPlayer);
             GameEngine.Instance?.ClearDungeonParty(); // Clear NPC teammates from dungeon
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You have left '{oldTeam}' to pursue the crown.");
+            terminal.WriteLine(Loc.Get("castle.left_team", oldTeam));
             terminal.WriteLine("");
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("You have chosen to challenge for the throne!");
-        terminal.WriteLine($"You must defeat {currentKing.GetTitle()} {currentKing.Name} in combat.");
+        terminal.WriteLine(Loc.Get("castle.chosen_challenge"));
+        terminal.WriteLine(Loc.Get("castle.must_defeat", currentKing.GetTitle(), currentKing.Name));
         terminal.WriteLine("");
 
         // Show monster guard warning
         if (currentKing.MonsterGuards.Count > 0)
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"WARNING: You must first defeat {currentKing.MonsterGuards.Count} Monster Guards!");
+            terminal.WriteLine(Loc.Get("castle.warn_monsters", currentKing.MonsterGuards.Count));
         }
 
         // Show NPC guard warning
         if (currentKing.Guards.Count > 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"WARNING: You must also defeat {currentKing.Guards.Count} Royal Guards!");
+            terminal.WriteLine(Loc.Get("castle.warn_guards", currentKing.Guards.Count));
         }
 
         if (currentKing.TotalGuardCount > 0)
@@ -4550,14 +4550,14 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("cyan");
-        terminal.Write("Do you wish to proceed? (Y/N): ");
+        terminal.Write(Loc.Get("castle.proceed_yn"));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
         if (confirm?.ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You reconsider and step back.");
+            terminal.WriteLine(Loc.Get("castle.reconsider"));
             await Task.Delay(2000);
             return false;
         }
@@ -4569,7 +4569,7 @@ public class CastleLocation : BaseLocation
         {
             terminal.ClearScreen();
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"=== Fighting Monster Guard: {monster.Name} (Level {monster.Level}) ===");
+            terminal.WriteLine(Loc.Get("castle.fight_monster_guard", monster.Name, monster.Level));
             terminal.WriteLine("");
 
             long monsterHP = monster.HP;
@@ -4582,7 +4582,7 @@ public class CastleLocation : BaseLocation
                 monsterHP -= playerDamage;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You strike the {monster.Name} for {playerDamage} damage! (Monster HP: {Math.Max(0, monsterHP)})");
+                terminal.WriteLine(Loc.Get("castle.strike_monster", monster.Name, playerDamage, Math.Max(0, monsterHP)));
 
                 if (monsterHP <= 0) break;
 
@@ -4592,7 +4592,7 @@ public class CastleLocation : BaseLocation
                 runningPlayerHP -= monsterDamage;
 
                 terminal.SetColor("red");
-                terminal.WriteLine($"The {monster.Name} claws you for {monsterDamage} damage! (Your HP: {Math.Max(0, runningPlayerHP)})");
+                terminal.WriteLine(Loc.Get("castle.monster_claws", monster.Name, monsterDamage, Math.Max(0, runningPlayerHP)));
 
                 await Task.Delay(300);
             }
@@ -4600,16 +4600,16 @@ public class CastleLocation : BaseLocation
             if (runningPlayerHP <= 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You were slain by the {monster.Name}!");
+                terminal.WriteLine(Loc.Get("castle.slain_by_monster", monster.Name));
                 currentPlayer.HP = 1;
-                terminal.WriteLine("Your challenge has failed. You barely escape with your life.");
+                terminal.WriteLine(Loc.Get("castle.challenge_failed"));
                 await Task.Delay(2500);
                 return false;
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You defeated the {monster.Name}!");
+                terminal.WriteLine(Loc.Get("castle.defeated_monster", monster.Name));
                 currentKing.MonsterGuards.Remove(monster);
                 NewsSystem.Instance?.Newsy(true, $"{currentPlayer.DisplayName} slew the monster guard {monster.Name}!");
             }
@@ -4625,8 +4625,8 @@ public class CastleLocation : BaseLocation
                 guard.Name.Equals(currentPlayer.Name2, StringComparison.OrdinalIgnoreCase))
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"As a former guard, you slip past your own post...");
-                terminal.WriteLine("Your betrayal of the crown is noted.");
+                terminal.WriteLine(Loc.Get("castle.slip_past"));
+                terminal.WriteLine(Loc.Get("castle.betrayal_noted"));
                 currentKing.Guards.Remove(guard);
                 NewsSystem.Instance?.Newsy(true, $"Guard {guard.Name} has betrayed the crown to challenge the throne!");
                 await Task.Delay(1500);
@@ -4635,7 +4635,7 @@ public class CastleLocation : BaseLocation
 
             terminal.ClearScreen();
             terminal.SetColor("bright_red");
-            terminal.WriteLine($"=== Fighting Royal Guard: {guard.Name} ===");
+            terminal.WriteLine(Loc.Get("castle.fight_royal_guard", guard.Name));
             terminal.WriteLine("");
 
             // Look up actual NPC stats if available, otherwise scale fallback with king level
@@ -4654,7 +4654,7 @@ public class CastleLocation : BaseLocation
             if (guard.Loyalty < 30 && random.Next(100) < 30)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"{guard.Name} sees your strength and flees from combat!");
+                terminal.WriteLine(Loc.Get("castle.guard_flees", guard.Name));
                 currentKing.Guards.Remove(guard);
                 NewsSystem.Instance?.Newsy(false, $"Cowardly guard {guard.Name} fled from {currentPlayer.DisplayName}!");
                 await Task.Delay(1500);
@@ -4664,7 +4664,7 @@ public class CastleLocation : BaseLocation
             if (actualNpc != null)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine($"Level {guardLevel} | STR: {guardStr} | DEF: {guardDef} | Loyalty: {guard.Loyalty}%");
+                terminal.WriteLine(Loc.Get("castle.guard_stats", guardLevel, guardStr, guardDef, guard.Loyalty));
                 terminal.WriteLine("");
             }
 
@@ -4675,7 +4675,7 @@ public class CastleLocation : BaseLocation
                 guardHP -= playerDamage;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You strike {guard.Name} for {playerDamage} damage! (Guard HP: {Math.Max(0, guardHP)})");
+                terminal.WriteLine(Loc.Get("castle.strike_guard", guard.Name, playerDamage, Math.Max(0, guardHP)));
 
                 if (guardHP <= 0) break;
 
@@ -4684,7 +4684,7 @@ public class CastleLocation : BaseLocation
                 runningPlayerHP -= guardDamage;
 
                 terminal.SetColor("red");
-                terminal.WriteLine($"{guard.Name} strikes you for {guardDamage} damage! (Your HP: {Math.Max(0, runningPlayerHP)})");
+                terminal.WriteLine(Loc.Get("castle.guard_strikes", guard.Name, guardDamage, Math.Max(0, runningPlayerHP)));
 
                 await Task.Delay(300);
             }
@@ -4692,16 +4692,16 @@ public class CastleLocation : BaseLocation
             if (runningPlayerHP <= 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You were defeated by {guard.Name}!");
+                terminal.WriteLine(Loc.Get("castle.defeated_by_guard", guard.Name));
                 currentPlayer.HP = 1;
-                terminal.WriteLine("Your challenge has failed. You barely escape with your life.");
+                terminal.WriteLine(Loc.Get("castle.challenge_failed"));
                 await Task.Delay(2500);
                 return false;
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You defeated {guard.Name}!");
+                terminal.WriteLine(Loc.Get("castle.defeated_guard", guard.Name));
                 currentKing.Guards.Remove(guard);
                 NewsSystem.Instance?.Newsy(true, $"{currentPlayer.DisplayName} defeated guard {guard.Name}!");
             }
@@ -4715,7 +4715,7 @@ public class CastleLocation : BaseLocation
         // Fight the king — use real stats with defender bonus
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"=== Final Battle: {currentKing.GetTitle()} {currentKing.Name} ===");
+        terminal.WriteLine(Loc.Get("castle.final_battle", currentKing.GetTitle(), currentKing.Name));
         terminal.WriteLine("");
 
         // Look up real king stats: NPC king, player king (offline), or scaled fallback
@@ -4778,7 +4778,7 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"Level {kingLevel} | STR: {kingStr} | DEF: {kingDef} | HP: {kingHP}");
+        terminal.WriteLine(Loc.Get("castle.king_stats", kingLevel, kingStr, kingDef, kingHP));
         terminal.WriteLine("");
 
         long finalPlayerHP = currentPlayer.HP;
@@ -4788,7 +4788,7 @@ public class CastleLocation : BaseLocation
         {
             round++;
             terminal.SetColor("cyan");
-            terminal.WriteLine($"--- Round {round} ---");
+            terminal.WriteLine(Loc.Get("castle.round_label", round));
 
             // Player attacks — armor reduces damage
             long playerDmg = Math.Max(1, currentPlayer.Strength + currentPlayer.WeapPow - kingDef - kingArmPow);
@@ -4796,7 +4796,7 @@ public class CastleLocation : BaseLocation
             kingHP -= playerDmg;
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"You strike for {playerDmg} damage! (King HP: {Math.Max(0, kingHP)})");
+            terminal.WriteLine(Loc.Get("castle.strike_king", playerDmg, Math.Max(0, kingHP)));
 
             if (kingHP <= 0) break;
 
@@ -4806,7 +4806,7 @@ public class CastleLocation : BaseLocation
             finalPlayerHP -= kingDmg;
 
             terminal.SetColor("red");
-            terminal.WriteLine($"{currentKing.Name} strikes for {kingDmg} damage! (Your HP: {Math.Max(0, finalPlayerHP)})");
+            terminal.WriteLine(Loc.Get("castle.king_strikes", currentKing.Name, kingDmg, Math.Max(0, finalPlayerHP)));
 
             await Task.Delay(500);
         }
@@ -4821,15 +4821,15 @@ public class CastleLocation : BaseLocation
             if (!IsScreenReader)
             {
                 terminal.WriteLine("════════════════════════════════════════════════");
-                terminal.WriteLine("              VICTORY!");
+                terminal.WriteLine(Loc.Get("castle.victory"));
                 terminal.WriteLine("════════════════════════════════════════════════");
             }
             else
             {
-                terminal.WriteLine("VICTORY!");
+                terminal.WriteLine(Loc.Get("castle.victory"));
             }
-            terminal.WriteLine($"You have defeated {currentKing.GetTitle()} {currentKing.Name}!");
-            terminal.WriteLine("The throne is yours!");
+            terminal.WriteLine(Loc.Get("castle.defeated_king", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.throne_is_yours"));
 
             // Record old monarch
             monarchHistory.Add(new MonarchRecord
@@ -4876,8 +4876,8 @@ public class CastleLocation : BaseLocation
             // Player lost
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("You have been defeated!");
-            terminal.WriteLine("The guards drag you from the castle...");
+            terminal.WriteLine(Loc.Get("castle.you_defeated"));
+            terminal.WriteLine(Loc.Get("castle.guards_drag_out"));
 
             await Task.Delay(3000);
             await NavigateToLocation(GameLocation.MainStreet);
@@ -4888,41 +4888,41 @@ public class CastleLocation : BaseLocation
     private async Task<bool> ClaimEmptyThrone()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("CLAIMING THE THRONE", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.claiming_throne"), "bright_yellow");
         terminal.WriteLine("");
 
         // Check level requirement
         if (currentPlayer.Level < GameConfig.MinLevelKing)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"You must be at least level {GameConfig.MinLevelKing} to claim the throne!");
-            terminal.WriteLine($"Your current level: {currentPlayer.Level}");
+            terminal.WriteLine(Loc.Get("castle.min_level_throne", GameConfig.MinLevelKing));
+            terminal.WriteLine(Loc.Get("castle.your_current_level", currentPlayer.Level));
             await Task.Delay(2500);
             return false;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("The Castle seems to be in disarray!");
-        terminal.WriteLine("No King or Queen is to be found anywhere. People are just");
-        terminal.WriteLine("running around in a disorganized manner.");
+        terminal.WriteLine(Loc.Get("castle.disarray_1"));
+        terminal.WriteLine(Loc.Get("castle.disarray_2"));
+        terminal.WriteLine(Loc.Get("castle.disarray_3"));
         terminal.WriteLine("");
 
         // RULE: King cannot be on a team - must leave team first
         if (!string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("To claim the throne, you must abandon your team.");
-            terminal.WriteLine($"You are currently a member of '{currentPlayer.Team}'.");
+            terminal.WriteLine(Loc.Get("castle.must_abandon_team"));
+            terminal.WriteLine(Loc.Get("castle.currently_member_of", currentPlayer.Team));
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.Write("Leave your team to claim the crown? (Y/N): ");
+            terminal.Write(Loc.Get("castle.leave_team_claim_yn"));
             terminal.SetColor("white");
             string leaveConfirm = await terminal.ReadLineAsync();
 
             if (leaveConfirm?.ToUpper() != "Y")
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You decide to remain loyal to your team.");
+                terminal.WriteLine(Loc.Get("castle.remain_loyal_team"));
                 await Task.Delay(2000);
                 return false;
             }
@@ -4932,20 +4932,20 @@ public class CastleLocation : BaseLocation
             CityControlSystem.Instance.ForceLeaveTeam(currentPlayer);
             GameEngine.Instance?.ClearDungeonParty(); // Clear NPC teammates from dungeon
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You have left '{oldTeam}' to claim the crown.");
+            terminal.WriteLine(Loc.Get("castle.left_team_for_crown", oldTeam));
             terminal.WriteLine("");
         }
 
         var title = currentPlayer.Sex == CharacterSex.Male ? "KING" : "QUEEN";
         terminal.SetColor("cyan");
-        terminal.Write($"Proclaim yourself {title}? (Y/N): ");
+        terminal.Write(Loc.Get("castle.proclaim_self_yn", title));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
         if (confirm?.ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You decide not to claim the throne.");
+            terminal.WriteLine(Loc.Get("castle.decide_not_claim"));
             await Task.Delay(2000);
             return false;
         }
@@ -4965,14 +4965,14 @@ public class CastleLocation : BaseLocation
         if (!IsScreenReader)
         {
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-            terminal.WriteLine("        Congratulations, The Castle is Yours!");
-            terminal.WriteLine($"  The InterRegnum is over, long live the {title}!");
+            terminal.WriteLine(Loc.Get("castle.congratulations_castle"));
+            terminal.WriteLine(Loc.Get("castle.interregnum_over", title));
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
         }
         else
         {
-            terminal.WriteLine("Congratulations, The Castle is Yours!");
-            terminal.WriteLine($"The InterRegnum is over, long live the {title}!");
+            terminal.WriteLine(Loc.Get("castle.congratulations_castle"));
+            terminal.WriteLine(Loc.Get("castle.interregnum_over", title));
         }
         terminal.WriteLine("");
 
@@ -4988,20 +4988,20 @@ public class CastleLocation : BaseLocation
     private async Task<bool> AttemptAbdication()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ABDICATION", "bright_red");
+        WriteBoxHeader(Loc.Get("castle.abdication"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("Are you sure you want to abdicate the throne?");
-        terminal.WriteLine("This action cannot be undone!");
+        terminal.WriteLine(Loc.Get("ui.confirm_abdicate"));
+        terminal.WriteLine(Loc.Get("castle.cannot_be_undone"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("You will lose all royal privileges and the kingdom");
-        terminal.WriteLine("will be thrown into chaos until a new ruler emerges.");
+        terminal.WriteLine(Loc.Get("castle.lose_privileges_1"));
+        terminal.WriteLine(Loc.Get("castle.lose_privileges_2"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("Abdicate the throne? (type 'yes' to confirm): ");
+        terminal.Write(Loc.Get("castle.abdicate_confirm_prompt"));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
@@ -5021,9 +5021,9 @@ public class CastleLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("You pack your few personal belongings and leave your Crown");
-            terminal.WriteLine("to the royal treasurer. You dress yourself in simple clothes");
-            terminal.WriteLine("and walk out from the Castle, never to return (?).");
+            terminal.WriteLine(Loc.Get("castle.pack_belongings_1"));
+            terminal.WriteLine(Loc.Get("castle.pack_belongings_2"));
+            terminal.WriteLine(Loc.Get("castle.pack_belongings_3"));
             terminal.WriteLine("");
 
             currentPlayer.King = false;
@@ -5035,9 +5035,9 @@ public class CastleLocation : BaseLocation
             playerIsKing = false;
 
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"The {(currentPlayer.Sex == CharacterSex.Male ? "King" : "Queen")} has ABDICATED!");
+            terminal.WriteLine(Loc.Get("castle.has_abdicated", currentPlayer.Sex == CharacterSex.Male ? Loc.Get("castle.king") : Loc.Get("castle.queen")));
             terminal.SetColor("red");
-            terminal.WriteLine("The land is in disarray! Who will claim the Throne?");
+            terminal.WriteLine(Loc.Get("castle.land_disarray"));
 
             NewsSystem.Instance.Newsy(true, $"{currentPlayer.DisplayName} has abdicated the throne! The kingdom is in chaos!");
 
@@ -5054,7 +5054,7 @@ public class CastleLocation : BaseLocation
         else
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine("Phew! The kingdom breathes a sigh of relief.");
+            terminal.WriteLine(Loc.Get("castle.kingdom_relief"));
             await Task.Delay(2000);
             return false;
         }
@@ -5069,14 +5069,14 @@ public class CastleLocation : BaseLocation
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("SEEK AN AUDIENCE", "bright_cyan");
+            WriteBoxHeader(Loc.Get("castle.seek_audience"), "bright_cyan");
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("With no monarch on the throne, there is no one to grant you an audience.");
-            terminal.WriteLine("The throne room stands empty and echoing...");
+            terminal.WriteLine(Loc.Get("castle.no_monarch_audience"));
+            terminal.WriteLine(Loc.Get("castle.throne_room_empty"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -5087,20 +5087,20 @@ public class CastleLocation : BaseLocation
         if (reputation < 25)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("SEEK AN AUDIENCE", "bright_cyan");
+            WriteBoxHeader(Loc.Get("castle.seek_audience"), "bright_cyan");
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine("The guards block your path!");
+            terminal.WriteLine(Loc.Get("castle.guards_block_path"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\"Begone, {currentPlayer.DisplayName}! The {currentKing.GetTitle()} has no time");
-            terminal.WriteLine("for the likes of you. Prove your worth to the realm first!\"");
+            terminal.WriteLine(Loc.Get("castle.begone_player", currentPlayer.DisplayName, currentKing.GetTitle()));
+            terminal.WriteLine(Loc.Get("castle.prove_worth"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("(Increase your Chivalry and Fame to gain an audience)");
+            terminal.WriteLine(Loc.Get("castle.increase_chivalry_fame"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -5109,55 +5109,55 @@ public class CastleLocation : BaseLocation
         while (true)
         {
             terminal.ClearScreen();
-            WriteBoxHeader("AUDIENCE WITH THE CROWN", "bright_cyan");
+            WriteBoxHeader(Loc.Get("castle.audience_crown"), "bright_cyan");
             terminal.WriteLine("");
 
             // Display monarch and player status
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} sits upon the throne.");
+            terminal.WriteLine(Loc.Get("castle.king_sits_throne", currentKing.GetTitle(), currentKing.Name));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Reign: {currentKing.TotalReign} days | Treasury: {currentKing.Treasury:N0} gold");
+            terminal.WriteLine(Loc.Get("castle.reign_treasury", currentKing.TotalReign, currentKing.Treasury));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Your Standing: {GetReputationTitle(reputation)} (Rep: {reputation})");
-            terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0} | Chivalry: {currentPlayer.Chivalry} | Darkness: {currentPlayer.Darkness}");
+            terminal.WriteLine(Loc.Get("castle.your_standing", GetReputationTitle(reputation), reputation));
+            terminal.WriteLine(Loc.Get("castle.your_gold_chiv_dark", currentPlayer.Gold, currentPlayer.Chivalry, currentPlayer.Darkness));
             terminal.WriteLine("");
 
             // Show greeting based on reputation
             if (reputation >= 150)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"\"Welcome, noble {currentPlayer.DisplayName}! The realm is honored by your presence.\"");
+                terminal.WriteLine(Loc.Get("castle.greeting_high_rep", currentPlayer.DisplayName));
             }
             else if (reputation >= 100)
             {
                 terminal.SetColor("cyan");
-                terminal.WriteLine($"\"Ah, {currentPlayer.DisplayName}. Your service to the crown is noted.\"");
+                terminal.WriteLine(Loc.Get("castle.greeting_mid_rep", currentPlayer.DisplayName));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"\"State your business, {currentPlayer.DisplayName}.\"");
+                terminal.WriteLine(Loc.Get("castle.greeting_low_rep", currentPlayer.DisplayName));
             }
             terminal.WriteLine("");
 
             // Menu options
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("What do you wish to petition the Crown for?");
+            terminal.WriteLine(Loc.Get("castle.petition_crown_for"));
             terminal.WriteLine("");
 
             if (IsScreenReader)
             {
-                WriteSRMenuOption("Q", "Request a Royal Quest");
-                WriteSRMenuOption("K", "Request Knighthood (Requires Chivalry 200+, Fame 100+)");
-                WriteSRMenuOption("P", "Request a Pardon (Clear Darkness for gold)");
-                WriteSRMenuOption("L", "Request a Loan (Borrow from Treasury)");
-                WriteSRMenuOption("C", "Report a Crime (Place Bounty)");
-                WriteSRMenuOption("B", "Request a Blessing (Temporary stat boost)");
-                WriteSRMenuOption("T", "Petition for Tax Relief (Reduce kingdom taxes)");
+                WriteSRMenuOption("Q", Loc.Get("castle.request_quest"));
+                WriteSRMenuOption("K", Loc.Get("castle.request_knighthood"));
+                WriteSRMenuOption("P", Loc.Get("castle.request_pardon"));
+                WriteSRMenuOption("L", Loc.Get("castle.request_loan"));
+                WriteSRMenuOption("C", Loc.Get("castle.report_crime"));
+                WriteSRMenuOption("B", Loc.Get("castle.request_blessing"));
+                WriteSRMenuOption("T", Loc.Get("castle.tax_relief"));
                 terminal.WriteLine("");
-                WriteSRMenuOption("R", "Return to Castle");
+                WriteSRMenuOption("R", Loc.Get("castle.return_castle"));
                 terminal.WriteLine("");
             }
             else
@@ -5169,7 +5169,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Request a Royal Quest");
+                terminal.WriteLine($" {Loc.Get("castle.request_quest")}");
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5178,9 +5178,9 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write(" Request Knighthood");
+                terminal.Write($" {Loc.Get("castle.request_knighthood")}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" (Requires Chivalry 200+, Fame 100+)");
+                terminal.WriteLine(Loc.Get("castle.req_chiv_fame"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5189,9 +5189,9 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write(" Request a Pardon");
+                terminal.Write($" {Loc.Get("castle.request_pardon")}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" (Clear Darkness for gold)");
+                terminal.WriteLine(Loc.Get("castle.req_clear_darkness"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5200,9 +5200,9 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write(" Request a Loan");
+                terminal.Write($" {Loc.Get("castle.request_loan")}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" (Borrow from Treasury)");
+                terminal.WriteLine(Loc.Get("castle.req_borrow_treasury"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5211,7 +5211,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Report a Crime (Place Bounty)");
+                terminal.WriteLine($" {Loc.Get("castle.report_crime")}");
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5220,9 +5220,9 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write(" Request a Blessing");
+                terminal.Write($" {Loc.Get("castle.request_blessing")}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" (Temporary stat boost)");
+                terminal.WriteLine(Loc.Get("castle.req_temp_stat_boost"));
 
                 terminal.SetColor("darkgray");
                 terminal.Write(" [");
@@ -5231,9 +5231,9 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.Write(" Petition for Tax Relief");
+                terminal.Write($" {Loc.Get("castle.tax_relief")}");
                 terminal.SetColor("gray");
-                terminal.WriteLine($" (Reduce kingdom taxes)");
+                terminal.WriteLine(Loc.Get("castle.req_reduce_taxes"));
 
                 terminal.WriteLine("");
                 terminal.SetColor("darkgray");
@@ -5243,7 +5243,7 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("darkgray");
                 terminal.Write("]");
                 terminal.SetColor("white");
-                terminal.WriteLine(" Return to Castle");
+                terminal.WriteLine($" {Loc.Get("castle.return_castle")}");
                 terminal.WriteLine("");
             }
 
@@ -5281,14 +5281,14 @@ public class CastleLocation : BaseLocation
 
     private string GetReputationTitle(long reputation)
     {
-        if (reputation >= 500) return "Legendary Hero";
-        if (reputation >= 300) return "Champion of the Realm";
-        if (reputation >= 200) return "Honored Noble";
-        if (reputation >= 150) return "Trusted Ally";
-        if (reputation >= 100) return "Respected Citizen";
-        if (reputation >= 50) return "Known Adventurer";
-        if (reputation >= 25) return "Common Petitioner";
-        return "Unknown";
+        if (reputation >= 500) return Loc.Get("castle.rep_legendary_hero");
+        if (reputation >= 300) return Loc.Get("castle.rep_champion_realm");
+        if (reputation >= 200) return Loc.Get("castle.rep_honored_noble");
+        if (reputation >= 150) return Loc.Get("castle.rep_trusted_ally");
+        if (reputation >= 100) return Loc.Get("castle.rep_respected_citizen");
+        if (reputation >= 50) return Loc.Get("castle.rep_known_adventurer");
+        if (reputation >= 25) return Loc.Get("castle.rep_common_petitioner");
+        return Loc.Get("castle.rep_unknown");
     }
 
     /// <summary>
@@ -5297,7 +5297,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestQuest()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REQUEST A ROYAL QUEST", "bright_cyan");
+        WriteSectionHeader(Loc.Get("castle.request_quest"), "bright_cyan");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5305,11 +5305,11 @@ public class CastleLocation : BaseLocation
         if (reputation < 50)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} waves dismissively.");
-            terminal.WriteLine("\"You have not yet proven yourself worthy of a royal commission.\"");
+            terminal.WriteLine(Loc.Get("castle.quest_waves_dismiss", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.quest_not_proven"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("(Requires reputation of 50+)");
+            terminal.WriteLine(Loc.Get("castle.requires_rep", 50));
         }
         else
         {
@@ -5320,20 +5320,20 @@ public class CastleLocation : BaseLocation
             if (existingRoyalQuest != null)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} raises an eyebrow.");
-                terminal.WriteLine("\"You already have a royal commission to complete.\"");
+                terminal.WriteLine(Loc.Get("castle.quest_raises_eyebrow", currentKing.GetTitle(), currentKing.Name));
+                terminal.WriteLine(Loc.Get("castle.quest_already_active"));
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine($"Active Quest: {existingRoyalQuest.Title}");
-                terminal.WriteLine($"Days Remaining: {existingRoyalQuest.DaysRemaining}");
+                terminal.WriteLine(Loc.Get("castle.quest_active_title", existingRoyalQuest.Title));
+                terminal.WriteLine(Loc.Get("castle.quest_days_remaining", existingRoyalQuest.DaysRemaining));
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("Complete or abandon your current quest first.");
+                terminal.WriteLine(Loc.Get("castle.quest_complete_first"));
             }
             else
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} considers your request...");
+                terminal.WriteLine(Loc.Get("castle.quest_considers", currentKing.GetTitle(), currentKing.Name));
                 terminal.WriteLine("");
 
                 // Generate a special royal quest with better rewards
@@ -5353,17 +5353,17 @@ public class CastleLocation : BaseLocation
                 string questDesc = questTypes[random.Next(questTypes.Length)];
 
                 terminal.SetColor("bright_yellow");
-                terminal.WriteLine("\"I have a task worthy of your skills...\"");
+                terminal.WriteLine(Loc.Get("castle.quest_task_worthy"));
                 terminal.WriteLine("");
                 terminal.SetColor("white");
-                terminal.WriteLine($"Quest: {questDesc}");
-                terminal.WriteLine($"Difficulty: {new string('*', difficulty + 1)}");
-                terminal.WriteLine($"Reward: {goldReward:N0} gold + {xpReward:N0} XP (upon completion)");
-                terminal.WriteLine($"Time Limit: {7 + difficulty * 2} days");
+                terminal.WriteLine(Loc.Get("castle.quest_desc", questDesc));
+                terminal.WriteLine(Loc.Get("castle.quest_difficulty", new string('*', difficulty + 1)));
+                terminal.WriteLine(Loc.Get("castle.quest_reward", goldReward, xpReward));
+                terminal.WriteLine(Loc.Get("castle.quest_time_limit", 7 + difficulty * 2));
                 terminal.WriteLine("");
 
                 terminal.SetColor("cyan");
-                terminal.Write("Accept this royal quest? (Y/N): ");
+                terminal.Write(Loc.Get("castle.quest_accept_yn"));
                 string response = await terminal.ReadLineAsync();
 
                 if (response?.ToUpper() == "Y")
@@ -5385,23 +5385,23 @@ public class CastleLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("\"Excellent! The Crown places its faith in you.\"");
-                    terminal.WriteLine($"You receive {advanceGold:N0} gold as an advance.");
-                    terminal.WriteLine($"You gain {advanceXP:N0} experience for this honor.");
+                    terminal.WriteLine(Loc.Get("castle.quest_excellent"));
+                    terminal.WriteLine(Loc.Get("castle.quest_advance_gold", advanceGold));
+                    terminal.WriteLine(Loc.Get("castle.quest_advance_xp", advanceXP));
                     terminal.WriteLine("");
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("Quest added to your active quests!");
-                    terminal.WriteLine("Check the Quest Hall to view progress and turn in when complete.");
+                    terminal.WriteLine(Loc.Get("castle.quest_added"));
+                    terminal.WriteLine(Loc.Get("castle.quest_check_hall"));
 
                     // Show objective
                     if (quest.Objectives.Count > 0)
                     {
                         terminal.WriteLine("");
                         terminal.SetColor("cyan");
-                        terminal.WriteLine($"Objective: {quest.Objectives[0].Description}");
+                        terminal.WriteLine(Loc.Get("castle.quest_objective", quest.Objectives[0].Description));
                         if (quest.Objectives[0].RequiredProgress > 1)
                         {
-                            terminal.WriteLine($"Target: {quest.Objectives[0].TargetName} x{quest.Objectives[0].RequiredProgress}");
+                            terminal.WriteLine(Loc.Get("castle.quest_target", quest.Objectives[0].TargetName, quest.Objectives[0].RequiredProgress));
                         }
                     }
 
@@ -5411,14 +5411,14 @@ public class CastleLocation : BaseLocation
                 {
                     terminal.WriteLine("");
                     terminal.SetColor("gray");
-                    terminal.WriteLine("\"Perhaps another time, then.\"");
+                    terminal.WriteLine(Loc.Get("castle.quest_another_time"));
                 }
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5428,7 +5428,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestKnighthood()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REQUEST KNIGHTHOOD", "bright_yellow");
+        WriteSectionHeader(Loc.Get("castle.request_knighthood"), "bright_yellow");
         terminal.WriteLine("");
 
         // Check requirements
@@ -5446,30 +5446,30 @@ public class CastleLocation : BaseLocation
         if (alreadyKnighted)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} smiles.");
-            terminal.WriteLine($"\"You already bear a noble title, {currentPlayer.NobleTitle} {currentPlayer.DisplayName}.\"");
-            terminal.WriteLine("\"Continue to serve the realm with honor.\"");
+            terminal.WriteLine(Loc.Get("castle.knight_smiles", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.knight_already_titled", currentPlayer.NobleTitle, currentPlayer.DisplayName));
+            terminal.WriteLine(Loc.Get("castle.knight_serve_honor"));
         }
         else if (!hasChivalry || !hasFame || !hasLevel || !notEvil)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} shakes their head.");
-            terminal.WriteLine("\"You are not yet ready for such an honor.\"");
+            terminal.WriteLine(Loc.Get("castle.knight_shakes_head", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.knight_not_ready"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("Requirements for Knighthood:");
-            terminal.WriteLine($"  Chivalry 200+: {(hasChivalry ? "Yes" : $"No ({currentPlayer.Chivalry}/200)")}");
-            terminal.WriteLine($"  Fame 100+: {(hasFame ? "Yes" : $"No ({currentPlayer.Fame}/100)")}");
-            terminal.WriteLine($"  Level 10+: {(hasLevel ? "Yes" : $"No ({currentPlayer.Level}/10)")}");
-            terminal.WriteLine($"  Honorable (Chivalry > Darkness): {(notEvil ? "Yes" : "No")}");
+            terminal.WriteLine(Loc.Get("castle.knight_requirements"));
+            terminal.WriteLine(Loc.Get("castle.knight_req_chivalry", hasChivalry ? Loc.Get("ui.yes") : $"{Loc.Get("ui.no")} ({currentPlayer.Chivalry}/200)"));
+            terminal.WriteLine(Loc.Get("castle.knight_req_fame", hasFame ? Loc.Get("ui.yes") : $"{Loc.Get("ui.no")} ({currentPlayer.Fame}/100)"));
+            terminal.WriteLine(Loc.Get("castle.knight_req_level", hasLevel ? Loc.Get("ui.yes") : $"{Loc.Get("ui.no")} ({currentPlayer.Level}/10)"));
+            terminal.WriteLine(Loc.Get("castle.knight_req_honorable", notEvil ? Loc.Get("ui.yes") : Loc.Get("ui.no")));
         }
         else
         {
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} rises from the throne!");
+            terminal.WriteLine(Loc.Get("castle.knight_rises", currentKing.GetTitle(), currentKing.Name));
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("\"Kneel before me, brave warrior.\"");
+            terminal.WriteLine(Loc.Get("castle.knight_kneel"));
             terminal.WriteLine("");
 
             await Task.Delay(1500);
@@ -5478,12 +5478,12 @@ public class CastleLocation : BaseLocation
             currentPlayer.NobleTitle = title;
 
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"*The {currentKing.GetTitle()} draws the Royal Sword*");
+            terminal.WriteLine(Loc.Get("castle.knight_draws_sword", currentKing.GetTitle()));
             terminal.WriteLine("");
-            terminal.WriteLine("\"By the power vested in me by the realm and the gods,\"");
-            terminal.WriteLine($"\"I dub thee {title} {currentPlayer.DisplayName}!\"");
+            terminal.WriteLine(Loc.Get("castle.knight_by_power"));
+            terminal.WriteLine(Loc.Get("castle.knight_dub_thee", title, currentPlayer.DisplayName));
             terminal.WriteLine("");
-            terminal.WriteLine("\"Rise, and serve the kingdom with honor!\"");
+            terminal.WriteLine(Loc.Get("castle.knight_rise"));
             terminal.WriteLine("");
 
             // Bonuses for knighthood
@@ -5491,15 +5491,15 @@ public class CastleLocation : BaseLocation
             currentPlayer.Fame += 25;
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"You are now {title} {currentPlayer.DisplayName}!");
-            terminal.WriteLine("+50 Chivalry, +25 Fame");
+            terminal.WriteLine(Loc.Get("castle.knight_you_are_now", title, currentPlayer.DisplayName));
+            terminal.WriteLine(Loc.Get("castle.knight_bonus"));
 
             NewsSystem.Instance?.Newsy(true, $"{currentPlayer.DisplayName} was knighted by {currentKing.GetTitle()} {currentKing.Name}!");
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5509,14 +5509,14 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestPardon()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REQUEST A PARDON", "bright_green");
+        WriteSectionHeader(Loc.Get("castle.request_pardon"), "bright_green");
         terminal.WriteLine("");
 
         if (currentPlayer.Darkness <= 0)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} looks puzzled.");
-            terminal.WriteLine("\"You have no sins to pardon, noble soul. Your record is clean.\"");
+            terminal.WriteLine(Loc.Get("castle.pardon_puzzled", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.pardon_no_sins"));
         }
         else
         {
@@ -5531,23 +5531,23 @@ public class CastleLocation : BaseLocation
                 pardonCost = (long)(pardonCost * 0.75);
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Your Current Darkness: {currentPlayer.Darkness}");
+            terminal.WriteLine(Loc.Get("castle.pardon_current_darkness", currentPlayer.Darkness));
             terminal.WriteLine("");
 
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} considers your request...");
+            terminal.WriteLine(Loc.Get("castle.pardon_considers", currentKing.GetTitle(), currentKing.Name));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine("\"The Crown can offer absolution, but such mercy has a price.\"");
+            terminal.WriteLine(Loc.Get("castle.pardon_absolution_price"));
             terminal.WriteLine("");
-            terminal.WriteLine($"Cost for Full Pardon: {pardonCost:N0} gold");
-            terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("castle.pardon_cost", pardonCost));
+            terminal.WriteLine(Loc.Get("castle.your_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
             if (currentPlayer.Gold < pardonCost)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You cannot afford a full pardon.");
+                terminal.WriteLine(Loc.Get("castle.pardon_cannot_afford"));
                 terminal.WriteLine("");
 
                 // Offer partial pardon
@@ -5557,7 +5557,7 @@ public class CastleLocation : BaseLocation
                 if (currentPlayer.Gold >= partialCost && partialReduction > 0)
                 {
                     terminal.SetColor("cyan");
-                    terminal.Write($"Accept partial pardon? (-{partialReduction} Darkness for {partialCost:N0} gold) (Y/N): ");
+                    terminal.Write(Loc.Get("castle.pardon_partial_yn", partialReduction, partialCost));
                     string partial = await terminal.ReadLineAsync();
 
                     if (partial?.ToUpper() == "Y")
@@ -5568,15 +5568,15 @@ public class CastleLocation : BaseLocation
 
                         terminal.WriteLine("");
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine("\"Some of your sins are forgiven. Go and sin no more.\"");
-                        terminal.WriteLine($"Darkness reduced by {partialReduction}. New Darkness: {currentPlayer.Darkness}");
+                        terminal.WriteLine(Loc.Get("castle.pardon_some_forgiven"));
+                        terminal.WriteLine(Loc.Get("castle.pardon_darkness_reduced", partialReduction, currentPlayer.Darkness));
                     }
                 }
             }
             else
             {
                 terminal.SetColor("cyan");
-                terminal.Write($"Pay {pardonCost:N0} gold for a full pardon? (Y/N): ");
+                terminal.Write(Loc.Get("castle.pardon_full_yn", pardonCost));
                 string response = await terminal.ReadLineAsync();
 
                 if (response?.ToUpper() == "Y")
@@ -5588,10 +5588,10 @@ public class CastleLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} raises a hand in blessing.");
-                    terminal.WriteLine("\"Your past sins are forgiven. Your slate is wiped clean.\"");
+                    terminal.WriteLine(Loc.Get("castle.pardon_hand_blessing", currentKing.GetTitle(), currentKing.Name));
+                    terminal.WriteLine(Loc.Get("castle.pardon_sins_forgiven"));
                     terminal.WriteLine("");
-                    terminal.WriteLine($"Darkness reduced from {oldDarkness} to 0!");
+                    terminal.WriteLine(Loc.Get("castle.pardon_darkness_to_zero", oldDarkness));
 
                     NewsSystem.Instance?.Newsy(false, $"{currentPlayer.DisplayName} received a royal pardon from {currentKing.GetTitle()} {currentKing.Name}.");
                 }
@@ -5600,7 +5600,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5610,7 +5610,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestLoan()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REQUEST A LOAN", "bright_magenta");
+        WriteSectionHeader(Loc.Get("castle.request_loan"), "bright_magenta");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5623,26 +5623,26 @@ public class CastleLocation : BaseLocation
             int daysRemaining = currentPlayer.RoyalLoanDueDay - DailySystemManager.Instance.CurrentDay;
 
             terminal.SetColor("yellow");
-            terminal.WriteLine("You have an outstanding loan from the Crown.");
+            terminal.WriteLine(Loc.Get("castle.loan_outstanding"));
             terminal.WriteLine("");
             terminal.SetColor("white");
-            terminal.WriteLine($"Principal: {currentPlayer.RoyalLoanAmount:N0} gold");
-            terminal.WriteLine($"With Interest (10%): {totalOwed:N0} gold");
-            terminal.WriteLine($"Days Remaining: {Math.Max(0, daysRemaining)}");
-            terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("castle.loan_principal", currentPlayer.RoyalLoanAmount));
+            terminal.WriteLine(Loc.Get("castle.loan_with_interest", totalOwed));
+            terminal.WriteLine(Loc.Get("castle.loan_days_remaining", Math.Max(0, daysRemaining)));
+            terminal.WriteLine(Loc.Get("castle.your_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
             if (daysRemaining < 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("YOUR LOAN IS OVERDUE!");
-                terminal.WriteLine("The Crown demands immediate repayment!");
+                terminal.WriteLine(Loc.Get("castle.loan_overdue"));
+                terminal.WriteLine(Loc.Get("castle.loan_demands_repayment"));
             }
 
             if (currentPlayer.Gold >= totalOwed)
             {
                 terminal.SetColor("cyan");
-                terminal.Write($"Repay the loan of {totalOwed:N0} gold? (Y/N): ");
+                terminal.Write(Loc.Get("castle.loan_repay_yn", totalOwed));
                 string response = await terminal.ReadLineAsync();
 
                 if (response?.ToUpper() == "Y")
@@ -5654,10 +5654,10 @@ public class CastleLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} nods approvingly.");
-                    terminal.WriteLine("\"Your debt is paid. The Crown is pleased.\"");
+                    terminal.WriteLine(Loc.Get("castle.loan_nods_approvingly", currentKing.GetTitle(), currentKing.Name));
+                    terminal.WriteLine(Loc.Get("castle.loan_debt_paid"));
                     terminal.WriteLine("");
-                    terminal.WriteLine("+10 Chivalry for honoring your obligations.");
+                    terminal.WriteLine(Loc.Get("castle.loan_chivalry_bonus"));
                     currentPlayer.Chivalry += 10;
 
                     NewsSystem.Instance?.Newsy(false, $"{currentPlayer.DisplayName} repaid their royal loan.");
@@ -5666,24 +5666,24 @@ public class CastleLocation : BaseLocation
             else
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("You don't have enough gold to repay the full amount.");
-                terminal.WriteLine("Gather more funds and return when you can pay.");
+                terminal.WriteLine(Loc.Get("ui.not_enough_gold_repay"));
+                terminal.WriteLine(Loc.Get("castle.loan_gather_funds"));
             }
         }
         else if (reputation < 75)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} looks skeptical.");
-            terminal.WriteLine("\"The Crown does not lend to those of... uncertain reputation.\"");
+            terminal.WriteLine(Loc.Get("castle.loan_skeptical", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.loan_uncertain_rep"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("(Requires reputation of 75+)");
+            terminal.WriteLine(Loc.Get("castle.requires_rep", 75));
         }
         else if (currentKing.Treasury < 1000)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} sighs heavily.");
-            terminal.WriteLine("\"The royal coffers are nearly empty. We have nothing to lend.\"");
+            terminal.WriteLine(Loc.Get("castle.loan_sighs", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.loan_coffers_empty"));
         }
         else
         {
@@ -5692,16 +5692,16 @@ public class CastleLocation : BaseLocation
             maxLoan = Math.Max(500, maxLoan); // Minimum loan
 
             terminal.SetColor("white");
-            terminal.WriteLine($"Royal Treasury: {currentKing.Treasury:N0} gold");
-            terminal.WriteLine($"Maximum Loan Available: {maxLoan:N0} gold");
+            terminal.WriteLine(Loc.Get("castle.loan_treasury", currentKing.Treasury));
+            terminal.WriteLine(Loc.Get("castle.loan_max_available", maxLoan));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Loan Terms: 10% interest, due in 30 days");
-            terminal.WriteLine("(Failure to repay will damage your reputation severely)");
+            terminal.WriteLine(Loc.Get("castle.loan_terms"));
+            terminal.WriteLine(Loc.Get("castle.loan_failure_warning"));
             terminal.WriteLine("");
 
             terminal.SetColor("cyan");
-            terminal.Write($"How much would you like to borrow? (0-{maxLoan:N0}): ");
+            terminal.Write(Loc.Get("castle.loan_how_much", maxLoan));
             string input = await terminal.ReadLineAsync();
 
             if (long.TryParse(input, out long amount) && amount > 0 && amount <= maxLoan)
@@ -5715,11 +5715,11 @@ public class CastleLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} nods.");
-                terminal.WriteLine($"\"The Crown grants you a loan of {amount:N0} gold.\"");
-                terminal.WriteLine($"\"You have 30 days to repay {(long)(amount * 1.10):N0} gold (with interest).\"");
+                terminal.WriteLine(Loc.Get("castle.loan_nods", currentKing.GetTitle(), currentKing.Name));
+                terminal.WriteLine(Loc.Get("castle.loan_grants", amount));
+                terminal.WriteLine(Loc.Get("castle.loan_repay_days", (long)(amount * 1.10)));
                 terminal.WriteLine("");
-                terminal.WriteLine($"You received {amount:N0} gold.");
+                terminal.WriteLine(Loc.Get("castle.loan_received", amount));
 
                 NewsSystem.Instance?.Newsy(false, $"{currentPlayer.DisplayName} received a loan of {amount:N0} gold from the Crown.");
             }
@@ -5727,19 +5727,19 @@ public class CastleLocation : BaseLocation
             {
                 terminal.WriteLine("");
                 terminal.SetColor("gray");
-                terminal.WriteLine("\"Very well. The offer stands should you need it.\"");
+                terminal.WriteLine(Loc.Get("castle.loan_offer_stands"));
             }
             else
             {
                 terminal.WriteLine("");
                 terminal.SetColor("red");
-                terminal.WriteLine("\"That is not a valid amount.\"");
+                terminal.WriteLine(Loc.Get("castle.loan_invalid_amount"));
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5749,12 +5749,12 @@ public class CastleLocation : BaseLocation
     private async Task AudienceReportCrime()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REPORT A CRIME", "bright_red");
+        WriteSectionHeader(Loc.Get("castle.report_crime"), "bright_red");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} listens intently.");
-        terminal.WriteLine("\"Who has wronged you or the realm?\"");
+        terminal.WriteLine(Loc.Get("castle.crime_listens", currentKing.GetTitle(), currentKing.Name));
+        terminal.WriteLine(Loc.Get("castle.crime_who_wronged"));
         terminal.WriteLine("");
 
         // Get list of NPCs that don't already have bounties
@@ -5767,12 +5767,12 @@ public class CastleLocation : BaseLocation
         if (npcs.Count == 0)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"There are no known criminals at large at this time.\"");
+            terminal.WriteLine(Loc.Get("castle.crime_no_criminals"));
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Known suspicious characters:");
+            terminal.WriteLine(Loc.Get("castle.crime_suspicious"));
             terminal.WriteLine("");
 
             for (int i = 0; i < npcs.Count; i++)
@@ -5781,14 +5781,14 @@ public class CastleLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write($"  {i + 1}. {npc.Name,-20}");
                 terminal.SetColor("gray");
-                terminal.Write($" Lv{npc.Level}");
+                terminal.Write(Loc.Get("castle.npc_lv", npc.Level));
                 terminal.SetColor("red");
-                terminal.WriteLine($" (Darkness: {npc.Darkness})");
+                terminal.WriteLine(Loc.Get("castle.darkness_label", npc.Darkness));
             }
 
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.Write("Enter number to report (or 0 to cancel): ");
+            terminal.Write(Loc.Get("castle.crime_enter_number"));
             string input = await terminal.ReadLineAsync();
 
             if (int.TryParse(input, out int choice) && choice > 0 && choice <= npcs.Count)
@@ -5798,14 +5798,14 @@ public class CastleLocation : BaseLocation
 
                 terminal.WriteLine("");
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"To place a bounty on {target.Name}, you must contribute {bountyCost:N0} gold.");
-                terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
+                terminal.WriteLine(Loc.Get("castle.crime_bounty_cost", target.Name, bountyCost));
+                terminal.WriteLine(Loc.Get("castle.your_gold", currentPlayer.Gold));
                 terminal.WriteLine("");
 
                 if (currentPlayer.Gold >= bountyCost)
                 {
                     terminal.SetColor("cyan");
-                    terminal.Write($"Pay {bountyCost:N0} gold to place a bounty? (Y/N): ");
+                    terminal.Write(Loc.Get("castle.crime_pay_bounty_yn", bountyCost));
                     string confirm = await terminal.ReadLineAsync();
 
                     if (confirm?.ToUpper() == "Y")
@@ -5815,9 +5815,9 @@ public class CastleLocation : BaseLocation
 
                         terminal.WriteLine("");
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} nods grimly.");
-                        terminal.WriteLine($"\"A bounty has been placed on {target.Name}.\"");
-                        terminal.WriteLine("\"Justice will be served.\"");
+                        terminal.WriteLine(Loc.Get("castle.crime_nods_grimly", currentKing.GetTitle(), currentKing.Name));
+                        terminal.WriteLine(Loc.Get("castle.crime_bounty_placed", target.Name));
+                        terminal.WriteLine(Loc.Get("castle.crime_justice_served"));
 
                         // Increase the target's darkness (they're now wanted)
                         target.Darkness += 25;
@@ -5834,14 +5834,14 @@ public class CastleLocation : BaseLocation
                 else
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine("You cannot afford to post this bounty.");
+                    terminal.WriteLine(Loc.Get("castle.crime_cannot_afford"));
                 }
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5851,7 +5851,7 @@ public class CastleLocation : BaseLocation
     private async Task AudienceRequestBlessing()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("REQUEST A BLESSING", "cyan");
+        WriteSectionHeader(Loc.Get("castle.request_blessing"), "cyan");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
@@ -5859,11 +5859,11 @@ public class CastleLocation : BaseLocation
         if (reputation < 100)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} considers your request.");
-            terminal.WriteLine("\"You have not yet earned such a boon from the Crown.\"");
+            terminal.WriteLine(Loc.Get("castle.blessing_considers", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.blessing_not_earned"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("(Requires reputation of 100+)");
+            terminal.WriteLine(Loc.Get("castle.requires_rep", 100));
         }
         else
         {
@@ -5875,28 +5875,28 @@ public class CastleLocation : BaseLocation
             {
                 blessingCost = 0;
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} smiles warmly.");
-                terminal.WriteLine("\"For a champion of your standing, this blessing is freely given.\"");
+                terminal.WriteLine(Loc.Get("castle.blessing_smiles", currentKing.GetTitle(), currentKing.Name));
+                terminal.WriteLine(Loc.Get("castle.blessing_freely_given"));
             }
             else if (reputation >= 200)
             {
                 blessingCost /= 2;
                 terminal.SetColor("white");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} nods approvingly.");
-                terminal.WriteLine($"\"For {blessingCost:N0} gold, the Crown will bestow its blessing upon you.\"");
+                terminal.WriteLine(Loc.Get("castle.blessing_nods", currentKing.GetTitle(), currentKing.Name));
+                terminal.WriteLine(Loc.Get("castle.blessing_for_gold", blessingCost));
             }
             else
             {
                 terminal.SetColor("white");
-                terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} considers.");
-                terminal.WriteLine($"\"Such a blessing requires a donation of {blessingCost:N0} gold to the realm.\"");
+                terminal.WriteLine(Loc.Get("castle.blessing_considers_2", currentKing.GetTitle(), currentKing.Name));
+                terminal.WriteLine(Loc.Get("castle.blessing_donation_req", blessingCost));
             }
 
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("The Royal Blessing grants:");
-            terminal.WriteLine("  +10% to attack and defense in combat");
-            terminal.WriteLine("  Improved accuracy against enemies");
+            terminal.WriteLine(Loc.Get("castle.blessing_grants"));
+            terminal.WriteLine(Loc.Get("castle.blessing_attack_defense"));
+            terminal.WriteLine(Loc.Get("castle.blessing_accuracy"));
             terminal.WriteLine("");
 
             bool canAfford = currentPlayer.Gold >= blessingCost || blessingCost == 0;
@@ -5904,7 +5904,7 @@ public class CastleLocation : BaseLocation
             if (!canAfford)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"You need {blessingCost:N0} gold. You have {currentPlayer.Gold:N0}.");
+                terminal.WriteLine(Loc.Get("castle.blessing_need_gold", blessingCost, currentPlayer.Gold));
             }
             else
             {
@@ -5934,19 +5934,19 @@ public class CastleLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_cyan");
-                    terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} raises a hand in blessing.");
+                    terminal.WriteLine(Loc.Get("castle.blessing_hand_raised", currentKing.GetTitle(), currentKing.Name));
                     terminal.WriteLine("");
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine("*A warm golden light surrounds you*");
+                    terminal.WriteLine(Loc.Get("castle.blessing_golden_light"));
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine("You feel strengthened by the Crown's favor!");
-                    terminal.WriteLine("  +10% to combat stats (attack/defense)");
+                    terminal.WriteLine(Loc.Get("castle.blessing_strengthened"));
+                    terminal.WriteLine(Loc.Get("castle.blessing_combat_stats"));
                     if (hpRestore > 0 || manaRestore > 0)
                     {
-                        terminal.WriteLine($"  Restored {hpRestore} HP and {manaRestore} Mana");
+                        terminal.WriteLine(Loc.Get("castle.blessing_restored", hpRestore, manaRestore));
                     }
-                    terminal.WriteLine("  (Blessing lasts for several combats)");
+                    terminal.WriteLine(Loc.Get("castle.blessing_lasts"));
 
                     NewsSystem.Instance?.Newsy(false, $"{currentPlayer.DisplayName} received the Royal Blessing from {currentKing.GetTitle()} {currentKing.Name}.");
                 }
@@ -5955,7 +5955,7 @@ public class CastleLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -5965,30 +5965,30 @@ public class CastleLocation : BaseLocation
     private async Task AudiencePetitionTaxRelief()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("PETITION FOR TAX RELIEF", "yellow");
+        WriteSectionHeader(Loc.Get("castle.petition_tax"), "yellow");
         terminal.WriteLine("");
 
         long reputation = (currentPlayer.Chivalry + currentPlayer.Fame) / 2;
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Current Kingdom Tax Rate: {currentKing.TaxRate}%");
+        terminal.WriteLine(Loc.Get("castle.tax_current_rate", currentKing.TaxRate));
         terminal.WriteLine("");
 
         if (reputation < 150)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} looks amused.");
-            terminal.WriteLine("\"And who are you to petition on matters of state?\"");
+            terminal.WriteLine(Loc.Get("castle.tax_amused", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.tax_who_are_you"));
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("(Requires reputation of 150+ to influence tax policy)");
+            terminal.WriteLine(Loc.Get("castle.tax_requires_rep"));
         }
         else if (currentKing.TaxRate <= 5)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} spreads their hands.");
-            terminal.WriteLine("\"The taxes are already as low as they can reasonably be.\"");
-            terminal.WriteLine("\"The realm still needs gold to function.\"");
+            terminal.WriteLine(Loc.Get("castle.tax_spreads_hands", currentKing.GetTitle(), currentKing.Name));
+            terminal.WriteLine(Loc.Get("castle.tax_already_low"));
+            terminal.WriteLine(Loc.Get("castle.tax_realm_needs_gold"));
         }
         else
         {
@@ -5998,18 +5998,18 @@ public class CastleLocation : BaseLocation
                 petitionCost /= 2;
 
             terminal.SetColor("white");
-            terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} considers your words.");
+            terminal.WriteLine(Loc.Get("castle.tax_considers_words", currentKing.GetTitle(), currentKing.Name));
             terminal.WriteLine("");
-            terminal.WriteLine($"\"A tax reduction could be arranged... with proper compensation.\"");
+            terminal.WriteLine(Loc.Get("castle.tax_reduction_arranged"));
             terminal.WriteLine("");
-            terminal.WriteLine($"Cost to reduce tax by 5%: {petitionCost:N0} gold");
-            terminal.WriteLine($"Your Gold: {currentPlayer.Gold:N0}");
+            terminal.WriteLine(Loc.Get("castle.tax_cost_reduce", petitionCost));
+            terminal.WriteLine(Loc.Get("castle.your_gold", currentPlayer.Gold));
             terminal.WriteLine("");
 
             if (currentPlayer.Gold >= petitionCost)
             {
                 terminal.SetColor("cyan");
-                terminal.Write($"Pay {petitionCost:N0} gold to reduce taxes? (Y/N): ");
+                terminal.Write(Loc.Get("castle.tax_pay_yn", petitionCost));
                 string response = await terminal.ReadLineAsync();
 
                 if (response?.ToUpper() == "Y")
@@ -6021,15 +6021,15 @@ public class CastleLocation : BaseLocation
 
                     terminal.WriteLine("");
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"{currentKing.GetTitle()} {currentKing.Name} nods solemnly.");
-                    terminal.WriteLine("\"Very well. Let it be known that taxes are hereby reduced.\"");
+                    terminal.WriteLine(Loc.Get("castle.tax_nods_solemnly", currentKing.GetTitle(), currentKing.Name));
+                    terminal.WriteLine(Loc.Get("castle.tax_hereby_reduced"));
                     terminal.WriteLine("");
-                    terminal.WriteLine($"Kingdom tax rate reduced from {oldRate}% to {currentKing.TaxRate}%!");
+                    terminal.WriteLine(Loc.Get("castle.tax_rate_reduced", oldRate, currentKing.TaxRate));
 
                     // Fame boost for helping the people
                     currentPlayer.Fame += 20;
                     currentPlayer.Chivalry += 10;
-                    terminal.WriteLine("+20 Fame, +10 Chivalry for aiding the common folk.");
+                    terminal.WriteLine(Loc.Get("castle.tax_fame_chivalry"));
 
                     NewsSystem.Instance?.Newsy(true, $"{currentPlayer.DisplayName} petitioned {currentKing.GetTitle()} {currentKing.Name} for tax relief! Kingdom taxes reduced to {currentKing.TaxRate}%.");
                 }
@@ -6037,13 +6037,13 @@ public class CastleLocation : BaseLocation
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You cannot afford to make this petition.");
+                terminal.WriteLine(Loc.Get("castle.tax_cannot_afford"));
             }
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -6052,18 +6052,18 @@ public class CastleLocation : BaseLocation
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There is no monarch to receive your donation!");
+            terminal.WriteLine(Loc.Get("castle.donate_no_monarch"));
             await Task.Delay(2000);
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine($"The Royal Purse currently contains {currentKing.Treasury:N0} gold.");
-        terminal.WriteLine($"You have {currentPlayer.Gold:N0} gold.");
+        terminal.WriteLine(Loc.Get("castle.donate_purse_contains", currentKing.Treasury));
+        terminal.WriteLine(Loc.Get("castle.donate_you_have", currentPlayer.Gold));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.Write("How much gold do you wish to donate? ");
+        terminal.Write(Loc.Get("castle.donate_how_much"));
         terminal.SetColor("white");
         string input = await terminal.ReadLineAsync();
 
@@ -6072,12 +6072,12 @@ public class CastleLocation : BaseLocation
             if (amount <= 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("Donation cancelled.");
+                terminal.WriteLine(Loc.Get("castle.donate_cancelled"));
             }
             else if (amount > currentPlayer.Gold)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine("You don't have that much gold!");
+                terminal.WriteLine(Loc.Get("castle.donate_not_enough"));
             }
             else
             {
@@ -6087,8 +6087,8 @@ public class CastleLocation : BaseLocation
                 currentPlayer.Chivalry += chivalryGain;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You donate {amount:N0} gold to the Royal Purse.");
-                terminal.WriteLine($"Your chivalry increases by {chivalryGain} for this noble deed!");
+                terminal.WriteLine(Loc.Get("castle.donate_gold", amount));
+                terminal.WriteLine(Loc.Get("castle.donate_chivalry", chivalryGain));
 
                 // Increase Crown standing (+1 per 50 gold donated)
                 int crownStandingGain = (int)(amount / 50);
@@ -6096,14 +6096,14 @@ public class CastleLocation : BaseLocation
                 {
                     UsurperRemake.Systems.FactionSystem.Instance.ModifyReputation(UsurperRemake.Systems.Faction.TheCrown, crownStandingGain);
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"The Crown appreciates your loyalty. (+{crownStandingGain} Crown standing)");
+                    terminal.WriteLine(Loc.Get("castle.crown_standing", crownStandingGain));
                 }
             }
         }
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Invalid amount.");
+            terminal.WriteLine(Loc.Get("castle.donate_invalid"));
         }
 
         await Task.Delay(2500);
@@ -6115,18 +6115,18 @@ public class CastleLocation : BaseLocation
     private async Task ApplyForRoyalGuard()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("ROYAL GUARD RECRUITMENT", "bright_cyan");
+        WriteBoxHeader(Loc.Get("castle.guard_recruitment"), "bright_cyan");
         terminal.WriteLine("");
 
         // Check if there's a king
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("With no monarch on the throne, the Royal Guard has disbanded.");
-            terminal.WriteLine("There is no one to accept your application.");
+            terminal.WriteLine(Loc.Get("castle.guard_no_monarch"));
+            terminal.WriteLine(Loc.Get("castle.guard_no_accept"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -6135,11 +6135,11 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Count >= GameConfig.MaxRoyalGuards)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The Royal Guard is at full capacity.");
-            terminal.WriteLine("There are no positions available at this time.");
+            terminal.WriteLine(Loc.Get("castle.guard_full_capacity"));
+            terminal.WriteLine(Loc.Get("castle.guard_no_positions"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -6148,10 +6148,10 @@ public class CastleLocation : BaseLocation
         if (currentKing.Guards.Any(g => g.Name == currentPlayer.DisplayName || g.Name == currentPlayer.Name2))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You are already serving in the Royal Guard!");
+            terminal.WriteLine(Loc.Get("castle.guard_already_serving"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -6161,14 +6161,14 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.Level < minLevel)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"The captain of the guard looks you over...");
+            terminal.WriteLine(Loc.Get("castle.guard_looks_over"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"\"Come back when you've proven yourself, adventurer.\"");
-            terminal.WriteLine($"\"We require guards of at least level {minLevel}.\"");
+            terminal.WriteLine(Loc.Get("castle.guard_come_back"));
+            terminal.WriteLine(Loc.Get("castle.guard_min_level", minLevel));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -6177,14 +6177,14 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.Darkness > currentPlayer.Chivalry + 50)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("The captain of the guard narrows his eyes...");
+            terminal.WriteLine(Loc.Get("castle.guard_narrows_eyes"));
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("\"Your reputation precedes you, and not in a good way.\"");
-            terminal.WriteLine("\"The Royal Guard serves the realm with honor. Seek redemption first.\"");
+            terminal.WriteLine(Loc.Get("castle.guard_bad_rep"));
+            terminal.WriteLine(Loc.Get("castle.guard_seek_redemption"));
             terminal.WriteLine("");
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Press Enter to continue...");
+            terminal.WriteLine(Loc.Get("ui.press_enter"));
             await terminal.ReadKeyAsync();
             return;
         }
@@ -6192,25 +6192,25 @@ public class CastleLocation : BaseLocation
         // Display offer
         long salary = GameConfig.BaseGuardSalary + (currentPlayer.Level * 20);
         terminal.SetColor("white");
-        terminal.WriteLine($"The captain of the guard reviews your credentials...");
+        terminal.WriteLine(Loc.Get("castle.guard_reviews"));
         terminal.WriteLine("");
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"\"Impressive, {currentPlayer.DisplayName}! Level {currentPlayer.Level}, with notable deeds.\"");
+        terminal.WriteLine(Loc.Get("castle.guard_impressive", currentPlayer.DisplayName, currentPlayer.Level));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine($"Position: Royal Guard");
-        terminal.WriteLine($"Daily Salary: {salary:N0} gold");
-        terminal.WriteLine($"Current Guards: {currentKing.Guards.Count}/{GameConfig.MaxRoyalGuards}");
+        terminal.WriteLine(Loc.Get("castle.guard_position"));
+        terminal.WriteLine(Loc.Get("castle.guard_salary", salary));
+        terminal.WriteLine(Loc.Get("castle.guard_current_count", currentKing.Guards.Count, GameConfig.MaxRoyalGuards));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("As a Royal Guard, you will:");
-        terminal.WriteLine("  - Defend the throne against usurpers");
-        terminal.WriteLine("  - Receive a daily salary from the treasury");
-        terminal.WriteLine("  - Gain prestige and the king's favor");
+        terminal.WriteLine(Loc.Get("castle.guard_as_guard"));
+        terminal.WriteLine(Loc.Get("castle.guard_defend"));
+        terminal.WriteLine(Loc.Get("castle.guard_receive_salary"));
+        terminal.WriteLine(Loc.Get("castle.guard_gain_prestige"));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.Write("Do you wish to join the Royal Guard? (Y/N): ");
+        terminal.Write(Loc.Get("castle.guard_join_yn"));
         terminal.SetColor("white");
         string response = await terminal.ReadLineAsync();
 
@@ -6231,11 +6231,11 @@ public class CastleLocation : BaseLocation
 
             terminal.WriteLine("");
             terminal.SetColor("bright_green");
-            terminal.WriteLine("The captain smiles and extends his hand.");
-            terminal.WriteLine($"\"Welcome to the Royal Guard, {currentPlayer.DisplayName}!\"");
+            terminal.WriteLine(Loc.Get("castle.guard_captain_smiles"));
+            terminal.WriteLine(Loc.Get("castle.guard_welcome", currentPlayer.DisplayName));
             terminal.WriteLine("");
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine($"You are now a member of {currentKing.GetTitle()} {currentKing.Name}'s Royal Guard!");
+            terminal.WriteLine(Loc.Get("castle.guard_now_member", currentKing.GetTitle(), currentKing.Name));
 
             // News announcement
             NewsSystem.Instance?.Newsy(true, $"{currentPlayer.DisplayName} has joined the Royal Guard!");
@@ -6247,13 +6247,13 @@ public class CastleLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("The captain nods understandingly.");
-            terminal.WriteLine("\"The offer stands, should you change your mind.\"");
+            terminal.WriteLine(Loc.Get("castle.guard_nods_understand"));
+            terminal.WriteLine(Loc.Get("castle.guard_offer_stands"));
         }
 
         terminal.WriteLine("");
         terminal.SetColor("darkgray");
-        terminal.WriteLine("Press Enter to continue...");
+        terminal.WriteLine(Loc.Get("ui.press_enter"));
         await terminal.ReadKeyAsync();
     }
 
@@ -6630,20 +6630,20 @@ public class CastleLocation : BaseLocation
         if (FactionSystem.Instance?.HasCastleAccess() != true)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("\n  The Royal Armory is restricted to Crown members.");
+            terminal.WriteLine($"\n  {Loc.Get("castle.armory_restricted")}");
             await Task.Delay(2000);
             return;
         }
 
         terminal.ClearScreen();
-        WriteBoxHeader("THE ROYAL ARMORY", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.royal_armory"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("gray");
-        terminal.WriteLine("  Racks of polished weapons and gleaming armor line the walls.");
-        terminal.WriteLine("  A Royal Quartermaster stands at attention.");
+        terminal.WriteLine(Loc.Get("castle.armory_desc_1"));
+        terminal.WriteLine(Loc.Get("castle.armory_desc_2"));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"\n  Gold: {currentPlayer.Gold:N0}");
+        terminal.WriteLine(Loc.Get("castle.gold_label", currentPlayer.Gold.ToString("N0")));
         terminal.WriteLine("");
 
         int level = currentPlayer.Level;
@@ -6659,7 +6659,7 @@ public class CastleLocation : BaseLocation
         int shieldArmPow = 80 + level;
 
         terminal.SetColor("bright_white");
-        terminal.WriteLine("  #  Item                  Price        Stats");
+        terminal.WriteLine(Loc.Get("castle.armory_header"));
         if (!IsScreenReader)
         {
             terminal.SetColor("darkgray");
@@ -6676,7 +6676,7 @@ public class CastleLocation : BaseLocation
             WriteSRMenuOption("2", $"Royal Guard Plate - {royalPlatePrice:N0}g - ArmPow {plateArmPow}", canPlate);
             WriteSRMenuOption("3", $"Crown Shield - {crownShieldPrice:N0}g - ArmPow {shieldArmPow}", canShield);
             WriteSRMenuOption("4", $"Signet Ring - {signetRingPrice:N0}g - +5 CHA, +5 STR", canRing);
-            WriteSRMenuOption("0", "Leave");
+            WriteSRMenuOption("0", Loc.Get("ui.leave"));
         }
         else
         {
@@ -6688,7 +6688,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor(bladeColor);
-            terminal.WriteLine($"Crown Blade         {crownBladePrice,10:N0}g   WeapPow {bladeWeapPow}");
+            terminal.WriteLine(Loc.Get("castle.crown_blade", crownBladePrice.ToString("N0").PadLeft(10), bladeWeapPow));
 
             string plateColor = currentPlayer.Gold >= royalPlatePrice ? "white" : "darkgray";
             terminal.SetColor("darkgray");
@@ -6698,7 +6698,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor(plateColor);
-            terminal.WriteLine($"Royal Guard Plate   {royalPlatePrice,10:N0}g   ArmPow {plateArmPow}");
+            terminal.WriteLine(Loc.Get("castle.royal_plate", royalPlatePrice.ToString("N0").PadLeft(10), plateArmPow));
 
             string shieldColor = currentPlayer.Gold >= crownShieldPrice ? "white" : "darkgray";
             terminal.SetColor("darkgray");
@@ -6708,7 +6708,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor(shieldColor);
-            terminal.WriteLine($"Crown Shield        {crownShieldPrice,10:N0}g   ArmPow {shieldArmPow}");
+            terminal.WriteLine(Loc.Get("castle.crown_shield", crownShieldPrice.ToString("N0").PadLeft(10), shieldArmPow));
 
             string ringColor = currentPlayer.Gold >= signetRingPrice ? "white" : "darkgray";
             terminal.SetColor("darkgray");
@@ -6718,7 +6718,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor(ringColor);
-            terminal.WriteLine($"Signet Ring         {signetRingPrice,10:N0}g   +5 CHA, +5 STR");
+            terminal.WriteLine(Loc.Get("castle.signet_ring", signetRingPrice.ToString("N0").PadLeft(10)));
 
             terminal.SetColor("darkgray");
             terminal.Write("  [");
@@ -6727,7 +6727,7 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("darkgray");
             terminal.Write("] ");
             terminal.SetColor("white");
-            terminal.WriteLine("Leave");
+            terminal.WriteLine(Loc.Get("ui.leave"));
         }
         terminal.WriteLine("");
 
@@ -6807,7 +6807,7 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.Gold < price)
         {
             terminal.SetColor("red");
-            terminal.WriteLine($"\n  You cant afford the {itemName}.");
+            terminal.WriteLine($"\n  {Loc.Get("castle.armory_cant_afford", itemName)}");
             await Task.Delay(2000);
             return;
         }
@@ -6830,9 +6830,9 @@ public class CastleLocation : BaseLocation
         }
 
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"\n  The Quartermaster presents you with the {itemName}.");
+        terminal.WriteLine($"\n  {Loc.Get("castle.armory_presents", itemName)}");
         terminal.SetColor("yellow");
-        terminal.WriteLine("  \"Wear it with honor.\"");
+        terminal.WriteLine(Loc.Get("castle.armory_wear_honor"));
         terminal.WriteLine("");
 
         await terminal.PressAnyKey();
@@ -6843,18 +6843,18 @@ public class CastleLocation : BaseLocation
         var factionSystem = UsurperRemake.Systems.FactionSystem.Instance;
 
         terminal.ClearScreen();
-        WriteBoxHeader("THE CROWN", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.the_crown"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("A royal herald leads you through gilded corridors to an ornate");
-        terminal.WriteLine("chamber where the Royal Chancellor awaits at a great oak desk.");
+        terminal.WriteLine(Loc.Get("castle.crown_herald_leads_1"));
+        terminal.WriteLine(Loc.Get("castle.crown_herald_leads_2"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Ah, a prospective servant of the realm,\" the Chancellor says,");
-        terminal.WriteLine("adjusting his monocle to study you carefully.");
+        terminal.WriteLine(Loc.Get("castle.crown_chancellor_says_1"));
+        terminal.WriteLine(Loc.Get("castle.crown_chancellor_says_2"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -6862,41 +6862,41 @@ public class CastleLocation : BaseLocation
         if (factionSystem.PlayerFaction != null)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("The Chancellor's expression hardens.");
+            terminal.WriteLine(Loc.Get("castle.crown_expression_hardens"));
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine($"\"Our records show you have sworn allegiance to {UsurperRemake.Systems.FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name}.\"");
-            terminal.WriteLine("\"The Crown does not accept those with divided loyalties.\"");
-            terminal.WriteLine("\"Should you ever renounce your current masters, return here.\"");
+            terminal.WriteLine(Loc.Get("castle.crown_sworn_allegiance", UsurperRemake.Systems.FactionSystem.Factions[factionSystem.PlayerFaction.Value].Name));
+            terminal.WriteLine(Loc.Get("castle.crown_divided_loyalties"));
+            terminal.WriteLine(Loc.Get("castle.crown_renounce_return"));
             terminal.WriteLine("");
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("The Chancellor gestures to tapestries depicting the kingdom's history.");
+        terminal.WriteLine(Loc.Get("castle.crown_tapestries"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"The Crown represents order, stability, and justice.\"");
-        terminal.WriteLine("\"When the Old Gods fell to corruption, it was The Crown\"");
-        terminal.WriteLine("\"that held the kingdom together. Law. Structure. Purpose.\"");
+        terminal.WriteLine(Loc.Get("castle.crown_order_justice"));
+        terminal.WriteLine(Loc.Get("castle.crown_old_gods_fell"));
+        terminal.WriteLine(Loc.Get("castle.crown_law_structure"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("\"We do not kneel to gods who abandoned us.\"");
-        terminal.WriteLine("\"We do not skulk in shadows like common thieves.\"");
-        terminal.WriteLine("\"We BUILD. We PROTECT. We GOVERN.\"");
+        terminal.WriteLine(Loc.Get("castle.crown_no_kneel"));
+        terminal.WriteLine(Loc.Get("castle.crown_no_skulk"));
+        terminal.WriteLine(Loc.Get("castle.crown_build_protect"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         // Show faction benefits
-        WriteSectionHeader("Benefits of The Crown", "bright_yellow");
+        WriteSectionHeader(Loc.Get("castle.benefits_crown"), "bright_yellow");
         terminal.SetColor("white");
-        terminal.WriteLine("• 10% discount at all legitimate shops");
-        terminal.WriteLine("• Access to Royal Guard positions and military resources");
-        terminal.WriteLine("• Friendly treatment from guards and noble NPCs");
-        terminal.WriteLine("• Priority audience with the ruling monarch");
+        terminal.WriteLine(Loc.Get("castle.crown_benefit_discount"));
+        terminal.WriteLine(Loc.Get("castle.crown_benefit_guard"));
+        terminal.WriteLine(Loc.Get("castle.crown_benefit_friendly"));
+        terminal.WriteLine(Loc.Get("castle.crown_benefit_audience"));
         terminal.WriteLine("");
 
         // Check requirements
@@ -6904,45 +6904,45 @@ public class CastleLocation : BaseLocation
 
         if (!canJoin)
         {
-            WriteSectionHeader("Requirements Not Met", "red");
+            WriteSectionHeader(Loc.Get("castle.requirements_not_met"), "red");
             terminal.SetColor("yellow");
             terminal.WriteLine(reason);
             terminal.WriteLine("");
             terminal.SetColor("gray");
-            terminal.WriteLine("The Crown requires:");
-            terminal.WriteLine("• Level 10 or higher");
-            terminal.WriteLine("• Chivalry 500+ (prove your honor through noble deeds)");
-            terminal.WriteLine("• Darkness below 500 (no criminal record)");
-            terminal.WriteLine($"  Your Chivalry: {currentPlayer.Chivalry}");
-            terminal.WriteLine($"  Your Darkness: {currentPlayer.Darkness}");
+            terminal.WriteLine(Loc.Get("castle.crown_requires"));
+            terminal.WriteLine(Loc.Get("castle.crown_req_level"));
+            terminal.WriteLine(Loc.Get("castle.crown_req_chivalry"));
+            terminal.WriteLine(Loc.Get("castle.crown_req_darkness"));
+            terminal.WriteLine(Loc.Get("castle.crown_your_chivalry", currentPlayer.Chivalry));
+            terminal.WriteLine(Loc.Get("castle.crown_your_darkness", currentPlayer.Darkness));
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("\"Your reputation precedes you,\" the Chancellor says coolly.");
+            terminal.WriteLine(Loc.Get("castle.crown_rep_precedes"));
             if (currentPlayer.Darkness > 500)
             {
-                terminal.WriteLine("\"The Crown does not associate with criminals.\"");
+                terminal.WriteLine(Loc.Get("castle.crown_no_criminals"));
             }
             else
             {
-                terminal.WriteLine("\"Prove your worth. Perform honorable deeds. Then return.\"");
+                terminal.WriteLine(Loc.Get("castle.crown_prove_worth"));
             }
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
             return;
         }
 
         // Can join - offer the choice
-        WriteSectionHeader("Requirements Met", "bright_green");
+        WriteSectionHeader(Loc.Get("castle.requirements_met"), "bright_green");
         terminal.SetColor("white");
-        terminal.WriteLine("The Chancellor rises and extends a scroll sealed with the royal crest.");
+        terminal.WriteLine(Loc.Get("castle.crown_extends_scroll"));
         terminal.WriteLine("");
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Your record speaks well of you. Honorable. Disciplined.\"");
-        terminal.WriteLine("\"Will you swear the Oath of Service and join The Crown?\"");
+        terminal.WriteLine(Loc.Get("castle.crown_record_speaks"));
+        terminal.WriteLine(Loc.Get("castle.crown_swear_oath"));
         terminal.WriteLine("");
         terminal.SetColor("yellow");
-        terminal.WriteLine("WARNING: Joining The Crown will:");
-        terminal.WriteLine("• Lock you out of The Faith and The Shadows");
-        terminal.WriteLine("• Decrease standing with rival factions by 100");
+        terminal.WriteLine(Loc.Get("castle.crown_warning"));
+        terminal.WriteLine(Loc.Get("castle.crown_lock_out"));
+        terminal.WriteLine(Loc.Get("castle.crown_decrease_standing"));
         terminal.WriteLine("");
 
         var choice = await terminal.GetInputAsync("Join The Crown? (Y/N) ");
@@ -6955,13 +6955,13 @@ public class CastleLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("The Chancellor nods curtly.");
+            terminal.WriteLine(Loc.Get("castle.crown_nods_curtly"));
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("\"A wise soul takes time to consider such oaths.\"");
-            terminal.WriteLine("\"The Crown's gates remain open to those of noble heart.\"");
+            terminal.WriteLine(Loc.Get("castle.crown_wise_soul"));
+            terminal.WriteLine(Loc.Get("castle.crown_gates_open"));
         }
 
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
 
     /// <summary>
@@ -6970,60 +6970,60 @@ public class CastleLocation : BaseLocation
     private async Task PerformCrownOath(UsurperRemake.Systems.FactionSystem factionSystem)
     {
         terminal.ClearScreen();
-        WriteBoxHeader("THE OATH OF SERVICE", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.oath_service"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("You are led to the throne room, where officials have gathered.");
-        terminal.WriteLine("The royal banner hangs above - a golden crown on crimson field.");
+        terminal.WriteLine(Loc.Get("castle.oath_led_throne_1"));
+        terminal.WriteLine(Loc.Get("castle.oath_led_throne_2"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("You kneel before the great seal of the kingdom.");
-        terminal.WriteLine("The Chancellor stands before you, scroll in hand.");
+        terminal.WriteLine(Loc.Get("castle.oath_kneel_seal"));
+        terminal.WriteLine(Loc.Get("castle.oath_chancellor_stands"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Repeat the Oath of Service:\"");
+        terminal.WriteLine(Loc.Get("castle.oath_repeat"));
         terminal.WriteLine("");
         await Task.Delay(1000);
 
         terminal.SetColor("yellow");
-        terminal.WriteLine("\"I pledge my sword, my honor, and my life to The Crown.\"");
+        terminal.WriteLine(Loc.Get("castle.oath_line_1"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"I will uphold law and order in all my dealings.\"");
+        terminal.WriteLine(Loc.Get("castle.oath_line_2"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"I will defend the realm against chaos and corruption.\"");
+        terminal.WriteLine(Loc.Get("castle.oath_line_3"));
         await Task.Delay(1200);
-        terminal.WriteLine("\"In service to the kingdom, I shall not falter.\"");
+        terminal.WriteLine(Loc.Get("castle.oath_line_4"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         terminal.SetColor("white");
-        terminal.WriteLine("The Chancellor places the royal seal upon your oath.");
-        terminal.WriteLine("Trumpets sound. The gathered officials applaud.");
+        terminal.WriteLine(Loc.Get("castle.oath_seal_placed"));
+        terminal.WriteLine(Loc.Get("castle.oath_trumpets"));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
         // Actually join the faction
         factionSystem.JoinFaction(UsurperRemake.Systems.Faction.TheCrown, currentPlayer);
 
-        WriteBoxHeader("YOU HAVE JOINED THE CROWN", "bright_green");
+        WriteBoxHeader(Loc.Get("castle.joined_crown"), "bright_green");
         terminal.WriteLine("");
 
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("\"Rise, servant of the Crown,\" the Chancellor declares.");
-        terminal.WriteLine("\"Your loyalty will be rewarded. Your service, remembered.\"");
+        terminal.WriteLine(Loc.Get("castle.oath_rise_servant"));
+        terminal.WriteLine(Loc.Get("castle.oath_loyalty_rewarded"));
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine("As a member of The Crown, you will receive:");
+        terminal.WriteLine(Loc.Get("castle.oath_as_member"));
         terminal.SetColor("bright_green");
-        terminal.WriteLine("• 10% discount at all shops in the kingdom");
-        terminal.WriteLine("• Recognition from guards and royal officials");
-        terminal.WriteLine("• Access to Crown-only opportunities and resources");
+        terminal.WriteLine(Loc.Get("castle.oath_benefit_1"));
+        terminal.WriteLine(Loc.Get("castle.oath_benefit_2"));
+        terminal.WriteLine(Loc.Get("castle.oath_benefit_3"));
         terminal.WriteLine("");
 
         // Generate news
@@ -7042,14 +7042,14 @@ public class CastleLocation : BaseLocation
     private async Task CastleSiegeMenu()
     {
         terminal.ClearScreen();
-        WriteBoxHeader("CASTLE SIEGE", "bright_red");
+        WriteBoxHeader(Loc.Get("castle.castle_siege"), "bright_red");
         terminal.WriteLine("");
 
         var backend = SaveSystem.Instance?.Backend as SqlSaveBackend;
         if (backend == null)
         {
             terminal.SetColor("red");
-            terminal.WriteLine("Online backend not available.");
+            terminal.WriteLine(Loc.Get("castle.siege_no_backend"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7058,8 +7058,8 @@ public class CastleLocation : BaseLocation
         if (string.IsNullOrEmpty(currentPlayer.Team))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You must be on a team to siege the castle!");
-            terminal.WriteLine("Visit the Team Corner to create or join a team.");
+            terminal.WriteLine(Loc.Get("castle.siege_need_team"));
+            terminal.WriteLine(Loc.Get("castle.siege_visit_team_corner"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7068,8 +7068,8 @@ public class CastleLocation : BaseLocation
         if (currentKing == null || !currentKing.IsActive)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("There is no king to overthrow! The throne sits empty.");
-            terminal.WriteLine("Use [C]laim Empty Throne instead.");
+            terminal.WriteLine(Loc.Get("castle.siege_no_king"));
+            terminal.WriteLine(Loc.Get("castle.siege_use_claim"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7078,7 +7078,7 @@ public class CastleLocation : BaseLocation
         if (currentKing.Name.Equals(currentPlayer.DisplayName, StringComparison.OrdinalIgnoreCase))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("You cannot siege your own castle!");
+            terminal.WriteLine(Loc.Get("castle.siege_own_castle"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7087,8 +7087,8 @@ public class CastleLocation : BaseLocation
         if (!backend.CanTeamSiege(currentPlayer.Team))
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your team has already attempted a siege in the last 24 hours.");
-            terminal.WriteLine("The castle defenses are on high alert. Try again later.");
+            terminal.WriteLine(Loc.Get("castle.siege_cooldown_1"));
+            terminal.WriteLine(Loc.Get("castle.siege_cooldown_2"));
             await terminal.PressAnyKey();
             return;
         }
@@ -7097,49 +7097,49 @@ public class CastleLocation : BaseLocation
         if (currentPlayer.Level < GameConfig.MinLevelKing)
         {
             terminal.SetColor("yellow");
-            terminal.WriteLine($"You must be at least level {GameConfig.MinLevelKing} to lead a siege.");
+            terminal.WriteLine(Loc.Get("castle.siege_min_level", GameConfig.MinLevelKing));
             await terminal.PressAnyKey();
             return;
         }
 
         // Show siege info
         terminal.SetColor("white");
-        terminal.WriteLine($"Your team '{currentPlayer.Team}' prepares to storm the castle!");
+        terminal.WriteLine(Loc.Get("castle.siege_team_prepares", currentPlayer.Team));
         terminal.WriteLine("");
 
         int totalGuards = currentKing.TotalGuardCount;
         terminal.SetColor("cyan");
-        terminal.WriteLine($"  King: {currentKing.GetTitle()} {currentKing.Name}");
+        terminal.WriteLine(Loc.Get("castle.siege_king", currentKing.GetTitle(), currentKing.Name));
         terminal.SetColor("red");
-        terminal.WriteLine($"  Monster Guards: {currentKing.MonsterGuards.Count}");
+        terminal.WriteLine(Loc.Get("castle.siege_monster_guards", currentKing.MonsterGuards.Count));
         terminal.SetColor("yellow");
-        terminal.WriteLine($"  Royal Guards: {currentKing.Guards.Count}");
+        terminal.WriteLine(Loc.Get("castle.siege_royal_guards", currentKing.Guards.Count));
         terminal.SetColor("white");
-        terminal.WriteLine($"  Total Defenders: {totalGuards}");
+        terminal.WriteLine(Loc.Get("castle.siege_total_defenders", totalGuards));
         terminal.WriteLine("");
 
         // Load team members for the assault
         var teamMembers = await backend.GetPlayerTeamMembers(currentPlayer.Team, currentPlayer.DisplayName);
         terminal.SetColor("bright_cyan");
-        terminal.WriteLine("Your siege force:");
+        terminal.WriteLine(Loc.Get("castle.siege_your_force"));
         terminal.SetColor("bright_green");
-        terminal.WriteLine($"  YOU — {currentPlayer.DisplayName} (Lv {currentPlayer.Level} {currentPlayer.Class})");
+        terminal.WriteLine(Loc.Get("castle.siege_you", currentPlayer.DisplayName, currentPlayer.Level, currentPlayer.Class));
         foreach (var member in teamMembers)
         {
             terminal.SetColor("cyan");
-            terminal.WriteLine($"  {member.DisplayName} (Lv {member.Level})");
+            terminal.WriteLine(Loc.Get("castle.siege_member_entry", member.DisplayName, member.Level));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("bright_red");
-        terminal.Write("Launch the siege? (Y/N): ");
+        terminal.Write(Loc.Get("castle.siege_launch_yn"));
         terminal.SetColor("white");
         string confirm = await terminal.ReadLineAsync();
 
         if (confirm?.ToUpper() != "Y")
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Your team stands down. Perhaps another day...");
+            terminal.WriteLine(Loc.Get("castle.siege_stands_down"));
             await Task.Delay(2000);
             return;
         }
@@ -7152,12 +7152,12 @@ public class CastleLocation : BaseLocation
         if (!IsScreenReader)
         {
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-            terminal.WriteLine("           THE SIEGE BEGINS!");
+            terminal.WriteLine(Loc.Get("castle.siege_begins"));
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
         }
         else
         {
-            terminal.WriteLine("THE SIEGE BEGINS!");
+            terminal.WriteLine(Loc.Get("castle.siege_begins_sr"));
         }
         terminal.WriteLine("");
 
@@ -7182,7 +7182,7 @@ public class CastleLocation : BaseLocation
         foreach (var monster in currentKing.MonsterGuards.ToList())
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine($">>> Monster Guard: {monster.Name} (Level {monster.Level}) blocks the path! <<<");
+            terminal.WriteLine(Loc.Get("castle.siege_monster_blocks", monster.Name, monster.Level));
             terminal.WriteLine("");
 
             long monsterHP = monster.HP;
@@ -7200,7 +7200,7 @@ public class CastleLocation : BaseLocation
                 monsterHP -= teamDmg;
 
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  Your team strikes {monster.Name} for {teamDmg} damage! (HP: {Math.Max(0, monsterHP)})");
+                terminal.WriteLine(Loc.Get("castle.team_strikes_monster", monster.Name, teamDmg, Math.Max(0, monsterHP)));
 
                 if (monsterHP <= 0) break;
 
@@ -7210,7 +7210,7 @@ public class CastleLocation : BaseLocation
                 teamHP -= monsterDmg;
 
                 terminal.SetColor("red");
-                terminal.WriteLine($"  {monster.Name} strikes back for {monsterDmg}! (Team HP: {Math.Max(0, teamHP)})");
+                terminal.WriteLine(Loc.Get("castle.siege_monster_strikes", monster.Name, monsterDmg, Math.Max(0, teamHP)));
 
                 await Task.Delay(250);
             }
@@ -7218,7 +7218,7 @@ public class CastleLocation : BaseLocation
             if (teamHP <= 0)
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"Your siege force was overwhelmed by {monster.Name}!");
+                terminal.WriteLine(Loc.Get("castle.siege_overwhelmed", monster.Name));
                 siegeFailed = true;
                 break;
             }
@@ -7227,7 +7227,7 @@ public class CastleLocation : BaseLocation
                 guardsDefeated++;
                 currentKing.MonsterGuards.Remove(monster);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  {monster.Name} has been defeated!");
+                terminal.WriteLine(Loc.Get("castle.siege_monster_defeated", monster.Name));
                 terminal.WriteLine("");
                 await Task.Delay(500);
             }
@@ -7239,14 +7239,14 @@ public class CastleLocation : BaseLocation
             foreach (var guard in currentKing.Guards.ToList())
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($">>> Royal Guard: {guard.Name} (Loyalty: {guard.Loyalty}%) stands firm! <<<");
+                terminal.WriteLine(Loc.Get("castle.siege_guard_stands", guard.Name, guard.Loyalty));
                 terminal.WriteLine("");
 
                 // Low loyalty guards may surrender during siege
                 if (guard.Loyalty < 25 && random.Next(100) < 40)
                 {
                     terminal.SetColor("bright_yellow");
-                    terminal.WriteLine($"  {guard.Name} throws down their weapon and surrenders!");
+                    terminal.WriteLine(Loc.Get("castle.siege_guard_surrenders", guard.Name));
                     guardsDefeated++;
                     currentKing.Guards.Remove(guard);
                     await Task.Delay(500);
@@ -7270,7 +7270,7 @@ public class CastleLocation : BaseLocation
                     guardHP -= teamDmg;
 
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  Your team strikes {guard.Name} for {teamDmg}! (HP: {Math.Max(0, guardHP)})");
+                    terminal.WriteLine(Loc.Get("castle.team_strikes_guard", guard.Name, teamDmg, Math.Max(0, guardHP)));
 
                     if (guardHP <= 0) break;
 
@@ -7279,7 +7279,7 @@ public class CastleLocation : BaseLocation
                     teamHP -= guardDmg;
 
                     terminal.SetColor("red");
-                    terminal.WriteLine($"  {guard.Name} fights back for {guardDmg}! (Team HP: {Math.Max(0, teamHP)})");
+                    terminal.WriteLine(Loc.Get("castle.siege_guard_fights", guard.Name, guardDmg, Math.Max(0, teamHP)));
 
                     await Task.Delay(250);
                 }
@@ -7287,7 +7287,7 @@ public class CastleLocation : BaseLocation
                 if (teamHP <= 0)
                 {
                     terminal.SetColor("red");
-                    terminal.WriteLine($"Your siege force was defeated by {guard.Name}!");
+                    terminal.WriteLine(Loc.Get("castle.siege_defeated_by", guard.Name));
                     siegeFailed = true;
                     break;
                 }
@@ -7296,7 +7296,7 @@ public class CastleLocation : BaseLocation
                     guardsDefeated++;
                     currentKing.Guards.Remove(guard);
                     terminal.SetColor("bright_green");
-                    terminal.WriteLine($"  {guard.Name} has been defeated!");
+                    terminal.WriteLine(Loc.Get("castle.siege_guard_defeated", guard.Name));
                     terminal.WriteLine("");
                     await Task.Delay(500);
                 }
@@ -7313,21 +7313,21 @@ public class CastleLocation : BaseLocation
             if (!IsScreenReader)
             {
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-                terminal.WriteLine("          THE SIEGE HAS FAILED!");
+                terminal.WriteLine(Loc.Get("castle.siege_failed"));
                 terminal.WriteLine("═══════════════════════════════════════════════════════════════");
             }
             else
             {
-                terminal.WriteLine("THE SIEGE HAS FAILED!");
+                terminal.WriteLine(Loc.Get("castle.siege_failed_sr"));
             }
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Your battered team retreats from the castle walls.");
+            terminal.WriteLine(Loc.Get("castle.siege_team_retreats"));
             terminal.SetColor("gray");
-            terminal.WriteLine($"Guards defeated: {guardsDefeated}/{Math.Max(1, totalGuards)}");
+            terminal.WriteLine(Loc.Get("castle.siege_guards_defeated", guardsDefeated, Math.Max(1, totalGuards)));
             currentPlayer.HP = Math.Max(1, currentPlayer.HP / 2);
             terminal.SetColor("red");
-            terminal.WriteLine("You lost half your HP in the failed assault.");
+            terminal.WriteLine(Loc.Get("castle.siege_lost_half_hp"));
 
             UsurperRemake.Systems.OnlineStateManager.Instance?.AddNews(
                 $"{currentPlayer.Team} attempted to siege the castle but was repelled! ({guardsDefeated}/{totalGuards} guards defeated)",
@@ -7343,24 +7343,24 @@ public class CastleLocation : BaseLocation
         if (!IsScreenReader)
         {
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
-            terminal.WriteLine("          ALL GUARDS DEFEATED — THE THRONE ROOM AWAITS!");
+            terminal.WriteLine(Loc.Get("castle.siege_guards_defeated"));
             terminal.WriteLine("═══════════════════════════════════════════════════════════════");
         }
         else
         {
-            terminal.WriteLine("ALL GUARDS DEFEATED - THE THRONE ROOM AWAITS!");
+            terminal.WriteLine(Loc.Get("castle.siege_guards_defeated_sr"));
         }
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Your team storms the throne room. {currentKing.GetTitle()} {currentKing.Name}");
-        terminal.WriteLine("rises from the throne, drawing their weapon...");
+        terminal.WriteLine(Loc.Get("castle.siege_storms_throne", currentKing.GetTitle(), currentKing.Name));
+        terminal.WriteLine(Loc.Get("castle.siege_draws_weapon"));
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("As siege leader, you must face the king in single combat.");
+        terminal.WriteLine(Loc.Get("castle.siege_face_single"));
         terminal.SetColor("gray");
-        terminal.WriteLine("(Your team holds back the remaining servants.)");
+        terminal.WriteLine(Loc.Get("castle.siege_team_holds_back"));
         terminal.WriteLine("");
 
         // Apply damage taken during siege to player
@@ -7368,11 +7368,11 @@ public class CastleLocation : BaseLocation
         currentPlayer.HP = Math.Max(currentPlayer.HP / 2, currentPlayer.HP - hpLost); // At least keep 50% HP
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Your HP after the siege assault: {currentPlayer.HP}/{currentPlayer.MaxHP}");
+        terminal.WriteLine(Loc.Get("castle.siege_hp_after", currentPlayer.HP, currentPlayer.MaxHP));
         terminal.WriteLine("");
 
         terminal.SetColor("bright_red");
-        terminal.Write("Face the king? (Y/N): ");
+        terminal.Write(Loc.Get("castle.siege_face_king_yn"));
         terminal.SetColor("white");
         string faceKing = await terminal.ReadLineAsync();
 
@@ -7380,8 +7380,8 @@ public class CastleLocation : BaseLocation
         {
             await backend.CompleteSiege(siegeId, "retreated");
             terminal.SetColor("gray");
-            terminal.WriteLine("Your team secured the guards but you declined to face the king.");
-            terminal.WriteLine("The king's remaining loyalists rally and your team retreats.");
+            terminal.WriteLine(Loc.Get("castle.siege_declined_king"));
+            terminal.WriteLine(Loc.Get("castle.siege_loyalists_rally"));
 
             UsurperRemake.Systems.OnlineStateManager.Instance?.AddNews(
                 $"{currentPlayer.Team} breached the castle defenses but retreated before facing the king!",
@@ -7453,10 +7453,10 @@ public class CastleLocation : BaseLocation
 
         terminal.ClearScreen();
         terminal.SetColor("bright_red");
-        terminal.WriteLine($"=== {currentKing.GetTitle()} {currentKing.Name} vs {currentPlayer.DisplayName} ===");
+        terminal.WriteLine(Loc.Get("castle.siege_vs", currentKing.GetTitle(), currentKing.Name, currentPlayer.DisplayName));
         terminal.WriteLine("");
         terminal.SetColor("gray");
-        terminal.WriteLine($"Level {siegeKingLevel} | STR: {siegeKingStr} | DEF: {siegeKingDef} | HP: {kingHP}");
+        terminal.WriteLine(Loc.Get("castle.siege_king_stats", siegeKingLevel, siegeKingStr, siegeKingDef, kingHP));
         terminal.WriteLine("");
 
         int kingRounds = 0;
@@ -7470,7 +7470,7 @@ public class CastleLocation : BaseLocation
             kingHP -= playerDamage;
 
             terminal.SetColor("bright_green");
-            terminal.WriteLine($"You strike {currentKing.Name} for {playerDamage} damage! (King HP: {Math.Max(0, kingHP)})");
+            terminal.WriteLine(Loc.Get("castle.siege_strike_king", currentKing.Name, playerDamage, Math.Max(0, kingHP)));
 
             if (kingHP <= 0) break;
 
@@ -7480,7 +7480,7 @@ public class CastleLocation : BaseLocation
             playerHP -= kingDamage;
 
             terminal.SetColor("red");
-            terminal.WriteLine($"{currentKing.Name} strikes you for {kingDamage}! (Your HP: {Math.Max(0, playerHP)})");
+            terminal.WriteLine(Loc.Get("castle.siege_king_strikes", currentKing.Name, kingDamage, Math.Max(0, playerHP)));
 
             await Task.Delay(300);
         }
@@ -7493,13 +7493,13 @@ public class CastleLocation : BaseLocation
             terminal.SetColor("red");
             if (playerHP <= 0)
             {
-                terminal.WriteLine($"{currentKing.Name} has defeated you!");
+                terminal.WriteLine(Loc.Get("castle.siege_king_defeated_you", currentKing.Name));
             }
             else
             {
-                terminal.WriteLine($"The battle reaches a stalemate! {currentKing.Name} holds firm.");
+                terminal.WriteLine(Loc.Get("castle.siege_stalemate", currentKing.Name));
             }
-            terminal.WriteLine("The siege has failed at the final hurdle.");
+            terminal.WriteLine(Loc.Get("castle.siege_failed_final"));
             currentPlayer.HP = Math.Max(1, playerHP);
 
             UsurperRemake.Systems.OnlineStateManager.Instance?.AddNews(
@@ -7514,12 +7514,12 @@ public class CastleLocation : BaseLocation
         await backend.CompleteSiege(siegeId, "victory");
 
         terminal.ClearScreen();
-        WriteBoxHeader("THE SIEGE IS VICTORIOUS!", "bright_yellow");
+        WriteBoxHeader(Loc.Get("castle.siege_victory"), "bright_yellow");
         terminal.WriteLine("");
 
         terminal.SetColor("white");
-        terminal.WriteLine($"{currentKing.Name} falls to the ground, defeated.");
-        terminal.WriteLine("The crown tumbles from their head and rolls to your feet...");
+        terminal.WriteLine(Loc.Get("castle.siege_king_falls", currentKing.Name));
+        terminal.WriteLine(Loc.Get("castle.siege_crown_tumbles"));
         terminal.WriteLine("");
         await Task.Delay(2000);
 
@@ -7529,7 +7529,7 @@ public class CastleLocation : BaseLocation
         GameEngine.Instance?.ClearDungeonParty();
 
         terminal.SetColor("yellow");
-        terminal.WriteLine($"You leave '{siegeTeam}' to take the crown.");
+        terminal.WriteLine(Loc.Get("castle.siege_leave_team", siegeTeam));
         terminal.WriteLine("");
         await Task.Delay(1500);
 
@@ -7561,10 +7561,10 @@ public class CastleLocation : BaseLocation
         currentPlayer.HP = playerHP;
 
         terminal.SetColor("bright_yellow");
-        terminal.WriteLine($"ALL HAIL {currentPlayer.DisplayName.ToUpper()}, THE NEW RULER!");
+        terminal.WriteLine(Loc.Get("castle.siege_all_hail", currentPlayer.DisplayName.ToUpper()));
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("Your team's siege will be remembered in the annals of history.");
+        terminal.WriteLine(Loc.Get("castle.siege_remembered"));
 
         UsurperRemake.Systems.OnlineStateManager.Instance?.AddNews(
             $"{siegeTeam} has conquered the castle! {currentPlayer.DisplayName} overthrew {oldKingName} and claims the throne!",

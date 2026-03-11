@@ -122,17 +122,17 @@ namespace UsurperRemake.Systems
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("The air grows cold.", "gray");
+            terminal.WriteLine(Loc.Get("opening.air_grows_cold"), "gray");
             await Task.Delay(800);
 
-            terminal.WriteLine("Shadows lengthen unnaturally.", "dark_gray");
+            terminal.WriteLine(Loc.Get("opening.shadows_lengthen"), "dark_gray");
             await Task.Delay(800);
 
-            terminal.WriteLine("Time itself seems to... pause.", "white");
+            terminal.WriteLine(Loc.Get("opening.time_pauses"), "white");
             await Task.Delay(1200);
 
             terminal.WriteLine("");
-            terminal.WriteLine("You are not alone.", "bright_magenta");
+            terminal.WriteLine(Loc.Get("opening.not_alone"), "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(1500);
@@ -184,35 +184,35 @@ namespace UsurperRemake.Systems
         private async Task ShowFirstSealHint(Character player, TerminalEmulator terminal)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("A weathered priest approaches you with knowing eyes.", "cyan");
+            terminal.WriteLine(Loc.Get("opening.priest_approaches"), "cyan");
             terminal.WriteLine("");
 
             await Task.Delay(500);
 
-            terminal.WriteLine("\"You carry the mark of destiny, young one.\"", "yellow");
-            terminal.WriteLine("\"I have seen it in my visions.\"", "yellow");
+            terminal.WriteLine(Loc.Get("opening.priest_mark"), "yellow");
+            terminal.WriteLine(Loc.Get("opening.priest_visions"), "yellow");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("\"The First Seal lies in the dungeons below.\"", "white");
-            terminal.WriteLine("\"Around the 25th level, where shadows grow deep.\"", "white");
-            terminal.WriteLine("\"There, the God of War stirs in his prison.\"", "white");
+            terminal.WriteLine(Loc.Get("opening.priest_first_seal"), "white");
+            terminal.WriteLine(Loc.Get("opening.priest_25th_level"), "white");
+            terminal.WriteLine(Loc.Get("opening.priest_god_of_war"), "white");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("\"Be ready. Be strong. The fate of all rests upon you.\"", "cyan");
+            terminal.WriteLine(Loc.Get("opening.priest_be_ready"), "cyan");
             terminal.WriteLine("");
 
             await Task.Delay(500);
 
-            terminal.WriteLine("The priest fades back into the temple shadows.", "gray");
+            terminal.WriteLine(Loc.Get("opening.priest_fades"), "gray");
             terminal.WriteLine("");
 
             StoryProgressionSystem.Instance.SetStoryFlag("first_seal_hint", true);
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         /// <summary>
@@ -221,26 +221,26 @@ namespace UsurperRemake.Systems
         private async Task ShowGodStirringWarning(Character player, TerminalEmulator terminal, string godName)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("A tremor runs through the ground.", "red");
-            terminal.WriteLine("Tankards rattle. Conversations halt.", "white");
+            terminal.WriteLine(Loc.Get("opening.tremor"), "red");
+            terminal.WriteLine(Loc.Get("opening.tankards_rattle"), "white");
             terminal.WriteLine("");
 
             await Task.Delay(800);
 
-            terminal.WriteLine("A grizzled veteran turns to you, eyes wide.", "gray");
-            terminal.WriteLine($"\"Did you feel that? Something stirs below.\"", "yellow");
-            terminal.WriteLine($"\"They say it's {godName}. The God of War awakens.\"", "yellow");
+            terminal.WriteLine(Loc.Get("opening.veteran_turns"), "gray");
+            terminal.WriteLine(Loc.Get("opening.veteran_feel_that"), "yellow");
+            terminal.WriteLine(Loc.Get("opening.veteran_god_awakens", godName), "yellow");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("\"The dungeons grow more dangerous each day.\"", "white");
-            terminal.WriteLine("\"Whatever you're planning... do it soon.\"", "white");
+            terminal.WriteLine(Loc.Get("opening.veteran_dangerous"), "white");
+            terminal.WriteLine(Loc.Get("opening.veteran_do_it_soon"), "white");
             terminal.WriteLine("");
 
             StoryProgressionSystem.Instance.SetStoryFlag($"{godName.ToLower()}_stirring_warning", true);
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         /// <summary>
@@ -300,22 +300,22 @@ namespace UsurperRemake.Systems
 
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "T H E   E T E R N A L   C Y C L E", "bright_yellow", 67);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("opening.eternal_cycle"), "bright_yellow", 67);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("The world fades to white...", "white");
+            terminal.WriteLine(Loc.Get("opening.world_fades"), "white");
             await Task.Delay(1500);
 
-            terminal.WriteLine("And from the void, you hear a familiar voice.", "bright_magenta");
+            terminal.WriteLine(Loc.Get("opening.familiar_voice"), "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(1000);
 
-            terminal.WriteLine("\"Did you think it would end? It never ends.\"", "bright_magenta");
-            terminal.WriteLine("\"The wheel turns. The cycle continues.\"", "bright_magenta");
-            terminal.WriteLine("\"But you... you remember. You carry forward.\"", "bright_magenta");
+            terminal.WriteLine(Loc.Get("opening.cycle_never_ends"), "bright_magenta");
+            terminal.WriteLine(Loc.Get("opening.wheel_turns"), "bright_magenta");
+            terminal.WriteLine(Loc.Get("opening.you_remember"), "bright_magenta");
             terminal.WriteLine("");
 
             await Task.Delay(1500);
@@ -323,26 +323,26 @@ namespace UsurperRemake.Systems
             // Calculate bonuses based on ending
             var bonuses = CalculateCycleBonuses(player, endingAchieved, currentCycle);
 
-            terminal.WriteLine($"ENTERING CYCLE {currentCycle + 1}", "bright_cyan");
+            terminal.WriteLine(Loc.Get("opening.entering_cycle", currentCycle + 1), "bright_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("You will carry forward:", "green");
-            terminal.WriteLine($"  +{bonuses.StrengthBonus} Starting Strength", "white");
-            terminal.WriteLine($"  +{bonuses.DefenceBonus} Starting Defence", "white");
-            terminal.WriteLine($"  +{bonuses.StaminaBonus} Starting Stamina", "white");
-            terminal.WriteLine($"  +{bonuses.GoldBonus} Starting Gold", "yellow");
-            terminal.WriteLine($"  +{bonuses.ExpMultiplier * 100 - 100}% Experience Gain", "cyan");
+            terminal.WriteLine(Loc.Get("opening.carry_forward"), "green");
+            terminal.WriteLine(Loc.Get("opening.bonus_strength", bonuses.StrengthBonus), "white");
+            terminal.WriteLine(Loc.Get("opening.bonus_defence", bonuses.DefenceBonus), "white");
+            terminal.WriteLine(Loc.Get("opening.bonus_stamina", bonuses.StaminaBonus), "white");
+            terminal.WriteLine(Loc.Get("opening.bonus_gold", bonuses.GoldBonus), "yellow");
+            terminal.WriteLine(Loc.Get("opening.bonus_exp", bonuses.ExpMultiplier * 100 - 100), "cyan");
             terminal.WriteLine("");
 
             if (bonuses.KeepsArtifactKnowledge)
             {
-                terminal.WriteLine("  * Artifact locations revealed from start", "bright_magenta");
+                terminal.WriteLine($"  * {Loc.Get("opening.bonus_artifacts")}", "bright_magenta");
             }
             if (bonuses.StartWithKey)
             {
-                terminal.WriteLine("  * Begin with the Ancient Iron Key", "bright_magenta");
+                terminal.WriteLine($"  * {Loc.Get("opening.bonus_key")}", "bright_magenta");
             }
 
-            await terminal.GetInputAsync("Press Enter to begin the new cycle...");
+            await terminal.GetInputAsync(Loc.Get("opening.press_enter_new_cycle"));
 
             // Reset story with cycle bonuses
             story.StartNewCycle(endingAchieved);
@@ -456,24 +456,24 @@ namespace UsurperRemake.Systems
             int goldBonus = 500 * (cycle - 1);
             float expMult = 1.0f + (0.1f * (cycle - 1));
 
-            bonuses.Add($"+{strBonus} Strength from past cycles");
-            bonuses.Add($"+{defBonus} Defence from past cycles");
-            bonuses.Add($"+{staBonus} Stamina from past cycles");
-            bonuses.Add($"+{goldBonus} Starting Gold");
-            bonuses.Add($"+{(expMult - 1) * 100:0}% Experience gain");
+            bonuses.Add(Loc.Get("opening.cycle_str_bonus", strBonus));
+            bonuses.Add(Loc.Get("opening.cycle_def_bonus", defBonus));
+            bonuses.Add(Loc.Get("opening.cycle_sta_bonus", staBonus));
+            bonuses.Add(Loc.Get("opening.cycle_gold_bonus", goldBonus));
+            bonuses.Add(Loc.Get("opening.cycle_exp_bonus", $"{(expMult - 1) * 100:0}"));
 
             // Check for special bonuses from endings
             if (story.HasStoryFlag("keeps_artifact_knowledge") || story.HasStoryFlag("knows_artifact_locations"))
             {
-                bonuses.Add("Artifact locations are revealed");
+                bonuses.Add(Loc.Get("opening.cycle_artifacts_revealed"));
             }
             if (story.HasStoryFlag("has_ancient_key"))
             {
-                bonuses.Add("You begin with the Ancient Iron Key");
+                bonuses.Add(Loc.Get("opening.cycle_ancient_key"));
             }
             if (story.CompletedEndings.Contains(EndingType.TrueEnding))
             {
-                bonuses.Add("The Ocean remembers you...");
+                bonuses.Add(Loc.Get("opening.cycle_ocean_remembers"));
             }
 
             return bonuses;

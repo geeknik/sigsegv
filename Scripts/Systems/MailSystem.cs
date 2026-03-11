@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -240,7 +241,7 @@ public static partial class MailSystem
         
         if (playerMail.Count == 0)
         {
-            terminal.WriteLine("You have no mail.", "gray");
+            terminal.WriteLine(Loc.Get("ui.no_mail"), "gray");
             return false;
         }
         
@@ -314,7 +315,7 @@ public static partial class MailSystem
         // Handle special mail types
         await ProcessSpecialMail(mail, terminal);
         
-        await terminal.PressAnyKey("Press Enter to continue...");
+        await terminal.PressAnyKey(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -355,7 +356,7 @@ public static partial class MailSystem
         terminal.WriteLine("(A)dopt a child", "white");
         terminal.WriteLine("(S)kip", "white");
         
-        var choice = await terminal.GetInputAsync("Your choice: ");
+        var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
         var gameEngine = GameEngine.Instance;
         var player = gameEngine?.CurrentPlayer;
         
@@ -397,7 +398,7 @@ public static partial class MailSystem
         terminal.WriteLine("(Y)es - Accept the honor", "white");
         terminal.WriteLine("(N)o - Decline politely", "white");
         
-        var choice = await terminal.GetInputAsync("Your choice: ");
+        var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
         var gameEngine = GameEngine.Instance;
         var player = gameEngine?.CurrentPlayer;
         
@@ -432,7 +433,7 @@ public static partial class MailSystem
             terminal.WriteLine("(Y)es - Accept the proposal", "white");
             terminal.WriteLine("(N)o - Decline the proposal", "white");
             
-            var choice = await terminal.GetInputAsync("Your choice: ");
+            var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
             
             switch (choice.ToUpper())
             {

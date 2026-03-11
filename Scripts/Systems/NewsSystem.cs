@@ -24,6 +24,29 @@ public partial class NewsSystem
     /// </summary>
     public static Action<string>? DatabaseCallback { get; set; }
 
+    /// <summary>
+    /// When set, Newsy() routes messages here instead of to file/DB.
+    /// Used by world sim catch-up to collect events for the summary.
+    /// </summary>
+    private List<string>? _catchUpBuffer;
+    private int _catchUpBufferMax = int.MaxValue;
+    public void SetCatchUpBuffer(List<string> buffer, int maxSize = int.MaxValue)
+    {
+        lock (_newsLock)
+        {
+            _catchUpBuffer = buffer;
+            _catchUpBufferMax = maxSize;
+        }
+    }
+    public void ClearCatchUpBuffer()
+    {
+        lock (_newsLock)
+        {
+            _catchUpBuffer = null;
+            _catchUpBufferMax = int.MaxValue;
+        }
+    }
+
     public static NewsSystem Instance
     {
         get
@@ -50,6 +73,14 @@ public partial class NewsSystem
 
         lock (_newsLock)
         {
+            // During catch-up, route to buffer instead of file/DB (checked inside lock for thread safety)
+            if (_catchUpBuffer != null)
+            {
+                if (_catchUpBuffer.Count < _catchUpBufferMax)
+                    _catchUpBuffer.Add(message);
+                return;
+            }
+
             try
             {
                 string timestamp = DateTime.Now.ToString("HH:mm");

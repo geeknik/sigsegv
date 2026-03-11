@@ -1,0 +1,3 @@
+love_corner.banner=-=*=- {0} -=*=-
+love_corner.expert_prompt={0} (A,C,D,E,V,M,P,G,S,R,L) :
+love_corner.rel_neutral=Neutral

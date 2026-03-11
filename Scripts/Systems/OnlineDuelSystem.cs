@@ -1,4 +1,5 @@
 using UsurperRemake.Utils;
+using UsurperRemake.Systems;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -135,7 +136,7 @@ public class OnlineDuelSystem
         if (challenger)
         {
             terminal.WriteLine($"{GameConfig.PlayerColor}You are the challenger!{GameConfig.TextColor}");
-            terminal.WriteLine("Waiting for opponent to accept...");
+            terminal.WriteLine(Loc.Get("duel.waiting_opponent"));
         }
         else
         {
@@ -204,7 +205,7 @@ public class OnlineDuelSystem
             if (sleepCounter >= maxWaits)
             {
                 terminal.WriteLine($"{GameConfig.ErrorColor}The fight has been called off!{GameConfig.TextColor}");
-                terminal.WriteLine("Opponent has not responded fast enough!");
+                terminal.WriteLine(Loc.Get("duel.opponent_no_response"));
                 meSleepy = true;
                 adios = true;
                 return;
@@ -269,7 +270,7 @@ public class OnlineDuelSystem
         switch (action.Type)
         {
             case DuelActionType.Say:
-                terminal.Write("Say what: ");
+                terminal.Write(Loc.Get("duel.say_prompt"));
                 string sayRaw = await terminal.GetStringInput();
                 // Enforce 70-character limit similar to Pascal s70
                 action.Message = sayRaw.Length > 70 ? sayRaw.Substring(0, 70) : sayRaw;
@@ -532,7 +533,7 @@ public class OnlineDuelSystem
                 
             case DuelOutcome.Disconnected:
                 terminal.WriteLine($"\n{GameConfig.WarningColor}DUEL CANCELLED{GameConfig.TextColor}");
-                terminal.WriteLine("The duel was cancelled due to connection issues.");
+                terminal.WriteLine(Loc.Get("duel.cancelled_connection"));
                 break;
         }
         

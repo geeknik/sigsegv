@@ -439,7 +439,10 @@ namespace UsurperRemake.Systems
                     IsIdentified = item.IsIdentified,
                     Shop = item.Shop,
                     Dungeon = item.Dungeon,
-                    Description = item.Description?.ToList() ?? new List<string>()
+                    Description = item.Description?.ToList() ?? new List<string>(),
+                    LootEffects = item.LootEffects?.Count > 0
+                        ? item.LootEffects.Select(e => new LootEffectData { EffectType = e.EffectType, Value = e.Value }).ToList()
+                        : null
                 }).ToList() ?? new List<InventoryItemData>(),
 
                 // Dynamic equipment (items equipped from dungeon loot that need definitions saved)
@@ -620,6 +623,7 @@ namespace UsurperRemake.Systems
                 SkipIntimateScenes = player.SkipIntimateScenes,
                 ScreenReaderMode = player.ScreenReaderMode,
                 CompactMode = player.CompactMode,
+                Language = player.Language ?? "en",
                 ColorTheme = player.ColorTheme,
                 AutoLevelUp = player.AutoLevelUp,
                 AutoEquipDisabled = player.AutoEquipDisabled,
@@ -938,7 +942,10 @@ namespace UsurperRemake.Systems
                 IsIdentified = item.IsIdentified,
                 Shop = item.Shop,
                 Dungeon = item.Dungeon,
-                Description = item.Description?.ToList() ?? new List<string>()
+                Description = item.Description?.ToList() ?? new List<string>(),
+                LootEffects = item.LootEffects?.Count > 0
+                    ? item.LootEffects.Select(e => new LootEffectData { EffectType = e.EffectType, Value = e.Value }).ToList()
+                    : null
             }).ToList();
         }
 

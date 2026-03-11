@@ -42,11 +42,11 @@ public class WeaponShopLocation : BaseLocation
 
     protected override string[]? GetAmbientMessages() => new[]
     {
-        "Steel rings against steel somewhere in the back.",
-        "The slow grind of a whetstone fills the room.",
-        "A hammer pounds away at an anvil in the smithy next door.",
-        "The sharp smell of oil and metal hangs in the air.",
-        "A blade is drawn from its scabbard and inspected with a soft whistle.",
+        Loc.Get("weapon_shop.ambient_steel"),
+        Loc.Get("weapon_shop.ambient_whetstone"),
+        Loc.Get("weapon_shop.ambient_hammer"),
+        Loc.Get("weapon_shop.ambient_oil"),
+        Loc.Get("weapon_shop.ambient_blade"),
     };
 
     protected override void DisplayLocation()
@@ -69,14 +69,14 @@ public class WeaponShopLocation : BaseLocation
         if (currentPlayer.WeapHag < 1)
         {
             terminal.SetColor("bright_red");
-            terminal.WriteLine("The big trolls pick you up and throw you out!");
-            terminal.WriteLine("Maybe you should be more careful about haggling next time...");
+            terminal.WriteLine(Loc.Get("weapon_shop.kicked_out1"));
+            terminal.WriteLine(Loc.Get("weapon_shop.kicked_out2"));
             terminal.WriteLine("");
-            terminal.WriteLine("Press Enter to return to street...", "yellow");
+            terminal.WriteLine(Loc.Get("weapon_shop.kicked_return"), "yellow");
             return;
         }
 
-        WriteBoxHeader("WEAPON SHOP", "bright_cyan");
+        WriteBoxHeader(Loc.Get("weapon_shop.header"), "bright_cyan");
         terminal.WriteLine("");
 
         ShowNPCsInLocation();
@@ -94,18 +94,18 @@ public class WeaponShopLocation : BaseLocation
     private void ShowMainMenu()
     {
         terminal.SetColor("yellow");
-        terminal.WriteLine($"Weaponstore, run by {shopkeeperName} the troll");
+        terminal.WriteLine(Loc.Get("weapon_shop.run_by", shopkeeperName));
         terminal.WriteLine("");
 
         ShowShopkeeperMood(shopkeeperName,
-            "A fat troll stumbles out from a back room and greets you.");
+            Loc.Get("weapon_shop.shopkeeper_greeting"));
         terminal.WriteLine("");
 
-        terminal.Write("You have ");
+        terminal.Write(Loc.Get("weapon_shop.you_have"));
         terminal.SetColor("yellow");
         terminal.Write(FormatNumber(currentPlayer.Gold));
         terminal.SetColor("white");
-        terminal.WriteLine(" gold crowns.");
+        terminal.WriteLine(Loc.Get("weapon_shop.gold_crowns"));
 
         // Show alignment price modifier
         var alignmentModifier = AlignmentSystem.Instance.GetPriceModifier(currentPlayer, isShadyShop: false);
@@ -114,9 +114,9 @@ public class WeaponShopLocation : BaseLocation
             var (alignText, alignColor) = AlignmentSystem.Instance.GetAlignmentDisplay(currentPlayer);
             terminal.SetColor(alignColor);
             if (alignmentModifier < 1.0f)
-                terminal.WriteLine($"  Your {alignText} alignment grants you a {(int)((1.0f - alignmentModifier) * 100)}% discount!");
+                terminal.WriteLine(Loc.Get("weapon_shop.align_discount", alignText, (int)((1.0f - alignmentModifier) * 100)));
             else
-                terminal.WriteLine($"  Your {alignText} alignment causes a {(int)((alignmentModifier - 1.0f) * 100)}% markup.");
+                terminal.WriteLine(Loc.Get("weapon_shop.align_markup", alignText, (int)((alignmentModifier - 1.0f) * 100)));
         }
 
         // Show world event price modifier
@@ -126,12 +126,12 @@ public class WeaponShopLocation : BaseLocation
             if (worldEventModifier < 1.0f)
             {
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"  World Events: {(int)((1.0f - worldEventModifier) * 100)}% discount active!");
+                terminal.WriteLine(Loc.Get("weapon_shop.world_discount", (int)((1.0f - worldEventModifier) * 100)));
             }
             else
             {
                 terminal.SetColor("red");
-                terminal.WriteLine($"  World Events: {(int)((worldEventModifier - 1.0f) * 100)}% price increase!");
+                terminal.WriteLine(Loc.Get("weapon_shop.world_markup", (int)((worldEventModifier - 1.0f) * 100)));
             }
         }
         terminal.WriteLine("");
@@ -141,21 +141,21 @@ public class WeaponShopLocation : BaseLocation
         terminal.WriteLine("");
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Select a category:");
+        terminal.WriteLine(Loc.Get("shop.select_category"));
         terminal.WriteLine("");
 
-        WriteSRMenuOption("1", "One-Handed Weapons (for dual-wield or sword+shield)");
-        WriteSRMenuOption("2", "Two-Handed Weapons (high damage, both hands occupied)");
-        WriteSRMenuOption("3", "Bows (ranged, two-handed)");
-        WriteSRMenuOption("4", "Shields (off-hand defense)");
+        WriteSRMenuOption("1", Loc.Get("weapon_shop.one_handed"));
+        WriteSRMenuOption("2", Loc.Get("weapon_shop.two_handed"));
+        WriteSRMenuOption("3", Loc.Get("weapon_shop.bows"));
+        WriteSRMenuOption("4", Loc.Get("weapon_shop.shields"));
 
         terminal.WriteLine("");
 
-        WriteSRMenuOption("S", "Sell weapons/shields");
-        WriteSRMenuOption("A", "Auto-buy best affordable weapon");
+        WriteSRMenuOption("S", Loc.Get("weapon_shop.sell"));
+        WriteSRMenuOption("A", Loc.Get("shop.auto_buy"));
 
         terminal.WriteLine("");
-        WriteSRMenuOption("R", "Return to street");
+        WriteSRMenuOption("R", Loc.Get("shop.return"));
         terminal.WriteLine("");
 
         ShowStatusLine();
@@ -167,33 +167,33 @@ public class WeaponShopLocation : BaseLocation
     private void DisplayLocationSR()
     {
         terminal.ClearScreen();
-        terminal.WriteLine("WEAPON SHOP");
+        terminal.WriteLine(Loc.Get("weapon_shop.header"));
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.WriteLine($"Run by {shopkeeperName} the troll. You have {FormatNumber(currentPlayer.Gold)} gold.");
+        terminal.WriteLine($"{Loc.Get("weapon_shop.run_by", shopkeeperName)} {Loc.Get("shop.you_have", FormatNumber(currentPlayer.Gold))}");
         terminal.WriteLine("");
 
         // Current weapons
         var mainHand = currentPlayer.GetEquipment(EquipmentSlot.MainHand);
         var offHand = currentPlayer.GetEquipment(EquipmentSlot.OffHand);
         terminal.SetColor("white");
-        terminal.WriteLine($"Main Hand: {(mainHand != null ? $"{mainHand.Name} (Pow:{mainHand.WeaponPower})" : "Empty")}");
-        terminal.WriteLine($"Off Hand: {(offHand != null ? (offHand.WeaponType == WeaponType.Shield || offHand.WeaponType == WeaponType.Buckler || offHand.WeaponType == WeaponType.TowerShield ? $"{offHand.Name} (AC:{offHand.ShieldBonus})" : $"{offHand.Name} (Pow:{offHand.WeaponPower})") : (mainHand?.Handedness == WeaponHandedness.TwoHanded ? "(using 2H weapon)" : "Empty"))}");
+        terminal.WriteLine($"{Loc.Get("shop.main_hand")} {(mainHand != null ? $"{mainHand.Name} (Pow:{mainHand.WeaponPower})" : Loc.Get("shop.empty"))}");
+        terminal.WriteLine($"{Loc.Get("shop.off_hand")} {(offHand != null ? (offHand.WeaponType == WeaponType.Shield || offHand.WeaponType == WeaponType.Buckler || offHand.WeaponType == WeaponType.TowerShield ? $"{offHand.Name} (AC:{offHand.ShieldBonus})" : $"{offHand.Name} (Pow:{offHand.WeaponPower})") : (mainHand?.Handedness == WeaponHandedness.TwoHanded ? Loc.Get("shop.using_2h") : Loc.Get("shop.empty")))}");
         terminal.WriteLine("");
 
         ShowNPCsInLocation();
 
         terminal.SetColor("cyan");
-        terminal.WriteLine("Categories:");
-        WriteSRMenuOption("1", "One-Handed Weapons (for dual-wield or sword+shield)");
-        WriteSRMenuOption("2", "Two-Handed Weapons (high damage, both hands occupied)");
-        WriteSRMenuOption("3", "Bows (ranged, two-handed)");
-        WriteSRMenuOption("4", "Shields (off-hand defense)");
+        terminal.WriteLine(Loc.Get("shop.categories"));
+        WriteSRMenuOption("1", Loc.Get("weapon_shop.one_handed"));
+        WriteSRMenuOption("2", Loc.Get("weapon_shop.two_handed"));
+        WriteSRMenuOption("3", Loc.Get("weapon_shop.bows"));
+        WriteSRMenuOption("4", Loc.Get("weapon_shop.shields"));
         terminal.WriteLine("");
-        WriteSRMenuOption("S", "Sell weapons/shields");
-        WriteSRMenuOption("A", "Auto-buy best affordable weapon");
+        WriteSRMenuOption("S", Loc.Get("weapon_shop.sell"));
+        WriteSRMenuOption("A", Loc.Get("shop.auto_buy"));
         terminal.WriteLine("");
-        WriteSRMenuOption("R", "Return to street");
+        WriteSRMenuOption("R", Loc.Get("shop.return"));
         terminal.WriteLine("");
         ShowStatusLine();
     }
@@ -206,23 +206,23 @@ public class WeaponShopLocation : BaseLocation
         terminal.ClearScreen();
 
         // Header
-        ShowBBSHeader("WEAPON SHOP");
+        ShowBBSHeader(Loc.Get("weapon_shop.header"));
 
         // 1-line description
         terminal.SetColor("gray");
-        terminal.WriteLine($" Run by {shopkeeperName} the troll. You have {FormatNumber(currentPlayer.Gold)} gold.");
+        terminal.WriteLine($" {Loc.Get("weapon_shop.run_by", shopkeeperName)} {Loc.Get("weapon_shop.you_have")}{FormatNumber(currentPlayer.Gold)}{Loc.Get("weapon_shop.gold_suffix")}");
 
         // Current weapons summary
         var mainHand = currentPlayer.GetEquipment(EquipmentSlot.MainHand);
         var offHand = currentPlayer.GetEquipment(EquipmentSlot.OffHand);
         terminal.SetColor("gray");
-        terminal.Write(" Main:");
+        terminal.Write(Loc.Get("weapon_shop.main_label"));
         terminal.SetColor("white");
-        terminal.Write(mainHand != null ? $"{mainHand.Name}" : "Empty");
+        terminal.Write(mainHand != null ? $"{mainHand.Name}" : Loc.Get("ui.empty"));
         terminal.SetColor("gray");
-        terminal.Write("  Off:");
+        terminal.Write(Loc.Get("weapon_shop.off_label"));
         terminal.SetColor("white");
-        terminal.WriteLine(offHand != null ? $"{offHand.Name}" : "Empty");
+        terminal.WriteLine(offHand != null ? $"{offHand.Name}" : Loc.Get("ui.empty"));
 
         // NPCs
         ShowBBSNPCs();
@@ -230,9 +230,9 @@ public class WeaponShopLocation : BaseLocation
 
         // Menu
         terminal.SetColor("cyan");
-        terminal.WriteLine(" Categories:");
-        ShowBBSMenuRow(("1", "bright_yellow", "One-Hand"), ("2", "bright_yellow", "Two-Hand"), ("3", "bright_yellow", "Bows"), ("4", "bright_yellow", "Shields"));
-        ShowBBSMenuRow(("S", "bright_green", "ell"), ("A", "bright_cyan", "uto-Buy"), ("R", "bright_red", "eturn"));
+        terminal.WriteLine(Loc.Get("weapon_shop.categories"));
+        ShowBBSMenuRow(("1", "bright_yellow", Loc.Get("weapon_shop.bbs_one_hand")), ("2", "bright_yellow", Loc.Get("weapon_shop.bbs_two_hand")), ("3", "bright_yellow", Loc.Get("weapon_shop.bbs_bows")), ("4", "bright_yellow", Loc.Get("weapon_shop.bbs_shields")));
+        ShowBBSMenuRow(("S", "bright_green", Loc.Get("weapon_shop.bbs_sell")), ("A", "bright_cyan", Loc.Get("weapon_shop.bbs_auto_buy")), ("R", "bright_red", Loc.Get("weapon_shop.bbs_return")));
 
         // Footer
         ShowBBSFooter();
@@ -241,79 +241,79 @@ public class WeaponShopLocation : BaseLocation
     private void ShowCurrentWeapons()
     {
         terminal.SetColor("cyan");
-        terminal.WriteLine("Current Weapons:");
+        terminal.WriteLine(Loc.Get("shop.current_weapons"));
 
         var mainHand = currentPlayer.GetEquipment(EquipmentSlot.MainHand);
         var offHand = currentPlayer.GetEquipment(EquipmentSlot.OffHand);
 
         terminal.SetColor("white");
-        terminal.Write("  Main Hand: ");
+        terminal.Write(Loc.Get("weapon_shop.main_hand_label"));
         if (mainHand != null)
         {
             terminal.SetColor("bright_white");
             terminal.Write(mainHand.Name);
             terminal.SetColor("gray");
             if (mainHand.Handedness == WeaponHandedness.TwoHanded)
-                terminal.WriteLine($" (2H, Pow:{mainHand.WeaponPower})");
+                terminal.WriteLine(Loc.Get("weapon_shop.stat_2h_pow", mainHand.WeaponPower));
             else
-                terminal.WriteLine($" (1H, Pow:{mainHand.WeaponPower})");
+                terminal.WriteLine(Loc.Get("weapon_shop.stat_1h_pow", mainHand.WeaponPower));
         }
         else
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         terminal.SetColor("white");
-        terminal.Write("  Off Hand:  ");
+        terminal.Write(Loc.Get("weapon_shop.off_hand_label"));
         if (offHand != null)
         {
             terminal.SetColor("bright_white");
             terminal.Write(offHand.Name);
             terminal.SetColor("gray");
             if (offHand.WeaponType == WeaponType.Shield || offHand.WeaponType == WeaponType.Buckler || offHand.WeaponType == WeaponType.TowerShield)
-                terminal.WriteLine($" (Shield, AC:{offHand.ShieldBonus}, Block:{offHand.BlockChance}%)");
+                terminal.WriteLine(Loc.Get("weapon_shop.stat_shield", offHand.ShieldBonus, offHand.BlockChance));
             else
-                terminal.WriteLine($" (1H, Pow:{offHand.WeaponPower})");
+                terminal.WriteLine(Loc.Get("weapon_shop.stat_1h_pow", offHand.WeaponPower));
         }
         else if (mainHand?.Handedness == WeaponHandedness.TwoHanded)
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine("(using 2H weapon)");
+            terminal.WriteLine(Loc.Get("weapon_shop.using_2h"));
         }
         else
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         // Show weapon configuration
         terminal.SetColor("gray");
-        terminal.Write("  Config: ");
+        terminal.Write(Loc.Get("weapon_shop.config_label"));
         if (currentPlayer.IsTwoHanding)
         {
             terminal.SetColor("bright_yellow");
-            terminal.WriteLine("Two-Handed (+25% damage, -15% defense)");
+            terminal.WriteLine(Loc.Get("weapon_shop.two_handed_desc"));
         }
         else if (currentPlayer.IsDualWielding)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("Dual-Wielding (+1 attack, -10% defense)");
+            terminal.WriteLine(Loc.Get("weapon_shop.dual_wield_desc"));
         }
         else if (currentPlayer.HasShieldEquipped)
         {
             terminal.SetColor("bright_cyan");
-            terminal.WriteLine("Sword & Board (balanced defense)");
+            terminal.WriteLine(Loc.Get("weapon_shop.sword_board_desc"));
         }
         else if (mainHand != null)
         {
             terminal.SetColor("white");
-            terminal.WriteLine("One-Handed (standard)");
+            terminal.WriteLine(Loc.Get("weapon_shop.one_handed_desc"));
         }
         else
         {
             terminal.SetColor("darkgray");
-            terminal.WriteLine("Unarmed");
+            terminal.WriteLine(Loc.Get("weapon_shop.unarmed_desc"));
         }
 
         // Calculate total weapon power
@@ -324,7 +324,7 @@ public class WeaponShopLocation : BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.Write("  Total Weapon Power: ");
+        terminal.Write(Loc.Get("weapon_shop.total_weapon_power"));
         terminal.SetColor("bright_yellow");
         terminal.WriteLine($"{totalPow}");
     }
@@ -354,10 +354,10 @@ public class WeaponShopLocation : BaseLocation
     {
         string categoryName = category switch
         {
-            WeaponCategory.OneHanded => "One-Handed Weapons",
-            WeaponCategory.TwoHanded => "Two-Handed Weapons",
-            WeaponCategory.Bows => "Bows",
-            WeaponCategory.Shields => "Shields",
+            WeaponCategory.OneHanded => Loc.Get("weapon_shop.cat_one_handed"),
+            WeaponCategory.TwoHanded => Loc.Get("weapon_shop.cat_two_handed"),
+            WeaponCategory.Bows => Loc.Get("weapon_shop.cat_bows"),
+            WeaponCategory.Shields => Loc.Get("weapon_shop.cat_shields"),
             _ => ""
         };
         if (string.IsNullOrEmpty(categoryName)) return;
@@ -383,14 +383,14 @@ public class WeaponShopLocation : BaseLocation
         if (currentItem != null)
         {
             terminal.SetColor("cyan");
-            terminal.Write("Current: ");
+            terminal.Write(Loc.Get("weapon_shop.current_prefix"));
             terminal.SetColor("bright_white");
             terminal.Write(currentItem.Name);
             terminal.SetColor("gray");
             if (category == WeaponCategory.Shields)
-                terminal.WriteLine($" (AC:{currentItem.ShieldBonus}, Block:{currentItem.BlockChance}%, Value:{FormatNumber(currentItem.Value)})");
+                terminal.WriteLine(Loc.Get("weapon_shop.current_shield_stats", currentItem.ShieldBonus, currentItem.BlockChance, FormatNumber(currentItem.Value)));
             else
-                terminal.WriteLine($" (Pow:{currentItem.WeaponPower}, Value:{FormatNumber(currentItem.Value)})");
+                terminal.WriteLine(Loc.Get("weapon_shop.current_weapon_stats", currentItem.WeaponPower, FormatNumber(currentItem.Value)));
             terminal.WriteLine("");
         }
 
@@ -400,19 +400,19 @@ public class WeaponShopLocation : BaseLocation
         int totalPages = (items.Count + ItemsPerPage - 1) / ItemsPerPage;
 
         terminal.SetColor("gray");
-        terminal.WriteLine($"Page {currentPage + 1}/{totalPages} - {items.Count} items total");
+        terminal.WriteLine(Loc.Get("weapon_shop.page_info", currentPage + 1, totalPages, items.Count));
         terminal.WriteLine("");
 
         if (category == WeaponCategory.Shields)
         {
             terminal.SetColor("bright_blue");
-            terminal.WriteLine("  #   Name                        Lvl  AC   Block  Price       Bonus");
+            terminal.WriteLine(Loc.Get("weapon_shop.shield_header"));
             WriteDivider(67);
         }
         else
         {
             terminal.SetColor("bright_blue");
-            terminal.WriteLine("  #   Name                        Lvl  Pow  Type      Price       Bonus");
+            terminal.WriteLine(Loc.Get("weapon_shop.weapon_header"));
             WriteDivider(74);
         }
 
@@ -490,7 +490,7 @@ public class WeaponShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("white");
-        terminal.Write("Buy item   ");
+        terminal.Write(Loc.Get("weapon_shop.buy_item"));
 
         if (currentPage > 0)
         {
@@ -499,7 +499,7 @@ public class WeaponShopLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("P");
             terminal.SetColor("darkgray");
-            terminal.Write("] Previous   ");
+            terminal.Write(Loc.Get("weapon_shop.previous"));
         }
 
         if (currentPage < totalPages - 1)
@@ -509,7 +509,7 @@ public class WeaponShopLocation : BaseLocation
             terminal.SetColor("bright_yellow");
             terminal.Write("N");
             terminal.SetColor("darkgray");
-            terminal.Write("] Next   ");
+            terminal.Write(Loc.Get("weapon_shop.next"));
         }
 
         terminal.SetColor("darkgray");
@@ -519,7 +519,7 @@ public class WeaponShopLocation : BaseLocation
         terminal.SetColor("darkgray");
         terminal.Write("] ");
         terminal.SetColor("red");
-        terminal.WriteLine("Back");
+        terminal.WriteLine(Loc.Get("weapon_shop.back"));
         terminal.WriteLine("");
     }
 
@@ -527,21 +527,21 @@ public class WeaponShopLocation : BaseLocation
     {
         var bonuses = new List<string>();
 
-        if (item.StrengthBonus != 0) bonuses.Add($"Str+{item.StrengthBonus}");
-        if (item.DexterityBonus != 0) bonuses.Add($"Dex+{item.DexterityBonus}");
-        if (item.IntelligenceBonus != 0) bonuses.Add($"Int+{item.IntelligenceBonus}");
-        if (item.WisdomBonus != 0) bonuses.Add($"Wis+{item.WisdomBonus}");
-        if (item.ConstitutionBonus != 0) bonuses.Add($"Con+{item.ConstitutionBonus}");
-        if (item.DefenceBonus != 0) bonuses.Add($"Def+{item.DefenceBonus}");
-        if (item.AgilityBonus != 0) bonuses.Add($"Agi+{item.AgilityBonus}");
-        if (item.MaxHPBonus != 0) bonuses.Add($"HP+{item.MaxHPBonus}");
-        if (item.MaxManaBonus != 0) bonuses.Add($"MP+{item.MaxManaBonus}");
-        if (item.CriticalChanceBonus != 0) bonuses.Add($"Crit+{item.CriticalChanceBonus}%");
-        if (item.CriticalDamageBonus != 0) bonuses.Add($"CritD+{item.CriticalDamageBonus}%");
-        if (item.ArmorPiercing != 0) bonuses.Add($"APen+{item.ArmorPiercing}%");
-        if (item.MagicResistance != 0) bonuses.Add($"MR+{item.MagicResistance}%");
-        if (item.LifeSteal != 0) bonuses.Add($"Leech{item.LifeSteal}%");
-        if (item.PoisonDamage != 0) bonuses.Add($"Psn+{item.PoisonDamage}");
+        if (item.StrengthBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_str")}+{item.StrengthBonus}");
+        if (item.DexterityBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_dex")}+{item.DexterityBonus}");
+        if (item.IntelligenceBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_int")}+{item.IntelligenceBonus}");
+        if (item.WisdomBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_wis")}+{item.WisdomBonus}");
+        if (item.ConstitutionBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_con")}+{item.ConstitutionBonus}");
+        if (item.DefenceBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_def")}+{item.DefenceBonus}");
+        if (item.AgilityBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_agi")}+{item.AgilityBonus}");
+        if (item.MaxHPBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_hp")}+{item.MaxHPBonus}");
+        if (item.MaxManaBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_mp")}+{item.MaxManaBonus}");
+        if (item.CriticalChanceBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_crit")}+{item.CriticalChanceBonus}%");
+        if (item.CriticalDamageBonus != 0) bonuses.Add($"{Loc.Get("ui.stat_critd")}+{item.CriticalDamageBonus}%");
+        if (item.ArmorPiercing != 0) bonuses.Add($"{Loc.Get("ui.stat_apen")}+{item.ArmorPiercing}%");
+        if (item.MagicResistance != 0) bonuses.Add($"{Loc.Get("ui.stat_mr")}+{item.MagicResistance}%");
+        if (item.LifeSteal != 0) bonuses.Add($"{Loc.Get("ui.stat_leech")}{item.LifeSteal}%");
+        if (item.PoisonDamage != 0) bonuses.Add($"{Loc.Get("ui.stat_psn")}+{item.PoisonDamage}");
 
         return string.Join(" ", bonuses.Take(3));
     }
@@ -633,7 +633,7 @@ public class WeaponShopLocation : BaseLocation
                 return false;
 
             default:
-                terminal.WriteLine("Invalid choice!", "red");
+                terminal.WriteLine(Loc.Get("weapon_shop.invalid_choice"), "red");
                 await Task.Delay(1000);
                 return false;
         }
@@ -686,7 +686,7 @@ public class WeaponShopLocation : BaseLocation
         int actualIndex = currentPage * ItemsPerPage + itemIndex - 1;
         if (actualIndex < 0 || actualIndex >= items.Count)
         {
-            terminal.WriteLine("Invalid item number!", "red");
+            terminal.WriteLine(Loc.Get("weapon_shop.invalid_item"), "red");
             await Task.Delay(1000);
             return;
         }
@@ -718,7 +718,7 @@ public class WeaponShopLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("red");
-            terminal.WriteLine($"You need {FormatNumber(totalWithTax)} gold but only have {FormatNumber(currentPlayer.Gold)}!");
+            terminal.WriteLine(Loc.Get("shop.insufficient_gold", FormatNumber(totalWithTax), FormatNumber(currentPlayer.Gold)));
             await Pause();
             return;
         }
@@ -732,30 +732,30 @@ public class WeaponShopLocation : BaseLocation
             && !item.ClassRestrictions.Contains(currentPlayer.Class))
         {
             canEquipPersonally = false;
-            cantEquipReason = $"Class restriction: {GetClassTag(item)}";
+            cantEquipReason = Loc.Get("weapon_shop.class_restriction", GetClassTag(item));
         }
         else if (item.RequiresGood && currentPlayer.Chivalry <= currentPlayer.Darkness)
         {
             canEquipPersonally = false;
-            cantEquipReason = "Requires good alignment";
+            cantEquipReason = Loc.Get("ui.requires_good");
         }
         else if (item.RequiresEvil && currentPlayer.Darkness <= currentPlayer.Chivalry)
         {
             canEquipPersonally = false;
-            cantEquipReason = "Requires evil alignment";
+            cantEquipReason = Loc.Get("ui.requires_evil");
         }
         else if (currentPlayer.Level < item.MinLevel)
         {
             canEquipPersonally = false;
-            cantEquipReason = $"Requires level {item.MinLevel} (you are level {currentPlayer.Level})";
+            cantEquipReason = Loc.Get("weapon_shop.requires_level", item.MinLevel, currentPlayer.Level);
         }
 
         if (!canEquipPersonally)
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Warning: {cantEquipReason}");
-            terminal.WriteLine("This item will go to your inventory (for companions/NPCs).");
+            terminal.WriteLine(Loc.Get("weapon_shop.warning_cant_equip", cantEquipReason));
+            terminal.WriteLine(Loc.Get("shop.item_to_inventory"));
         }
 
         // Warning for 2H weapons if shield equipped
@@ -763,8 +763,8 @@ public class WeaponShopLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("yellow");
-            terminal.WriteLine("Warning: Two-handed weapons require both hands!");
-            terminal.WriteLine("Your shield will be unequipped.");
+            terminal.WriteLine(Loc.Get("weapon_shop.two_hand_warning"));
+            terminal.WriteLine(Loc.Get("weapon_shop.shield_unequipped"));
         }
 
         // Show tax breakdown
@@ -772,14 +772,14 @@ public class WeaponShopLocation : BaseLocation
 
         terminal.WriteLine("");
         terminal.SetColor("white");
-        terminal.Write($"Buy {item.Name} for ");
+        terminal.Write(Loc.Get("weapon_shop.buy_prompt_name", item.Name));
         terminal.SetColor("yellow");
         terminal.Write(FormatNumber(totalWithTax));
         terminal.SetColor("white");
         if (kingTax > 0 || cityTax > 0)
         {
             terminal.SetColor("gray");
-            terminal.Write($" (incl. tax)");
+            terminal.Write(Loc.Get("weapon_shop.incl_tax"));
             terminal.SetColor("white");
         }
         else
@@ -788,11 +788,11 @@ public class WeaponShopLocation : BaseLocation
             if (Math.Abs(totalModifier - 1.0f) > 0.01f)
             {
                 terminal.SetColor("gray");
-                terminal.Write($" (was {FormatNumber(item.Value)})");
+                terminal.Write(Loc.Get("weapon_shop.was_price", FormatNumber(item.Value)));
                 terminal.SetColor("white");
             }
         }
-        terminal.Write(" gold? (Y/N): ");
+        terminal.Write(Loc.Get("weapon_shop.gold_prompt"));
 
         var confirm = await terminal.GetInput("");
         if (confirm.ToUpper() != "Y")
@@ -814,13 +814,13 @@ public class WeaponShopLocation : BaseLocation
             // Ask whether to equip or send to inventory
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            var equipChoice = await terminal.GetInput("[E]quip now or [I]nventory? ");
+            var equipChoice = await terminal.GetInput(Loc.Get("weapon_shop.equip_or_inventory"));
             if (equipChoice.Trim().ToUpper().StartsWith("I"))
             {
                 var invItem = currentPlayer.ConvertEquipmentToLegacyItem(item);
                 currentPlayer.Inventory.Add(invItem);
                 terminal.SetColor("bright_green");
-                terminal.WriteLine($"You purchased {item.Name} — added to inventory.");
+                terminal.WriteLine(Loc.Get("shop.purchased_inventory", item.Name));
             }
             else
             {
@@ -835,7 +835,7 @@ public class WeaponShopLocation : BaseLocation
                         var invItem = currentPlayer.ConvertEquipmentToLegacyItem(item);
                         currentPlayer.Inventory.Add(invItem);
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"You purchased {item.Name} — added to inventory.");
+                        terminal.WriteLine(Loc.Get("shop.purchased_inventory", item.Name));
                         await SaveSystem.Instance.AutoSave(currentPlayer);
                         await Pause();
                         return;
@@ -846,7 +846,7 @@ public class WeaponShopLocation : BaseLocation
                 {
                     terminal.SetColor("bright_green");
                     terminal.WriteLine("");
-                    terminal.WriteLine($"You purchased and equipped {item.Name}!");
+                    terminal.WriteLine(Loc.Get("shop.purchased_equipped", item.Name));
                     if (!string.IsNullOrEmpty(message))
                     {
                         terminal.SetColor("gray");
@@ -861,7 +861,7 @@ public class WeaponShopLocation : BaseLocation
                     currentPlayer.Inventory.Add(invItem);
                     terminal.SetColor("yellow");
                     terminal.WriteLine("");
-                    terminal.WriteLine($"Couldn't equip {item.Name} — added to inventory.");
+                    terminal.WriteLine(Loc.Get("shop.couldnt_equip", item.Name));
                 }
             }
         }
@@ -872,7 +872,7 @@ public class WeaponShopLocation : BaseLocation
             currentPlayer.Inventory.Add(invItem);
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine($"You purchased {item.Name} — added to inventory.");
+            terminal.WriteLine(Loc.Get("shop.purchased_inventory", item.Name));
         }
 
         // Track purchase (all paths — equip, inventory, or can't-equip)
@@ -891,7 +891,7 @@ public class WeaponShopLocation : BaseLocation
     private async Task SellWeapon()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("Sell Weapons/Shields", "bright_yellow");
+        WriteSectionHeader(Loc.Get("weapon_shop.sell_header"), "bright_yellow");
         terminal.WriteLine("");
 
         // Get Shadows faction fence bonus modifier (1.0 normal, 1.2 with Shadows)
@@ -901,7 +901,7 @@ public class WeaponShopLocation : BaseLocation
         if (hasFenceBonus)
         {
             terminal.SetColor("bright_magenta");
-            terminal.WriteLine("  [Shadows Bonus: +20% sell prices]");
+            terminal.WriteLine(Loc.Get("weapon_shop.shadows_bonus"));
             terminal.WriteLine("");
         }
 
@@ -911,7 +911,7 @@ public class WeaponShopLocation : BaseLocation
 
         // Show equipped items first
         terminal.SetColor("cyan");
-        terminal.WriteLine("[ EQUIPPED ]");
+        terminal.WriteLine(Loc.Get("weapon_shop.equipped_label"));
 
         var mainHand = currentPlayer.GetEquipment(EquipmentSlot.MainHand);
         if (mainHand != null)
@@ -921,9 +921,9 @@ public class WeaponShopLocation : BaseLocation
             terminal.SetColor("bright_cyan");
             terminal.Write($"{num}. ");
             terminal.SetColor("white");
-            terminal.Write($"Main Hand: {mainHand.Name}");
+            terminal.Write(Loc.Get("weapon_shop.sell_main_hand", mainHand.Name));
             terminal.SetColor("yellow");
-            terminal.WriteLine($" - Sell for {FormatNumber(displayPrice)} gold");
+            terminal.WriteLine(Loc.Get("weapon_shop.sell_for_gold", FormatNumber(displayPrice)));
             num++;
         }
 
@@ -935,9 +935,9 @@ public class WeaponShopLocation : BaseLocation
             terminal.SetColor("bright_cyan");
             terminal.Write($"{num}. ");
             terminal.SetColor("white");
-            terminal.Write($"Off Hand: {offHand.Name}");
+            terminal.Write(Loc.Get("weapon_shop.sell_off_hand", offHand.Name));
             terminal.SetColor("yellow");
-            terminal.WriteLine($" - Sell for {FormatNumber(displayPrice)} gold");
+            terminal.WriteLine(Loc.Get("weapon_shop.sell_for_gold", FormatNumber(displayPrice)));
             num++;
         }
 
@@ -951,7 +951,7 @@ public class WeaponShopLocation : BaseLocation
         {
             terminal.WriteLine("");
             terminal.SetColor("cyan");
-            terminal.WriteLine("[ INVENTORY ]");
+            terminal.WriteLine(Loc.Get("weapon_shop.inventory_label"));
 
             foreach (var (item, invIndex) in inventoryWeapons)
             {
@@ -962,11 +962,11 @@ public class WeaponShopLocation : BaseLocation
                 terminal.SetColor("white");
                 terminal.Write($"{item.Name}");
                 if (item.Type == ObjType.Weapon)
-                    terminal.Write($" (WP:{item.Attack})");
+                    terminal.Write(Loc.Get("weapon_shop.inv_wp", item.Attack));
                 else
-                    terminal.Write($" (Shield)");
+                    terminal.Write(Loc.Get("weapon_shop.inv_shield"));
                 terminal.SetColor("yellow");
-                terminal.WriteLine($" - Sell for {FormatNumber(displayPrice)} gold");
+                terminal.WriteLine(Loc.Get("weapon_shop.sell_for_gold", FormatNumber(displayPrice)));
                 num++;
             }
         }
@@ -974,13 +974,13 @@ public class WeaponShopLocation : BaseLocation
         if (sellableItems.Count == 0)
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("You have no weapons or shields to sell.");
+            terminal.WriteLine(Loc.Get("ui.no_weapons_to_sell"));
             await Pause();
             return;
         }
 
         terminal.WriteLine("");
-        terminal.Write("Sell which? ([A]ll backpack, 0 to cancel): ");
+        terminal.Write(Loc.Get("weapon_shop.sell_prompt"));
         var input = (await terminal.GetInput("")).Trim().ToUpper();
 
         if (input == "A")
@@ -994,14 +994,14 @@ public class WeaponShopLocation : BaseLocation
             if (sellable.Count == 0)
             {
                 terminal.SetColor("gray");
-                terminal.WriteLine("No sellable weapons or shields in your backpack.");
+                terminal.WriteLine(Loc.Get("weapon_shop.no_sellable"));
                 await Pause();
                 return;
             }
 
             long totalGold = sellable.Sum(i => (long)((i.Value / 2) * fenceModifier));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"Sell {sellable.Count} item{(sellable.Count > 1 ? "s" : "")} for {FormatNumber(totalGold)} gold? (Y/N): ");
+            terminal.WriteLine(Loc.Get("weapon_shop.bulk_sell_confirm", sellable.Count, FormatNumber(totalGold)));
             var bulkConfirm = (await terminal.GetInput("")).Trim().ToUpper();
 
             if (bulkConfirm == "Y")
@@ -1015,7 +1015,7 @@ public class WeaponShopLocation : BaseLocation
 
                 terminal.SetColor("bright_green");
                 terminal.WriteLine("");
-                terminal.WriteLine($"Sold {sellable.Count} item{(sellable.Count > 1 ? "s" : "")} for {FormatNumber(totalGold)} gold!");
+                terminal.WriteLine(sellable.Count > 1 ? Loc.Get("shop.sold_bulk", sellable.Count, FormatNumber(totalGold)) : Loc.Get("shop.sold_bulk_one", sellable.Count, FormatNumber(totalGold)));
             }
             await Pause();
             return;
@@ -1033,16 +1033,12 @@ public class WeaponShopLocation : BaseLocation
         {
             terminal.SetColor("red");
             terminal.WriteLine("");
-            terminal.WriteLine($"The {selected.name} is CURSED and cannot be sold!");
+            terminal.WriteLine(Loc.Get("shop.cursed_cannot_sell", selected.name));
             await Pause();
             return;
         }
 
-        terminal.Write($"Sell {selected.name} for ");
-        terminal.SetColor("yellow");
-        terminal.Write(FormatNumber(price));
-        terminal.SetColor("white");
-        terminal.Write(" gold? (Y/N): ");
+        terminal.Write(Loc.Get("weapon_shop.sell_confirm", selected.name, FormatNumber(price)));
 
         var confirm = await terminal.GetInput("");
         if (confirm.ToUpper() == "Y")
@@ -1071,7 +1067,7 @@ public class WeaponShopLocation : BaseLocation
 
             terminal.SetColor("bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine($"Sold {selected.name} for {FormatNumber(price)} gold!");
+            terminal.WriteLine(Loc.Get("shop.sold_single", selected.name, FormatNumber(price)));
         }
 
         await Pause();
@@ -1080,7 +1076,7 @@ public class WeaponShopLocation : BaseLocation
     private async Task AutoBuyBestWeapon()
     {
         terminal.ClearScreen();
-        WriteSectionHeader("Auto-Buy Best Affordable Weapon", "bright_cyan");
+        WriteSectionHeader(Loc.Get("weapon_shop.auto_buy"), "bright_cyan");
         terminal.WriteLine("");
 
         var currentWeapon = currentPlayer.GetEquipment(EquipmentSlot.MainHand);
@@ -1105,13 +1101,13 @@ public class WeaponShopLocation : BaseLocation
             if (currentWeapon != null)
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"No upgrades available. Your {currentWeapon.Name} (WP: {currentPow}) is already");
-                terminal.WriteLine($"the best weapon you can afford with {FormatNumber(currentPlayer.Gold)} gold.");
+                terminal.WriteLine(Loc.Get("weapon_shop.autobuy_already_best", currentWeapon.Name, currentPow));
+                terminal.WriteLine(Loc.Get("weapon_shop.autobuy_best_afford", FormatNumber(currentPlayer.Gold)));
             }
             else
             {
                 terminal.SetColor("yellow");
-                terminal.WriteLine($"No affordable weapons found. You have {FormatNumber(currentPlayer.Gold)} gold.");
+                terminal.WriteLine(Loc.Get("weapon_shop.autobuy_no_affordable", FormatNumber(currentPlayer.Gold)));
             }
             terminal.WriteLine("");
             await Pause();
@@ -1119,8 +1115,8 @@ public class WeaponShopLocation : BaseLocation
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine($"Current weapon: {currentWeapon?.Name ?? "(none)"} (WP: {currentPow})");
-        terminal.WriteLine($"Your gold: {FormatNumber(currentPlayer.Gold)}");
+        terminal.WriteLine(Loc.Get("weapon_shop.autobuy_current", currentWeapon?.Name ?? Loc.Get("ui.none"), currentPow));
+        terminal.WriteLine(Loc.Get("weapon_shop.autobuy_your_gold", FormatNumber(currentPlayer.Gold)));
         terminal.WriteLine("");
 
         // Iterate through weapons, letting player choose
@@ -1151,24 +1147,24 @@ public class WeaponShopLocation : BaseLocation
             terminal.SetColor("cyan");
             terminal.WriteLine($"  {weapon.Name}");
             terminal.SetColor("white");
-            terminal.WriteLine($"  Weapon Power: {weapon.WeaponPower} (currently: {currentPow}, +{weapon.WeaponPower - currentPow})");
+            terminal.WriteLine(Loc.Get("weapon_shop.autobuy_wp", weapon.WeaponPower, currentPow, weapon.WeaponPower - currentPow));
             terminal.SetColor("yellow");
-            terminal.WriteLine($"  Price: {FormatNumber(adjustedPrice)} gold");
+            terminal.WriteLine(Loc.Get("weapon_shop.autobuy_price", FormatNumber(adjustedPrice)));
 
             // Show tax breakdown
             CityControlSystem.Instance.DisplayTaxBreakdown(terminal, weapon.Name, adjustedPrice);
 
             terminal.SetColor("gray");
-            terminal.WriteLine($"  (Gold after purchase: {FormatNumber(currentPlayer.Gold - abTotal)})");
+            terminal.WriteLine(Loc.Get("weapon_shop.autobuy_gold_after", FormatNumber(currentPlayer.Gold - abTotal)));
             terminal.WriteLine("");
 
             terminal.SetColor("white");
-            terminal.WriteLine("  [Y] Buy this weapon");
-            terminal.WriteLine("  [N] Skip, show next option");
-            terminal.WriteLine("  [S] Skip weapon slot entirely");
-            terminal.WriteLine("  [C] Cancel auto-buy");
+            terminal.WriteLine(Loc.Get("weapon_shop.auto_buy_yes"));
+            terminal.WriteLine(Loc.Get("weapon_shop.auto_buy_no"));
+            terminal.WriteLine(Loc.Get("weapon_shop.auto_buy_skip"));
+            terminal.WriteLine(Loc.Get("weapon_shop.auto_buy_cancel"));
             terminal.WriteLine("");
-            terminal.Write("Your choice: ");
+            terminal.Write(Loc.Get("ui.your_choice"));
 
             var choice = await terminal.GetInput("");
             terminal.WriteLine("");
@@ -1193,7 +1189,7 @@ public class WeaponShopLocation : BaseLocation
                             currentPlayer.Statistics.TotalGoldSpent -= abTotal;
                             currentPlayer.Statistics.TotalItemsBought--;
                             terminal.SetColor("yellow");
-                            terminal.WriteLine("Purchase cancelled.");
+                            terminal.WriteLine(Loc.Get("weapon_shop.purchase_cancelled"));
                             await Pause();
                             return;
                         }
@@ -1202,7 +1198,7 @@ public class WeaponShopLocation : BaseLocation
                     if (currentPlayer.EquipItem(weapon, targetSlot, out string message))
                     {
                         terminal.SetColor("bright_green");
-                        terminal.WriteLine($"Bought and equipped {weapon.Name}!");
+                        terminal.WriteLine(Loc.Get("weapon_shop.autobuy_purchased", weapon.Name));
                         if (!string.IsNullOrEmpty(message))
                         {
                             terminal.SetColor("gray");
@@ -1217,7 +1213,7 @@ public class WeaponShopLocation : BaseLocation
                     else
                     {
                         terminal.SetColor("red");
-                        terminal.WriteLine($"Failed: {message}");
+                        terminal.WriteLine(Loc.Get("weapon_shop.autobuy_failed", message));
                         currentPlayer.Gold += abTotal;
                     }
 
@@ -1233,41 +1229,41 @@ public class WeaponShopLocation : BaseLocation
                     // Skip to next weapon option
                     weaponIndex++;
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Skipped.");
+                    terminal.WriteLine(Loc.Get("weapon_shop.skipped"));
                     terminal.WriteLine("");
                     break;
 
                 case "S":
                     // Skip weapon slot entirely
                     terminal.SetColor("gray");
-                    terminal.WriteLine("Skipping weapon slot.");
+                    terminal.WriteLine(Loc.Get("weapon_shop.skipping_slot"));
                     await Pause();
                     return;
 
                 case "C":
                     // Cancel entirely
                     terminal.SetColor("yellow");
-                    terminal.WriteLine("Auto-buy cancelled.");
+                    terminal.WriteLine(Loc.Get("weapon_shop.auto_cancelled"));
                     await Pause();
                     return;
 
                 default:
                     terminal.SetColor("red");
-                    terminal.WriteLine("Invalid choice. Please enter Y, N, S, or C.");
+                    terminal.WriteLine(Loc.Get("weapon_shop.auto_invalid"));
                     break;
             }
         }
 
         // No more options
         terminal.SetColor("gray");
-        terminal.WriteLine("No more affordable weapon upgrades available.");
+        terminal.WriteLine(Loc.Get("weapon_shop.autobuy_no_more"));
         await Pause();
     }
 
     private async Task Pause()
     {
         terminal.SetColor("gray");
-        terminal.Write("Press ENTER to continue...");
+        terminal.Write(Loc.Get("ui.press_enter"));
         await terminal.GetInput("");
     }
 
@@ -1278,7 +1274,7 @@ public class WeaponShopLocation : BaseLocation
     {
         terminal.WriteLine("");
         terminal.SetColor("cyan");
-        terminal.WriteLine("This is a one-handed weapon. Where would you like to equip it?");
+        terminal.WriteLine(Loc.Get("weapon_shop.one_hand_where"));
         terminal.WriteLine("");
 
         // Show current equipment in both slots
@@ -1286,7 +1282,7 @@ public class WeaponShopLocation : BaseLocation
         var offHandItem = currentPlayer.GetEquipment(EquipmentSlot.OffHand);
 
         terminal.SetColor("white");
-        terminal.Write("  (M) Main Hand: ");
+        terminal.Write(Loc.Get("weapon_shop.one_hand_main"));
         if (mainHandItem != null)
         {
             terminal.SetColor("yellow");
@@ -1295,11 +1291,11 @@ public class WeaponShopLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         terminal.SetColor("white");
-        terminal.Write("  (O) Off-Hand:  ");
+        terminal.Write(Loc.Get("weapon_shop.one_hand_off"));
         if (offHandItem != null)
         {
             terminal.SetColor("yellow");
@@ -1308,14 +1304,14 @@ public class WeaponShopLocation : BaseLocation
         else
         {
             terminal.SetColor("gray");
-            terminal.WriteLine("Empty");
+            terminal.WriteLine(Loc.Get("ui.empty"));
         }
 
         terminal.SetColor("white");
-        terminal.WriteLine("  (C) Cancel");
+        terminal.WriteLine(Loc.Get("weapon_shop.one_hand_cancel"));
         terminal.WriteLine("");
 
-        terminal.Write("Your choice: ");
+        terminal.Write(Loc.Get("ui.your_choice"));
         var slotChoice = await terminal.GetInput("");
 
         return slotChoice.ToUpper() switch

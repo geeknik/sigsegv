@@ -660,7 +660,7 @@ namespace UsurperRemake.Systems
             // Check if already resolved
             if (madeChoices.ContainsKey(paradoxId))
             {
-                terminal.WriteLine("You have already made this choice.", "yellow");
+                terminal.WriteLine(Loc.Get("moral.already_chosen"), "yellow");
                 return madeChoices[paradoxId];
             }
 
@@ -709,7 +709,7 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "A   C H O I C E   A W A I T S", "bright_yellow", 64);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("moral.header_choice"), "bright_yellow", 64);
             terminal.WriteLine("");
             terminal.WriteLine($"  {paradox.Name}", "bright_white");
             terminal.WriteLine("");
@@ -766,17 +766,17 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine("  There is no going back.", "dark_red");
+            terminal.WriteLine($"  {Loc.Get("moral.no_going_back")}", "dark_red");
             terminal.WriteLine("");
 
             while (true)
             {
-                var input = await terminal.GetInputAsync("  Your choice: ");
+                var input = await terminal.GetInputAsync($"  {Loc.Get("ui.your_choice")}");
                 if (int.TryParse(input, out int choice) && choice >= 1 && choice <= availableChoices.Count)
                 {
                     return availableChoices[choice - 1];
                 }
-                terminal.WriteLine("  Please enter a valid choice.", "yellow");
+                terminal.WriteLine($"  {Loc.Get("moral.enter_valid_choice")}", "yellow");
             }
         }
 
@@ -787,7 +787,7 @@ namespace UsurperRemake.Systems
         {
             terminal.Clear();
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "C O N S E Q U E N C E S", "dark_cyan", 64);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("moral.header_consequences"), "dark_cyan", 64);
             terminal.WriteLine("");
 
             await Task.Delay(1000);
@@ -806,7 +806,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>
@@ -887,7 +887,7 @@ namespace UsurperRemake.Systems
             if (!GameConfig.ScreenReaderMode)
                 terminal.WriteLine("  ═══════════════════════════════════════════", "dark_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("  [A deeper understanding stirs...]", "cyan");
+            terminal.WriteLine($"  {Loc.Get("moral.deeper_understanding")}", "cyan");
             terminal.WriteLine("");
 
             foreach (var line in paradox.OceanPhilosophyReflection!)
@@ -897,7 +897,7 @@ namespace UsurperRemake.Systems
             }
 
             terminal.WriteLine("");
-            await terminal.GetInputAsync("  Press Enter to continue...");
+            await terminal.GetInputAsync($"  {Loc.Get("ui.press_enter")}");
         }
 
         /// <summary>

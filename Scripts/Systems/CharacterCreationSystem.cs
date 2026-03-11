@@ -36,9 +36,9 @@ public class CharacterCreationSystem
         }
 
         terminal.WriteLine("");
-        terminal.WriteLine("--- CHARACTER CREATION ---", "bright_green");
+        terminal.WriteLine($"--- {Loc.Get("creation.header")} ---", "bright_green");
         terminal.WriteLine("");
-        terminal.WriteLine("Welcome to the medieval world of Usurper...", "yellow");
+        terminal.WriteLine(Loc.Get("creation.welcome"), "yellow");
         terminal.WriteLine("");
 
         // Create base character with Pascal defaults
@@ -55,7 +55,7 @@ public class CharacterCreationSystem
                 character.Name1 = DoorMode.GetPlayerName();
 
                 // Let player choose a display name
-                terminal.WriteLine($"BBS Login: {character.Name1}", "gray");
+                terminal.WriteLine($"{Loc.Get("character_creation.bbs_login")}: {character.Name1}", "gray");
                 terminal.WriteLine("");
                 characterName = await SelectCharacterName();
                 if (string.IsNullOrEmpty(characterName))
@@ -68,7 +68,7 @@ public class CharacterCreationSystem
             {
                 // Alt character: Name1 = DB key (e.g. "rage__alt"), Name2 = player-chosen display name
                 character.Name1 = playerName;
-                terminal.WriteLine("  Choose a name for your alt character:", "bright_cyan");
+                terminal.WriteLine($"  {Loc.Get("creation.choose_display_name")}", "bright_cyan");
                 terminal.WriteLine("");
                 characterName = await SelectCharacterName();
                 if (string.IsNullOrEmpty(characterName))
@@ -85,9 +85,9 @@ public class CharacterCreationSystem
                 if (DoorMode.IsOnlineMode)
                 {
                     // Online mode: account name is the save key, let player choose a display name
-                    terminal.WriteLine($"Account: {playerName}", "gray");
+                    terminal.WriteLine($"{Loc.Get("character_creation.account")}: {playerName}", "gray");
                     terminal.WriteLine("");
-                    terminal.WriteLine("Choose a character name (or press Enter to use your account name):", "bright_cyan");
+                    terminal.WriteLine(Loc.Get("creation.choose_display_online"), "bright_cyan");
                     terminal.WriteLine("");
                     characterName = await SelectCharacterName(allowEmpty: true);
                     if (string.IsNullOrWhiteSpace(characterName))
@@ -98,7 +98,7 @@ public class CharacterCreationSystem
                 {
                     // Local/save slot: name already provided, use it directly
                     characterName = playerName;
-                    terminal.WriteLine($"Creating character: {characterName}", "cyan");
+                    terminal.WriteLine(Loc.Get("creation.creating", characterName), "cyan");
                     terminal.WriteLine("");
                     character.Name2 = characterName;
                 }
@@ -147,16 +147,16 @@ public class CharacterCreationSystem
             // Step 9: Show character summary and confirm
             await ShowCharacterSummary(character);
             
-            var confirm = await terminal.GetInputAsync("Create this character? (Y/n): ");
+            var confirm = await terminal.GetInputAsync(Loc.Get("creation.confirm"));
             if (!string.IsNullOrEmpty(confirm) && confirm.ToUpper() != "Y")
             {
-                terminal.WriteLine("Character creation aborted.", "red");
+                terminal.WriteLine(Loc.Get("creation.aborted"), "red");
                 return null;
             }
-            
+
             terminal.WriteLine("");
-            terminal.WriteLine("Character created successfully!", "green");
-            terminal.WriteLine("Preparing to enter the realm...", "cyan");
+            terminal.WriteLine(Loc.Get("creation.created"), "green");
+            terminal.WriteLine(Loc.Get("creation.entering"), "cyan");
             await Task.Delay(2000);
             
             return character;
@@ -320,17 +320,17 @@ public class CharacterCreationSystem
         do
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Enter your character's name:", "cyan");
-            terminal.WriteLine("This is the name you will be known by in the realm.");
+            terminal.WriteLine(Loc.Get("creation.enter_name"), "cyan");
+            terminal.WriteLine(Loc.Get("creation.name_known_as"));
             terminal.WriteLine("");
 
-            name = await terminal.GetInputAsync("Character name: ");
+            name = await terminal.GetInputAsync(Loc.Get("creation.name_prompt"));
 
             if (string.IsNullOrWhiteSpace(name))
             {
                 if (allowEmpty)
                     return ""; // Caller handles the default
-                terminal.WriteLine("You must enter a name!", "red");
+                terminal.WriteLine(Loc.Get("creation.name_required"), "red");
                 continue;
             }
 
@@ -340,7 +340,7 @@ public class CharacterCreationSystem
             var upperName = name.ToUpper();
             if (GameConfig.ForbiddenNames.Contains(upperName))
             {
-                terminal.WriteLine("I'm sorry, but that name is already being used.", "red");
+                terminal.WriteLine(Loc.Get("creation.name_forbidden"), "red");
                 continue;
             }
 
@@ -353,13 +353,13 @@ public class CharacterCreationSystem
                 if (existingNames.Any(n => string.Equals(n, name, StringComparison.OrdinalIgnoreCase)
                     && !string.Equals(n, ownAccount, StringComparison.OrdinalIgnoreCase)))
                 {
-                    terminal.WriteLine("That name is already taken! Choose another.", "red");
+                    terminal.WriteLine(Loc.Get("creation.name_taken"), "red");
                     continue;
                 }
             }
 
             terminal.WriteLine("");
-            terminal.WriteLine($"{name} is what you want? (Y/n)", "yellow");
+            terminal.WriteLine(Loc.Get("creation.name_confirm", name), "yellow");
             var confirm = await terminal.GetInputAsync("");
 
             if (string.IsNullOrEmpty(confirm) || confirm.ToUpper() == "Y")
@@ -380,26 +380,26 @@ public class CharacterCreationSystem
         while (true)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("Gender:", "cyan");
-            terminal.WriteLine("(M)ale", "white");
-            terminal.WriteLine("(F)emale", "white");
-            
-            var choice = await terminal.GetInputAsync("Choice: ");
+            terminal.WriteLine(Loc.Get("creation.gender"), "cyan");
+            terminal.WriteLine(Loc.Get("creation.male"), "white");
+            terminal.WriteLine(Loc.Get("creation.female"), "white");
+
+            var choice = await terminal.GetInputAsync(Loc.Get("creation.gender_prompt"));
             
             switch (choice.ToUpper())
             {
                 case "M":
-                    if (await ConfirmChoice("Play a Male character", false))
+                    if (await ConfirmChoice(Loc.Get("creation.gender_confirm_m"), false))
                         return CharacterSex.Male;
                     break;
-                    
+
                 case "F":
-                    if (await ConfirmChoice("Play a Female character", false))
+                    if (await ConfirmChoice(Loc.Get("creation.gender_confirm_f"), false))
                         return CharacterSex.Female;
                     break;
                     
                 default:
-                    terminal.WriteLine("Please choose M or F.", "red");
+                    terminal.WriteLine(Loc.Get("creation.gender_invalid"), "red");
                     break;
             }
         }
@@ -412,40 +412,40 @@ public class CharacterCreationSystem
     {
         terminal.Clear();
         terminal.WriteLine("");
-        UIHelper.WriteBoxHeader(terminal, "SELECT DIFFICULTY MODE", "bright_cyan", 64);
+        UIHelper.WriteBoxHeader(terminal, Loc.Get("creation.difficulty.header"), "bright_cyan", 64);
         terminal.WriteLine("");
 
         while (true)
         {
             // Display difficulty options with descriptions
-            terminal.WriteLine("(E)asy      - " + DifficultySystem.GetDescription(DifficultyMode.Easy), DifficultySystem.GetColor(DifficultyMode.Easy));
+            terminal.WriteLine($"(E){Loc.Get("character_creation.easy_label")}      - " + DifficultySystem.GetDescription(DifficultyMode.Easy), DifficultySystem.GetColor(DifficultyMode.Easy));
             terminal.WriteLine("");
-            terminal.WriteLine("(N)ormal    - " + DifficultySystem.GetDescription(DifficultyMode.Normal), DifficultySystem.GetColor(DifficultyMode.Normal));
+            terminal.WriteLine($"(N){Loc.Get("character_creation.normal_label")}    - " + DifficultySystem.GetDescription(DifficultyMode.Normal), DifficultySystem.GetColor(DifficultyMode.Normal));
             terminal.WriteLine("");
-            terminal.WriteLine("(H)ard      - " + DifficultySystem.GetDescription(DifficultyMode.Hard), DifficultySystem.GetColor(DifficultyMode.Hard));
+            terminal.WriteLine($"(H){Loc.Get("character_creation.hard_label")}      - " + DifficultySystem.GetDescription(DifficultyMode.Hard), DifficultySystem.GetColor(DifficultyMode.Hard));
             terminal.WriteLine("");
-            terminal.WriteLine("(!)Nightmare- " + DifficultySystem.GetDescription(DifficultyMode.Nightmare), DifficultySystem.GetColor(DifficultyMode.Nightmare));
+            terminal.WriteLine($"(!){Loc.Get("character_creation.nightmare_label")}- " + DifficultySystem.GetDescription(DifficultyMode.Nightmare), DifficultySystem.GetColor(DifficultyMode.Nightmare));
             terminal.WriteLine("");
 
-            var choice = await terminal.GetInputAsync("Choose difficulty (E/N/H/!): ");
+            var choice = await terminal.GetInputAsync(Loc.Get("creation.difficulty.prompt"));
 
             switch (choice.ToUpper())
             {
                 case "E":
                     terminal.WriteLine("");
-                    terminal.WriteLine("Easy mode selected - enjoy a relaxed adventure!", DifficultySystem.GetColor(DifficultyMode.Easy));
+                    terminal.WriteLine(Loc.Get("creation.difficulty.easy_selected"), DifficultySystem.GetColor(DifficultyMode.Easy));
                     await Task.Delay(1000);
                     return DifficultyMode.Easy;
 
                 case "N":
                     terminal.WriteLine("");
-                    terminal.WriteLine("Normal mode selected - the classic Usurper experience!", DifficultySystem.GetColor(DifficultyMode.Normal));
+                    terminal.WriteLine(Loc.Get("creation.difficulty.normal_selected"), DifficultySystem.GetColor(DifficultyMode.Normal));
                     await Task.Delay(1000);
                     return DifficultyMode.Normal;
 
                 case "H":
                     terminal.WriteLine("");
-                    terminal.WriteLine("Hard mode selected - prepare for a challenge!", DifficultySystem.GetColor(DifficultyMode.Hard));
+                    terminal.WriteLine(Loc.Get("creation.difficulty.hard_selected"), DifficultySystem.GetColor(DifficultyMode.Hard));
                     await Task.Delay(1000);
                     return DifficultyMode.Hard;
 
@@ -453,27 +453,27 @@ public class CharacterCreationSystem
                     terminal.WriteLine("");
                     if (!GameConfig.ScreenReaderMode)
                         terminal.WriteLine("═══════════════════════════════════════════", "bright_red");
-                    terminal.WriteLine("    NIGHTMARE MODE — PERMADEATH", DifficultySystem.GetColor(DifficultyMode.Nightmare));
+                    terminal.WriteLine($"    {Loc.Get("creation.difficulty.nightmare_header")}", DifficultySystem.GetColor(DifficultyMode.Nightmare));
                     if (!GameConfig.ScreenReaderMode)
                         terminal.WriteLine("═══════════════════════════════════════════", "bright_red");
                     terminal.WriteLine("");
-                    terminal.WriteLine("Death is permanent. Your save will be", "red");
-                    terminal.WriteLine("deleted if you die. No resurrections.", "red");
-                    terminal.WriteLine("No mercy. No second chances.", "red");
+                    terminal.WriteLine(Loc.Get("creation.difficulty.nightmare_desc1"), "red");
+                    terminal.WriteLine(Loc.Get("creation.difficulty.nightmare_desc2"), "red");
+                    terminal.WriteLine(Loc.Get("creation.difficulty.nightmare_desc3"), "red");
                     terminal.WriteLine("");
-                    var confirm = await terminal.GetInputAsync("Death is PERMANENT. Are you SURE? (y/N): ");
+                    var confirm = await terminal.GetInputAsync(Loc.Get("creation.difficulty.nightmare_confirm"));
                     if (confirm.ToUpper() == "Y")
                     {
-                        terminal.WriteLine("Your fate is sealed. May the gods have mercy.", "bright_red");
+                        terminal.WriteLine(Loc.Get("creation.difficulty.nightmare_sealed"), "bright_red");
                         await Task.Delay(1500);
                         return DifficultyMode.Nightmare;
                     }
-                    terminal.WriteLine("A wise choice. Select another difficulty.", "yellow");
+                    terminal.WriteLine(Loc.Get("creation.difficulty.nightmare_wise"), "yellow");
                     terminal.WriteLine("");
                     break;
 
                 default:
-                    terminal.WriteLine("Please choose E, N, H, or !.", "red");
+                    terminal.WriteLine(Loc.Get("creation.difficulty.invalid"), "red");
                     terminal.WriteLine("");
                     break;
             }
@@ -493,27 +493,27 @@ public class CharacterCreationSystem
             {
                 terminal.Clear();
                 terminal.WriteLine("");
-                terminal.WriteLine("Choose your Race:", "cyan");
+                terminal.WriteLine(Loc.Get("creation.choose_race"), "cyan");
                 terminal.WriteLine("");
 
                 // Show race menu with available classes
-                DisplayRaceOption(0, "Human", CharacterRace.Human);
-                DisplayRaceOption(1, "Hobbit", CharacterRace.Hobbit);
-                DisplayRaceOption(2, "Elf", CharacterRace.Elf);
-                DisplayRaceOption(3, "Half-elf", CharacterRace.HalfElf);
-                DisplayRaceOption(4, "Dwarf", CharacterRace.Dwarf);
-                DisplayRaceOption(5, "Troll", CharacterRace.Troll, "*regeneration");
-                DisplayRaceOption(6, "Orc", CharacterRace.Orc);
-                DisplayRaceOption(7, "Gnome", CharacterRace.Gnome);
-                DisplayRaceOption(8, "Gnoll", CharacterRace.Gnoll, "*poisonous bite");
-                DisplayRaceOption(9, "Mutant", CharacterRace.Mutant);
+                DisplayRaceOption(0, Loc.Get("race.human"), CharacterRace.Human);
+                DisplayRaceOption(1, Loc.Get("race.hobbit"), CharacterRace.Hobbit);
+                DisplayRaceOption(2, Loc.Get("race.elf"), CharacterRace.Elf);
+                DisplayRaceOption(3, Loc.Get("race.half_elf"), CharacterRace.HalfElf);
+                DisplayRaceOption(4, Loc.Get("race.dwarf"), CharacterRace.Dwarf);
+                DisplayRaceOption(5, Loc.Get("race.troll"), CharacterRace.Troll, $"*{Loc.Get("creation.preview.regen").ToLower()}");
+                DisplayRaceOption(6, Loc.Get("race.orc"), CharacterRace.Orc);
+                DisplayRaceOption(7, Loc.Get("race.gnome"), CharacterRace.Gnome);
+                DisplayRaceOption(8, Loc.Get("race.gnoll"), CharacterRace.Gnoll, $"*{Loc.Get("creation.preview.poison_bite").ToLower()}");
+                DisplayRaceOption(9, Loc.Get("race.mutant"), CharacterRace.Mutant);
                 terminal.WriteLine("");
-                terminal.WriteLine("(H) Help", "green");
-                terminal.WriteLine("(A) Abort", "red");
+                terminal.WriteLine($"(H) {Loc.Get("creation.help")}", "green");
+                terminal.WriteLine($"(A) {Loc.Get("creation.abort")}", "red");
                 terminal.WriteLine("");
             }
 
-            choice = await terminal.GetInputAsync("Your choice: ");
+            choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
             // Handle help
             if (choice.ToUpper() == "H")
@@ -526,7 +526,7 @@ public class CharacterCreationSystem
             // Handle abort
             if (choice.ToUpper() == "A")
             {
-                if (await ConfirmChoice("Abort", false))
+                if (await ConfirmChoice(Loc.Get("charcreate.abort"), false))
                 {
                     throw new OperationCanceledException("Character creation aborted by user");
                 }
@@ -548,7 +548,7 @@ public class CharacterCreationSystem
             }
             else
             {
-                terminal.WriteLine("Invalid choice. Please select 0-9, H for help, or A to abort.", "red");
+                terminal.WriteLine(Loc.Get("creation.invalid_race"), "red");
             }
         }
     }
@@ -586,7 +586,7 @@ public class CharacterCreationSystem
         // Show available classes in a muted color
         if (availableClasses.Count == allClasses.Length)
         {
-            terminal.WriteLine($" [All classes]", "darkgray");
+            terminal.WriteLine($" [{Loc.Get("creation.all_classes")}]", "darkgray");
         }
         else
         {
@@ -711,7 +711,7 @@ public class CharacterCreationSystem
 
         // ── Row 22: Confirm prompt ──
         var raceDesc = GameConfig.RaceDescriptions[race];
-        string prompt = $" Be {raceDesc}? [Y]es [N]o";
+        string prompt = $" {Loc.Get("creation.preview.be_race", raceDesc)}";
         terminal.Write("║", "gray");
         terminal.Write(prompt.PadRight(TOTAL_W - 2), "white");
         terminal.WriteLine("║", "gray");
@@ -781,10 +781,10 @@ public class CharacterCreationSystem
         }
 
         // ── Stat bars ──
-        AddStatBar("HP", raceAttrib.HPBonus, 17);
-        AddStatBar("Strength", raceAttrib.StrengthBonus, 5);
-        AddStatBar("Defence", raceAttrib.DefenceBonus, 5);
-        AddStatBar("Stamina", raceAttrib.StaminaBonus, 5);
+        AddStatBar(Loc.Get("status.hp"), raceAttrib.HPBonus, 17);
+        AddStatBar(Loc.Get("status.str"), raceAttrib.StrengthBonus, 5);
+        AddStatBar(Loc.Get("status.def"), raceAttrib.DefenceBonus, 5);
+        AddStatBar(Loc.Get("status.sta"), raceAttrib.StaminaBonus, 5);
 
         // ── Separator ──
         AddSeparator();
@@ -823,11 +823,11 @@ public class CharacterCreationSystem
 
         if (available.Count == allClasses.Length)
         {
-            AddText("Classes: All", "cyan");
+            AddText($"{Loc.Get("creation.preview.classes")} {Loc.Get("creation.preview.classes_all")}", "cyan");
         }
         else
         {
-            AddText("Classes:", "cyan");
+            AddText(Loc.Get("creation.preview.classes"), "cyan");
             // Word-wrap class list
             var classList = new StringBuilder();
             foreach (var cls in available)
@@ -869,17 +869,17 @@ public class CharacterCreationSystem
         // ── Special trait ──
         string special = race switch
         {
-            CharacterRace.Troll => "Regeneration",
-            CharacterRace.Gnoll => "Poisonous Bite",
-            _ => "None"
+            CharacterRace.Troll => Loc.Get("creation.preview.regen"),
+            CharacterRace.Gnoll => Loc.Get("creation.preview.poison_bite"),
+            _ => Loc.Get("creation.preview.none")
         };
-        AddText($"Special: {special}", "cyan");
-        if (race == CharacterRace.Troll) AddText("Heals HP each round", "gray");
-        else if (race == CharacterRace.Gnoll) AddText("Chance to poison foes", "gray");
+        AddText($"{Loc.Get("creation.preview.special")} {special}", "cyan");
+        if (race == CharacterRace.Troll) AddText(Loc.Get("creation.preview.regen_desc"), "gray");
+        else if (race == CharacterRace.Gnoll) AddText(Loc.Get("creation.preview.poison_desc"), "gray");
 
         // ── Armor restriction for small races ──
         if (GameConfig.IsSmallRace(race))
-            AddText("No Heavy armor (Small)", "red");
+            AddText(Loc.Get("creation.preview.small_race"), "red");
 
         // Pad remaining rows with blanks (18 = CONTENT_ROWS for BBS fit)
         while (lines.Count < 18)
@@ -923,10 +923,10 @@ public class CharacterCreationSystem
         CardBlank(pad, W);
 
         // ── Stat bars ──
-        CardStatBar(pad, W, "HP",       raceAttrib.HPBonus, 17);
-        CardStatBar(pad, W, "Strength", raceAttrib.StrengthBonus, 5);
-        CardStatBar(pad, W, "Defence",  raceAttrib.DefenceBonus, 5);
-        CardStatBar(pad, W, "Stamina",  raceAttrib.StaminaBonus, 5);
+        CardStatBar(pad, W, Loc.Get("status.hp"),  raceAttrib.HPBonus, 17);
+        CardStatBar(pad, W, Loc.Get("status.str"), raceAttrib.StrengthBonus, 5);
+        CardStatBar(pad, W, Loc.Get("status.def"), raceAttrib.DefenceBonus, 5);
+        CardStatBar(pad, W, Loc.Get("status.sta"), raceAttrib.StaminaBonus, 5);
 
         // ── Separator ──
         CardSeparator(pad, W);
@@ -946,19 +946,19 @@ public class CharacterCreationSystem
 
         if (available.Count == allClasses.Length)
         {
-            CardLine(pad, W, "  [cyan]Classes:  [white]All classes available");
+            CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.classes")}  [white]{Loc.Get("creation.preview.classes_all")}");
         }
         else
         {
             var classNames = available.Select(c => c.ToString());
             string classList = string.Join(", ", classNames);
-            if (("  Classes:  " + classList).Length <= W - 4)
+            if (($"  {Loc.Get("creation.preview.classes")}  " + classList).Length <= W - 4)
             {
-                CardLine(pad, W, $"  [cyan]Classes:  [white]{classList}");
+                CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.classes")}  [white]{classList}");
             }
             else
             {
-                CardLine(pad, W, $"  [cyan]Classes:");
+                CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.classes")}");
                 var row1 = string.Join(", ", available.Take(available.Count / 2 + 1).Select(c => c.ToString()));
                 var row2 = string.Join(", ", available.Skip(available.Count / 2 + 1).Select(c => c.ToString()));
                 CardLine(pad, W, $"  [white]{row1}");
@@ -977,16 +977,16 @@ public class CharacterCreationSystem
         // ── Special trait ──
         string special = race switch
         {
-            CharacterRace.Troll => "[yellow]Regeneration [gray]- Heals HP each combat round",
-            CharacterRace.Gnoll => "[yellow]Poisonous Bite [gray]- Chance to poison enemies",
-            _ => "[gray]None"
+            CharacterRace.Troll => $"[yellow]{Loc.Get("creation.preview.regen")} [gray]- {Loc.Get("creation.preview.regen_desc")}",
+            CharacterRace.Gnoll => $"[yellow]{Loc.Get("creation.preview.poison_bite")} [gray]- {Loc.Get("creation.preview.poison_desc")}",
+            _ => $"[gray]{Loc.Get("creation.preview.none")}"
         };
-        CardLine(pad, W, $"  [cyan]Special:  {special}");
+        CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.special")}  {special}");
 
         // ── Armor restriction for small races ──
         if (GameConfig.IsSmallRace(race))
         {
-            CardLine(pad, W, "  [yellow]Size:     [red]Small (cannot wear Heavy armor)");
+            CardLine(pad, W, $"  [yellow]Size:     [red]{Loc.Get("creation.preview.small_race")}");
         }
 
         CardBlank(pad, W);
@@ -997,7 +997,7 @@ public class CharacterCreationSystem
         // ── Confirm prompt ──
         terminal.WriteLine("");
         var raceDesc = GameConfig.RaceDescriptions[race];
-        var response = await terminal.GetInputAsync($"{pad} Be {raceDesc}? (Y/N): ");
+        var response = await terminal.GetInputAsync($"{pad} {Loc.Get("creation.preview.be_race_yn", raceDesc)}");
 
         return !string.IsNullOrEmpty(response) &&
                (response.ToUpper() == "Y" || response.ToUpper() == "YES");
@@ -1150,17 +1150,17 @@ public class CharacterCreationSystem
 
     private static string GetRaceDescription(CharacterRace race) => race switch
     {
-        CharacterRace.Human => "Balanced in all areas. Can be any class.",
-        CharacterRace.Hobbit => "Small but agile. Excellent rogues and rangers.",
-        CharacterRace.Elf => "Graceful and magical. Excellent mages and clerics.",
-        CharacterRace.HalfElf => "Versatile like humans. Can be any class.",
-        CharacterRace.Dwarf => "Strong and tough. Great warriors, but distrust magic.",
-        CharacterRace.Troll => "Massive brutes with natural regeneration.",
-        CharacterRace.Orc => "Aggressive fighters with limited magic ability.",
-        CharacterRace.Gnome => "Small and clever. Great mages, poor heavy fighters.",
-        CharacterRace.Gnoll => "Pack hunters with a poisonous bite.",
-        CharacterRace.Mutant => "Chaotic and unpredictable. Can be any class.",
-        _ => "Unknown heritage."
+        CharacterRace.Human => Loc.Get("character_creation.race_desc.human"),
+        CharacterRace.Hobbit => Loc.Get("character_creation.race_desc.hobbit"),
+        CharacterRace.Elf => Loc.Get("character_creation.race_desc.elf"),
+        CharacterRace.HalfElf => Loc.Get("character_creation.race_desc.half_elf"),
+        CharacterRace.Dwarf => Loc.Get("character_creation.race_desc.dwarf"),
+        CharacterRace.Troll => Loc.Get("character_creation.race_desc.troll"),
+        CharacterRace.Orc => Loc.Get("character_creation.race_desc.orc"),
+        CharacterRace.Gnome => Loc.Get("character_creation.race_desc.gnome"),
+        CharacterRace.Gnoll => Loc.Get("character_creation.race_desc.gnoll"),
+        CharacterRace.Mutant => Loc.Get("character_creation.race_desc.mutant"),
+        _ => Loc.Get("character_creation.race_desc.unknown")
     };
 
     private async Task<bool> ShowClassPreview(CharacterClass characterClass, CharacterRace race)
@@ -1245,7 +1245,7 @@ public class CharacterCreationSystem
 
         // ── Row 22: Confirm prompt ──
         var article = "aeiouAEIOU".Contains(className[0]) ? "an" : "a";
-        string prompt = $" Be {article} {className}? [Y]es [N]o";
+        string prompt = $" {Loc.Get("creation.preview.be_class", article, className)}";
         terminal.Write("║", "gray");
         terminal.Write(prompt.PadRight(TOTAL_W - 2), "white");
         terminal.WriteLine("║", "gray");
@@ -1329,10 +1329,10 @@ public class CharacterCreationSystem
         // ── Category ──
         string category = characterClass switch
         {
-            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => "Melee Fighter",
-            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => "Hybrid Class",
-            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => "Magic User",
-            _ => "Adventurer"
+            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => Loc.Get("creation.preview.category.melee"),
+            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => Loc.Get("creation.preview.category.hybrid"),
+            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => Loc.Get("creation.preview.category.magic"),
+            _ => Loc.Get("creation.preview.category.adventurer")
         };
         AddText(category, "cyan");
 
@@ -1354,17 +1354,17 @@ public class CharacterCreationSystem
         string manaColor;
         if (attrs.Mana > 0)
         {
-            manaText = $"Mana: {attrs.Mana}";
+            manaText = $"{Loc.Get("creation.preview.mana")} {attrs.Mana}";
             manaColor = "bright_green";
         }
         else if (GetClassManaPerLevel(characterClass) > 0)
         {
-            manaText = $"Mana: +{GetClassManaPerLevel(characterClass)}/level";
+            manaText = $"{Loc.Get("creation.preview.mana")} {Loc.Get("creation.preview.mana_per_level", GetClassManaPerLevel(characterClass).ToString())}";
             manaColor = "cyan";
         }
         else
         {
-            manaText = "Mana: None";
+            manaText = $"{Loc.Get("creation.preview.mana")} {Loc.Get("creation.preview.mana_none")}";
             manaColor = "gray";
         }
         AddText(manaText, manaColor);
@@ -1372,9 +1372,9 @@ public class CharacterCreationSystem
         // ── Armor ──
         string armorInfo = GameConfig.GetMaxArmorWeight(characterClass) switch
         {
-            ArmorWeightClass.Light => "Armor: Light only",
-            ArmorWeightClass.Medium => "Armor: Light & Medium",
-            _ => "Armor: All types"
+            ArmorWeightClass.Light => $"{Loc.Get("creation.preview.armor")} {Loc.Get("creation.preview.armor_light")}",
+            ArmorWeightClass.Medium => $"{Loc.Get("creation.preview.armor")} {Loc.Get("creation.preview.armor_medium")}",
+            _ => $"{Loc.Get("creation.preview.armor")} {Loc.Get("creation.preview.armor_all")}"
         };
         string armorColor = GameConfig.GetMaxArmorWeight(characterClass) switch
         {
@@ -1442,10 +1442,10 @@ public class CharacterCreationSystem
         // Determine class category
         string category = characterClass switch
         {
-            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => "Melee Fighter",
-            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => "Hybrid Class",
-            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => "Magic User",
-            _ => "Adventurer"
+            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => Loc.Get("creation.preview.category.melee"),
+            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => Loc.Get("creation.preview.category.hybrid"),
+            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => Loc.Get("creation.preview.category.magic"),
+            _ => Loc.Get("creation.preview.category.adventurer")
         };
 
         // ── Top border with class name ──
@@ -1478,12 +1478,12 @@ public class CharacterCreationSystem
         if (attrs.Mana > 0)
             manaCardText = $"[bright_green]{attrs.Mana}";
         else if (GetClassManaPerLevel(characterClass) > 0)
-            manaCardText = $"[cyan]+{GetClassManaPerLevel(characterClass)}/level";
+            manaCardText = $"[cyan]{Loc.Get("creation.preview.mana_per_level", GetClassManaPerLevel(characterClass).ToString())}";
         else
-            manaCardText = "[gray]None";
-        CardLine(pad, W, $"  [cyan]Mana: {manaCardText}");
+            manaCardText = $"[gray]{Loc.Get("creation.preview.mana_none")}";
+        CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.mana")} {manaCardText}");
         string strengths = GetClassStrengths(characterClass);
-        CardLine(pad, W, $"  [cyan]Strengths:  [white]{strengths}");
+        CardLine(pad, W, $"  [cyan]{Loc.Get("creation.preview.strengths")}  [white]{strengths}");
 
         CardBlank(pad, W);
 
@@ -1493,7 +1493,7 @@ public class CharacterCreationSystem
         // ── Confirm prompt ──
         terminal.WriteLine("");
         var article = "aeiouAEIOU".Contains(className[0]) ? "an" : "a";
-        var response = await terminal.GetInputAsync($"{pad} Be {article} {className}? (Y/N): ");
+        var response = await terminal.GetInputAsync($"{pad} {Loc.Get("creation.preview.be_class_yn", article, className)}");
 
         return !string.IsNullOrEmpty(response) &&
                (response.ToUpper() == "Y" || response.ToUpper() == "YES");
@@ -1509,10 +1509,10 @@ public class CharacterCreationSystem
         string desc = GetRaceDescription(race);
 
         terminal.WriteLine("");
-        terminal.WriteLine($"Race: {raceName}");
+        terminal.WriteLine($"{Loc.Get("status.race")}: {raceName}");
         terminal.WriteLine($"\"{desc}\"");
         terminal.WriteLine("");
-        terminal.WriteLine($"Stats: HP +{raceAttrib.HPBonus}, Strength +{raceAttrib.StrengthBonus}, Defence +{raceAttrib.DefenceBonus}, Stamina +{raceAttrib.StaminaBonus}");
+        terminal.WriteLine($"{Loc.Get("creation.preview.stats")} {Loc.Get("status.hp")} +{raceAttrib.HPBonus}, {Loc.Get("status.str")} +{raceAttrib.StrengthBonus}, {Loc.Get("status.def")} +{raceAttrib.DefenceBonus}, {Loc.Get("status.sta")} +{raceAttrib.StaminaBonus}");
         terminal.WriteLine("");
 
         // Available classes
@@ -1529,16 +1529,16 @@ public class CharacterCreationSystem
 
         if (available.Count == allClasses.Length)
         {
-            terminal.WriteLine("Classes: All classes available");
+            terminal.WriteLine($"{Loc.Get("creation.preview.classes")} {Loc.Get("creation.preview.classes_all")}");
         }
         else
         {
-            terminal.WriteLine($"Classes: {string.Join(", ", available.Select(c => c.ToString()))}");
+            terminal.WriteLine($"{Loc.Get("creation.preview.classes")} {string.Join(", ", available.Select(c => c.ToString()))}");
         }
 
         if (restricted.Length > 0 && GameConfig.RaceRestrictionReasons.ContainsKey(race))
         {
-            terminal.WriteLine($"Restricted: {GameConfig.RaceRestrictionReasons[race]}");
+            terminal.WriteLine($"{Loc.Get("creation.preview.restricted")} {GameConfig.RaceRestrictionReasons[race]}");
         }
 
         terminal.WriteLine("");
@@ -1546,15 +1546,15 @@ public class CharacterCreationSystem
         // Special trait
         string special = race switch
         {
-            CharacterRace.Troll => "Regeneration - Heals HP each combat round",
-            CharacterRace.Gnoll => "Poisonous Bite - Chance to poison enemies",
-            _ => "None"
+            CharacterRace.Troll => $"{Loc.Get("creation.preview.regen")} - {Loc.Get("creation.preview.regen_desc")}",
+            CharacterRace.Gnoll => $"{Loc.Get("creation.preview.poison_bite")} - {Loc.Get("creation.preview.poison_desc")}",
+            _ => Loc.Get("creation.preview.none")
         };
-        terminal.WriteLine($"Special: {special}");
+        terminal.WriteLine($"{Loc.Get("creation.preview.special")} {special}");
 
         terminal.WriteLine("");
         var raceDesc = GameConfig.RaceDescriptions[race];
-        var response = await terminal.GetInputAsync($"Be {raceDesc}? (Y/N): ");
+        var response = await terminal.GetInputAsync(Loc.Get("creation.preview.be_race_yn", raceDesc));
 
         return !string.IsNullOrEmpty(response) &&
                (response.ToUpper() == "Y" || response.ToUpper() == "YES");
@@ -1570,35 +1570,35 @@ public class CharacterCreationSystem
 
         string category = characterClass switch
         {
-            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => "Melee Fighter",
-            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => "Hybrid Class",
-            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => "Magic User",
-            _ => "Adventurer"
+            CharacterClass.Warrior or CharacterClass.Barbarian or CharacterClass.Paladin => Loc.Get("creation.preview.category.melee"),
+            CharacterClass.Ranger or CharacterClass.Assassin or CharacterClass.Bard or CharacterClass.Jester => Loc.Get("creation.preview.category.hybrid"),
+            CharacterClass.Magician or CharacterClass.Sage or CharacterClass.Cleric or CharacterClass.Alchemist => Loc.Get("creation.preview.category.magic"),
+            _ => Loc.Get("creation.preview.category.adventurer")
         };
 
         string desc = GetClassDescription(characterClass);
 
         terminal.WriteLine("");
-        terminal.WriteLine($"Class: {className} ({category})");
+        terminal.WriteLine($"{Loc.Get("status.class")}: {className} ({category})");
         terminal.WriteLine($"\"{desc}\"");
         terminal.WriteLine("");
-        terminal.WriteLine($"Stats: HP +{attrs.HP}, STR +{attrs.Strength}, DEF +{attrs.Defence}, STA +{attrs.Stamina}, AGI +{attrs.Agility}, CHA +{attrs.Charisma}, DEX +{attrs.Dexterity}, WIS +{attrs.Wisdom}, INT +{attrs.Intelligence}, CON +{attrs.Constitution}");
+        terminal.WriteLine($"{Loc.Get("creation.preview.stats")} {Loc.Get("status.hp")} +{attrs.HP}, {Loc.Get("status.str")} +{attrs.Strength}, {Loc.Get("status.def")} +{attrs.Defence}, {Loc.Get("status.sta")} +{attrs.Stamina}, {Loc.Get("status.agi")} +{attrs.Agility}, {Loc.Get("status.cha")} +{attrs.Charisma}, {Loc.Get("status.dex")} +{attrs.Dexterity}, {Loc.Get("status.wis")} +{attrs.Wisdom}, {Loc.Get("status.int")} +{attrs.Intelligence}, {Loc.Get("status.con")} +{attrs.Constitution}");
         terminal.WriteLine("");
 
         string manaText;
         if (attrs.Mana > 0)
             manaText = attrs.Mana.ToString();
         else if (GetClassManaPerLevel(characterClass) > 0)
-            manaText = $"+{GetClassManaPerLevel(characterClass)}/level (grows with level)";
+            manaText = Loc.Get("creation.preview.mana_grows", GetClassManaPerLevel(characterClass).ToString());
         else
-            manaText = "None (physical class)";
-        terminal.WriteLine($"Mana: {manaText}");
+            manaText = Loc.Get("creation.preview.mana_none_physical");
+        terminal.WriteLine($"{Loc.Get("creation.preview.mana")} {manaText}");
         string strengths = GetClassStrengths(characterClass);
-        terminal.WriteLine($"Strengths: {strengths}");
+        terminal.WriteLine($"{Loc.Get("creation.preview.strengths")} {strengths}");
 
         terminal.WriteLine("");
         var article = "aeiouAEIOU".Contains(className[0]) ? "an" : "a";
-        var response = await terminal.GetInputAsync($"Be {article} {className}? (Y/N): ");
+        var response = await terminal.GetInputAsync(Loc.Get("creation.preview.be_class_yn", article, className));
 
         return !string.IsNullOrEmpty(response) &&
                (response.ToUpper() == "Y" || response.ToUpper() == "YES");
@@ -1606,34 +1606,34 @@ public class CharacterCreationSystem
 
     private static string GetClassDescription(CharacterClass cls) => cls switch
     {
-        CharacterClass.Warrior => "Strong fighters, masters of weapons. Balanced and reliable.",
-        CharacterClass.Barbarian => "Savage fighters with incredible strength and endurance.",
-        CharacterClass.Paladin => "Holy warriors of virtue. Strong in combat and spirit.",
-        CharacterClass.Ranger => "Woodsmen and trackers. Balanced fighters with survival skills.",
-        CharacterClass.Assassin => "Deadly killers, masters of stealth and critical strikes.",
-        CharacterClass.Bard => "Party support through song. CHA scales damage. Songs buff the whole party.",
-        CharacterClass.Jester => "Chaotic trickster. CHA scales damage. Trickster's Luck: random combat procs.",
-        CharacterClass.Magician => "Arcane master. Arcane Mastery: +15% spell damage. Best offensive caster.",
-        CharacterClass.Sage => "Scholars and wise magic users. The deepest mana reserves.",
-        CharacterClass.Cleric => "Healers and holy magic users. Devoted to faith and wisdom.",
-        CharacterClass.Alchemist => "Bomb-throwing scientists. INT scales damage. Potion Mastery: +50% healing.",
-        _ => "An adventurer of unknown calling."
+        CharacterClass.Warrior => Loc.Get("character_creation.class_desc.warrior"),
+        CharacterClass.Barbarian => Loc.Get("character_creation.class_desc.barbarian"),
+        CharacterClass.Paladin => Loc.Get("character_creation.class_desc.paladin"),
+        CharacterClass.Ranger => Loc.Get("character_creation.class_desc.ranger"),
+        CharacterClass.Assassin => Loc.Get("character_creation.class_desc.assassin"),
+        CharacterClass.Bard => Loc.Get("character_creation.class_desc.bard"),
+        CharacterClass.Jester => Loc.Get("character_creation.class_desc.jester"),
+        CharacterClass.Magician => Loc.Get("character_creation.class_desc.magician"),
+        CharacterClass.Sage => Loc.Get("character_creation.class_desc.sage"),
+        CharacterClass.Cleric => Loc.Get("character_creation.class_desc.cleric"),
+        CharacterClass.Alchemist => Loc.Get("character_creation.class_desc.alchemist"),
+        _ => Loc.Get("character_creation.class_desc.unknown")
     };
 
     private static string GetClassStrengths(CharacterClass cls) => cls switch
     {
-        CharacterClass.Warrior => "High HP, STR, DEF, CON. Well-rounded melee.",
-        CharacterClass.Barbarian => "Highest HP, STR, STA, CON. Raw power.",
-        CharacterClass.Paladin => "High HP, STR, STA, CON. Tough and honorable.",
-        CharacterClass.Ranger => "Good STA, DEX. Jack of all trades.",
-        CharacterClass.Assassin => "Best DEX. High STR and AGI for ambushes.",
-        CharacterClass.Bard => "Good CHA, DEX. Balanced across all stats.",
-        CharacterClass.Jester => "Best AGI and CHA. Trickster's Luck: bonus dmg, dodge, or stamina.",
-        CharacterClass.Magician => "Best INT. Arcane Mastery +15% spell damage.",
-        CharacterClass.Sage => "Best WIS and INT. Deepest mana pool (50).",
-        CharacterClass.Cleric => "Good WIS and CHA. Healing magic and mana.",
-        CharacterClass.Alchemist => "Best WIS and INT. High CHA for trading.",
-        _ => "Unknown strengths."
+        CharacterClass.Warrior => Loc.Get("character_creation.class_str.warrior"),
+        CharacterClass.Barbarian => Loc.Get("character_creation.class_str.barbarian"),
+        CharacterClass.Paladin => Loc.Get("character_creation.class_str.paladin"),
+        CharacterClass.Ranger => Loc.Get("character_creation.class_str.ranger"),
+        CharacterClass.Assassin => Loc.Get("character_creation.class_str.assassin"),
+        CharacterClass.Bard => Loc.Get("character_creation.class_str.bard"),
+        CharacterClass.Jester => Loc.Get("character_creation.class_str.jester"),
+        CharacterClass.Magician => Loc.Get("character_creation.class_str.magician"),
+        CharacterClass.Sage => Loc.Get("character_creation.class_str.sage"),
+        CharacterClass.Cleric => Loc.Get("character_creation.class_str.cleric"),
+        CharacterClass.Alchemist => Loc.Get("character_creation.class_str.alchemist"),
+        _ => Loc.Get("character_creation.class_str.unknown")
     };
 
     /// <summary>
@@ -1700,35 +1700,35 @@ public class CharacterCreationSystem
             {
                 terminal.Clear();
                 terminal.WriteLine("");
-                terminal.WriteLine($"Choose your Class (as a {GameConfig.RaceNames[(int)race]}):", "cyan");
+                terminal.WriteLine(Loc.Get("creation.choose_class", GameConfig.RaceNames[(int)race]), "cyan");
                 terminal.WriteLine("");
 
                 // Show class menu with restrictions marked
-                DisplayClassOption(0, "Warrior", CharacterClass.Warrior, restrictedClasses);
-                DisplayClassOption(1, "Paladin", CharacterClass.Paladin, restrictedClasses);
-                DisplayClassOption(2, "Ranger", CharacterClass.Ranger, restrictedClasses);
-                DisplayClassOption(3, "Assassin", CharacterClass.Assassin, restrictedClasses);
-                DisplayClassOption(4, "Bard", CharacterClass.Bard, restrictedClasses);
-                DisplayClassOption(5, "Jester", CharacterClass.Jester, restrictedClasses);
-                DisplayClassOption(6, "Alchemist", CharacterClass.Alchemist, restrictedClasses);
-                DisplayClassOption(7, "Magician", CharacterClass.Magician, restrictedClasses);
-                DisplayClassOption(8, "Cleric", CharacterClass.Cleric, restrictedClasses);
-                DisplayClassOption(9, "Sage", CharacterClass.Sage, restrictedClasses);
-                DisplayClassOption(10, "Barbarian", CharacterClass.Barbarian, restrictedClasses);
+                DisplayClassOption(0, Loc.Get("class.warrior"), CharacterClass.Warrior, restrictedClasses);
+                DisplayClassOption(1, Loc.Get("class.paladin"), CharacterClass.Paladin, restrictedClasses);
+                DisplayClassOption(2, Loc.Get("class.ranger"), CharacterClass.Ranger, restrictedClasses);
+                DisplayClassOption(3, Loc.Get("class.assassin"), CharacterClass.Assassin, restrictedClasses);
+                DisplayClassOption(4, Loc.Get("class.bard"), CharacterClass.Bard, restrictedClasses);
+                DisplayClassOption(5, Loc.Get("class.jester"), CharacterClass.Jester, restrictedClasses);
+                DisplayClassOption(6, Loc.Get("class.alchemist"), CharacterClass.Alchemist, restrictedClasses);
+                DisplayClassOption(7, Loc.Get("class.magician"), CharacterClass.Magician, restrictedClasses);
+                DisplayClassOption(8, Loc.Get("class.cleric"), CharacterClass.Cleric, restrictedClasses);
+                DisplayClassOption(9, Loc.Get("class.sage"), CharacterClass.Sage, restrictedClasses);
+                DisplayClassOption(10, Loc.Get("class.barbarian"), CharacterClass.Barbarian, restrictedClasses);
 
                 // Always show prestige classes — unlocked ones selectable, locked ones grayed out
                 terminal.WriteLine("");
                 if (!GameConfig.ScreenReaderMode)
-                    terminal.WriteLine("  ═══ PRESTIGE CLASSES (NG+) ═══", "bright_magenta");
+                    terminal.WriteLine($"  ═══ {Loc.Get("creation.prestige_header")} ═══", "bright_magenta");
                 else
-                    terminal.WriteLine("  PRESTIGE CLASSES (NG+)", "bright_magenta");
+                    terminal.WriteLine($"  {Loc.Get("creation.prestige_header")}", "bright_magenta");
                 var allPrestige = new[]
                 {
-                    (CharacterClass.Tidesworn, "Savior ending"),
-                    (CharacterClass.Wavecaller, "Savior ending"),
-                    (CharacterClass.Cyclebreaker, "Defiant ending"),
-                    (CharacterClass.Abysswarden, "Usurper ending"),
-                    (CharacterClass.Voidreaver, "Usurper ending")
+                    (CharacterClass.Tidesworn, Loc.Get("charcreate.prestige_req_savior")),
+                    (CharacterClass.Wavecaller, Loc.Get("charcreate.prestige_req_savior")),
+                    (CharacterClass.Cyclebreaker, Loc.Get("charcreate.prestige_req_defiant")),
+                    (CharacterClass.Abysswarden, Loc.Get("charcreate.prestige_req_usurper")),
+                    (CharacterClass.Voidreaver, Loc.Get("charcreate.prestige_req_usurper"))
                 };
                 int prestigeIdx = prestigeStartIndex;
                 foreach (var (pc, unlockReq) in allPrestige)
@@ -1746,23 +1746,23 @@ public class CharacterCreationSystem
                     {
                         terminal.Write($"     ", "dark_gray");
                         terminal.Write($"{pc,-14}", "dark_gray");
-                        terminal.WriteLine($" [Locked — requires {unlockReq}]", "dark_gray");
+                        terminal.WriteLine($" {Loc.Get("creation.prestige_locked", unlockReq)}", "dark_gray");
                     }
                 }
 
-                terminal.WriteLine("(H) Help", "green");
-                terminal.WriteLine("(A) Abort", "red");
+                terminal.WriteLine($"(H) {Loc.Get("creation.help")}", "green");
+                terminal.WriteLine($"(A) {Loc.Get("creation.abort")}", "red");
                 terminal.WriteLine("");
 
                 // Show restriction reason if this race has restrictions
                 if (restrictedClasses.Length > 0 && GameConfig.RaceRestrictionReasons.ContainsKey(race))
                 {
-                    terminal.WriteLine($"Note: {GameConfig.RaceRestrictionReasons[race]}", "yellow");
+                    terminal.WriteLine($"{Loc.Get("character_creation.note")}: {GameConfig.RaceRestrictionReasons[race]}", "yellow");
                     terminal.WriteLine("");
                 }
             }
 
-            choice = await terminal.GetInputAsync("Your choice: ");
+            choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
             // Handle help
             if (choice.ToUpper() == "H")
@@ -1775,7 +1775,7 @@ public class CharacterCreationSystem
             // Handle abort
             if (choice.ToUpper() == "A")
             {
-                if (await ConfirmChoice("Abort", false))
+                if (await ConfirmChoice(Loc.Get("charcreate.abort"), false))
                 {
                     throw new OperationCanceledException("Character creation aborted by user");
                 }
@@ -1793,7 +1793,7 @@ public class CharacterCreationSystem
                 {
                     terminal.WriteLine("");
                     var article1 = "aeiouAEIOU".Contains(characterClass.ToString()[0]) ? "an" : "a";
-                    terminal.WriteLine($"Sorry, {GameConfig.RaceNames[(int)race]} cannot be {article1} {characterClass}!", "red");
+                    terminal.WriteLine(Loc.Get("creation.race_restricted", GameConfig.RaceNames[(int)race], article1, characterClass.ToString()), "red");
                     if (GameConfig.RaceRestrictionReasons.ContainsKey(race))
                     {
                         terminal.WriteLine(GameConfig.RaceRestrictionReasons[race], "yellow");
@@ -1814,7 +1814,7 @@ public class CharacterCreationSystem
             else
             {
                 int maxChoice = unlockedPrestige.Count > 0 ? prestigeStartIndex + unlockedPrestige.Count - 1 : 10;
-                terminal.WriteLine($"Invalid choice. Please select 0-{maxChoice}, H for help, or A to abort.", "red");
+                terminal.WriteLine(Loc.Get("creation.invalid_class", maxChoice.ToString()), "red");
             }
         }
     }
@@ -1880,7 +1880,7 @@ public class CharacterCreationSystem
 
         if (isRestricted)
         {
-            terminal.WriteLine($"{numberStr} {className,-12} [UNAVAILABLE]", "darkgray");
+            terminal.WriteLine($"{numberStr} {className,-12} [{Loc.Get("character_creation.unavailable")}]", "darkgray");
         }
         else
         {
@@ -1905,12 +1905,12 @@ public class CharacterCreationSystem
             terminal.Clear();
             terminal.WriteLine("");
             if (!GameConfig.ScreenReaderMode)
-                terminal.WriteLine("═══ STAT ROLL ═══", "bright_cyan");
+                terminal.WriteLine($"═══ {Loc.Get("character_creation.stat_roll")} ═══", "bright_cyan");
             else
-                terminal.WriteLine("STAT ROLL", "bright_cyan");
+                terminal.WriteLine(Loc.Get("character_creation.stat_roll"), "bright_cyan");
             terminal.WriteLine("");
-            terminal.WriteLine($"Class: {character.Class}", "yellow");
-            terminal.WriteLine($"Race: {GameConfig.RaceNames[(int)character.Race]}", "yellow");
+            terminal.WriteLine($"{Loc.Get("status.class")}: {character.Class}", "yellow");
+            terminal.WriteLine($"{Loc.Get("status.race")}: {GameConfig.RaceNames[(int)character.Race]}", "yellow");
             terminal.WriteLine("");
 
             // Calculate total stat points for comparison
@@ -1918,47 +1918,47 @@ public class CharacterCreationSystem
                               character.Agility + character.Charisma + character.Dexterity +
                               character.Wisdom + character.Intelligence + character.Constitution;
 
-            terminal.WriteLine("Your rolled attributes:", "cyan");
+            terminal.WriteLine(Loc.Get("character_creation.rolled_attributes"), "cyan");
             terminal.WriteLine("");
-            terminal.Write($"  Hit Points:    ");
+            terminal.Write($"  {Loc.Get("ui.stat_hp"),-15} ");
             terminal.Write($"{character.HP,3}", GetStatColor(character.HP, 15, 25));
-            terminal.WriteLine("  - Your life force", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_hp")}", "gray");
 
-            terminal.Write($"  Strength:      ");
+            terminal.Write($"  {Loc.Get("ui.stat_strength"),-15} ");
             terminal.Write($"{character.Strength,3}", GetStatColor(character.Strength, 6, 12));
-            terminal.WriteLine("  - Melee damage bonus", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_str")}", "gray");
 
-            terminal.Write($"  Defence:       ");
+            terminal.Write($"  {Loc.Get("ui.stat_defense"),-15} ");
             terminal.Write($"{character.Defence,3}", GetStatColor(character.Defence, 5, 10));
-            terminal.WriteLine("  - Reduces damage taken", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_def")}", "gray");
 
-            terminal.Write($"  Stamina:       ");
+            terminal.Write($"  {Loc.Get("ui.stat_stamina"),-15} ");
             terminal.Write($"{character.Stamina,3}", GetStatColor(character.Stamina, 5, 10));
-            terminal.WriteLine("  - Combat ability pool", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_sta")}", "gray");
 
-            terminal.Write($"  Agility:       ");
+            terminal.Write($"  {Loc.Get("ui.stat_agility"),-15} ");
             terminal.Write($"{character.Agility,3}", GetStatColor(character.Agility, 5, 10));
-            terminal.WriteLine("  - Dodge chance, extra attacks", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_agi")}", "gray");
 
-            terminal.Write($"  Dexterity:     ");
+            terminal.Write($"  {Loc.Get("ui.stat_dexterity"),-15} ");
             terminal.Write($"{character.Dexterity,3}", GetStatColor(character.Dexterity, 5, 10));
-            terminal.WriteLine("  - Hit chance, critical hits", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_dex")}", "gray");
 
-            terminal.Write($"  Constitution:  ");
+            terminal.Write($"  {Loc.Get("ui.stat_constitution"),-15} ");
             terminal.Write($"{character.Constitution,3}", GetStatColor(character.Constitution, 5, 10));
-            terminal.WriteLine("  - Bonus HP, poison resist", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_con")}", "gray");
 
-            terminal.Write($"  Intelligence:  ");
+            terminal.Write($"  {Loc.Get("ui.stat_intelligence"),-15} ");
             terminal.Write($"{character.Intelligence,3}", GetStatColor(character.Intelligence, 5, 10));
-            terminal.WriteLine("  - Spell damage, mana pool", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_int")}", "gray");
 
-            terminal.Write($"  Wisdom:        ");
+            terminal.Write($"  {Loc.Get("ui.stat_wisdom"),-15} ");
             terminal.Write($"{character.Wisdom,3}", GetStatColor(character.Wisdom, 5, 10));
-            terminal.WriteLine("  - Mana efficiency, magic resist", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_wis")}", "gray");
 
-            terminal.Write($"  Charisma:      ");
+            terminal.Write($"  {Loc.Get("ui.stat_charisma"),-15} ");
             terminal.Write($"{character.Charisma,3}", GetStatColor(character.Charisma, 5, 10));
-            terminal.WriteLine("  - Shop prices, NPC reactions", "gray");
+            terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_cha")}", "gray");
 
             // Show effective mana including INT/WIS bonuses (matches what RecalculateStats will give)
             long effectiveMana = character.MaxMana;
@@ -1969,34 +1969,34 @@ public class CharacterCreationSystem
             }
             if (effectiveMana > 0)
             {
-                terminal.Write($"  Mana:          ");
+                terminal.Write($"  {Loc.Get("ui.stat_mana"),-15} ");
                 terminal.Write($"{effectiveMana,3}/{effectiveMana}", "cyan");
-                terminal.WriteLine("  - Spellcasting resource", "gray");
+                terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_mana")}", "gray");
             }
             else if (GetClassManaPerLevel(character.Class) > 0)
             {
-                terminal.Write($"  Mana:          ");
-                terminal.Write($"+{GetClassManaPerLevel(character.Class)}/level", "cyan");
-                terminal.WriteLine("  - Grows with level-ups", "gray");
+                terminal.Write($"  {Loc.Get("ui.stat_mana"),-15} ");
+                terminal.Write(Loc.Get("charcreate.mana_per_level_label", GetClassManaPerLevel(character.Class).ToString()), "cyan");
+                terminal.WriteLine($"  - {Loc.Get("character_creation.stat_desc_mana_grows")}", "gray");
             }
             terminal.WriteLine("");
-            terminal.WriteLine($"  Total Stats: {totalStats}", totalStats >= 70 ? "bright_green" : totalStats >= 55 ? "yellow" : "red");
+            terminal.WriteLine($"  {Loc.Get("character_creation.total_stats")}: {totalStats}", totalStats >= 70 ? "bright_green" : totalStats >= 55 ? "yellow" : "red");
             terminal.WriteLine("");
 
             if (rerollsRemaining > 0)
             {
-                terminal.WriteLine($"Re-rolls remaining: {rerollsRemaining}", "yellow");
+                terminal.WriteLine(Loc.Get("character_creation.rerolls_remaining", rerollsRemaining.ToString()), "yellow");
                 terminal.WriteLine("");
-                terminal.WriteLine("(A)ccept these stats", "green");
-                terminal.WriteLine("(R)e-roll for new stats", "cyan");
+                terminal.WriteLine(Loc.Get("character_creation.accept_stats"), "green");
+                terminal.WriteLine(Loc.Get("character_creation.reroll_stats"), "cyan");
                 terminal.WriteLine("");
 
-                var choice = await terminal.GetInputAsync("Your choice: ");
+                var choice = await terminal.GetInputAsync(Loc.Get("ui.your_choice"));
 
                 if (choice.ToUpper() == "A")
                 {
                     terminal.WriteLine("");
-                    terminal.WriteLine("Stats accepted!", "bright_green");
+                    terminal.WriteLine(Loc.Get("character_creation.stats_accepted"), "bright_green");
                     await Task.Delay(1000);
                     break;
                 }
@@ -2006,20 +2006,20 @@ public class CharacterCreationSystem
                     if (rerollsRemaining == 0)
                     {
                         terminal.WriteLine("");
-                        terminal.WriteLine("This is your final roll!", "bright_red");
+                        terminal.WriteLine(Loc.Get("character_creation.final_roll"), "bright_red");
                         await Task.Delay(1500);
                     }
                     else
                     {
                         terminal.WriteLine("");
-                        terminal.WriteLine("Re-rolling stats...", "cyan");
+                        terminal.WriteLine(Loc.Get("character_creation.rerolling"), "cyan");
                         await Task.Delay(800);
                     }
                     continue;
                 }
                 else
                 {
-                    terminal.WriteLine("Please choose (A)ccept or (R)e-roll.", "red");
+                    terminal.WriteLine(Loc.Get("character_creation.choose_accept_reroll"), "red");
                     await Task.Delay(1000);
                     continue;
                 }
@@ -2027,9 +2027,9 @@ public class CharacterCreationSystem
             else
             {
                 // No re-rolls remaining - must accept
-                terminal.WriteLine("No re-rolls remaining - these are your final stats!", "bright_red");
+                terminal.WriteLine(Loc.Get("character_creation.no_rerolls"), "bright_red");
                 terminal.WriteLine("");
-                await terminal.GetInputAsync("Press Enter to accept and continue...");
+                await terminal.GetInputAsync(Loc.Get("character_creation.press_enter_accept"));
                 break;
             }
         }
@@ -2280,49 +2280,49 @@ public class CharacterCreationSystem
     {
         terminal.Clear();
         terminal.WriteLine("");
-        terminal.WriteLine("--- CHARACTER SUMMARY ---", "bright_green");
+        terminal.WriteLine($"--- {Loc.Get("character_creation.summary_header")} ---", "bright_green");
         terminal.WriteLine("");
-        
-        terminal.WriteLine($"Name: {character.Name2}", "cyan");
-        terminal.WriteLine($"Race: {GameConfig.RaceNames[(int)character.Race]}", "yellow");
-        terminal.WriteLine($"Class: {character.Class}", "yellow");
-        terminal.WriteLine($"Sex: {(character.Sex == CharacterSex.Male ? "Male" : "Female")}", "white");
-        terminal.WriteLine($"Age: {character.Age}", "white");
+
+        terminal.WriteLine($"{Loc.Get("ui.name_label")}: {character.Name2}", "cyan");
+        terminal.WriteLine($"{Loc.Get("status.race")}: {GameConfig.RaceNames[(int)character.Race]}", "yellow");
+        terminal.WriteLine($"{Loc.Get("status.class")}: {character.Class}", "yellow");
+        terminal.WriteLine($"{Loc.Get("character_creation.sex")}: {(character.Sex == CharacterSex.Male ? Loc.Get("character_creation.male") : Loc.Get("character_creation.female"))}", "white");
+        terminal.WriteLine($"{Loc.Get("character_creation.age")}: {character.Age}", "white");
         terminal.WriteLine("");
-        
-        terminal.WriteLine("=== ATTRIBUTES ===", "green");
-        terminal.WriteLine($"Hit Points: {character.HP}/{character.MaxHP}", "white");
-        terminal.WriteLine($"Strength: {character.Strength}", "white");
-        terminal.WriteLine($"Defence: {character.Defence}", "white");
-        terminal.WriteLine($"Stamina: {character.Stamina}", "white");
-        terminal.WriteLine($"Agility: {character.Agility}", "white");
-        terminal.WriteLine($"Dexterity: {character.Dexterity}", "white");
-        terminal.WriteLine($"Constitution: {character.Constitution}", "white");
-        terminal.WriteLine($"Intelligence: {character.Intelligence}", "white");
-        terminal.WriteLine($"Wisdom: {character.Wisdom}", "white");
-        terminal.WriteLine($"Charisma: {character.Charisma}", "white");
+
+        terminal.WriteLine($"=== {Loc.Get("ui.attributes")} ===", "green");
+        terminal.WriteLine($"{Loc.Get("ui.stat_hp")}: {character.HP}/{character.MaxHP}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_strength")}: {character.Strength}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_defense")}: {character.Defence}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_stamina")}: {character.Stamina}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_agility")}: {character.Agility}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_dexterity")}: {character.Dexterity}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_constitution")}: {character.Constitution}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_intelligence")}: {character.Intelligence}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_wisdom")}: {character.Wisdom}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.stat_charisma")}: {character.Charisma}", "white");
         if (character.MaxMana > 0)
         {
-            terminal.WriteLine($"Mana: {character.Mana}/{character.MaxMana}", "cyan");
+            terminal.WriteLine($"{Loc.Get("ui.stat_mana")}: {character.Mana}/{character.MaxMana}", "cyan");
         }
         terminal.WriteLine("");
         
-        terminal.WriteLine("=== APPEARANCE ===", "green");
-        terminal.WriteLine($"Height: {character.Height} cm", "white");
-        terminal.WriteLine($"Weight: {character.Weight} kg", "white");
-        terminal.WriteLine($"Eyes: {GameConfig.EyeColors[character.Eyes]}", "white");
-        terminal.WriteLine($"Hair: {GameConfig.HairColors[character.Hair]}", "white");
-        terminal.WriteLine($"Skin: {GameConfig.SkinColors[character.Skin]}", "white");
+        terminal.WriteLine($"=== {Loc.Get("character_creation.appearance")} ===", "green");
+        terminal.WriteLine($"{Loc.Get("character_creation.height")}: {character.Height} cm", "white");
+        terminal.WriteLine($"{Loc.Get("character_creation.weight")}: {character.Weight} kg", "white");
+        terminal.WriteLine($"{Loc.Get("character_creation.eyes")}: {GameConfig.EyeColors[character.Eyes]}", "white");
+        terminal.WriteLine($"{Loc.Get("character_creation.hair")}: {GameConfig.HairColors[character.Hair]}", "white");
+        terminal.WriteLine($"{Loc.Get("character_creation.skin")}: {GameConfig.SkinColors[character.Skin]}", "white");
+        terminal.WriteLine("");
+
+        terminal.WriteLine($"=== {Loc.Get("character_creation.starting_resources")} ===", "green");
+        terminal.WriteLine($"{Loc.Get("ui.gold")}: {character.Gold}", "yellow");
+        terminal.WriteLine($"{Loc.Get("ui.experience")}: {character.Experience}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.level")}: {character.Level}", "white");
+        terminal.WriteLine($"{Loc.Get("ui.healing_potions")}: {character.Healing}", "white");
         terminal.WriteLine("");
         
-        terminal.WriteLine("=== STARTING RESOURCES ===", "green");
-        terminal.WriteLine($"Gold: {character.Gold}", "yellow");
-        terminal.WriteLine($"Experience: {character.Experience}", "white");
-        terminal.WriteLine($"Level: {character.Level}", "white");
-        terminal.WriteLine($"Healing Potions: {character.Healing}", "white");
-        terminal.WriteLine("");
-        
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2332,10 +2332,10 @@ public class CharacterCreationSystem
     {
         terminal.Clear();
         terminal.WriteLine("");
-        terminal.WriteLine("--- RACE INFORMATION ---", "bright_green");
+        terminal.WriteLine($"--- {Loc.Get("character_creation.race_info_header")} ---", "bright_green");
         terminal.WriteLine("");
         terminal.WriteLine(GameConfig.RaceHelpText, "white");
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>
@@ -2345,10 +2345,10 @@ public class CharacterCreationSystem
     {
         terminal.Clear();
         terminal.WriteLine("");
-        terminal.WriteLine("--- CLASS INFORMATION ---", "bright_green");
+        terminal.WriteLine($"--- {Loc.Get("character_creation.class_info_header")} ---", "bright_green");
         terminal.WriteLine("");
         terminal.WriteLine(GameConfig.ClassHelpText, "white");
-        await terminal.GetInputAsync("Press Enter to continue...");
+        await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
     }
     
     /// <summary>

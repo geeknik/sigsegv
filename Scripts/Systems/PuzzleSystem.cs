@@ -660,7 +660,7 @@ namespace UsurperRemake.Systems
                 // Show hints if available and player asks
                 if (puzzle.Hints.Count > 0 && totalAttempts > 1)
                 {
-                    terminal.WriteLine($"[Type 'hint' for a clue, or 'quit' to give up]", "dark_cyan");
+                    terminal.WriteLine(Loc.Get("puzzle.hint_or_quit"), "dark_cyan");
                 }
 
                 // Get player input based on puzzle type
@@ -668,7 +668,7 @@ namespace UsurperRemake.Systems
 
                 if (result.Action == PuzzleAction.Quit)
                 {
-                    terminal.WriteLine("You step back from the puzzle, unable to solve it.", "yellow");
+                    terminal.WriteLine(Loc.Get("puzzle.step_back"), "yellow");
                     return new PuzzleResult { Solved = false, Fled = true };
                 }
 
@@ -706,24 +706,24 @@ namespace UsurperRemake.Systems
         {
             string diffText = puzzle.Difficulty switch
             {
-                1 => "Simple",
-                2 => "Moderate",
-                3 => "Challenging",
-                4 => "Difficult",
-                _ => "Legendary"
+                1 => Loc.Get("puzzle.diff_simple"),
+                2 => Loc.Get("puzzle.diff_moderate"),
+                3 => Loc.Get("puzzle.diff_challenging"),
+                4 => Loc.Get("puzzle.diff_difficult"),
+                _ => Loc.Get("puzzle.diff_legendary")
             };
 
             if (!GameConfig.ScreenReaderMode)
             {
                 terminal.WriteLine("╔══════════════════════════════════════════════════════════════════╗", "bright_cyan");
                 terminal.WriteLine($"║  {puzzle.Title.PadRight(62)}║", "bright_cyan");
-                terminal.WriteLine($"║  Difficulty: {diffText.PadRight(51)}║", "cyan");
+                terminal.WriteLine($"║  {Loc.Get("puzzle.difficulty_label", diffText).PadRight(62)}║", "cyan");
                 terminal.WriteLine("╚══════════════════════════════════════════════════════════════════╝", "bright_cyan");
             }
             else
             {
                 terminal.WriteLine(puzzle.Title, "bright_cyan");
-                terminal.WriteLine($"Difficulty: {diffText}", "cyan");
+                terminal.WriteLine(Loc.Get("puzzle.difficulty_label", diffText), "cyan");
             }
             terminal.WriteLine("");
             terminal.WriteLine(puzzle.Description, "white");
@@ -732,7 +732,7 @@ namespace UsurperRemake.Systems
 
         private void DisplayPuzzleState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
-            terminal.WriteLine($"Attempts remaining: {puzzle.AttemptsRemaining}",
+            terminal.WriteLine(Loc.Get("puzzle.attempts_remaining", puzzle.AttemptsRemaining),
                 puzzle.AttemptsRemaining > 2 ? "green" : "yellow");
             terminal.WriteLine("");
 
@@ -765,85 +765,85 @@ namespace UsurperRemake.Systems
         private void DisplayLeverState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
             int leverCount = puzzle.Solution.Count;
-            terminal.WriteLine("  Levers:", "white");
+            terminal.WriteLine(Loc.Get("puzzle.levers_label"), "white");
             for (int i = 0; i < leverCount; i++)
             {
                 // CurrentState now stores 1-indexed lever numbers
                 bool pulled = puzzle.CurrentState.Contains((i + 1).ToString());
-                string status = pulled ? "[PULLED]" : "[------]";
+                string status = pulled ? Loc.Get("puzzle.lever_pulled") : Loc.Get("puzzle.lever_empty");
                 string color = pulled ? "green" : "gray";
                 terminal.WriteLine($"    {i + 1}. {status}", color);
             }
             terminal.WriteLine("");
-            terminal.WriteLine("Enter lever number to pull (1-" + leverCount + "):", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.enter_lever", leverCount), "cyan");
         }
 
         private void DisplaySymbolState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
-            terminal.WriteLine("  Current alignment:", "white");
+            terminal.WriteLine(Loc.Get("puzzle.current_alignment"), "white");
             for (int i = 0; i < puzzle.CurrentState.Count; i++)
             {
-                terminal.WriteLine($"    Panel {i + 1}: {puzzle.CurrentState[i]}", "gray");
+                terminal.WriteLine(Loc.Get("puzzle.panel_label", i + 1, puzzle.CurrentState[i]), "gray");
             }
             terminal.WriteLine("");
-            terminal.WriteLine("  Available symbols: " + string.Join(", ", puzzle.AvailableChoices), "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.available_symbols", string.Join(", ", puzzle.AvailableChoices)), "cyan");
             terminal.WriteLine("");
-            terminal.WriteLine("Enter: [panel number] [symbol] (e.g., '1 sun'):", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.enter_symbol"), "cyan");
         }
 
         private void DisplayLightState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
-            terminal.WriteLine("  Torches:", "white");
+            terminal.WriteLine(Loc.Get("puzzle.torches_label"), "white");
             for (int i = 0; i < puzzle.CurrentState.Count; i++)
             {
                 bool lit = puzzle.CurrentState[i] == "lit";
-                string display = lit ? "* LIT *  " : "  UNLIT  ";
+                string display = lit ? Loc.Get("puzzle.torch_lit") : Loc.Get("puzzle.torch_unlit");
                 string color = lit ? "bright_yellow" : "dark_gray";
-                terminal.Write($"    Torch {i + 1}: ");
+                terminal.Write(Loc.Get("puzzle.torch_label", i + 1));
                 terminal.WriteLine(display, color);
             }
             terminal.WriteLine("");
-            terminal.WriteLine("Enter torch number to toggle (1-" + puzzle.CurrentState.Count + "):", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.enter_torch", puzzle.CurrentState.Count), "cyan");
         }
 
         private void DisplayNumberState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
-            terminal.WriteLine("  Available numbers:", "white");
+            terminal.WriteLine(Loc.Get("puzzle.available_numbers"), "white");
             terminal.WriteLine("    " + string.Join("  ", puzzle.AvailableChoices), "bright_cyan");
             terminal.WriteLine("");
 
             if (puzzle.CurrentState.Count > 0)
             {
                 int sum = puzzle.CurrentState.Sum(s => int.Parse(s));
-                terminal.WriteLine($"  Selected: {string.Join(" + ", puzzle.CurrentState)} = {sum}", "yellow");
+                terminal.WriteLine(Loc.Get("puzzle.selected", string.Join(" + ", puzzle.CurrentState), sum), "yellow");
             }
 
             int target = (int)puzzle.CustomData["target"];
-            terminal.WriteLine($"  Target sum: {target}", "bright_green");
+            terminal.WriteLine(Loc.Get("puzzle.target_sum", target), "bright_green");
             terminal.WriteLine("");
-            terminal.WriteLine("Enter a number to add/remove, or 'submit' when ready:", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.enter_number"), "cyan");
         }
 
         private void DisplayMemorySequence(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
-            terminal.WriteLine("  Watch the sequence carefully!", "bright_yellow");
+            terminal.WriteLine(Loc.Get("puzzle.watch_sequence"), "bright_yellow");
             terminal.WriteLine("");
             terminal.WriteLine("  " + string.Join(" -> ", puzzle.Solution), "bright_magenta");
             terminal.WriteLine("");
-            terminal.WriteLine("  (The sequence will be hidden after you begin)", "gray");
+            terminal.WriteLine(Loc.Get("puzzle.sequence_hidden"), "gray");
             terminal.WriteLine("");
-            terminal.WriteLine("Press Enter when ready to begin...", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.press_enter_begin"), "cyan");
         }
 
         private void DisplayGenericState(PuzzleInstance puzzle, TerminalEmulator terminal)
         {
             if (puzzle.CurrentState.Count > 0)
             {
-                terminal.WriteLine("  Current state: " + string.Join(", ", puzzle.CurrentState), "yellow");
+                terminal.WriteLine(Loc.Get("puzzle.current_state", string.Join(", ", puzzle.CurrentState)), "yellow");
             }
             if (puzzle.AvailableChoices.Count > 0)
             {
-                terminal.WriteLine("  Options: " + string.Join(", ", puzzle.AvailableChoices), "cyan");
+                terminal.WriteLine(Loc.Get("puzzle.options", string.Join(", ", puzzle.AvailableChoices)), "cyan");
             }
             terminal.WriteLine("");
         }
@@ -1017,7 +1017,7 @@ namespace UsurperRemake.Systems
                 if (!GameConfig.ScreenReaderMode)
                     terminal.WriteLine("═══ HINT ═══", "bright_yellow");
                 else
-                    terminal.WriteLine("HINT:", "bright_yellow");
+                    terminal.WriteLine(Loc.Get("puzzle.hint_header"), "bright_yellow");
                 terminal.WriteLine(hint, "yellow");
                 if (!GameConfig.ScreenReaderMode)
                     terminal.WriteLine("═════════════", "bright_yellow");
@@ -1025,50 +1025,50 @@ namespace UsurperRemake.Systems
             }
             else
             {
-                terminal.WriteLine("No hints available for this puzzle.", "gray");
+                terminal.WriteLine(Loc.Get("puzzle.no_hints"), "gray");
             }
         }
 
         private async Task DisplayPuzzleSuccess(PuzzleInstance puzzle, Character player, TerminalEmulator terminal)
         {
             terminal.WriteLine("");
-            UIHelper.WriteBoxHeader(terminal, "P U Z Z L E   S O L V E D !", "bright_green", 66);
+            UIHelper.WriteBoxHeader(terminal, Loc.Get("puzzle.solved_header"), "bright_green", 66);
             terminal.WriteLine("");
 
-            terminal.WriteLine($"You gain {puzzle.SuccessXP} experience!", "cyan");
+            terminal.WriteLine(Loc.Get("puzzle.xp_gained", puzzle.SuccessXP), "cyan");
             player.Experience += puzzle.SuccessXP;
 
             // Ocean philosophy tie-in for certain puzzles
             if (puzzle.Difficulty >= 4)
             {
                 terminal.WriteLine("");
-                terminal.WriteLine("As the mechanism unlocks, a whisper echoes:", "bright_magenta");
-                terminal.WriteLine("'The wave that stops struggling finds its way home...'", "magenta");
+                terminal.WriteLine(Loc.Get("puzzle.whisper_echo"), "bright_magenta");
+                terminal.WriteLine(Loc.Get("puzzle.wave_quote"), "magenta");
                 OceanPhilosophySystem.Instance.CollectFragment(WaveFragment.TheForgetting);
             }
 
-            await terminal.GetInputAsync("Press Enter to continue...");
+            await terminal.GetInputAsync(Loc.Get("ui.press_enter"));
         }
 
         private async Task DisplayPuzzleFailure(PuzzleInstance puzzle, Character player, TerminalEmulator terminal)
         {
             terminal.WriteLine("");
-            terminal.WriteLine("The puzzle resets with a grinding sound.", "yellow");
+            terminal.WriteLine(Loc.Get("puzzle.reset_sound"), "yellow");
 
             if (puzzle.FailureDamagePercent > 0 && puzzle.AttemptsRemaining == 0)
             {
                 int damage = CalculateFailureDamage(puzzle, player);
                 player.HP = Math.Max(1, player.HP - damage);
-                terminal.WriteLine($"A trap triggers! You take {damage} damage!", "red");
+                terminal.WriteLine(Loc.Get("puzzle.trap_damage", damage), "red");
             }
 
             if (puzzle.AttemptsRemaining > 0)
             {
-                terminal.WriteLine($"{puzzle.AttemptsRemaining} attempts remaining.", "yellow");
+                terminal.WriteLine(Loc.Get("puzzle.attempts_left", puzzle.AttemptsRemaining), "yellow");
             }
             else
             {
-                terminal.WriteLine("You have exhausted all attempts. The puzzle remains unsolved.", "dark_red");
+                terminal.WriteLine(Loc.Get("puzzle.exhausted"), "dark_red");
             }
 
             await Task.Delay(500);
