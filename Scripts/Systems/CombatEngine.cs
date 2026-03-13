@@ -201,6 +201,10 @@ public partial class CombatEngine
         attacker.HasBloodlust = false;
         attacker.HasStatusImmunity = false;
         attacker.StatusImmunityDuration = 0;
+        attacker.DeathsEmbraceActive = false;
+        attacker.StatusLifestealPercent = 0;
+        defender.DeathsEmbraceActive = false;
+        defender.StatusLifestealPercent = 0;
         abilityCooldowns.Clear();
         pvpDefenderCooldowns.Clear();
         teammateCooldowns.Clear();
@@ -377,6 +381,8 @@ public partial class CombatEngine
         player.HasBloodlust = false;
         player.HasStatusImmunity = false;
         player.StatusImmunityDuration = 0;
+        player.DeathsEmbraceActive = false;
+        player.StatusLifestealPercent = 0;
         abilityCooldowns.Clear();
         teammateCooldowns.Clear();
 
@@ -4003,6 +4009,12 @@ public partial class CombatEngine
             terminal.WriteLine(Loc.Get("combat.divine_protection_absorbs", divineReduction), "bright_cyan");
         }
 
+        // Abysswarden Prison Warden's Resilience: enemies deal 10% less damage
+        if (player.Class == CharacterClass.Abysswarden && actualDamage > 1)
+        {
+            actualDamage = Math.Max(1, (long)(actualDamage * (1.0 - GameConfig.AbysswardenPrisonWardResist)));
+        }
+
         // Check for divine intervention (save from lethal hit)
         bool wouldDie = player.HP - actualDamage <= 0;
         if (wouldDie && DivineBlessingSystem.Instance.CheckDivineIntervention(player, (int)actualDamage))
@@ -4036,6 +4048,17 @@ public partial class CombatEngine
 
         // Apply damage
         player.HP = Math.Max(0, player.HP - actualDamage);
+
+        // Voidreaver Death's Embrace: revive on lethal damage
+        if (player.HP <= 0 && player.DeathsEmbraceActive)
+        {
+            player.HP = Math.Max(1, (long)(player.MaxHP * 0.15));
+            player.DeathsEmbraceActive = false;
+            player.DodgeNextAttack = true;
+            terminal.SetColor("bright_red");
+            terminal.WriteLine("DEATH'S EMBRACE TRIGGERS! You cheat death and rise with newfound fury!");
+            terminal.WriteLine($"Revived with {player.HP} HP! Next attack will miss!", "dark_red");
+        }
 
         // Track statistics - damage taken
         player.Statistics.RecordDamageTaken(actualDamage);
@@ -4090,13 +4113,24 @@ public partial class CombatEngine
             }
         }
 
-        // Wavecaller Reflecting status: reflect 15% of damage when Empathic Link or Harmonic Shield active
+        // Reflecting status: reflect damage back at attacker (Wavecaller 15%, Voidreaver 25%)
         if (actualDamage > 0 && monster.IsAlive && player.HasStatus(StatusEffect.Reflecting))
         {
-            long reflectDamage = Math.Max(1, (long)(actualDamage * GameConfig.WavecallerReflectionPercent));
+            float reflectPercent = player.Class == CharacterClass.Voidreaver
+                ? GameConfig.VoidreaverReflectionPercent
+                : GameConfig.WavecallerReflectionPercent;
+            long reflectDamage = Math.Max(1, (long)(actualDamage * reflectPercent));
             monster.HP = Math.Max(0, monster.HP - reflectDamage);
-            terminal.SetColor("bright_magenta");
-            terminal.WriteLine($"Harmonic energy reflects {reflectDamage} damage back at {monster.Name}!");
+            if (player.Class == CharacterClass.Voidreaver)
+            {
+                terminal.SetColor("dark_red");
+                terminal.WriteLine($"Void Shroud reflects {reflectDamage} damage back at {monster.Name}!");
+            }
+            else
+            {
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine($"Harmonic energy reflects {reflectDamage} damage back at {monster.Name}!");
+            }
             if (monster.HP <= 0)
             {
                 terminal.WriteLine($"The reflected energy destroys {monster.Name}!", "bright_white");
@@ -4176,6 +4210,18 @@ public partial class CombatEngine
                 if (actualDamage > maxDmg) actualDamage = maxDmg;
 
                 player.HP -= actualDamage;
+
+                // Voidreaver Death's Embrace: revive on lethal damage from abilities
+                if (player.HP <= 0 && player.DeathsEmbraceActive)
+                {
+                    player.HP = Math.Max(1, (long)(player.MaxHP * 0.15));
+                    player.DeathsEmbraceActive = false;
+                    player.DodgeNextAttack = true;
+                    terminal.SetColor("bright_red");
+                    terminal.WriteLine("DEATH'S EMBRACE TRIGGERS! You cheat death and rise with newfound fury!");
+                    terminal.WriteLine($"Revived with {player.HP} HP! Next attack will miss!", "dark_red");
+                }
+
                 terminal.WriteLine(Loc.Get("combat.you_take_damage", actualDamage), "red");
                 result.CombatLog.Add($"{monster.Name} uses {abilityName} for {actualDamage} damage");
             }
@@ -4195,6 +4241,11 @@ public partial class CombatEngine
             {
                 terminal.WriteLine(Loc.Get("combat.iron_will_resists", abilityResult.InflictStatus), "bright_white");
                 result.CombatLog.Add($"Player resists {abilityResult.InflictStatus} (status immunity)");
+            }
+            else if (player.Class == CharacterClass.Cyclebreaker && random.Next(100) < (int)(GameConfig.CyclebreakerDebuffResistChance * 100))
+            {
+                terminal.WriteLine($"Probability Manipulation negates {abilityResult.InflictStatus}!", "bright_magenta");
+                result.CombatLog.Add($"Cyclebreaker resists {abilityResult.InflictStatus} (Probability Manipulation)");
             }
             else if (random.Next(100) < abilityResult.StatusChance)
             {
@@ -5075,6 +5126,30 @@ public partial class CombatEngine
         terminal.WriteLine(Loc.Get("combat.you_slain", result.Monster.Name));
         terminal.WriteLine("");
 
+        // Abysswarden Corruption Harvest: heal 15% max HP on killing a poisoned enemy
+        if (result.Player.Class == CharacterClass.Abysswarden && result.Monster.Poisoned)
+        {
+            long corruptHeal = Math.Max(1, (long)(result.Player.MaxHP * GameConfig.AbysswardenCorruptionHealPercent));
+            result.Player.HP = Math.Min(result.Player.MaxHP, result.Player.HP + corruptHeal);
+            terminal.WriteLine($"Corruption Harvest absorbs {corruptHeal} HP from the poisoned corpse!", "dark_red");
+        }
+
+        // Voidreaver Void Hunger: heal 10% max HP on every kill
+        if (result.Player.Class == CharacterClass.Voidreaver)
+        {
+            long voidHeal = Math.Max(1, (long)(result.Player.MaxHP * GameConfig.VoidreaverVoidHungerPercent));
+            result.Player.HP = Math.Min(result.Player.MaxHP, result.Player.HP + voidHeal);
+            terminal.WriteLine($"Void Hunger absorbs {voidHeal} HP from the fallen!", "dark_red");
+
+            // Soul Eater: restore 15% max mana on killing blow
+            if (result.Player.IsManaClass)
+            {
+                int manaRestore = Math.Max(1, (int)(result.Player.MaxMana * GameConfig.VoidreaverSoulEaterManaPercent));
+                result.Player.Mana = Math.Min(result.Player.MaxMana, result.Player.Mana + manaRestore);
+                terminal.WriteLine($"Soul Eater drains {manaRestore} mana from the victim's essence!", "dark_magenta");
+            }
+        }
+
         // MUD mode: broadcast boss kills only (regular kills too spammy)
         if (isBoss)
             UsurperRemake.Server.RoomRegistry.BroadcastAction($"{result.Player.DisplayName} has defeated the mighty {result.Monster.Name}!");
@@ -5196,6 +5271,15 @@ public partial class CombatEngine
         if (result.Player.CycleExpMultiplier > 1.0f)
         {
             expReward = (long)(expReward * result.Player.CycleExpMultiplier);
+        }
+
+        // Cyclebreaker Cycle Memory: +5% XP per NG+ cycle (max +25%)
+        if (result.Player.Class == CharacterClass.Cyclebreaker)
+        {
+            int cycle = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+            float cycleXPBonus = Math.Min(GameConfig.CyclebreakerCycleXPBonusCap, (cycle - 1) * GameConfig.CyclebreakerCycleXPBonus);
+            if (cycleXPBonus > 0)
+                expReward += (long)(expReward * cycleXPBonus);
         }
 
         // Divine Boon passive XP and gold bonuses (from worshipped player-god)
@@ -5963,6 +6047,22 @@ public partial class CombatEngine
             long boonSteal = Math.Max(1, (long)(damage * attacker.CachedBoonEffects.LifestealPercent));
             attacker.HP = Math.Min(attacker.MaxHP, attacker.HP + boonSteal);
             terminal.WriteLine(Loc.Get("combat.boon_drain", boonSteal), "dark_cyan");
+        }
+
+        // Abysswarden Abyssal Siphon passive: 10% lifesteal on all attacks
+        if (attacker.Class == CharacterClass.Abysswarden)
+        {
+            long siphon = Math.Max(1, (long)(damage * GameConfig.AbysswardenAbyssalSiphonPercent));
+            attacker.HP = Math.Min(attacker.MaxHP, attacker.HP + siphon);
+            terminal.WriteLine($"Abyssal Siphon drains {siphon} HP!", "dark_red");
+        }
+
+        // Ability-granted lifesteal (StatusEffect.Lifesteal from Abysswarden/Voidreaver/Assassin abilities)
+        if (attacker.HasStatus(StatusEffect.Lifesteal) && attacker.StatusLifestealPercent > 0)
+        {
+            long statusSteal = Math.Max(1, damage * attacker.StatusLifestealPercent / 100);
+            attacker.HP = Math.Min(attacker.MaxHP, attacker.HP + statusSteal);
+            terminal.WriteLine($"Dark energy siphons {statusSteal} HP!", "dark_red");
         }
 
         // Elemental enchant procs
@@ -9932,6 +10032,12 @@ public partial class CombatEngine
             // Execute the ability
             var abilityResult = ClassAbilitySystem.UseAbility(player, action.AbilityId, random);
 
+            // Voidreaver Pain Threshold: +20% ability damage when below 50% HP
+            if (player.Class == CharacterClass.Voidreaver && player.HP < player.MaxHP / 2 && abilityResult.Damage > 0)
+            {
+                abilityResult.Damage = (int)(abilityResult.Damage * (1.0 + GameConfig.VoidreaverPainThresholdBonus));
+            }
+
             // Display ability use
             terminal.WriteLine("");
             terminal.SetColor("bright_cyan");
@@ -11181,8 +11287,9 @@ public partial class CombatEngine
 
             case "borrowed_power":
             {
-                // +N per cycle to all stats (N = CurrentCycle, max 10)
-                int cycleBonus = Math.Min(10, StoryProgressionSystem.Instance?.CurrentCycle ?? 1);
+                // Scale with both cycle count and player level for meaningful buff
+                int cycle = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+                int cycleBonus = Math.Min(50, cycle * (player.Level / 10 + 1));
                 player.TempAttackBonus += cycleBonus;
                 player.TempAttackBonusDuration = Math.Max(player.TempAttackBonusDuration, abilityResult.Duration);
                 player.TempDefenseBonus += cycleBonus;
@@ -11206,11 +11313,17 @@ public partial class CombatEngine
                         terminal.SetColor("bright_magenta");
                         terminal.WriteLine(Loc.Get("combat.ability_echo_25_echo", dmg));
                     }
+                    if (target.HP <= 0)
+                    {
+                        target.HP = 0;
+                        if (!result.DefeatedMonsters.Contains(target))
+                            result.DefeatedMonsters.Add(target);
+                    }
                 }
                 break;
 
             case "quantum_state":
-                // 50% dodge chance for duration (use Blur status)
+                // 20% dodge chance for duration (use Blur status) + dodge next attack
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Blur))
                     player.ActiveStatuses[StatusEffect.Blur] = abilityResult.Duration > 0 ? abilityResult.Duration : 3;
                 player.DodgeNextAttack = true;
@@ -11259,13 +11372,25 @@ public partial class CombatEngine
                 break;
 
             case "chrono_surge":
-                // Double actions this round — set Haste=2 so after the start-of-round decrement
-                // the player still has Haste=1 and benefits for exactly 1 round.
+            {
+                // Time manipulation: reduce all ability cooldowns by 2 rounds + Haste for 1 round
+                int cdReduced = 0;
+                foreach (var key in abilityCooldowns.Keys.ToList())
+                {
+                    if (abilityCooldowns[key] > 0)
+                    {
+                        abilityCooldowns[key] = Math.Max(0, abilityCooldowns[key] - 2);
+                        cdReduced++;
+                    }
+                }
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Haste))
                     player.ActiveStatuses[StatusEffect.Haste] = 2;
                 terminal.SetColor("bright_magenta");
                 terminal.WriteLine(Loc.Get("combat.ability_chrono_surge"));
+                if (cdReduced > 0)
+                    terminal.WriteLine($"Chrono Surge accelerates time — {cdReduced} ability cooldown(s) reduced by 2 rounds!", "bright_magenta");
                 break;
+            }
 
             case "singularity":
             {
@@ -11364,13 +11489,14 @@ public partial class CombatEngine
             }
 
             case "corrupting_dot":
-                // Poison DoT + lifesteal
+                // Poison DoT + 15% lifesteal on attacks
                 if (target != null && target.IsAlive)
                 {
                     target.Poisoned = true;
                     target.PoisonRounds = Math.Max(target.PoisonRounds, abilityResult.Duration > 0 ? abilityResult.Duration : 5);
                     if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                         player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 5;
+                    player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 15);
                     terminal.SetColor("dark_red");
                     terminal.WriteLine(Loc.Get("combat.ability_corrupting_dot", target.Name));
                 }
@@ -11379,6 +11505,8 @@ public partial class CombatEngine
             case "umbral_step":
                 // Guaranteed crit + evade all attacks
                 player.DodgeNextAttack = true;
+                player.TempAttackBonus += 999;
+                player.TempAttackBonusDuration = 1;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Hidden))
                     player.ActiveStatuses[StatusEffect.Hidden] = 1;
                 terminal.SetColor("dark_red");
@@ -11389,6 +11517,7 @@ public partial class CombatEngine
                 // 10% lifesteal for duration
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 10);
                 terminal.SetColor("dark_red");
                 terminal.WriteLine(Loc.Get("combat.ability_lifesteal_10"));
                 break;
@@ -11486,6 +11615,7 @@ public partial class CombatEngine
                 player.HP = Math.Max(1, player.HP - sacrifice);
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 25);
                 terminal.SetColor("dark_red");
                 terminal.WriteLine(Loc.Get("combat.ability_dark_pact", sacrifice));
                 break;
@@ -11594,13 +11724,14 @@ public partial class CombatEngine
 
             case "offer_flesh":
             {
-                // Sacrifice 15% HP for +60 ATK (handled). Below 25% HP: doubles to +120.
+                // Sacrifice 15% HP for +60 ATK (handled). Below 25% HP: doubles to +120 for full duration.
                 int sacrifice = (int)(player.MaxHP * 0.15);
                 player.HP = Math.Max(1, player.HP - sacrifice);
                 bool desperate = player.HP < (int)(player.MaxHP * 0.25);
                 if (desperate)
                 {
                     player.TempAttackBonus += 60;
+                    player.TempAttackBonusDuration = Math.Max(player.TempAttackBonusDuration, abilityResult.Duration > 0 ? abilityResult.Duration : 3);
                     terminal.SetColor("bright_red");
                     terminal.WriteLine(Loc.Get("combat.ability_offer_flesh_desperate", sacrifice));
                 }
@@ -11614,7 +11745,7 @@ public partial class CombatEngine
 
             case "execute_reap":
             {
-                // 100 damage, 3x vs <30% HP
+                // 100 damage, 3x vs <30% HP, kill resets cooldown
                 if (target != null && target.IsAlive)
                 {
                     int dmg = abilityResult.Damage;
@@ -11628,6 +11759,12 @@ public partial class CombatEngine
                         target.HP = 0;
                         if (!result.DefeatedMonsters.Contains(target))
                             result.DefeatedMonsters.Add(target);
+                        // Kill resets Reap cooldown
+                        if (abilityCooldowns.ContainsKey("reap"))
+                        {
+                            abilityCooldowns["reap"] = 0;
+                            terminal.WriteLine("Reap cooldown reset!", "bright_red");
+                        }
                     }
                 }
                 break;
@@ -11648,6 +11785,7 @@ public partial class CombatEngine
                 player.HP = Math.Max(1, player.HP - sacrifice);
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 20);
                 player.IsRaging = true;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Raging))
                     player.ActiveStatuses[StatusEffect.Raging] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
@@ -11756,7 +11894,8 @@ public partial class CombatEngine
             }
 
             case "deaths_embrace":
-                // Safety net: regen + dodge
+                // Revive on death + regen + dodge
+                player.DeathsEmbraceActive = true;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Regenerating))
                     player.ActiveStatuses[StatusEffect.Regenerating] = abilityResult.Duration > 0 ? abilityResult.Duration : 3;
                 player.DodgeNextAttack = true;
@@ -12277,6 +12416,60 @@ public partial class CombatEngine
                 int defReduction = (int)(target.ArmPow * 0.25);
                 target.ArmPow = Math.Max(0, target.ArmPow - defReduction);
                 terminal.WriteLine(Loc.Get("combat.spell_disintegrate", target.Name, defReduction), "bright_red");
+                break;
+
+            case "ignore_defense":
+                // Void Bolt: deal bonus damage equal to target's armor (compensates for defense subtraction)
+                if (target.IsAlive && target.ArmPow > 0)
+                {
+                    long bonusDmg = Math.Max(1, target.ArmPow);
+                    target.HP -= bonusDmg;
+                    terminal.SetColor("dark_red");
+                    terminal.WriteLine($"The void bolt pierces all defenses for {bonusDmg} bonus damage!");
+                    if (target.HP <= 0)
+                    {
+                        target.HP = 0;
+                        if (!result.DefeatedMonsters.Contains(target))
+                            result.DefeatedMonsters.Add(target);
+                    }
+                }
+                break;
+
+            case "unmaking":
+                // Unmaking: if target dies, restore caster's HP and mana
+                if (!target.IsAlive || target.HP <= 0)
+                {
+                    player.HP = player.MaxHP;
+                    player.Mana = player.MaxMana;
+                    terminal.SetColor("bright_red");
+                    terminal.WriteLine($"Reality unravels! {player.DisplayName} absorbs the void — full HP and mana restored!");
+                }
+                break;
+
+            case "probability_shift":
+                // Cyclebreaker: confuse (may skip/hit self) + slow (reduced power) for 3 rounds
+                target.IsConfused = true;
+                target.ConfusedDuration = Math.Max(target.ConfusedDuration, 3);
+                target.IsSlowed = true;
+                target.SlowDuration = Math.Max(target.SlowDuration, 3);
+                terminal.WriteLine($"Probability warps around {target.Name} — accuracy and power diminished!", "cyan");
+                break;
+
+            case "ignore_half_defense":
+                // Cyclebreaker Echo of Tomorrow: deal bonus damage equal to 50% of target's armor
+                if (target.IsAlive && target.ArmPow > 0)
+                {
+                    long halfDefBonus = Math.Max(1, target.ArmPow / 2);
+                    target.HP -= halfDefBonus;
+                    terminal.SetColor("cyan");
+                    terminal.WriteLine($"Future echo bypasses half of {target.Name}'s defense for {halfDefBonus} bonus damage!");
+                    if (target.HP <= 0)
+                    {
+                        target.HP = 0;
+                        if (!result.DefeatedMonsters.Contains(target))
+                            result.DefeatedMonsters.Add(target);
+                    }
+                }
                 break;
 
             case "psychic":
@@ -14385,6 +14578,30 @@ public partial class CombatEngine
             totalExp += expReward;
             totalGold += goldReward;
 
+            // Abysswarden Corruption Harvest: heal 15% max HP on killing a poisoned enemy
+            if (result.Player.Class == CharacterClass.Abysswarden && monster.Poisoned)
+            {
+                long corruptHeal = Math.Max(1, (long)(result.Player.MaxHP * GameConfig.AbysswardenCorruptionHealPercent));
+                result.Player.HP = Math.Min(result.Player.MaxHP, result.Player.HP + corruptHeal);
+                terminal.WriteLine($"Corruption Harvest absorbs {corruptHeal} HP from the poisoned {monster.Name}!", "dark_red");
+            }
+
+            // Voidreaver Void Hunger: heal 10% max HP on every kill
+            if (result.Player.Class == CharacterClass.Voidreaver)
+            {
+                long voidHeal = Math.Max(1, (long)(result.Player.MaxHP * GameConfig.VoidreaverVoidHungerPercent));
+                result.Player.HP = Math.Min(result.Player.MaxHP, result.Player.HP + voidHeal);
+                terminal.WriteLine($"Void Hunger absorbs {voidHeal} HP from the fallen {monster.Name}!", "dark_red");
+
+                // Soul Eater: restore 15% max mana on killing blow
+                if (result.Player.IsManaClass)
+                {
+                    int manaRestore = Math.Max(1, (int)(result.Player.MaxMana * GameConfig.VoidreaverSoulEaterManaPercent));
+                    result.Player.Mana = Math.Min(result.Player.MaxMana, result.Player.Mana + manaRestore);
+                    terminal.WriteLine($"Soul Eater drains {manaRestore} mana from {monster.Name}!", "dark_magenta");
+                }
+            }
+
             // Track monster kill stats
             result.Player.MKills++;
             result.Player.Statistics.RecordMonsterKill(expReward, goldReward, isBoss, monster.IsUnique);
@@ -14493,6 +14710,15 @@ public partial class CombatEngine
         if (result.Player.CycleExpMultiplier > 1.0f)
         {
             adjustedExp = (long)(adjustedExp * result.Player.CycleExpMultiplier);
+        }
+
+        // Cyclebreaker Cycle Memory: +5% XP per NG+ cycle (max +25%) — multi-monster path
+        if (result.Player.Class == CharacterClass.Cyclebreaker)
+        {
+            int cycleMM = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+            float cycleXPBonusMM = Math.Min(GameConfig.CyclebreakerCycleXPBonusCap, (cycleMM - 1) * GameConfig.CyclebreakerCycleXPBonus);
+            if (cycleXPBonusMM > 0)
+                adjustedExp += (long)(adjustedExp * cycleXPBonusMM);
         }
 
         // Guild XP bonus (v0.52.0) — multi-monster path
@@ -15890,6 +16116,12 @@ public partial class CombatEngine
         // Execute the ability
         var abilityResult = ClassAbilitySystem.UseAbility(player, selectedAbility.Id, random);
 
+        // Voidreaver Pain Threshold: +20% ability damage when below 50% HP
+        if (player.Class == CharacterClass.Voidreaver && player.HP < player.MaxHP / 2 && abilityResult.Damage > 0)
+        {
+            abilityResult.Damage = (int)(abilityResult.Damage * (1.0 + GameConfig.VoidreaverPainThresholdBonus));
+        }
+
         terminal.WriteLine("");
         terminal.SetColor("bright_magenta");
         terminal.WriteLine(abilityResult.Message);
@@ -16966,8 +17198,9 @@ public partial class CombatEngine
 
             case "borrowed_power":
             {
-                // +N per cycle to all stats (N = CurrentCycle, max 10)
-                int cbCycleBonus = Math.Min(10, StoryProgressionSystem.Instance?.CurrentCycle ?? 1);
+                // Scale with both cycle count and player level for meaningful buff
+                int cbCycle = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+                int cbCycleBonus = Math.Min(50, cbCycle * (player.Level / 10 + 1));
                 player.TempAttackBonus += cbCycleBonus;
                 player.TempAttackBonusDuration = Math.Max(player.TempAttackBonusDuration, abilityResult.Duration);
                 player.TempDefenseBonus += cbCycleBonus;
@@ -16991,11 +17224,17 @@ public partial class CombatEngine
                         terminal.SetColor("bright_magenta");
                         terminal.WriteLine(Loc.Get("combat.ability_echo_25_echo", echoDmg));
                     }
+                    if (monster.HP <= 0)
+                    {
+                        monster.HP = 0;
+                        if (!result.DefeatedMonsters.Contains(monster))
+                            result.DefeatedMonsters.Add(monster);
+                    }
                 }
                 break;
 
             case "quantum_state":
-                // 50% dodge chance for duration (use Blur status)
+                // 20% dodge chance for duration (use Blur status) + dodge next attack
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Blur))
                     player.ActiveStatuses[StatusEffect.Blur] = abilityResult.Duration > 0 ? abilityResult.Duration : 3;
                 player.DodgeNextAttack = true;
@@ -17045,12 +17284,25 @@ public partial class CombatEngine
                 break;
 
             case "chrono_surge":
-                // Double actions this round
+            {
+                // Time manipulation: reduce all ability cooldowns by 2 rounds + Haste for 1 round
+                int mmCdReduced = 0;
+                foreach (var key in abilityCooldowns.Keys.ToList())
+                {
+                    if (abilityCooldowns[key] > 0)
+                    {
+                        abilityCooldowns[key] = Math.Max(0, abilityCooldowns[key] - 2);
+                        mmCdReduced++;
+                    }
+                }
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Haste))
                     player.ActiveStatuses[StatusEffect.Haste] = 2;
                 terminal.SetColor("bright_magenta");
                 terminal.WriteLine(Loc.Get("combat.ability_chrono_surge"));
+                if (mmCdReduced > 0)
+                    terminal.WriteLine($"Chrono Surge accelerates time — {mmCdReduced} ability cooldown(s) reduced by 2 rounds!", "bright_magenta");
                 break;
+            }
 
             case "singularity":
             {
@@ -17146,13 +17398,14 @@ public partial class CombatEngine
             }
 
             case "corrupting_dot":
-                // Poison DoT + lifesteal
+                // Poison DoT + 15% lifesteal on attacks
                 if (monster != null && monster.IsAlive)
                 {
                     monster.Poisoned = true;
                     monster.PoisonRounds = Math.Max(monster.PoisonRounds, abilityResult.Duration > 0 ? abilityResult.Duration : 5);
                     if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                         player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 5;
+                    player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 15);
                     terminal.SetColor("dark_red");
                     terminal.WriteLine(Loc.Get("combat.ability_corrupting_dot", monster.Name));
                 }
@@ -17161,6 +17414,8 @@ public partial class CombatEngine
             case "umbral_step":
                 // Guaranteed crit + evade all attacks
                 player.DodgeNextAttack = true;
+                player.TempAttackBonus += 999;
+                player.TempAttackBonusDuration = 1;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Hidden))
                     player.ActiveStatuses[StatusEffect.Hidden] = 1;
                 terminal.SetColor("dark_red");
@@ -17171,6 +17426,7 @@ public partial class CombatEngine
                 // 10% lifesteal for duration
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 10);
                 terminal.SetColor("dark_red");
                 terminal.WriteLine(Loc.Get("combat.ability_lifesteal_10"));
                 break;
@@ -17245,6 +17501,7 @@ public partial class CombatEngine
                 player.HP = Math.Max(1, player.HP - dpSacrifice);
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 25);
                 terminal.SetColor("dark_red");
                 terminal.WriteLine(Loc.Get("combat.ability_dark_pact", dpSacrifice));
                 break;
@@ -17351,13 +17608,14 @@ public partial class CombatEngine
 
             case "offer_flesh":
             {
-                // Sacrifice 15% HP for +60 ATK (handled). Below 25% HP: doubles to +120.
+                // Sacrifice 15% HP for +60 ATK (handled). Below 25% HP: doubles to +120 for full duration.
                 int ofSacrifice = (int)(player.MaxHP * 0.15);
                 player.HP = Math.Max(1, player.HP - ofSacrifice);
                 bool ofDesperate = player.HP < (int)(player.MaxHP * 0.25);
                 if (ofDesperate)
                 {
                     player.TempAttackBonus += 60;
+                    player.TempAttackBonusDuration = Math.Max(player.TempAttackBonusDuration, abilityResult.Duration > 0 ? abilityResult.Duration : 3);
                     terminal.SetColor("bright_red");
                     terminal.WriteLine(Loc.Get("combat.ability_offer_flesh_desperate", ofSacrifice));
                 }
@@ -17371,7 +17629,7 @@ public partial class CombatEngine
 
             case "execute_reap":
             {
-                // 100 damage, 3x vs <30% HP
+                // 100 damage, 3x vs <30% HP, kill resets cooldown
                 if (monster != null && monster.IsAlive)
                 {
                     int dmg = abilityResult.Damage;
@@ -17385,6 +17643,12 @@ public partial class CombatEngine
                         monster.HP = 0;
                         if (!result.DefeatedMonsters.Contains(monster))
                             result.DefeatedMonsters.Add(monster);
+                        // Kill resets Reap cooldown
+                        if (abilityCooldowns.ContainsKey("reap"))
+                        {
+                            abilityCooldowns["reap"] = 0;
+                            terminal.WriteLine("Reap cooldown reset!", "bright_red");
+                        }
                     }
                 }
                 break;
@@ -17405,6 +17669,7 @@ public partial class CombatEngine
                 player.HP = Math.Max(1, player.HP - apoSacrifice);
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Lifesteal))
                     player.ActiveStatuses[StatusEffect.Lifesteal] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
+                player.StatusLifestealPercent = Math.Max(player.StatusLifestealPercent, 20);
                 player.IsRaging = true;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Raging))
                     player.ActiveStatuses[StatusEffect.Raging] = abilityResult.Duration > 0 ? abilityResult.Duration : 4;
@@ -17489,7 +17754,8 @@ public partial class CombatEngine
             }
 
             case "deaths_embrace":
-                // Safety net: regen + dodge
+                // Revive on death + regen + dodge
+                player.DeathsEmbraceActive = true;
                 if (!player.ActiveStatuses.ContainsKey(StatusEffect.Regenerating))
                     player.ActiveStatuses[StatusEffect.Regenerating] = abilityResult.Duration > 0 ? abilityResult.Duration : 3;
                 player.DodgeNextAttack = true;
@@ -21541,6 +21807,15 @@ public partial class CombatEngine
             // NG+ cycle multiplier
             if (groupedPlayer.CycleExpMultiplier > 1.0f)
                 playerExp = (long)(playerExp * groupedPlayer.CycleExpMultiplier);
+
+            // Cyclebreaker Cycle Memory XP bonus
+            if (groupedPlayer.Class == CharacterClass.Cyclebreaker)
+            {
+                int gpCycle = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+                float gpCycleBonus = Math.Min(GameConfig.CyclebreakerCycleXPBonusCap, (gpCycle - 1) * GameConfig.CyclebreakerCycleXPBonus);
+                if (gpCycleBonus > 0)
+                    playerExp += (long)(playerExp * gpCycleBonus);
+            }
 
             // Group level gap penalty
             float groupXPMult = GroupSystem.GetGroupXPMultiplier(groupedPlayer.Level, highestLevel);

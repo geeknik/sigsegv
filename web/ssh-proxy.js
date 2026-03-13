@@ -2638,18 +2638,21 @@ function handleHttpRequest(req, res) {
     res.writeHead(204);
     res.end();
   } else if (req.method === 'GET') {
-    // Static file serving for HTML pages (index, dashboard, balance, admin)
+    // Static file serving for HTML pages and assets (index, dashboard, balance, admin, lang/*.json)
     const MIME_TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.ico': 'image/x-icon' };
     let filePath = req.url.split('?')[0];
     if (filePath === '/') filePath = '/index.html';
     if (!path.extname(filePath)) filePath += '.html';
-    const safeName = path.basename(filePath);
-    const fullPath = path.join(__dirname, safeName);
-    if (fs.existsSync(fullPath)) {
-      const ext = path.extname(safeName);
+    // Resolve path safely — allow lang/ subdirectory but prevent directory traversal
+    const resolved = path.resolve(__dirname, '.' + filePath);
+    if (!resolved.startsWith(path.resolve(__dirname))) {
+      res.writeHead(403);
+      res.end('{"error":"forbidden"}');
+    } else if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+      const ext = path.extname(resolved);
       res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream');
       res.writeHead(200);
-      fs.createReadStream(fullPath).pipe(res);
+      fs.createReadStream(resolved).pipe(res);
     } else {
       res.writeHead(404);
       res.end('{"error":"not found"}');

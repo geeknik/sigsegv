@@ -208,7 +208,7 @@ public static class SpellSystem
             [2] = new SpellInfo(2, "Tidecall Barrier", "Surround all allies with shimmering wave-light. All allies: +25 protection. Duration: whole fight.", 40, 6, "Tidabarriarie", true, "Buff"),
             [3] = new SpellInfo(3, "Siren's Lament", "Sing the Ocean's grief, sapping enemy will. All enemies: -30% attack, -20% defense. Duration: 4 rounds.", 55, 11, "Sirenlamentarie", true, "Debuff"),
             [4] = new SpellInfo(4, "Restorative Tide", "A warm wave of healing energy. Effect: 80-120 hp to all allies. Duration: 1 turn.", 90, 16, "Restoratidarie", true, "Heal"),
-            [5] = new SpellInfo(5, "Symphony of the Depths", "Channel the Ocean's full harmonic spectrum. All allies: +60 attack, +40 defense, +30% crit. Self: -50% max HP. Duration: whole fight.", 160, 22, "Symphodeptarie", true, "Buff")
+            [5] = new SpellInfo(5, "Symphony of the Depths", "Channel the Ocean's full harmonic spectrum. All allies: +60 attack, +40 defense, guaranteed crit on next hit. Self: -50% max HP. Duration: whole fight.", 160, 22, "Symphodeptarie", true, "Buff")
         },
 
         // ═══════════════════════════════════════════════════════════════════════════════
@@ -220,8 +220,8 @@ public static class SpellSystem
             [1] = new SpellInfo(1, "Deja Vu", "Glimpse a fragment of a past cycle. Dodge the next incoming attack completely. Duration: 1 attack.", 15, 1, "Dejavuarie", false, "Buff"),
             [2] = new SpellInfo(2, "Probability Shift", "Twist fate against your enemy. Target: crit chance = 0%, miss chance +30%. Duration: 3 rounds.", 40, 7, "Probashiftarie", false, "Debuff"),
             [3] = new SpellInfo(3, "Echo of Tomorrow", "Strike with damage from a future timeline. Damage: 80-110. Ignores 50% of defense. Duration: 1 turn.", 65, 12, "Echomorrarie", false, "Attack"),
-            [4] = new SpellInfo(4, "Cycle Rewind", "Revert your body to an earlier state. Restores HP to 3 rounds ago or full if combat just started. Duration: 1 turn.", 100, 18, "Cyclewindarie", false, "Heal"),
-            [5] = new SpellInfo(5, "Paradox Collapse", "Collapse multiple timelines onto the target. Damage: 250-350 + 10% of all damage dealt this fight. Duration: 1 turn.", 200, 24, "Paradoxcollarie", false, "Attack")
+            [4] = new SpellInfo(4, "Cycle Rewind", "Revert your body to an earlier state. Restores 30% max HP and cures disease. Duration: 1 turn.", 100, 18, "Cyclewindarie", false, "Heal"),
+            [5] = new SpellInfo(5, "Paradox Collapse", "Collapse multiple timelines onto the target. Damage: 250-350. Duration: 1 turn.", 200, 24, "Paradoxcollarie", false, "Attack")
         },
 
         // ═══════════════════════════════════════════════════════════════════════════════
@@ -231,7 +231,7 @@ public static class SpellSystem
         [CharacterClass.Abysswarden] = new Dictionary<int, SpellInfo>
         {
             [1] = new SpellInfo(1, "Prison Siphon", "Draw power from the nearest sealed God-prison. Damage: 12-18. Heals self 50% of damage. Duration: 1 turn.", 15, 1, "Prisonsipharie", false, "Attack"),
-            [2] = new SpellInfo(2, "Noctura's Whisper", "Invoke the Shadow Goddess's paranoia. Target: -25% attack, -25% defense, 20% skip turn. Duration: 3 rounds.", 35, 6, "Nocturwhisparie", false, "Debuff"),
+            [2] = new SpellInfo(2, "Noctura's Whisper", "Invoke the Shadow Goddess's paranoia. Target: -25% attack, -25% defense. Duration: 3 rounds.", 35, 6, "Nocturwhisparie", false, "Debuff"),
             [3] = new SpellInfo(3, "Abyssal Chains", "Bind the target with chains from the Old Gods' prison. Damage: 65-85. Target immobilized 2 rounds. Duration: 1 turn.", 60, 11, "Abysschainarie", false, "Attack"),
             [4] = new SpellInfo(4, "Devour Essence", "Consume the target's life force. Damage: 100-140. Heals 75%. Restores 20 mana. Duration: 1 turn.", 90, 17, "Devouressarie", false, "Attack"),
             [5] = new SpellInfo(5, "Maelketh's Prison Break", "Crack the War God's seal, releasing imprisoned fury. Damage: 220-300. Self takes 10% as backlash. Duration: 1 turn.", 180, 23, "Maelbreakarie", false, "Attack")
@@ -244,9 +244,9 @@ public static class SpellSystem
         [CharacterClass.Voidreaver] = new Dictionary<int, SpellInfo>
         {
             [1] = new SpellInfo(1, "Soul Shred", "Tear at the target's soul. Damage: 15-22 + 5% of your current HP as bonus. Duration: 1 turn.", 10, 1, "Soulshredarie", false, "Attack"),
-            [2] = new SpellInfo(2, "Blood Pact", "Sacrifice 20% of max HP. Gain +50 attack, +30% crit for the fight. Cannot be dispelled. Duration: whole fight.", 30, 5, "Bloodpactarie", false, "Buff"),
+            [2] = new SpellInfo(2, "Blood Pact", "Sacrifice 20% of max HP. Gain +50 attack for the fight and guaranteed critical strike on next hit. Cannot be dispelled.", 30, 5, "Bloodpactarie", false, "Buff"),
             [3] = new SpellInfo(3, "Void Bolt", "Fire a bolt of annihilating nothingness. Damage: 90-120. Ignores all defense. Duration: 1 turn.", 55, 10, "Voidboltarie", false, "Attack"),
-            [4] = new SpellInfo(4, "Consume the Fallen", "Devour a dead enemy's residual energy. Heals 50% of last killed enemy's max HP (min 100). Only after a kill. Duration: 1 turn.", 80, 16, "Consumfallarie", false, "Heal"),
+            [4] = new SpellInfo(4, "Consume the Fallen", "Devour residual energy from the fallen. Heals 25% of max HP (min 100). Duration: 1 turn.", 80, 16, "Consumfallarie", false, "Heal"),
             [5] = new SpellInfo(5, "Unmaking", "Erase the target from reality. Damage: 350-450. Costs 25% current HP. If kills: restore all HP and mana. Duration: 1 turn.", 250, 24, "Unmakingarie", false, "Attack")
         }
     };
@@ -611,6 +611,21 @@ public static class SpellSystem
                 break;
             case CharacterClass.Sage:
                 ExecuteSageSpell(caster, spellLevel, target, allTargets, result, random, profMult);
+                break;
+            case CharacterClass.Tidesworn:
+                ExecuteTideswornSpell(caster, spellLevel, target, allTargets, result, random, profMult);
+                break;
+            case CharacterClass.Wavecaller:
+                ExecuteWavecallerSpell(caster, spellLevel, target, allTargets, result, random, profMult);
+                break;
+            case CharacterClass.Cyclebreaker:
+                ExecuteCyclebreakerSpell(caster, spellLevel, target, allTargets, result, random, profMult);
+                break;
+            case CharacterClass.Abysswarden:
+                ExecuteAbysswardenSpell(caster, spellLevel, target, allTargets, result, random, profMult);
+                break;
+            case CharacterClass.Voidreaver:
+                ExecuteVoidreaverSpell(caster, spellLevel, target, allTargets, result, random, profMult);
                 break;
         }
     }
@@ -1338,4 +1353,203 @@ public static class SpellSystem
         
         return 0;
     }
-} 
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // PRESTIGE CLASS SPELL IMPLEMENTATIONS
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    private static void ExecuteTideswornSpell(Character caster, int spellLevel, Character target, List<Character> allTargets, SpellResult result, Random random, float profMult = 1.0f)
+    {
+        switch (spellLevel)
+        {
+            case 1: // Tidal Ward - Protection +20, reflects 10% melee damage
+                result.ProtectionBonus = ScaleProtectionEffect(20 + (caster.Level / 8), caster, profMult);
+                result.Duration = 999;
+                result.Message += $" A barrier of living water surrounds {caster.Name2}! (+{result.ProtectionBonus} defense)";
+                break;
+            case 2: // Purifying Surge - 40-60 heal + cure disease/poison
+                int tideHeal2 = 40 + random.Next(21);
+                result.Healing = ScaleHealingEffect(tideHeal2, caster, random, profMult);
+                result.SpecialEffect = "cure_disease";
+                result.Message += $" Sacred water cleanses and heals {caster.Name2} for {result.Healing} HP!";
+                break;
+            case 3: // Ocean's Rebuke - 70-95 damage
+                int tideDmg3 = 70 + random.Next(26);
+                result.Damage = ScaleSpellEffect(tideDmg3, caster, random, profMult);
+                result.SpecialEffect = "holy";
+                result.Message += $" A crashing wave strikes {target?.Name2 ?? "the enemy"} for {result.Damage} damage!";
+                break;
+            case 4: // Covenant of the Deep - All allies +40 protection, +20 attack
+                result.ProtectionBonus = ScaleProtectionEffect(40 + (caster.Level / 5), caster, profMult);
+                result.AttackBonus = (int)((20 + (caster.Level / 8)) * profMult);
+                result.Duration = 999;
+                result.IsMultiTarget = true;
+                result.Message += $" The Ocean shields the faithful! (+{result.ProtectionBonus} defense, +{result.AttackBonus} attack to all)";
+                break;
+            case 5: // Deluge of Sanctity - 200-280 AoE damage + heal self 100
+                int tideDmg5 = 200 + random.Next(81);
+                result.Damage = ScaleSpellEffect(tideDmg5, caster, random, profMult);
+                result.Healing = ScaleHealingEffect(100, caster, random, profMult);
+                result.IsMultiTarget = true;
+                result.Message += $" The Ocean's wrath floods all enemies for {result.Damage} damage! {caster.Name2} is restored for {result.Healing} HP!";
+                break;
+        }
+    }
+
+    private static void ExecuteWavecallerSpell(Character caster, int spellLevel, Character target, List<Character> allTargets, SpellResult result, Random random, float profMult = 1.0f)
+    {
+        switch (spellLevel)
+        {
+            case 1: // Harmonic Resonance - +15 attack, +10 defense
+                result.AttackBonus = (int)((15 + (caster.Level / 10)) * profMult);
+                result.ProtectionBonus = ScaleProtectionEffect(10 + (caster.Level / 12), caster, profMult);
+                result.Duration = 999;
+                result.Message += $" Attuned to harmonic rhythms! (+{result.AttackBonus} attack, +{result.ProtectionBonus} defense)";
+                break;
+            case 2: // Tidecall Barrier - All allies +25 protection
+                result.ProtectionBonus = ScaleProtectionEffect(25 + (caster.Level / 6), caster, profMult);
+                result.Duration = 999;
+                result.IsMultiTarget = true;
+                result.Message += $" Shimmering wave-light protects all allies! (+{result.ProtectionBonus} defense)";
+                break;
+            case 3: // Siren's Lament - All enemies debuffed
+                result.SpecialEffect = "weaken";
+                result.Duration = 4;
+                result.IsMultiTarget = true;
+                result.Message += $" The Ocean's grief saps enemy will! (-30% attack, -20% defense)";
+                break;
+            case 4: // Restorative Tide - 80-120 heal to all allies
+                int waveHeal4 = 80 + random.Next(41);
+                result.Healing = ScaleHealingEffect(waveHeal4, caster, random, profMult);
+                result.IsMultiTarget = true;
+                result.Message += $" A warm healing wave restores {result.Healing} HP to all allies!";
+                break;
+            case 5: // Symphony of the Depths - Massive buff + guaranteed crit, costs 50% HP
+                result.AttackBonus = (int)((60 + (caster.Level / 3)) * profMult);
+                result.ProtectionBonus = ScaleProtectionEffect(40 + (caster.Level / 4), caster, profMult);
+                result.Duration = 999;
+                result.IsMultiTarget = true;
+                // Guaranteed crit via TempAttackBonus pattern
+                caster.TempAttackBonus += 999;
+                caster.TempAttackBonusDuration = 2;
+                int hpCost = (int)(caster.MaxHP * 0.50);
+                caster.HP = Math.Max(1, caster.HP - hpCost);
+                result.Message += $" The Ocean's full harmonic spectrum unleashed! (+{result.AttackBonus} attack, +{result.ProtectionBonus} defense, guaranteed crit to all) {caster.Name2} sacrifices {hpCost} HP!";
+                break;
+        }
+    }
+
+    private static void ExecuteCyclebreakerSpell(Character caster, int spellLevel, Character target, List<Character> allTargets, SpellResult result, Random random, float profMult = 1.0f)
+    {
+        switch (spellLevel)
+        {
+            case 1: // Deja Vu - Dodge next attack
+                result.SpecialEffect = "dodge_next";
+                result.Duration = 1;
+                result.Message += $" {caster.Name2} glimpses a past cycle — next attack will miss!";
+                break;
+            case 2: // Probability Shift - Target crit=0%, miss+30% for 3 rounds
+                result.SpecialEffect = "probability_shift";
+                result.Duration = 3;
+                result.Message += $" Fate twists against {target?.Name2 ?? "the enemy"} — accuracy ruined for 3 rounds!";
+                break;
+            case 3: // Echo of Tomorrow - 80-110 damage, ignores 50% defense
+                int cbDmg3 = 80 + random.Next(31);
+                result.Damage = ScaleSpellEffect(cbDmg3, caster, random, profMult);
+                result.SpecialEffect = "ignore_half_defense";
+                result.Message += $" Future timeline damage strikes {target?.Name2 ?? "the enemy"} for {result.Damage}!";
+                break;
+            case 4: // Cycle Rewind - Heal 30% max HP (simplified from "HP 3 rounds ago")
+                int rewindHeal = (int)(caster.MaxHP * 0.30);
+                result.Healing = ScaleHealingEffect(rewindHeal, caster, random, profMult);
+                result.SpecialEffect = "cure_disease";
+                result.Message += $" {caster.Name2} rewinds the cycle, restoring {result.Healing} HP!";
+                break;
+            case 5: // Paradox Collapse - 250-350 damage + 10% of all damage dealt this fight
+                int cbDmg5 = 250 + random.Next(101);
+                result.Damage = ScaleSpellEffect(cbDmg5, caster, random, profMult);
+                result.Message += $" Multiple timelines collapse onto {target?.Name2 ?? "the enemy"} for {result.Damage} damage!";
+                break;
+        }
+    }
+
+    private static void ExecuteAbysswardenSpell(Character caster, int spellLevel, Character target, List<Character> allTargets, SpellResult result, Random random, float profMult = 1.0f)
+    {
+        switch (spellLevel)
+        {
+            case 1: // Prison Siphon - 12-18 damage, heal 50%
+                int abDmg1 = 12 + random.Next(7);
+                result.Damage = ScaleSpellEffect(abDmg1, caster, random, profMult);
+                result.Healing = result.Damage / 2;
+                result.Message += $" {caster.Name2} siphons prison energy for {result.Damage} damage, healing {result.Healing} HP!";
+                break;
+            case 2: // Noctura's Whisper - Debuff: -25% attack, -25% defense, 20% skip
+                result.SpecialEffect = "weaken";
+                result.Duration = 3;
+                result.Message += $" Noctura's paranoia grips {target?.Name2 ?? "the enemy"}! (-25% attack/defense)";
+                break;
+            case 3: // Abyssal Chains - 65-85 damage, immobilize 2 rounds
+                int abDmg3 = 65 + random.Next(21);
+                result.Damage = ScaleSpellEffect(abDmg3, caster, random, profMult);
+                result.SpecialEffect = "stun";
+                result.Duration = 2;
+                result.Message += $" Abyssal chains bind {target?.Name2 ?? "the enemy"} for {result.Damage} damage! Immobilized!";
+                break;
+            case 4: // Devour Essence - 100-140 damage, heal 75%, restore 20 mana
+                int abDmg4 = 100 + random.Next(41);
+                result.Damage = ScaleSpellEffect(abDmg4, caster, random, profMult);
+                result.Healing = (int)(result.Damage * 0.75);
+                caster.Mana = Math.Min(caster.MaxMana, caster.Mana + 20);
+                result.Message += $" {caster.Name2} devours life force for {result.Damage} damage, healing {result.Healing} HP! (+20 mana)";
+                break;
+            case 5: // Maelketh's Prison Break - 220-300 damage, 10% backlash
+                int abDmg5 = 220 + random.Next(81);
+                result.Damage = ScaleSpellEffect(abDmg5, caster, random, profMult);
+                int backlash = (int)(result.Damage * 0.10);
+                caster.HP = Math.Max(1, caster.HP - backlash);
+                result.Message += $" The War God's fury unleashed for {result.Damage} damage! ({backlash} backlash to {caster.Name2})";
+                break;
+        }
+    }
+
+    private static void ExecuteVoidreaverSpell(Character caster, int spellLevel, Character target, List<Character> allTargets, SpellResult result, Random random, float profMult = 1.0f)
+    {
+        switch (spellLevel)
+        {
+            case 1: // Soul Shred - 15-22 + 5% current HP
+                int vrDmg1 = 15 + random.Next(8) + (int)(caster.HP * 0.05);
+                result.Damage = ScaleSpellEffect(vrDmg1, caster, random, profMult);
+                result.Message += $" {caster.Name2} tears at the enemy's soul for {result.Damage} damage!";
+                break;
+            case 2: // Blood Pact - Sacrifice 20% max HP, gain attack bonus + guaranteed crit
+                int sacrifice = (int)(caster.MaxHP * 0.20);
+                caster.HP = Math.Max(1, caster.HP - sacrifice);
+                result.AttackBonus = (int)((50 + (caster.Level / 3)) * profMult);
+                result.Duration = 999;
+                // Grant guaranteed critical strike on next hit
+                caster.TempAttackBonus += 999;
+                caster.TempAttackBonusDuration = 2; // Lasts for next attack
+                result.Message += $" {caster.Name2} sacrifices {sacrifice} HP! (+{result.AttackBonus} attack, guaranteed crit!)";
+                break;
+            case 3: // Void Bolt - 90-120 damage, ignores all defense
+                int vrDmg3 = 90 + random.Next(31);
+                result.Damage = ScaleSpellEffect(vrDmg3, caster, random, profMult);
+                result.SpecialEffect = "ignore_defense";
+                result.Message += $" A bolt of annihilating nothingness strikes for {result.Damage} damage!";
+                break;
+            case 4: // Consume the Fallen - Heal 100+ HP (simplified from "50% of last killed")
+                int consumeHeal = Math.Max(100, (int)(caster.MaxHP * 0.25));
+                result.Healing = ScaleHealingEffect(consumeHeal, caster, random, profMult);
+                result.Message += $" {caster.Name2} consumes fallen energy, restoring {result.Healing} HP!";
+                break;
+            case 5: // Unmaking - 350-450 damage, costs 25% current HP
+                int unmakeCost = (int)(caster.HP * 0.25);
+                caster.HP = Math.Max(1, caster.HP - unmakeCost);
+                int vrDmg5 = 350 + random.Next(101);
+                result.Damage = ScaleSpellEffect(vrDmg5, caster, random, profMult);
+                result.SpecialEffect = "unmaking";
+                result.Message += $" {caster.Name2} erases reality for {result.Damage} damage! (-{unmakeCost} HP)";
+                break;
+        }
+    }
+}

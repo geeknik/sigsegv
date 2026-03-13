@@ -4802,7 +4802,10 @@ public abstract class BaseLocation
             || currentPlayer.Class == CharacterClass.Jester
             || currentPlayer.Class == CharacterClass.Cleric
             || currentPlayer.Class == CharacterClass.Tidesworn
-            || currentPlayer.Class == CharacterClass.Wavecaller;
+            || currentPlayer.Class == CharacterClass.Wavecaller
+            || currentPlayer.Class == CharacterClass.Cyclebreaker
+            || currentPlayer.Class == CharacterClass.Abysswarden
+            || currentPlayer.Class == CharacterClass.Voidreaver;
         if (hasAnyBuff)
         {
             terminal.SetColor("bright_cyan");
@@ -4838,6 +4841,31 @@ public abstract class BaseLocation
                 terminal.SetColor("bright_magenta");
                 terminal.WriteLine($"  - Harmonic Resonance: +{(int)(GameConfig.WavecallerHarmonicResonanceBonus * 100)}% healing from abilities and spells");
                 terminal.WriteLine($"  - Damage Reflection: {(int)(GameConfig.WavecallerReflectionPercent * 100)}% damage reflected when Harmonic Shield or Empathic Link active");
+            }
+            if (currentPlayer.Class == CharacterClass.Cyclebreaker)
+            {
+                terminal.SetColor("bright_magenta");
+                terminal.WriteLine($"  - Probability Manipulation: {(int)(GameConfig.CyclebreakerDebuffResistChance * 100)}% chance to resist incoming debuffs");
+                int cycle = StoryProgressionSystem.Instance?.CurrentCycle ?? 1;
+                float xpBonus = Math.Min(GameConfig.CyclebreakerCycleXPBonusCap, (cycle - 1) * GameConfig.CyclebreakerCycleXPBonus);
+                if (xpBonus > 0)
+                    terminal.WriteLine($"  - Cycle Memory: +{(int)(xpBonus * 100)}% XP from combat (Cycle {cycle})");
+                else
+                    terminal.WriteLine($"  - Cycle Memory: +5% XP per NG+ cycle (inactive in Cycle 1)");
+            }
+            if (currentPlayer.Class == CharacterClass.Abysswarden)
+            {
+                terminal.SetColor("dark_red");
+                terminal.WriteLine($"  - Abyssal Siphon: {(int)(GameConfig.AbysswardenAbyssalSiphonPercent * 100)}% lifesteal on all attacks");
+                terminal.WriteLine($"  - Prison Warden's Resilience: Enemies deal {(int)(GameConfig.AbysswardenPrisonWardResist * 100)}% less damage");
+                terminal.WriteLine($"  - Corruption Harvest: Heal {(int)(GameConfig.AbysswardenCorruptionHealPercent * 100)}% max HP on killing a poisoned enemy");
+            }
+            if (currentPlayer.Class == CharacterClass.Voidreaver)
+            {
+                terminal.SetColor("dark_red");
+                terminal.WriteLine($"  - Void Hunger: Heal {(int)(GameConfig.VoidreaverVoidHungerPercent * 100)}% max HP on every kill");
+                terminal.WriteLine($"  - Pain Threshold: +{(int)(GameConfig.VoidreaverPainThresholdBonus * 100)}% ability damage when below 50% HP");
+                terminal.WriteLine($"  - Soul Eater: Restore {(int)(GameConfig.VoidreaverSoulEaterManaPercent * 100)}% max mana on killing blow");
             }
             if (currentPlayer.HasGodSlayerBuff)
             {

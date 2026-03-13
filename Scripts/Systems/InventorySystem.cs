@@ -153,11 +153,18 @@ namespace UsurperRemake.Systems
                     if (item.Strength != 0) stats.Add($"{Loc.Get("ui.stat_str")}:{item.Strength:+#;-#;0}");
                     if (item.Dexterity != 0) stats.Add($"{Loc.Get("ui.stat_dex")}:{item.Dexterity:+#;-#;0}");
                     if (item.Wisdom != 0) stats.Add($"{Loc.Get("ui.stat_wis")}:{item.Wisdom:+#;-#;0}");
+                    if (item.Agility != 0) stats.Add($"{Loc.Get("ui.stat_agi")}:{item.Agility:+#;-#;0}");
+                    if (item.Charisma != 0) stats.Add($"{Loc.Get("ui.stat_cha")}:{item.Charisma:+#;-#;0}");
+                    // CON and INT are stored in LootEffects, not as direct Item properties
+                    int conFromLoot = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Constitution).Sum(e => e.Value) ?? 0;
+                    int intFromLoot = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Intelligence).Sum(e => e.Value) ?? 0;
+                    if (conFromLoot != 0) stats.Add($"{Loc.Get("ui.stat_con")}:{conFromLoot:+#;-#;0}");
+                    if (intFromLoot != 0) stats.Add($"{Loc.Get("ui.stat_int")}:{intFromLoot:+#;-#;0}");
 
                     if (stats.Count > 0)
                     {
                         terminal.SetColor("darkgray");
-                        terminal.Write($" ({string.Join(", ", stats.Take(3))})");
+                        terminal.Write($" ({string.Join(", ", stats.Take(4))})");
                     }
                 }
                 else
@@ -454,6 +461,14 @@ namespace UsurperRemake.Systems
                 if (item.Strength != 0) stats.Add($"{Loc.Get("ui.stat_strength")}: {item.Strength:+#;-#;0}");
                 if (item.Dexterity != 0) stats.Add($"{Loc.Get("ui.stat_dexterity")}: {item.Dexterity:+#;-#;0}");
                 if (item.Wisdom != 0) stats.Add($"{Loc.Get("ui.stat_wisdom")}: {item.Wisdom:+#;-#;0}");
+                if (item.Agility != 0) stats.Add($"{Loc.Get("ui.stat_agi")}: {item.Agility:+#;-#;0}");
+                if (item.Charisma != 0) stats.Add($"{Loc.Get("ui.stat_cha")}: {item.Charisma:+#;-#;0}");
+                // CON and INT are stored in LootEffects, not as direct Item properties
+                int detailCon = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Constitution).Sum(e => e.Value) ?? 0;
+                int detailInt = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Intelligence).Sum(e => e.Value) ?? 0;
+                if (detailCon != 0) stats.Add($"{Loc.Get("ui.stat_con")}: {detailCon:+#;-#;0}");
+                if (detailInt != 0) stats.Add($"{Loc.Get("ui.stat_int")}: {detailInt:+#;-#;0}");
+                if (item.HP != 0) stats.Add($"{Loc.Get("ui.stat_hp")}: {item.HP:+#;-#;0}");
                 if (item.MagicProperties?.Mana != 0) stats.Add($"{Loc.Get("ui.stat_mana")}: {item.MagicProperties.Mana:+#;-#;0}");
 
                 if (stats.Count > 0)

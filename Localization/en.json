@@ -4421,6 +4421,7 @@
   "dark_alley.bm_poison_result": "  You acquire {0} poison vials. (Total: {1})",
   "dark_alley.bm_poison_use": "  Use [B] Coat Blade during combat to apply a poison.",
   "dark_alley.bm_poison_limit": "  You can't carry any more. Three is the limit.",
+  "dark_alley.bm_smoke_limit": "  You can't carry any more smoke bombs. Three is the limit.",
   "dark_alley.bm_smoke_result": "  Smoke bomb acquired. You now carry {0}.",
   "dark_alley.informant_no_access": "  You don't have access to the information network.",
   "dark_alley.informant_join_first": "  Join the Shadows first.",

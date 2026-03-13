@@ -1696,7 +1696,7 @@ public static class ClassAbilitySystem
         {
             Id = "borrowed_power",
             Name = "Borrowed Power",
-            Description = "Channel a past self's strength. +1 per cycle to all stats (max +10) for 4 rounds.",
+            Description = "Channel a past self's strength. Scales with cycle count and level (max +50 ATK/DEF) for 4 rounds.",
             LevelRequired = 5, StaminaCost = 35, Cooldown = 3,
             Type = AbilityType.Buff, Duration = 4,
             SpecialEffect = "borrowed_power",
@@ -1716,7 +1716,7 @@ public static class ClassAbilitySystem
         {
             Id = "quantum_state",
             Name = "Quantum State",
-            Description = "Exist in two states simultaneously. 50% chance to avoid any attack for 3 rounds.",
+            Description = "Exist in two states simultaneously. Dodge the next attack and 20% evasion for 3 rounds.",
             LevelRequired = 25, StaminaCost = 60, Cooldown = 5,
             Type = AbilityType.Defense, Duration = 3,
             SpecialEffect = "quantum_state",
@@ -1756,7 +1756,7 @@ public static class ClassAbilitySystem
         {
             Id = "chrono_surge",
             Name = "Chrono Surge",
-            Description = "Accelerate time around yourself. Take two actions this round.",
+            Description = "Accelerate time. Reduces all ability cooldowns by 2 rounds and grants Haste for 1 round.",
             LevelRequired = 70, StaminaCost = 80, Cooldown = 7,
             Type = AbilityType.Buff,
             SpecialEffect = "chrono_surge",
@@ -1810,9 +1810,9 @@ public static class ClassAbilitySystem
         {
             Id = "corrupting_touch",
             Name = "Corrupting Touch",
-            Description = "Infect with Old God corruption. 15 damage/round for 5 rounds. Each tick heals you.",
+            Description = "Infect with Old God corruption. 40 damage/round for 5 rounds. Each tick heals you.",
             LevelRequired = 5, StaminaCost = 35, Cooldown = 3,
-            Type = AbilityType.Debuff, BaseDamage = 15, Duration = 5,
+            Type = AbilityType.Debuff, BaseDamage = 40, Duration = 5,
             SpecialEffect = "corrupting_dot",
             AvailableToClasses = new[] { CharacterClass.Abysswarden }
         },
@@ -1914,9 +1914,9 @@ public static class ClassAbilitySystem
         {
             Id = "hungering_strike",
             Name = "Hungering Strike",
-            Description = "A ravenous blow. 60 base damage. Heals 30% of damage dealt.",
+            Description = "A ravenous blow. 90 base damage. Heals 30% of damage dealt.",
             LevelRequired = 1, StaminaCost = 20, Cooldown = 1,
-            Type = AbilityType.Attack, BaseDamage = 60,
+            Type = AbilityType.Attack, BaseDamage = 90,
             SpecialEffect = "lifesteal_30",
             AvailableToClasses = new[] { CharacterClass.Voidreaver }
         },

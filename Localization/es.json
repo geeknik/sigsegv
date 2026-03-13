@@ -4418,6 +4418,7 @@
   "dark_alley.bm_poison_result": "  Adquieres {0} frascos de veneno. (Total: {1})",
   "dark_alley.bm_poison_use": "  Usa [B] Envenenar Hoja durante combate para aplicar un veneno.",
   "dark_alley.bm_poison_limit": "  No puedes llevar más. Tres es el limite.",
+  "dark_alley.bm_smoke_limit": "  No puedes llevar más bombas de humo. Tres es el limite.",
   "dark_alley.bm_smoke_result": "  Bomba de humo adquirida. Ahora llevas {0}.",
   "dark_alley.informant_no_access": "  No tienes acceso a la red de información.",
   "dark_alley.informant_join_first": "  Únete a las Sombras primero.",

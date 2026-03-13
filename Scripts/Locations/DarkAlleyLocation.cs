@@ -179,10 +179,6 @@ namespace UsurperRemake.Locations
                     if (!IsUndergroundAccessAllowed()) { await ShowUndergroundRejection(); return false; }
                     await VisitPickpocket();
                     return false;
-                case "F": // Fence stolen goods
-                    if (!IsUndergroundAccessAllowed()) { await ShowUndergroundRejection(); return false; }
-                    await VisitFence();
-                    return false;
                 case "C": // Gambling Den
                     if (!IsUndergroundAccessAllowed()) { await ShowUndergroundRejection(); return false; }
                     await VisitGamblingDen();
@@ -277,7 +273,6 @@ namespace UsurperRemake.Locations
             terminal.WriteLine(":");
             string lockNote = undergroundLocked ? Loc.Get("dark_alley.locked_suffix") : "";
             WriteSRMenuOption("P", Loc.Get("dark_alley.sr_pickpocket") + lockNote);
-            WriteSRMenuOption("F", Loc.Get("dark_alley.sr_fence") + lockNote);
             WriteSRMenuOption("C", Loc.Get("dark_alley.sr_gambling_den") + lockNote);
             WriteSRMenuOption("T", Loc.Get("dark_alley.sr_the_pit") + lockNote);
             WriteSRMenuOption("L", Loc.Get("dark_alley.sr_loan_shark") + lockNote);
@@ -432,16 +427,7 @@ namespace UsurperRemake.Locations
             terminal.SetColor("darkgray");
             terminal.Write("]");
             terminal.SetColor(labelColor);
-            terminal.Write(Loc.Get("dark_alley.menu_pickpocket"));
-
-            terminal.SetColor("darkgray");
-            terminal.Write("[");
-            terminal.SetColor(keyColor);
-            terminal.Write("F");
-            terminal.SetColor("darkgray");
-            terminal.Write("]");
-            terminal.SetColor(labelColor);
-            terminal.WriteLine(Loc.Get("dark_alley.menu_fence"));
+            terminal.WriteLine(Loc.Get("dark_alley.menu_pickpocket"));
 
             // Row 2
             terminal.SetColor("darkgray");
@@ -609,7 +595,7 @@ namespace UsurperRemake.Locations
                 terminal.Write(Loc.Get("dark_alley.bbs_locked"));
             }
             terminal.WriteLine(":");
-            ShowBBSMenuRow(("P", kc, Loc.Get("dark_alley.bbs_pickpocket")), ("F", kc, Loc.Get("dark_alley.bbs_fence")), ("C", kc, Loc.Get("dark_alley.bbs_gamble")), ("T", kc, Loc.Get("dark_alley.bbs_the_pit")));
+            ShowBBSMenuRow(("P", kc, Loc.Get("dark_alley.bbs_pickpocket")), ("C", kc, Loc.Get("dark_alley.bbs_gamble")), ("T", kc, Loc.Get("dark_alley.bbs_the_pit")));
             ShowBBSMenuRow(("L", kc, Loc.Get("dark_alley.bbs_loan")), ("N", kc, Loc.Get("dark_alley.bbs_safe")));
 
             // Faction/special options (1 row)
@@ -641,7 +627,9 @@ namespace UsurperRemake.Locations
         {
             var alignmentModifier = AlignmentSystem.Instance.GetPriceModifier(currentPlayer, isShadyShop: true);
             var worldEventModifier = WorldEventSystem.Instance.GlobalPriceModifier;
-            return (long)(basePrice * alignmentModifier * worldEventModifier);
+            // Shadows members get 10% discount on all shady shop purchases
+            float shadowsDiscount = FactionSystem.Instance?.PlayerFaction == Faction.TheShadows ? 0.90f : 1.0f;
+            return Math.Max(1, (long)(basePrice * alignmentModifier * worldEventModifier * shadowsDiscount));
         }
 
         private async Task VisitDrugPalace()
@@ -1407,7 +1395,7 @@ namespace UsurperRemake.Locations
                     if (currentPlayer.SmokeBombs >= 3)
                     {
                         terminal.SetColor("gray");
-                        terminal.WriteLine(Loc.Get("dark_alley.bm_poison_limit"));
+                        terminal.WriteLine(Loc.Get("dark_alley.bm_smoke_limit"));
                     }
                     else if (currentPlayer.Gold < smokeBombPrice)
                     {
@@ -1703,7 +1691,7 @@ namespace UsurperRemake.Locations
             float baseChance = 0.45f + chaBonus;
 
             // Determine actual outcome based on chance (not the dice -- the dice are loaded!)
-            float roll = (float)new Random().NextDouble();
+            float roll = (float)Random.Shared.NextDouble();
             if (roll < baseChance)
             {
                 // Player wins - adjust displayed result to match their guess
@@ -1758,7 +1746,7 @@ namespace UsurperRemake.Locations
             // 33% base + DEX/500 bonus
             float dexBonus = currentPlayer.Dexterity / 500f;
             float chance = 0.33f + dexBonus;
-            float roll = (float)new Random().NextDouble();
+            float roll = (float)Random.Shared.NextDouble();
 
             int queenPosition = Random.Shared.Next(1, 4);
             if (roll < chance)
@@ -1795,20 +1783,23 @@ namespace UsurperRemake.Locations
             WriteSRMenuOption("3", Loc.Get("dark_alley.skull_all"));
             var riskChoice = await terminal.GetInput("> ");
 
+            // WIS-based insight bonus (unique mechanic for Skull & Bones)
+            float wisBonus = currentPlayer.Wisdom / 300f;
+
             float winChance;
             float multiplier;
             switch (riskChoice)
             {
                 case "2":
-                    winChance = 0.30f;
+                    winChance = 0.30f + wisBonus;
                     multiplier = 3.0f;
                     break;
                 case "3":
-                    winChance = 0.15f;
+                    winChance = 0.15f + wisBonus;
                     multiplier = 5.0f;
                     break;
                 default:
-                    winChance = 0.45f;
+                    winChance = 0.45f + wisBonus;
                     multiplier = 2.0f;
                     break;
             }
@@ -1818,7 +1809,7 @@ namespace UsurperRemake.Locations
             terminal.WriteLine(Loc.Get("dark_alley.skull_jaw"));
             await Task.Delay(1000);
 
-            float roll = (float)new Random().NextDouble();
+            float roll = (float)Random.Shared.NextDouble();
             if (roll < winChance)
             {
                 won = true;
@@ -1910,7 +1901,7 @@ namespace UsurperRemake.Locations
             float chance = Math.Min(0.75f, 0.40f + currentPlayer.Dexterity * 0.005f +
                 (currentPlayer.Class == CharacterClass.Assassin ? 0.15f : 0f));
 
-            float roll = (float)new Random().NextDouble();
+            float roll = (float)Random.Shared.NextDouble();
 
             if (roll < 0.10f)
             {
@@ -2165,7 +2156,7 @@ namespace UsurperRemake.Locations
                 var result = await combatEngine.PlayerVsPlayer(currentPlayer, opponent);
 
                 currentPlayer.PitFightsToday++;
-                currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 5);
+                currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 8); // NPC fights give more rep
                 currentPlayer.Darkness += 2;
 
                 if (result.Outcome == CombatOutcome.Victory)
@@ -2232,8 +2223,8 @@ namespace UsurperRemake.Locations
             if (currentPlayer.Gold <= 0) return (0, 1.0f);
 
             // Cap max bet based on level to prevent gold farming exploit
-            // At level 29: max 14,500. At level 100: max 50,000.
-            long maxBet = Math.Min(currentPlayer.Gold, (long)currentPlayer.Level * 500);
+            // At level 29: max 5,800. At level 100: max 20,000.
+            long maxBet = Math.Min(currentPlayer.Gold, (long)currentPlayer.Level * 200);
 
             terminal.SetColor("yellow");
             terminal.WriteLine(Loc.Get("dark_alley.pit_side_bet"));
@@ -2245,7 +2236,7 @@ namespace UsurperRemake.Locations
 
             if (betChoice != "1" && betChoice != "2" && betChoice != "3") return (0, 1.0f);
 
-            multiplier = betChoice == "1" ? 1.5f : betChoice == "2" ? 2.0f : 3.0f;
+            multiplier = betChoice == "1" ? 1.5f : betChoice == "2" ? 2.0f : 2.5f;
 
             terminal.SetColor("yellow");
             terminal.WriteLine(Loc.Get("dark_alley.pit_wager_prompt", maxBet));
@@ -2331,6 +2322,7 @@ namespace UsurperRemake.Locations
                         currentPlayer.LoanDaysRemaining = 0;
                         currentPlayer.LoanInterestAccrued = 0;
                         currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 3);
+                        currentPlayer.Chivalry += 1; // Keeping your word, even to criminals
 
                         terminal.SetColor("bright_green");
                         terminal.WriteLine(Loc.Get("dark_alley.loan_paid"));
@@ -2375,6 +2367,7 @@ namespace UsurperRemake.Locations
                             currentPlayer.LoanDaysRemaining = 0;
                             currentPlayer.LoanInterestAccrued = 0;
                             currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 3);
+                            currentPlayer.Chivalry += 1; // Keeping your word, even to criminals
                             terminal.SetColor("bright_green");
                             terminal.WriteLine(Loc.Get("dark_alley.loan_fully_paid"));
 
@@ -2461,10 +2454,16 @@ namespace UsurperRemake.Locations
 
             bool isShadows = FactionSystem.Instance?.PlayerFaction == Faction.TheShadows;
             float fenceRate = isShadows ? 0.80f : 0.70f;
-            if (isShadows)
+            // Apply Shadows rank-scaled fence bonus (10-37.5% additional based on rank 0-8)
+            if (isShadows && FactionSystem.Instance != null)
             {
+                float factionBonus = FactionSystem.Instance.GetFencePriceModifier();
+                fenceRate = Math.Min(0.95f, fenceRate * factionBonus); // Cap at 95% of item value
                 terminal.SetColor("bright_magenta");
                 terminal.WriteLine(Loc.Get("dark_alley.fence_shadow_bonus"));
+                int displayPercent = (int)(fenceRate * 100);
+                terminal.SetColor("magenta");
+                terminal.WriteLine($"  Shadows rank bonus: {displayPercent}% of item value");
                 terminal.WriteLine("");
             }
 
@@ -2520,6 +2519,8 @@ namespace UsurperRemake.Locations
             currentPlayer.ItemType.RemoveAt(selected.index);
             currentPlayer.Gold += selected.value;
             currentPlayer.Statistics?.RecordSale(selected.value);
+            currentPlayer.Darkness += 1; // Fencing stolen goods is a minor crime
+            currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 1);
 
             terminal.SetColor("bright_green");
             terminal.WriteLine(Loc.Get("dark_alley.fence_sold", selected.name, selected.value));
@@ -2588,14 +2589,25 @@ namespace UsurperRemake.Locations
 
             terminal.SetColor("bright_green");
             terminal.WriteLine(Loc.Get("dark_alley.safe_healed", healAmount));
+
+            // Restore 50% mana for casters
+            if (currentPlayer.IsManaClass && currentPlayer.MaxMana > 0)
+            {
+                long manaRestore = currentPlayer.MaxMana / 2;
+                currentPlayer.Mana = Math.Min(currentPlayer.MaxMana, currentPlayer.Mana + manaRestore);
+                terminal.WriteLine($"  Mana restored: +{manaRestore}");
+            }
+
             terminal.SetColor("gray");
             terminal.WriteLine($"{Loc.Get("combat.bar_hp")}: {currentPlayer.HP}/{currentPlayer.MaxHP}");
 
             currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + 1);
 
-            // 10% robbery chance (Shadows members exempt)
+            // Robbery chance scaled by alignment (Shadows members exempt)
+            // Evil players are respected (2%), neutral (8%), good players are easy marks (15%)
             bool isShadows = FactionSystem.Instance?.PlayerFaction == Faction.TheShadows;
-            if (!isShadows && Random.Shared.Next(1, 101) <= 10)
+            int robberyChance = currentPlayer.Darkness > 300 ? 2 : currentPlayer.Darkness > 100 ? 5 : currentPlayer.Chivalry > 200 ? 15 : 8;
+            if (!isShadows && Random.Shared.Next(1, 101) <= robberyChance)
             {
                 float lossPercent = Random.Shared.Next(5, 11) / 100f;
                 long goldLost = Math.Max(1, (long)(currentPlayer.Gold * lossPercent));
@@ -2799,7 +2811,7 @@ namespace UsurperRemake.Locations
                 if (player.Darkness > 300)
                 {
                     float arrestChance = 0.50f;
-                    if ((float)new Random().NextDouble() < arrestChance)
+                    if ((float)Random.Shared.NextDouble() < arrestChance)
                     {
                         term.SetColor("bright_red");
                         term.WriteLine("");
@@ -2961,6 +2973,19 @@ namespace UsurperRemake.Locations
                 term.WriteLine(Loc.Get("dark_alley.enforcer_lost", goldTaken, hpDamage));
                 term.SetColor("yellow");
                 term.WriteLine(Loc.Get("dark_alley.enforcer_extension"));
+            }
+            else
+            {
+                // Player died — loan forgiven (can't collect from a corpse), clear debt
+                player.LoanAmount = 0;
+                player.LoanDaysRemaining = 0;
+                player.LoanInterestAccrued = 0;
+
+                term.SetColor("bright_red");
+                term.WriteLine("");
+                term.WriteLine("The enforcer stands over your broken body.");
+                term.SetColor("red");
+                term.WriteLine("\"Consider the debt... settled.\"");
             }
 
             term.WriteLine("");
@@ -3321,6 +3346,10 @@ namespace UsurperRemake.Locations
                 currentPlayer.Darkness += deed.DarknessGain;
                 terminal.SetColor("red");
                 terminal.WriteLine(Loc.Get("dark_alley.evil_darkness_gain", deed.DarknessGain));
+
+                // Reputation scales with deed tier
+                int deedRep = deed.Tier == DeedTier.Dark ? 15 : deed.Tier == DeedTier.Serious ? 8 : 3;
+                currentPlayer.DarkAlleyReputation = Math.Min(1000, currentPlayer.DarkAlleyReputation + deedRep);
 
                 // Gold reward (level-scaled)
                 if (deed.GoldRewardBase > 0)

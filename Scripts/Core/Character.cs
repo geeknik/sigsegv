@@ -267,6 +267,8 @@ public class Character
     // Ability-applied combat state flags (combat-transient, not serialized)
     public bool HasBloodlust { get; set; } = false;      // Barbarian: heal on kill
     public bool HasStatusImmunity { get; set; } = false;  // Immune to debuffs
+    public int StatusLifestealPercent { get; set; } = 0;  // Lifesteal % from abilities (e.g. 10, 25)
+    public bool DeathsEmbraceActive { get; set; } = false; // Voidreaver: revive on death once (combat-transient)
     public int StatusImmunityDuration { get; set; } = 0;
 
     // Boss fight party mechanics (v0.52.1 — combat-transient, not serialized)
@@ -1520,6 +1522,10 @@ public class Character
                 case StatusEffect.Cursed:
                 case StatusEffect.Diseased:
                     messages.Add(($"{DisplayName} is no longer {s.ToString().ToLower()}.", "gray"));
+                    break;
+                case StatusEffect.Lifesteal:
+                    StatusLifestealPercent = 0;
+                    messages.Add(($"{DisplayName}'s lifesteal fades.", "gray"));
                     break;
                 default:
                     messages.Add(($"{DisplayName}'s {effectName} wears off.", "gray"));

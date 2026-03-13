@@ -8500,15 +8500,20 @@ public class DungeonLocation : BaseLocation
     private static string FormatItemBonuses(Item item)
     {
         var bonuses = new List<string>();
-        if (item.Strength > 0) bonuses.Add($"STR +{item.Strength}");
-        if (item.Defence > 0) bonuses.Add($"DEF +{item.Defence}");
-        if (item.HP > 0) bonuses.Add($"HP +{item.HP}");
-        if (item.Dexterity > 0) bonuses.Add($"DEX +{item.Dexterity}");
-        if (item.Wisdom > 0) bonuses.Add($"WIS +{item.Wisdom}");
-        if (item.Agility > 0) bonuses.Add($"AGI +{item.Agility}");
-        if (item.Charisma > 0) bonuses.Add($"CHA +{item.Charisma}");
-        if (item.Stamina > 0) bonuses.Add($"STA +{item.Stamina}");
-        if (item.Mana > 0) bonuses.Add($"Mana +{item.Mana}");
+        if (item.Strength != 0) bonuses.Add($"STR {item.Strength:+#;-#;0}");
+        if (item.Defence != 0) bonuses.Add($"DEF {item.Defence:+#;-#;0}");
+        if (item.Dexterity != 0) bonuses.Add($"DEX {item.Dexterity:+#;-#;0}");
+        if (item.Wisdom != 0) bonuses.Add($"WIS {item.Wisdom:+#;-#;0}");
+        if (item.Agility != 0) bonuses.Add($"AGI {item.Agility:+#;-#;0}");
+        if (item.Charisma != 0) bonuses.Add($"CHA {item.Charisma:+#;-#;0}");
+        // CON and INT are stored in LootEffects, not as direct Item properties
+        int conFromEffects = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Constitution).Sum(e => e.Value) ?? 0;
+        int intFromEffects = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Intelligence).Sum(e => e.Value) ?? 0;
+        if (conFromEffects != 0) bonuses.Add($"CON {conFromEffects:+#;-#;0}");
+        if (intFromEffects != 0) bonuses.Add($"INT {intFromEffects:+#;-#;0}");
+        if (item.HP != 0) bonuses.Add($"HP {item.HP:+#;-#;0}");
+        if (item.Mana != 0) bonuses.Add($"Mana {item.Mana:+#;-#;0}");
+        if (item.Stamina != 0) bonuses.Add($"STA {item.Stamina:+#;-#;0}");
         if (bonuses.Count > 0) return ", " + string.Join(", ", bonuses);
         return "";
     }
@@ -8518,15 +8523,20 @@ public class DungeonLocation : BaseLocation
         var stats = new List<string>();
         if (item.Attack > 0) stats.Add($"Atk +{item.Attack}");
         if (item.Armor > 0) stats.Add($"Def +{item.Armor}");
-        if (item.Strength > 0) stats.Add($"STR +{item.Strength}");
-        if (item.Defence > 0) stats.Add($"DEF +{item.Defence}");
-        if (item.HP > 0) stats.Add($"HP +{item.HP}");
-        if (item.Dexterity > 0) stats.Add($"DEX +{item.Dexterity}");
-        if (item.Wisdom > 0) stats.Add($"WIS +{item.Wisdom}");
-        if (item.Agility > 0) stats.Add($"AGI +{item.Agility}");
-        if (item.Charisma > 0) stats.Add($"CHA +{item.Charisma}");
-        if (item.Stamina > 0) stats.Add($"STA +{item.Stamina}");
-        if (item.Mana > 0) stats.Add($"Mana +{item.Mana}");
+        if (item.Strength != 0) stats.Add($"STR {item.Strength:+#;-#;0}");
+        if (item.Defence != 0) stats.Add($"DEF {item.Defence:+#;-#;0}");
+        if (item.Dexterity != 0) stats.Add($"DEX {item.Dexterity:+#;-#;0}");
+        if (item.Wisdom != 0) stats.Add($"WIS {item.Wisdom:+#;-#;0}");
+        if (item.Agility != 0) stats.Add($"AGI {item.Agility:+#;-#;0}");
+        if (item.Charisma != 0) stats.Add($"CHA {item.Charisma:+#;-#;0}");
+        // CON and INT are stored in LootEffects, not as direct Item properties
+        int conFromEffects = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Constitution).Sum(e => e.Value) ?? 0;
+        int intFromEffects = item.LootEffects?.Where(e => e.EffectType == (int)LootGenerator.SpecialEffect.Intelligence).Sum(e => e.Value) ?? 0;
+        if (conFromEffects != 0) stats.Add($"CON {conFromEffects:+#;-#;0}");
+        if (intFromEffects != 0) stats.Add($"INT {intFromEffects:+#;-#;0}");
+        if (item.HP != 0) stats.Add($"HP {item.HP:+#;-#;0}");
+        if (item.Mana != 0) stats.Add($"Mana {item.Mana:+#;-#;0}");
+        if (item.Stamina != 0) stats.Add($"STA {item.Stamina:+#;-#;0}");
         return stats.Count > 0 ? string.Join(", ", stats) : "Accessory";
     }
 

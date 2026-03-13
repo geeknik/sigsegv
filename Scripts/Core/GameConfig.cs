@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public static partial class GameConfig
 {
     // Version information
-    public const string Version = "0.52.2";
+    public const string Version = "0.52.3";
     public const string VersionName = "The Hook";
     public const string DiscordInvite = "discord.gg/EZhwgDT6Ta";
 
@@ -824,6 +824,19 @@ public static partial class GameConfig
     public const float WavecallerHarmonicResonanceBonus = 0.25f; // Wavecaller: +25% healing from abilities and spells
     public const float WavecallerReflectionPercent = 0.15f;      // Wavecaller: 15% damage reflection when Reflecting
     public const float WavecallerOceansVoiceCritBonus = 0.20f;   // Wavecaller: +20% crit chance from Ocean's Voice
+    // Cyclebreaker Passives
+    public const float CyclebreakerDebuffResistChance = 0.25f;  // Cyclebreaker: 25% chance to resist incoming debuffs
+    public const float CyclebreakerCycleXPBonus = 0.05f;        // Cyclebreaker: +5% XP bonus per NG+ cycle (max +25%)
+    public const float CyclebreakerCycleXPBonusCap = 0.25f;     // Cyclebreaker: Maximum XP bonus from Cycle Memory
+    // Abysswarden Passives
+    public const float AbysswardenAbyssalSiphonPercent = 0.10f;   // Abysswarden: 10% passive lifesteal on all attacks
+    public const float AbysswardenPrisonWardResist = 0.10f;       // Abysswarden: Enemies deal 10% less damage
+    public const float AbysswardenCorruptionHealPercent = 0.15f;  // Abysswarden: Heal 15% max HP on killing poisoned enemy
+    // Voidreaver Passives
+    public const float VoidreaverReflectionPercent = 0.25f;       // Voidreaver: 25% damage reflection from Void Shroud
+    public const float VoidreaverVoidHungerPercent = 0.10f;       // Voidreaver: Heal 10% max HP on every kill
+    public const float VoidreaverPainThresholdBonus = 0.20f;      // Voidreaver: +20% ability damage when below 50% HP
+    public const float VoidreaverSoulEaterManaPercent = 0.15f;    // Voidreaver: Restore 15% max mana on killing blow
     // Jester Trickster's Luck
     public const int JesterTrickstersLuckChance = 20;        // Jester: 20% chance per attack to proc random bonus
     public const float JesterLuckBonusDamage = 0.50f;        // +50% bonus damage on lucky proc
