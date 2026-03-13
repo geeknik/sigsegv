@@ -13,7 +13,7 @@
   "nav.github": "GitHub",
   "nav.sponsor": "&#9829; Sponsor",
 
-  "banner.text": "Usurper Reborn launches on Steam <span class=\"banner-date\">March 13, 2026</span> — Wishlist now!",
+  "banner.text": "Usurper Reborn is now available on Steam!",
 
   "hero.subtitle": "THE 1993 BBS CLASSIC, REBUILT",
   "hero.desc": "A text RPG where the town keeps going when you log off. NPCs get married, have kids, get old, die. 100-floor dungeon. Seven gods who want to talk before you fight them. Five different endings. GPL licensed, totally free.",
@@ -332,8 +332,8 @@
   "connect.download_desc": "Standalone builds for Windows, Linux, and macOS. Play offline or connect to the online server.",
   "connect.download_btn": "Latest Release on GitHub",
   "connect.steam_title": "&#9658; Steam",
-  "connect.steam_desc": "Usurper Reborn launches on Steam <span style=\"color:var(--gold);font-weight:bold;\">March 13, 2026</span>. Wishlist it now!",
-  "connect.steam_btn": "Wishlist on Steam",
+  "connect.steam_desc": "Usurper Reborn is available on Steam. Includes bundled terminal and fonts.",
+  "connect.steam_btn": "Get on Steam",
   "connect.observatory_title": "&#9658; The Observatory",
   "connect.observatory_desc": "Watch the NPCs live their lives in real-time. Personality charts, relationship maps, demographics, live event feeds.",
   "connect.observatory_btn": "Open Dashboard",

@@ -13,7 +13,7 @@
   "nav.github": "GitHub",
   "nav.sponsor": "&#9829; Patrocinar",
 
-  "banner.text": "Usurper Reborn se lanza en Steam el <span class=\"banner-date\">13 de marzo de 2026</span> — ¡Añádelo a tu lista de deseados!",
+  "banner.text": "¡Usurper Reborn ya está disponible en Steam!",
 
   "hero.subtitle": "EL CLÁSICO DE BBS DE 1993, RECONSTRUIDO",
   "hero.desc": "Un RPG de texto donde el pueblo sigue funcionando cuando te desconectas. Los NPCs se casan, tienen hijos, envejecen, mueren. Mazmorra de 100 pisos. Siete dioses que quieren hablar contigo antes de pelear. Cinco finales diferentes. Licencia GPL, totalmente gratis.",
@@ -332,8 +332,8 @@
   "connect.download_desc": "Versiones independientes para Windows, Linux y macOS. Juega sin conexión o conéctate al servidor en línea.",
   "connect.download_btn": "Última Versión en GitHub",
   "connect.steam_title": "&#9658; Steam",
-  "connect.steam_desc": "Usurper Reborn se lanza en Steam el <span style=\"color:var(--gold);font-weight:bold;\">13 de marzo de 2026</span>. ¡Añádelo a tu lista de deseados!",
-  "connect.steam_btn": "Lista de Deseados en Steam",
+  "connect.steam_desc": "Usurper Reborn está disponible en Steam. Incluye terminal y fuentes integradas.",
+  "connect.steam_btn": "Obtener en Steam",
   "connect.observatory_title": "&#9658; El Observatorio",
   "connect.observatory_desc": "Observa a los NPCs vivir sus vidas en tiempo real. Gráficos de personalidad, mapas de relaciones, demografía, eventos en vivo.",
   "connect.observatory_btn": "Abrir Panel de Control",
