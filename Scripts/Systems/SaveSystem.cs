@@ -535,6 +535,7 @@ namespace UsurperRemake.Systems
                 // Status
                 Chivalry = player.Chivalry,
                 Darkness = player.Darkness,
+                Fame = player.Fame,
                 Mental = player.Mental,
                 Poison = player.Poison,
                 PoisonTurns = player.PoisonTurns,
