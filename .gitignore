@@ -61,3 +61,7 @@ nul
 
 # Dev/localization tooling scripts (not part of the game)
 tools/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db

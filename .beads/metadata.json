@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "usurper_reborn",
+  "project_id": "60cb16f9-26b3-40cb-a3ed-e61b159a19c8"
+}
