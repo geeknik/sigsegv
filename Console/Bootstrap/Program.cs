@@ -7,7 +7,7 @@ using UsurperRemake.Systems;
 using UsurperRemake.BBS;
 using UsurperRemake.Server;
 
-// Console bootstrapper for Usurper Reborn
+// Console bootstrapper for SIGSEGV: The Heap Lands
 //
 // BBS DOOR MODE: Use command-line arguments to run as a BBS door:
 //   --door <path>     Load drop file (auto-detect DOOR32.SYS or DOOR.SYS)
@@ -68,7 +68,7 @@ namespace UsurperConsole
             // Handle --version flag: print version and exit immediately
             if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v" || args[0] == "-V"))
             {
-                Console.WriteLine($"Usurper Reborn v{GameConfig.Version}");
+                Console.WriteLine($"{GameConfig.ProductName} v{GameConfig.Version}");
                 return;
             }
 
@@ -97,7 +97,7 @@ namespace UsurperConsole
             // Set up console close handlers
             SetupConsoleCloseHandlers();
 
-            Console.WriteLine("Launching Usurper Reborn – Console Mode");
+            Console.WriteLine($"Launching {GameConfig.ProductName} - Console Mode");
 
             try
             {
@@ -415,7 +415,7 @@ namespace UsurperConsole
         /// </summary>
         private static async Task RunMudServerMode()
         {
-            Console.Error.WriteLine($"[MUD] Starting Usurper Reborn MUD Server v{GameConfig.Version}");
+            Console.Error.WriteLine($"[MUD] Starting {GameConfig.ProductName} MUD Server v{GameConfig.Version}");
             Console.Error.WriteLine($"[MUD] Port: {DoorMode.MudPort}, Database: {DoorMode.OnlineDatabasePath}");
 
             // Set up cancellation for graceful shutdown
@@ -705,4 +705,4 @@ namespace UsurperConsole
             }
         }
     }
-} 
+}

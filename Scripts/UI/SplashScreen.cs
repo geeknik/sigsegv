@@ -4,39 +4,20 @@ using System.Threading.Tasks;
 namespace UsurperRemake.UI
 {
     /// <summary>
-    /// Displays the USURPER REBORN ANSI art splash screen.
-    /// Full-color ANSI art with embedded title text, followed by credits.
-    /// Fits within 80x25 BBS terminal (SyncTERM compatible).
+    /// Displays the SIGSEGV splash screen.
+    /// Kept text-first so it remains readable in BBS, SSH, and screen-reader contexts.
     /// </summary>
     public static class SplashScreen
     {
-        // 80-column ANSI art splash — converted from usurper-reborn3.ans
-        private static readonly string[] SplashArt = new string[]
+        private static readonly string[] SplashLines =
         {
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;31m\u2584\u2584\x1b[41m\u2588\u2584\x1b[33m\u2584\u2584\x1b[31;43m\u2580\x1b[33m\u2588\u2588\u2588\x1b[37m\u2580\x1b[33m\u2588\x1b[37m\u2584\x1b[33;47m\u2580\u2580\x1b[37m\u2588\u2588\u2588\x1b[33m\u2580\x1b[37;43m\u2584\u2584\x1b[33m\u2588\x1b[31;47m\u2580\u2580\x1b[37m\u2588\x1b[43m\u258c\x1b[33m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[41m\u2580\u2580\u2580\u2580\x1b[31m\u2580\x1b[0;31;41m\u2588\x1b[1;30;40m\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2584\u25a0\x1b[31m\u2590\x1b[41m\u2588\x1b[33m\u2584\u2584\x1b[43m\u2588\u2588\u2588\x1b[31m\u2584\x1b[37m\u2584\u2584\x1b[33;47m\u2580\x1b[37m\u2588\u2588\x1b[43m\u258c\x1b[31;47m\u2584\u2584\x1b[37m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[31m\u2584\u2584\x1b[37;41m\u2580\x1b[31;43m\u2584\x1b[33m\u2588\u2588\u2588\u2588\x1b[31;47m\u2584\x1b[33;41m\u25a0\x1b[31m\u2584\x1b[0;31;41m\u2588\x1b[1;30m\u2584\x1b[31;40m\u2580\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u25a0\u2588\x1b[33m\u2590\x1b[43m\u2588\x1b[31;41m\u2588\u2588\x1b[33m\u2580\x1b[31m\u2588\x1b[47m\u2580\x1b[37m\u2588\u2588\u2580\x1b[30m\u2584\x1b[37m\u2588\u2588\u2588\u2584\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258c\x1b[31m\u2580\x1b[41m\u25a0\u2588\u2588\u2588\x1b[43m\u2584\x1b[33m\u2588\x1b[31m\u2590\x1b[41m\u2580\x1b[0;31;41m\u2588\x1b[1;30m\u2590\x1b[40m\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\x1b[1;31m\u2590\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2584\x1b[31m\u2584\x1b[33;43m\u2588\u2588\u2588\x1b[31m\u2590\x1b[41m\u2588\u2588\x1b[0;47m\u2588\u2588\x1b[1;31m\u25a0\x1b[0;47m\u2588\x1b[1m\u2580\u2588\u2588\x1b[40m\u2584\x1b[47m\u2588\u2588\u2588\u2580\u2588\u2588\u2588\u2588\u2588\u2580\x1b[0;47m\u2588\u2588\x1b[1;31;43m\u2580\x1b[41m\u258c\x1b[30m\u2584\x1b[0;31;41m\u2588\x1b[1m\u2590\u2588\x1b[43m\u2590\x1b[41m\u2584\x1b[30m\u2590\u2580\x1b[40m\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\x1b[1;31m\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;33m\u2590\x1b[43m\u2588\u2588\u2588\u2588\x1b[31m\u2590\x1b[41m\u2588\x1b[47m\u258c\x1b[0;47m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2580\x1b[0;30;47m\u2580\x1b[1;37m\u2588\u2588\u2580\u2580\u2580\u2580\x1b[0;47m\u2588\u2588\u2588\x1b[1;30m\u2584\x1b[40m\u2580\u2590\u25a0\u2588\x1b[31;41m\u2590\u2588\x1b[33;43m\u2588\x1b[31;41m\u2588\u2588\x1b[30m\u2590\x1b[40m\u2580\x1b[0;31m\u2584\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2584\x1b[33m\u2580\x1b[31;43m\u2584\x1b[33m\u2588\u2588\x1b[31;41m\u2588\u2588\x1b[47m\u258c\x1b[0;47m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;30m\u2590\x1b[40m\u2588\u2584\x1b[0;30m\u2588\x1b[1m\u2588\x1b[31;41m\u2590\u2580\u2590\x1b[33;43m\u2588\x1b[31;41m\u2588\u2584\x1b[30m\u2580\x1b[31;40m\u258c\x1b[0;30m\u2588\u2588\x1b[1;31m\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;31m\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[1;31m\u2584\x1b[41m\u2588\x1b[33m\u258c\u258c\x1b[0;31m\u2580\x1b[1;47m\u2584\x1b[0;47m\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2590\u2588\u2584\u2584\x1b[0;47m\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2584\u2588\u2588\u258c\x1b[30m\u2584\x1b[40m\u2588\u2588\x1b[0;30m\u2588\x1b[31m\u2590\u2580\x1b[1;30m\u2580\x1b[31;41m\u2588\x1b[43m\u2580\x1b[33;41m\u2580\x1b[31m\u2580\x1b[30m\u25a0\u2580\x1b[40m\u258c\x1b[0;30m\u2588\x1b[1;31m\u2590\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;31m\u2580\x1b[41m\u2588\x1b[40m\u258c\x1b[30m\u2584\u2584\u2588\x1b[0;31;41m\u2588\x1b[1m\u2588\x1b[33m\u258c\x1b[31m\u2588\x1b[30;40m\u2584\x1b[31;41m\u2588\x1b[37;47m\u2584\u2584\x1b[0;47m\u2588\u2588\x1b[1;30m\u2584\x1b[0m\u2580\u2580\x1b[1;47m\u2580\u2580\u25a0\x1b[0;47m\u2588\x1b[30m\u258c\x1b[1;37m\u2590\u25a0\u2580\x1b[0m\u2580\x1b[1;30m\u2580\u2580\u2588\x1b[47m\u25a0\x1b[0;47m\u2588\x1b[1m\u2584\x1b[0;47m\u2588\x1b[1;31;40m\u258c\x1b[0;31m\u2590\x1b[1;41m\u2588\x1b[33;43m\u2588\x1b[41m\u2584\x1b[31m\u2588\x1b[33m\u2584\u2584\x1b[40m\u2584\u25a0\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;33;41m\u2590\x1b[43m\u2588\x1b[30;41m\u2580\u2580\x1b[0;31;41m\u2588\u2588\u2588\x1b[1;33m\u2580\x1b[31m\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2580\u2580\x1b[0m\u2584\x1b[1m\u2584\x1b[30m\u2590\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;31;41m\u2588\x1b[33;43m\u2588\u2588\u2588\u2588\x1b[41m\u2580\x1b[30;40m\u2588\u258c\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;31m\u2590\x1b[33;41m\u2590\x1b[43m\u2588\u2588\x1b[41m\u2584\u2584\x1b[31m\u2588\u2588\x1b[33m\u2584\u2584\x1b[31;40m\u258c\x1b[0m\u258c\x1b[30m\u2588\u2588\u2588\u2588\x1b[1;31m\u25a0\x1b[0;30m\u2588\u2588\u2588\x1b[37m\u2590\x1b[1;30;47m\u258c\x1b[37;40m\u2580\u2580\x1b[0m\u2590\u258c\x1b[1;30m\u258c\x1b[0;30m\u2588\u2588\u2588\x1b[31m\u25a0\x1b[30m\u2588\u2588\u2588\u2588\u2588\x1b[1;31;41m\u2588\x1b[33m\u2584\x1b[43m\u2588\x1b[37m\u258c\x1b[33m\u2588\u2588\x1b[0;31;41m\u2588\x1b[1;30m\u2580\x1b[40m\u258c\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2588\x1b[31m\u25a0\x1b[33;43m\u2588\u2588\u2588\u2588\x1b[47m\u2584\x1b[37m\u2588\x1b[33;41m\u2580\x1b[31m\u2588\x1b[47m\u2580\x1b[37m\u2580\x1b[40m\u2584\x1b[0m\u2584\u2584\x1b[30m\u2588\u2588\x1b[1;37m\u2584\u2584\u2584\x1b[0;47m\u2588\x1b[30;40m\u2588\u2588\u2588\u2588\x1b[1m\u2590\x1b[47m\u258c\x1b[0m\u2584\x1b[1m\u2584\x1b[0;30m\u2588\u2588\u2588\x1b[1m\u2584\u2584\x1b[37m\u2584\x1b[47m\u25a0\x1b[30;40m\u2580\x1b[31;41m\u2588\x1b[37m\u2580\x1b[43m\u2580\x1b[33m\u2588\u2588\x1b[41m\u258c\x1b[30m\u2584\x1b[40m\u2588\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[1m\u2584\x1b[0;30m\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2588\u2588\x1b[41m\u2590\x1b[31;40m\u2580\x1b[33;41m\u2580\x1b[43m\u2588\x1b[37m\u2580\x1b[31m\u2580\x1b[41m\u2588\x1b[47m\u2584\x1b[30;40m\u2588\x1b[0m\u2580\u2580\u2580\u2580\u2580\u2580\x1b[1;30;47m\u2584\x1b[0;47m\u2588\x1b[40m\u258c\x1b[30m\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2580\x1b[0m\u2580\u2580\u2580\x1b[1;30m\u2580\x1b[0m\u2580\u2580\u2580\x1b[1;30m\u2588\u2584\x1b[0;30m\u2588\x1b[1;31;41m\u2588\x1b[33;43m\u2588\u2588\u2588\u2588\x1b[40m\u258c\x1b[30m\u2588\u2584\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2584\u2588\u2588\x1b[31;41m\u2580\x1b[33m\u2580\x1b[43m\u2588\u2588\x1b[40m\u2584\x1b[30m\u25a0\x1b[31m\u2584\x1b[0;31m\u2584\x1b[30m\u2588\u2588\u2588\u2588\x1b[1;31m\u2584\x1b[0;47m\u2588\x1b[40m\u2584\x1b[30m\u2588\u2588\x1b[1;37m\u258c\x1b[0m\u2584\x1b[30m\u2588\x1b[1m\u2588\u2588\u2588\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[1;33m\u2584\x1b[30m\u2584\x1b[33m\u2584\x1b[43m\u2588\u2588\u2588\x1b[41m\u2580\x1b[31;40m\u2580\x1b[30;41m\u2580\x1b[40m\u25a0\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\x1b[1;37m\u2590\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1;47m\u2580\u2580\x1b[40m\u2588\u2588\u2588\x1b[37;41m\u2584\u2584\x1b[31m\u2584\u2588\x1b[33m\u2580\u2580\u2580\u258c\x1b[31m\u258c\x1b[40m\u2590\u2580\x1b[37m\u2584\x1b[31;41m\u258c\x1b[37;47m\u2588\u2588\u2584\x1b[0;47m\u2588\x1b[40m\u2590\u25a0\x1b[1;30;47m\u2580\x1b[37m\u2584\x1b[40m\u258c\x1b[0m\u2590\x1b[1m\u2584\u25a0\u2584\u2584\x1b[31;41m\u2584\x1b[33m\u2580\u2580\u2580\x1b[37m\u2584\x1b[31m\u2580\x1b[37m\u2584\u2584\x1b[31;40m\u2580\x1b[0;30m\u2588\x1b[1;37m\u2584\u2584\u2584\u2584\u2584\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\x1b[1;37;47m\u2588\u2588\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1;37;47m\u2588\u2588\x1b[30;40m\u2580\x1b[37;47m\u2588\x1b[40m\u258c\x1b[0;30m\u2588\u2588\x1b[1;37m\u2580\x1b[30;41m\u2584\x1b[37;47m\u2590\u2588\x1b[31;41m\u2580\u2580\u2580\x1b[0;31;41m\u2588\x1b[1;37;47m\u2588\u2588\x1b[0;31m\u258c\x1b[1;30;47m\u258c\x1b[37m\u2588\u2588\u2580\u2580\u2588\u2588\x1b[40m\u2584\x1b[0m\u25a0\x1b[1;30m\u2580\x1b[37;47m\u2588\x1b[40m\u258c\u2580\u2580\x1b[47m\u2588\u2588\x1b[31;40m\u2580\x1b[37;47m\u2588\u2588\x1b[0;30m\u2588\x1b[1;37m\u2580\u2580\u2580\x1b[0;30m\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[40m\u258c\x1b[0;30m\u2588\x1b[1;37m\u2580\x1b[47m\u2588\u2588\x1b[0;30m\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\x1b[1;37;47m\u2588\u2588\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1;37;47m\u2580\u2580\x1b[0;30m\u2588\x1b[1;37m\u2580\x1b[47m\u2580\u2580\x1b[0m\u2584\x1b[30m\u2588\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[0;30m\u2588\x1b[31m\u2580\u2580\x1b[41m\u2588\x1b[1;37;47m\u2590\u25a0\x1b[0;31;41m\u2588\x1b[30m\u25a0\x1b[1;37;47m\u2588\u2588\x1b[40m\u2584\x1b[47m\u2584\u2588\u2588\x1b[40m\u2580\x1b[30m\u258c\x1b[0;31m\u2584\x1b[1;37;47m\u2588\u2580\x1b[0;31m\u2584\x1b[41m\u2588\x1b[1;37;47m\u2580\u2588\x1b[0;30m\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[0m\u2584\x1b[1m\u2584\u258c\x1b[0;30m\u2588\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[40m\u258c\x1b[0;30m\u2584\x1b[37m\u2584\x1b[1;47m\u2588\x1b[40m\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\x1b[1;47m\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1;47m\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[37m\u2580\x1b[47m\u2588\x1b[40m\u258c\u2590\x1b[47m\u2588\x1b[40m\u258c\x1b[30m\u2588\u2588\u2588\x1b[37;47m\u2588\u2588\x1b[1;31;41m\u2584\u258c\x1b[0;31;47m\u258c\x1b[1;37m\u2580\x1b[0;30;41m\u25a0\x1b[37m\u2580\x1b[1;47m\u2580\x1b[0;31;47m\u2580\x1b[41m\u2588\u2588\x1b[1m\u2584\x1b[0;47m\u2588\u2588\x1b[31m\u2584\u2584\x1b[30;40m\u2588\u2588\u2588\x1b[37m\u2590\x1b[47m\u2588\x1b[30;40m\u2588\u2588\u2588\u2588\u2588\x1b[37m\u2590\x1b[47m\u2588\x1b[40m\u258c\u2580\x1b[47m\u2588\x1b[40m\u2584\x1b[30m\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\x1b[1m\u2580\u2580\u2584\u25a0\u2580\u2580\x1b[0;30m\u2588\u2588\x1b[1m\u2580\u2580\u2584\u25a0\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[37m\u2580\x1b[1;30m\u25a0\u2584\x1b[0m\u2580\u2580\x1b[30m\u2588\x1b[1;31;41m\u25a0\x1b[0;30;41m\u2584\x1b[31;47m\u258c\x1b[1;30m\u2584\x1b[31;41m\u2584\u2584\u2584\x1b[0;41m\u2580\x1b[1;30m\u2584\x1b[0;31;41m\u2588\x1b[1m\u2584\x1b[30;47m\u2584\u2584\x1b[0;31m\u2580\x1b[30m\u2588\u2588\u2588\u2588\x1b[37m\u2580\u2580\u2580\u2580\u2580 \x1b[30m\u2588\x1b[1m\u2590\u2580\u25a0\x1b[0;30m\u2588\u2588\x1b[1m\u2580\u2580\u2584\x1b[0;30m\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;37m\u25a0\u2584\u2584\u2584\u2584\u2584\u2584\x1b[0;30m\u2588\u2588\x1b[1;37m\u2584\u2584\u2584\u2584\u2584\u2584\x1b[0;30m\u2588\x1b[1;37m\u2584\u2584\u2584\u2584\u2584\u2584\x1b[0;30m\u2588\x1b[1;31;41m\u2580\u258c\u2584\x1b[37m\u2584\u2584\x1b[40m\u2584\x1b[41m\u2584\x1b[0;30m\u2588\u2588\u2588\x1b[1;37m\u2584\u2584\u2584\u2584\u2584\x1b[0;30m\u2588\u2588\x1b[1;37m\u25a0\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1;37m\u2590\u2584\u25a0\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1;37;47m\u2588\x1b[40m\u258c\x1b[0;30m\u2588\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[40m\u258c\x1b[0;30m\u2588\x1b[37m\u2590\x1b[47m\u2588\x1b[30;40m\u2588\u2588\u2588\u2588\u2588\x1b[1;37m\u2590\x1b[47m\u2580\x1b[0m\u258c\x1b[30m\u2588\x1b[37m\u2590\x1b[1;47m\u2580\x1b[0m\u258c\x1b[30m\u2588\x1b[1;37;47m\u2588\x1b[40m\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[1;37m\u2580\x1b[47m\u2580\x1b[0m\u2584\x1b[30m\u2588\x1b[1;37;47m\u2588\x1b[0m\u258c\x1b[30m\u2588\u2588\x1b[1;37;47m\u2588\u2580\x1b[0;30m\u2588\u2588\x1b[1;37;47m\u2588\u2588\u2588\x1b[40m\u2584\x1b[0;30m\u2588\u2588\x1b[1;37m\u2590\x1b[47m\u2588\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37;47m\u2588\u2588\x1b[40m\u2584\u2584\u2580\u2580\x1b[30m\u2588\u2588\x1b[37m\u2590\x1b[47m\u2588\x1b[40m\u2584\u2584\u2584\x1b[30m\u2588\u2588\x1b[37m\u2590\x1b[47m\u2588\x1b[40m\u258c\u25a0\x1b[47m\u2588\u2588\x1b[40m\u2584\u2590\x1b[47m\u2588\x1b[31;40m\u2584\u2584\x1b[30m\u2588\u2588\u2588\u2588\x1b[37;47m\u2588\x1b[30;40m\u2588\x1b[37;47m\u2588\u2588\x1b[40m\u2584\u2584\u2580\u2580\x1b[30m\u2588\u2588\x1b[37;47m\u2588\u2588\x1b[30m\u2584\x1b[37m\u2588\u2588\x1b[30m\u2580\u258c\x1b[37m\u2588\x1b[30;40m\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2588\u258c\x1b[0;30m\u2588\x1b[37m\u2580\x1b[1;30m\u2588\u2584\x1b[0;30m\u2588\u2588\x1b[1m\u2590\u2588\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2590\u2588\u258c\x1b[0;30m\u2588\u2588\x1b[1m\u2590\u2588\x1b[0;30m\u2588\x1b[1m\u2588\u2588\x1b[37m\u2580\x1b[0;30m\u2588\x1b[31m\u2590\x1b[1m\u2584\x1b[30m\u2590\u2580\x1b[0;30m\u2588\x1b[1;47m\u2584\x1b[40m\u258c\x1b[0;30m\u2588\x1b[37m\u2580\x1b[1;30m\u2588\x1b[0;30m\u2588\u2588\u2588\x1b[1;47m\u2584\x1b[40m\u2588\x1b[0;30m\u2588\u2588\x1b[37m\u2580\x1b[1;30;47m\u2584\u2584\u2584\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[1m\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[1m\u2580\x1b[0;30m\u2588\u2588\x1b[1m\u2580\u2580\u2580\u2580\u2580\u2580\x1b[0;30m\u2588\u2588\x1b[1m\u2580\u2580\u2580\u2580\x1b[0;31m\u2584\x1b[1m\u2584\x1b[0;30m\u2588\u2588\u2588\x1b[31m\u2584\x1b[30m\u2588\x1b[1m\u25a0\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[1m\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\x1b[1m\u2580\u25a0\x1b[0;30m\u2588\x1b[1m\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\x1b[1m\u2580\u2580\x1b[0;30m\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
-            "\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[31m\u2590\x1b[1;41m\u2590\x1b[40m\u2584\x1b[41m\u2588\x1b[0;31m\u2580\x1b[30m\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\x1b[37m                    ",
+            "SIGSEGV // THE HEAP LANDS",
+            "Manage a server. Conquer a Lattice. Attain sudo.",
+            "",
+            "A generational rogue-like where code is law.",
+            "",
+            "BOOT > ROOT > PLAN > EXECUTE > EXTRACT",
+            "Stay allocated. Stay dangerous. Never let the Garbage Collectors catch your PID."
         };
 
         public static async Task Show(dynamic terminal)
@@ -46,42 +27,42 @@ namespace UsurperRemake.UI
             bool isPlainText = false;
             try { isPlainText = terminal.IsPlainText; } catch { }
 
-            if (GameConfig.ScreenReaderMode || isPlainText)
-            {
-                // Screen reader: plain text title instead of ANSI art
-                terminal.WriteLine("");
-                terminal.SetColor("bright_white");
-                terminal.WriteLine("  USURPER REBORN");
-                terminal.SetColor("gray");
-                terminal.WriteLine("  A modern recreation of the classic 1993 BBS door game");
-                terminal.WriteLine("");
-            }
-            else
-            {
-                // Render each line of ANSI art
-                foreach (var line in SplashArt)
-                {
-                    terminal.WriteRawAnsi("          " + line.TrimEnd() + "\r\n");
-                }
-
-                // Reset colors after art
-                terminal.WriteRawAnsi("\x1b[0m");
-            }
-
-            // Version info and press any key
-            string version = $"v{GameConfig.Version} \"{GameConfig.VersionName}\"";
-            int pad = (80 - version.Length) / 2;
-            terminal.SetColor("gray");
-            terminal.Write(new string(' ', pad) + version);
             terminal.WriteLine("");
             terminal.SetColor("bright_white");
-            string prompt = "Press any key...";
-            int promptPad = (80 - prompt.Length) / 2;
-            terminal.Write(new string(' ', promptPad) + prompt);
+            WriteCentered(terminal, SplashLines[0]);
+            terminal.SetColor("gray");
+
+            for (int i = 1; i < SplashLines.Length; i++)
+            {
+                WriteCentered(terminal, SplashLines[i]);
+            }
+
+            if (!GameConfig.ScreenReaderMode && !isPlainText)
+            {
+                terminal.WriteLine("");
+                terminal.SetColor("white");
+                WriteCentered(terminal, "root@sigsegv:~# bootstrap");
+                terminal.SetColor("gray");
+            }
+
+            terminal.WriteLine("");
+
+            string version = $"{GameConfig.ProductName} v{GameConfig.Version} \"{GameConfig.VersionName}\"";
+            terminal.SetColor("gray");
+            WriteCentered(terminal, version);
+
+            terminal.SetColor("bright_white");
+            WriteCentered(terminal, "Press any key...");
             terminal.SetColor("white");
 
             await terminal.WaitForKey("");
             terminal.ClearScreen();
+        }
+
+        private static void WriteCentered(dynamic terminal, string text)
+        {
+            int pad = Math.Max(0, (80 - text.Length) / 2);
+            terminal.WriteLine(new string(' ', pad) + text);
         }
     }
 }

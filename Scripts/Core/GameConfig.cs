@@ -9,8 +9,12 @@ using System.Collections.Generic;
 public static partial class GameConfig
 {
     // Version information
+    public const string ProductShortName = "SIGSEGV";
+    public const string ProductName = "SIGSEGV: The Heap Lands";
+    public const string ProductBanner = "SIGSEGV // THE HEAP LANDS";
+    public const string ProductTagline = "Manage a server. Conquer a Lattice. Attain sudo.";
     public const string Version = "0.52.11";
-    public const string VersionName = "The Hook";
+    public const string VersionName = "panic(2038)";
     public const string DiscordInvite = "discord.gg/EZhwgDT6Ta";
 
     // From Pascal global_maxXX constants
@@ -99,7 +103,7 @@ public static partial class GameConfig
     /// <summary>
     /// Message of the Day - displayed to players on login
     /// </summary>
-    public static string MessageOfTheDay { get; set; } = "Thanks for playing Usurper Reborn! Report bugs with the in-game ! command.";
+    public static string MessageOfTheDay { get; set; } = "SIGSEGV is in active remake. Expect sharp edges and report bugs with the in-game ! command.";
 
     /// <summary>
     /// When true, the [O]nline Multiplayer option is hidden from BBS door players.
