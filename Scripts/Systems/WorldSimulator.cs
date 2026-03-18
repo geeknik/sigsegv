@@ -1899,101 +1899,101 @@ public class WorldSimulator
         {
             case "dungeon":
                 NPCExploreDungeon(npc);
-                npc.CurrentActivity = "exploring the dungeon depths";
+                npc.CurrentActivity = "probing deep subnet layers";
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.5f, 90);
                 npc.EmotionalState?.AddEmotion(EmotionType.Fear, 0.3f, 60);
                 break;
             case "shop":
                 NPCGoShopping(npc);
                 npc.CurrentActivity = npc.CurrentLocation == "Weapon Shop"
-                    ? "examining a blade on the rack"
-                    : "browsing the armor on display";
+                    ? "checking a fresh shipment of hardware"
+                    : "testing fresh defensive plating";
                 npc.EmotionalState?.AddEmotion(EmotionType.Greed, 0.3f, 60);
                 break;
             case "train":
                 NPCTrainAtGym(npc);
-                npc.CurrentActivity = "training with the practice dummies";
+                npc.CurrentActivity = "running drills on the sim range";
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.4f, 90);
                 npc.EmotionalState?.AddEmotion(EmotionType.Pride, 0.3f, 60);
                 break;
             case "levelup":
                 NPCVisitMaster(npc);
-                npc.CurrentActivity = "consulting with the Level Master";
+                npc.CurrentActivity = "meeting with a training broker";
                 npc.EmotionalState?.AddEmotion(EmotionType.Pride, 0.6f, 120);
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.5f, 120);
                 npc.EmotionalState?.AddEmotion(EmotionType.Hope, 0.4f, 90);
                 break;
             case "heal":
                 NPCVisitHealer(npc);
-                npc.CurrentActivity = "browsing the healing potions";
+                npc.CurrentActivity = "shopping for repair patches";
                 npc.EmotionalState?.AddEmotion(EmotionType.Hope, 0.4f, 60);
                 npc.EmotionalState?.AddEmotion(EmotionType.Peace, 0.3f, 90);
                 break;
             case "move":
                 MoveNPCToRandomLocation(npc);
-                npc.CurrentActivity = "passing through";
+                npc.CurrentActivity = "moving through the grid";
                 break;
             case "team_recruit":
                 NPCTeamRecruitment(npc);
-                npc.CurrentActivity = "looking for recruits";
+                npc.CurrentActivity = "looking for crew";
                 npc.EmotionalState?.AddEmotion(EmotionType.Hope, 0.3f, 60);
                 break;
             case "team_dungeon":
                 NPCTeamDungeonRun(npc);
-                npc.CurrentActivity = "rallying the team for a dungeon run";
+                npc.CurrentActivity = "assembling a crew for a subnet run";
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.5f, 90);
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.4f, 90);
                 break;
             case "love_street":
                 NPCVisitLoveStreet(npc);
-                npc.CurrentActivity = "enjoying the evening company";
+                npc.CurrentActivity = "chasing trouble in the neon nightlife";
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.5f, 120);
                 npc.EmotionalState?.AddEmotion(EmotionType.Peace, 0.3f, 90);
                 break;
             case "temple":
                 NPCVisitTemple(npc);
-                npc.CurrentActivity = "praying quietly";
+                npc.CurrentActivity = "observing a quiet ritual";
                 npc.EmotionalState?.AddEmotion(EmotionType.Peace, 0.5f, 120);
                 npc.EmotionalState?.AddEmotion(EmotionType.Hope, 0.4f, 90);
                 break;
             case "bank":
                 NPCVisitBank(npc);
-                npc.CurrentActivity = "counting coins at the counter";
+                npc.CurrentActivity = "balancing accounts at the vault";
                 npc.EmotionalState?.AddEmotion(EmotionType.Greed, 0.3f, 60);
                 break;
             case "marketplace":
                 NPCVisitMarketplace(npc);
-                npc.CurrentActivity = "haggling with a merchant";
+                npc.CurrentActivity = "haggling over contraband";
                 npc.EmotionalState?.AddEmotion(EmotionType.Greed, 0.4f, 60);
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.2f, 60);
                 break;
             case "castle":
                 NPCVisitCastle(npc);
-                npc.CurrentActivity = "attending to court business";
+                npc.CurrentActivity = "handling tower politics";
                 npc.EmotionalState?.AddEmotion(EmotionType.Pride, 0.4f, 90);
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.3f, 60);
                 break;
             case "go_home":
                 NPCGoHome(npc);
-                npc.CurrentActivity = "heading home for the day";
+                npc.CurrentActivity = "heading back to their hideout";
                 npc.EmotionalState?.AddEmotion(EmotionType.Peace, 0.4f, 120);
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.3f, 90);
                 break;
             case "dark_alley":
                 NPCVisitDarkAlley(npc);
-                npc.CurrentActivity = "lurking in the shadows";
+                npc.CurrentActivity = "working a dead drop in the shadows";
                 npc.EmotionalState?.AddEmotion(EmotionType.Greed, 0.4f, 90);
                 npc.EmotionalState?.AddEmotion(EmotionType.Confidence, 0.3f, 60);
                 break;
             case "inn":
                 NPCVisitInn(npc);
-                npc.CurrentActivity = "having a drink at the bar";
+                npc.CurrentActivity = "nursing synthbrew at the bar";
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.3f, 60);
                 npc.EmotionalState?.AddEmotion(EmotionType.Peace, 0.3f, 90);
                 break;
             case "settlement":
                 npc.CurrentLocation = "Settlement";
-                npc.CurrentActivity = "helping build the settlement";
+                npc.CurrentActivity = "helping wire up the heap fringe";
                 npc.EmotionalState?.AddEmotion(EmotionType.Joy, 0.3f, 60);
                 npc.EmotionalState?.AddEmotion(EmotionType.Hope, 0.3f, 90);
                 break;

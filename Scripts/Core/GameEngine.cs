@@ -2901,7 +2901,7 @@ public partial class GameEngine
         if (potionsReward > 0)
         {
             player.Healing = Math.Min(player.Healing + potionsReward, 99);
-            terminal.WriteLine($"  +{potionsReward} healing potions", "bright_green");
+            terminal.WriteLine($"  +{potionsReward} repair patches", "bright_green");
         }
 
         // Apply herbs (one of each type)

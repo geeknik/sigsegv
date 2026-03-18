@@ -15433,10 +15433,10 @@ public class DungeonLocation : BaseLocation
         group.IsInDungeon = true;
         group.CurrentFloor = currentDungeonLevel;
 
-        // Notify group followers that leader has entered the dungeon
+        // Notify group followers that leader has entered the subnet
         GroupSystem.Instance!.NotifyGroup(group,
-            $"\u001b[1;33m  * Your group leader {ctx.Username} has entered the dungeon (Floor {currentDungeonLevel})!\u001b[0m" +
-            $"\n\u001b[1;33m  * Go to the Dungeons to join them!\u001b[0m",
+            $"\u001b[1;33m  * Your group leader {ctx.Username} has entered the subnet (Layer {currentDungeonLevel})!\u001b[0m" +
+            $"\n\u001b[1;33m  * Go to the Subnet to join them!\u001b[0m",
             excludeUsername: ctx.Username);
 
         // Show leader how many slots are available for NPCs
@@ -15482,7 +15482,7 @@ public class DungeonLocation : BaseLocation
         if (leaderSession?.Context?.LocationManager == null)
         {
             term.SetColor("red");
-            term.WriteLine("  Could not connect to your group leader's dungeon session.");
+            term.WriteLine("  Could not connect to your group leader's subnet session.");
             await term.PressAnyKey();
             return;
         }
@@ -15491,7 +15491,7 @@ public class DungeonLocation : BaseLocation
         if (leaderDungeon == null)
         {
             term.SetColor("red");
-            term.WriteLine("  Your group leader is not in the dungeon.");
+            term.WriteLine("  Your group leader is not in the subnet.");
             await term.PressAnyKey();
             return;
         }
@@ -15526,16 +15526,16 @@ public class DungeonLocation : BaseLocation
         mySession.GroupLeaderSession = leaderSession;
 
         // Update online location
-        ctx.OnlineState?.UpdateLocation($"Dungeon (Group: {group.LeaderUsername})");
+        ctx.OnlineState?.UpdateLocation($"Subnet (Group: {group.LeaderUsername})");
 
         // Notify leader and group
         leaderSession.EnqueueMessage(
-            $"\u001b[1;32m  * {ctx.Username} has joined your dungeon group!\u001b[0m");
+            $"\u001b[1;32m  * {ctx.Username} has joined your subnet group!\u001b[0m");
         GroupSystem.Instance?.NotifyGroup(group,
-            $"\u001b[1;32m  * {ctx.Username} has entered the dungeon with the group.\u001b[0m",
+            $"\u001b[1;32m  * {ctx.Username} has entered the subnet with the group.\u001b[0m",
             excludeUsername: ctx.Username);
 
-        // Show the current room the leader is in (so follower immediately feels "in" the dungeon)
+        // Show the current room the leader is in (so follower immediately feels "in" the subnet)
         var leaderRoom = leaderDungeon.currentFloor?.GetCurrentRoom();
         if (leaderRoom != null)
         {
@@ -15547,7 +15547,7 @@ public class DungeonLocation : BaseLocation
             // Fallback if room not available
             term.ClearScreen();
             term.SetColor("gray");
-            term.WriteLine($"  You join {group.LeaderUsername}'s group in the dungeon...");
+            term.WriteLine($"  You join {group.LeaderUsername}'s group in the subnet...");
             term.WriteLine("");
         }
 
@@ -15594,7 +15594,7 @@ public class DungeonLocation : BaseLocation
 
                 var trimmed = input.Trim();
 
-                // Q = leave group dungeon
+                // Q = leave group subnet
                 if (trimmed.Equals("Q", StringComparison.OrdinalIgnoreCase))
                     break;
 
@@ -15626,7 +15626,7 @@ public class DungeonLocation : BaseLocation
                     continue;
                 }
 
-                // P = Use potion (healing or mana)
+                // P = Use patch (healing or entropy)
                 if (trimmed.Equals("P", StringComparison.OrdinalIgnoreCase))
                 {
                     await UseFollowerPotion(player, term);
@@ -15695,7 +15695,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("yellow");
                 term.Write("    P");
                 term.SetColor("gray");
-                term.WriteLine("  - Use potion (HP or Mana)");
+                term.WriteLine("  - Use patch (HP or Entropy)");
                 term.SetColor("yellow");
                 term.Write("    =");
                 term.SetColor("gray");
@@ -15703,7 +15703,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("yellow");
                 term.Write("    Q");
                 term.SetColor("gray");
-                term.WriteLine("  - Leave dungeon");
+                term.WriteLine("  - Leave subnet");
                 term.SetColor("white");
                 term.WriteLine("  In combat:");
                 term.SetColor("yellow");
@@ -15713,7 +15713,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("yellow");
                 term.Write("    C");
                 term.SetColor("gray");
-                term.WriteLine("  - Cast best spell");
+                term.WriteLine("  - Execute best payload");
                 term.SetColor("yellow");
                 term.Write("    D");
                 term.SetColor("gray");
@@ -15721,7 +15721,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("yellow");
                 term.Write("    I");
                 term.SetColor("gray");
-                term.WriteLine("  - Use potion");
+                term.WriteLine("  - Use patch");
                 term.SetColor("yellow");
                 term.Write("    H");
                 term.SetColor("gray");
@@ -15733,7 +15733,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("yellow");
                 term.Write("    1-9");
                 term.SetColor("gray");
-                term.WriteLine(" - Quickbar (spells/abilities)");
+                term.WriteLine(" - Quickbar (payloads/abilities)");
                 term.SetColor("white");
                 term.WriteLine("  Slash commands:");
                 term.SetColor("gray");
@@ -15749,7 +15749,7 @@ public class DungeonLocation : BaseLocation
                 term.SetColor("bright_cyan");
                 term.WriteLine($"  {player.DisplayName} — Level {player.Level} {player.Race} {player.Class}");
                 term.SetColor("white");
-                term.WriteLine($"  HP: {player.HP}/{player.MaxHP}  Mana: {player.Mana}/{player.MaxMana}  Sta: {player.CurrentCombatStamina}/{player.Stamina}");
+                term.WriteLine($"  HP: {player.HP}/{player.MaxHP}  Entropy: {player.Mana}/{player.MaxMana}  Sta: {player.CurrentCombatStamina}/{player.Stamina}");
                 term.SetColor("gray");
                 term.WriteLine($"  STR:{player.Strength} DEF:{player.Defense} DEX:{player.Dexterity} AGI:{player.Agility}");
                 term.WriteLine($"  CON:{player.Constitution} INT:{player.Intelligence} WIS:{player.Wisdom} CHA:{player.Charisma}");
@@ -15765,9 +15765,9 @@ public class DungeonLocation : BaseLocation
                 term.SetColor(hpColor);
                 term.WriteLine($"  HP: {player.HP}/{player.MaxHP} ({hpPct}%)");
                 term.SetColor("blue");
-                term.WriteLine($"  MP: {player.Mana}/{player.MaxMana} ({mpPct}%)");
+                term.WriteLine($"  EN: {player.Mana}/{player.MaxMana} ({mpPct}%)");
                 term.SetColor("yellow");
-                term.WriteLine($"  Potions: HP={player.Healing}  MP={player.ManaPotions}");
+                term.WriteLine($"  Patches: HP={player.Healing}  EN={player.ManaPotions}");
                 return true;
 
             case "g":
@@ -15811,7 +15811,7 @@ public class DungeonLocation : BaseLocation
                             ? (GameConfig.ScreenReaderMode ? "*" : "\u001b[1;33m★\u001b[0m")
                             : (GameConfig.ScreenReaderMode ? "-" : "·");
                         string suffix = isMe ? " \u001b[36m(you)\u001b[0m" : "";
-                        term.WriteLine($"  {prefix} \u001b[{mhpColor}m{memberPlayer.DisplayName}\u001b[0m Lv{memberPlayer.Level} {memberPlayer.Class} — HP:{memberPlayer.HP}/{memberPlayer.MaxHP} ({mhpPct}%) MP:{memberPlayer.Mana}/{memberPlayer.MaxMana}{suffix}");
+                        term.WriteLine($"  {prefix} \u001b[{mhpColor}m{memberPlayer.DisplayName}\u001b[0m Lv{memberPlayer.Level} {memberPlayer.Class} — HP:{memberPlayer.HP}/{memberPlayer.MaxHP} ({mhpPct}%) EN:{memberPlayer.Mana}/{memberPlayer.MaxMana}{suffix}");
                     }
                 }
                 return true;
@@ -15933,7 +15933,7 @@ public class DungeonLocation : BaseLocation
 
             term.WriteLine("");
             term.SetColor("yellow");
-            term.WriteLine($"  Gold: {player.Gold:N0}    HP Potions: {player.Healing}  MP Potions: {player.ManaPotions}");
+            term.WriteLine($"  Gold: {player.Gold:N0}    HP Patches: {player.Healing}  EN Patches: {player.ManaPotions}");
 
             // Show equip/unequip options
             bool hasBackpackItems = player.Inventory.Count > 0;
@@ -16049,7 +16049,7 @@ public class DungeonLocation : BaseLocation
     }
 
     /// <summary>
-    /// Use a healing or mana potion for a group follower.
+    /// Use a healing or entropy patch for a group follower.
     /// If player has both types, prompts for choice; otherwise auto-uses the available type.
     /// </summary>
     private static async Task UseFollowerPotion(Character player, TerminalEmulator term)
@@ -16063,12 +16063,12 @@ public class DungeonLocation : BaseLocation
             if (player.Healing <= 0 && player.ManaPotions <= 0)
             {
                 term.SetColor("red");
-                term.WriteLine("  You have no potions.");
+                term.WriteLine("  You have no patches.");
             }
             else
             {
                 term.SetColor("green");
-                term.WriteLine("  HP and Mana are already full.");
+                term.WriteLine("  HP and Entropy are already full.");
             }
             await Task.Delay(1500);
             return;
@@ -16078,7 +16078,7 @@ public class DungeonLocation : BaseLocation
         if (hasHealPots && hasManaPots)
         {
             term.SetColor("white");
-            term.WriteLine($"  [H] Healing potion ({player.Healing} left)  [M] Mana potion ({player.ManaPotions} left)");
+            term.WriteLine($"  [H] Repair patch ({player.Healing} left)  [M] Entropy patch ({player.ManaPotions} left)");
             term.SetColor("gray");
             term.Write("  Choose: ");
             var choice = await term.GetInput("");
@@ -16098,9 +16098,9 @@ public class DungeonLocation : BaseLocation
             player.ManaPotions--;
 
             term.SetColor("bright_blue");
-            term.WriteLine($"  You drink a mana potion and recover {actualMana:N0} MP!");
+            term.WriteLine($"  You apply an entropy patch and recover {actualMana:N0} EN!");
             term.SetColor("cyan");
-            term.WriteLine($"  Mana: {player.Mana}/{player.MaxMana}    Mana Potions: {player.ManaPotions}");
+            term.WriteLine($"  Entropy: {player.Mana}/{player.MaxMana}    Entropy Patches: {player.ManaPotions}");
         }
         else
         {
@@ -16112,9 +16112,9 @@ public class DungeonLocation : BaseLocation
             player.Statistics.RecordPotionUsed(actualHeal);
 
             term.SetColor("bright_green");
-            term.WriteLine($"  You drink a healing potion and recover {actualHeal:N0} HP!");
+            term.WriteLine($"  You apply a repair patch and recover {actualHeal:N0} HP!");
             term.SetColor("cyan");
-            term.WriteLine($"  HP: {player.HP}/{player.MaxHP}    Potions: {player.Healing}/{player.MaxPotions}");
+            term.WriteLine($"  HP: {player.HP}/{player.MaxHP}    Patches: {player.Healing}/{player.MaxPotions}");
         }
         await Task.Delay(1500);
     }
@@ -16148,11 +16148,11 @@ public class DungeonLocation : BaseLocation
         term.SetColor("white");
         term.WriteLine($" {player.HP}/{player.MaxHP}");
 
-        // MP bar
+        // Entropy bar
         int mpPct = player.MaxMana > 0 ? (int)(player.Mana * 20 / player.MaxMana) : 0;
         mpPct = Math.Clamp(mpPct, 0, 20);
         string mpBar = new string('#', mpPct) + new string('.', 20 - mpPct);
-        term.Write("  Mana: ");
+        term.Write("  Ent:  ");
         term.SetColor("blue");
         term.Write($"[{mpBar}]");
         term.SetColor("white");
@@ -16176,13 +16176,13 @@ public class DungeonLocation : BaseLocation
         term.SetColor("yellow");
         term.WriteLine($"  Gold: {player.Gold:N0}    XP: {player.Experience:N0}");
         term.SetColor("green");
-        term.WriteLine($"  Potions: {player.Healing}/{player.MaxPotions}");
+        term.WriteLine($"  Patches: {player.Healing}/{player.MaxPotions}");
         term.WriteLine("");
         await term.PressAnyKey();
     }
 
     /// <summary>
-    /// Clean up when a group follower exits the dungeon (voluntarily, disconnect, or group disband).
+    /// Clean up when a group follower exits the subnet (voluntarily, disconnect, or group disband).
     /// </summary>
     private void CleanupGroupFollower(
         Character player, TerminalEmulator term,
@@ -16206,13 +16206,13 @@ public class DungeonLocation : BaseLocation
         mySession.IsGroupFollower = false;
         mySession.GroupLeaderSession = null;
 
-        // Notify leader (follower left the dungeon, not necessarily the group)
+        // Notify leader (follower left the subnet, not necessarily the group)
         leaderSession.EnqueueMessage(
-            $"\u001b[1;33m  * {mySession.Username} has left the dungeon.\u001b[0m");
+            $"\u001b[1;33m  * {mySession.Username} has left the subnet.\u001b[0m");
     }
 
     /// <summary>
-    /// Clean up group state when the leader exits the dungeon.
+    /// Clean up group state when the leader exits the subnet.
     /// Returns followers to town but keeps the group intact for regrouping.
     /// </summary>
     private void CleanupGroupDungeonOnLeaderExit(Character player)
@@ -16235,7 +16235,7 @@ public class DungeonLocation : BaseLocation
 
             group.IsInDungeon = false;
 
-            // Signal each follower to exit the dungeon (breaks their GroupFollowerLoop)
+            // Signal each follower to exit the subnet (breaks their GroupFollowerLoop)
             // but do NOT disband the group — they stay grouped for regrouping later
             foreach (var follower in groupedFollowers)
             {
@@ -16244,13 +16244,13 @@ public class DungeonLocation : BaseLocation
                 {
                     followerSession.IsGroupFollower = false; // breaks the while loop
                     followerSession.EnqueueMessage(
-                        "\u001b[1;33m  * The leader has left the dungeon. Returning to town...\u001b[0m");
+                        "\u001b[1;33m  * The leader has left the subnet. Returning to town...\u001b[0m");
                 }
             }
 
             // Notify group (including non-dungeon members)
             GroupSystem.Instance?.NotifyGroup(group,
-                $"\u001b[1;33m  * {ctx.Username} has left the dungeon. The dungeon run is over.\u001b[0m",
+                $"\u001b[1;33m  * {ctx.Username} has left the subnet. The subnet run is over.\u001b[0m",
                 excludeUsername: ctx.Username);
         }
     }
